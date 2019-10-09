@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/help">
+        <file alias="php_function_descs">resources/help/php/function_descs</file>
+        <file alias="php_class_method_descs">resources/help/php/class_method_descs</file>
+        <file alias="php_manual_files">resources/help/php/files</file>
+        <file alias="editor_shortcuts">resources/help/shortcuts</file>
+        <file alias="about">resources/help/about</file>
+    </qresource>
+</RCC>

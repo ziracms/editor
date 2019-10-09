@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/styles/dark">
+        <file alias="style">resources/styles/dark/style</file>
+        <file alias="handle.png">resources/styles/dark/images/handle.png</file>
+        <file alias="down_arrow.png">resources/styles/dark/images/down_arrow.png</file>
+        <file alias="scheme">resources/styles/dark/scheme</file>
+    </qresource>
+    <qresource prefix="/styles/light">
+        <file alias="style">resources/styles/light/style</file>
+        <file alias="scheme">resources/styles/light/scheme</file>
+        <file alias="down_arrow.png">resources/styles/light/images/down_arrow.png</file>
+        <file alias="handle.png">resources/styles/light/images/handle.png</file>
+    </qresource>
+</RCC>

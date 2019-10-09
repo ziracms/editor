@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/highlight">
+        <file alias="php_keys">resources/highlight/php/keywords</file>
+        <file alias="php_consts">resources/highlight/php/consts</file>
+        <file alias="php_classes">resources/highlight/php/classes</file>
+        <file alias="php_types">resources/highlight/php/types</file>
+        <file alias="js_keys">resources/highlight/js/keywords</file>
+        <file alias="js_functions">resources/highlight/js/functions</file>
+        <file alias="js_types">resources/highlight/js/types</file>
+        <file alias="js_props">resources/highlight/js/props</file>
+        <file alias="css_keys">resources/highlight/css/keywords</file>
+        <file alias="css_spec">resources/highlight/css/special</file>
+    </qresource>
+</RCC>

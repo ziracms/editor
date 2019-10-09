@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/syntax">
+        <file alias="css_props">resources/syntax/css/properties</file>
+        <file alias="html_tags">resources/syntax/html/tags</file>
+        <file alias="html_shortags">resources/syntax/html/shortags</file>
+        <file alias="html_alltags">resources/syntax/html/alltags</file>
+        <file alias="php_functions">resources/syntax/php/functions</file>
+        <file alias="js_objects">resources/syntax/js/objects</file>
+        <file alias="php_globals">resources/syntax/php/globals</file>
+        <file alias="php_classes">resources/syntax/php/classes</file>
+        <file alias="php_class_props">resources/syntax/php/class_props</file>
+        <file alias="php_class_consts">resources/syntax/php/class_consts</file>
+        <file alias="php_class_methods">resources/syntax/php/class_methods</file>
+        <file alias="php_specials">resources/syntax/php/specials</file>
+        <file alias="js_specials">resources/syntax/js/specials</file>
+        <file alias="php_consts">resources/syntax/php/consts</file>
+        <file alias="php_function_types">resources/syntax/php/function_types</file>
+        <file alias="php_class_method_types">resources/syntax/php/class_method_types</file>
+    </qresource>
+</RCC>

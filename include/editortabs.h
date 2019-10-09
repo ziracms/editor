@@ -1,0 +1,98 @@
+/*******************************************
+ * Zira Editor
+ * A lightweight PHP Editor
+ * (C)2019 https://github.com/ziracms/editor
+ *******************************************/
+
+#ifndef EDITORTABS_H
+#define EDITORTABS_H
+
+#include <QObject>
+#include "editor.h"
+
+class EditorTabs : public QObject
+{
+    Q_OBJECT
+public:
+    EditorTabs(QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords);
+    ~EditorTabs();
+    void createTab(QString filepath, bool initHighlight = true);
+    bool closeWindowAllowed();
+    Editor * getActiveEditor();
+    QStringList getOpenTabFiles();
+    QList<int> getOpenTabLines();
+    int getCurrentTabIndex();
+    QString getCurrentTabFilename();
+    void closeSaved();
+    void setActiveTab(int index);
+    void setTabLines(QList<int> lines);
+    void initHighlighters();
+    QRect getGeometry();
+    QRect getGeometryGlobal();
+    QRect getGeometryMappedTo(QWidget * parent);
+protected:
+    Editor * getTabEditor(int index);
+    QString getTabNameFromPath(QString filepath);
+    void fileBrowserFileRenamed(QString oldpath, QString newpath);
+    void fileBrowserFolderRenamed(QString oldpath, QString newpath);
+private:
+    Editor * editor;
+    QTabWidget * tabWidget;
+    Settings * settings;
+    HighlightWords * highlightWords;
+    CompleteWords * completeWords;
+    HelpWords * helpWords;
+
+    bool blockSig;
+signals:
+    void statusBarText(QString);
+    void progressChange(int);
+    void editorFilenameChanged(QString);
+    void tabOpened(int index);
+    void tabSwitched(int index);
+    void tabClosed(int index);
+    void modifiedStateChanged(bool m);
+    void editorSaved(int index);
+    void editorReady(int index);
+    void editorShowDeclaration(QString name);
+    void editorShowHelp(QString name);
+    void editorParsePHPRequested(int index, QString text);
+    void editorUndoRedoChanged();
+    void editorBackForwardChanged();
+    void editorSearchInFilesRequested(QString text);
+    void updateProject(void);
+    void editorFocused(void);
+    void editorBreadcrumbsClick(void);
+public slots:
+    void openFile(QString filepath, bool initHighlight = true);
+    void fileBrowserCreated(QString path);
+    void fileBrowserRenamed(QString oldpath, QString newpath);
+    void fileBrowserDeleted(QString path);
+    void open(QString dir = "");
+    void save();
+    void saveAll();
+    void saveAs();
+    void close();
+    void closeTab(int index);
+private slots:
+    void ready(int index);
+    void switchTab(int index);
+    void editorModifiedStateChanged(int index, bool m);
+    void statusBarTextChangeRequested(int index, QString text);
+    void progressChangeRequested(int index, int val);
+    void filenameChanged(int index, QString name);
+    void saved(int index);
+    void reloaded(int index);
+    void showDeclaration(int index, QString name);
+    void showHelp(int index, QString name);
+    void parsePHP(int index, QString text);
+    void undoRedoChanged(int index);
+    void backForwardChanged(int index);
+    void searchInFiles(QString text);
+    void searchInFilesRequested();
+    void focusIn(int index);
+    void breadcrumbsClick(int index);
+    void warning(int index, QString slug, QString text);
+};
+
+#endif // EDITORTABS_H

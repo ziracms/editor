@@ -1,0 +1,22 @@
+<table>
+<tr><td>List of keyboard shortcuts:</td><td></td></tr>
+<tr><td>&nbsp;</td><td></td></tr>
+<tr><td>Undo:</td><td>Ctrl+Z</td></tr>
+<tr><td>Redo:</td><td>Ctrl+Shift+Z</td></tr>
+<tr><td>Indent:</td><td>TAB</td></tr>
+<tr><td>Unindent:</td><td>Shift+TAB</td></tr>
+<tr><td>Save:</td><td>Ctrl+S</td></tr>
+<tr><td>Save All:</td><td>Ctrl+Shift+S</td></tr>
+<tr><td>Comment In/Out:</td><td>Ctrl+/</td></tr>
+<tr><td>Overwrite Mode On/Off:</td><td>Insert</td></tr>
+<tr><td>Show tooltip:</td><td>Ctrl+Space</td></tr>
+<tr><td>Search document:</td><td>Ctrl+F</td></tr>
+<tr><td>Search in files:</td><td>Ctrl+Shift+F</td></tr>
+<tr><td>Context help:</td><td>F1</td></tr>
+<tr><td>Duplicate line:</td><td>Ctrl+D</td></tr>
+<tr><td>Delete line:</td><td>Ctrl+Alt+D</td></tr>
+<tr><td>Show/Hide Sidebar:</td><td>Ctrl+Alt+S</td></tr>
+<tr><td>Show/Hide Toolbar:</td><td>Ctrl+Alt+T</td></tr>
+<tr><td>Show/Hide Output:</td><td>Ctrl+Alt+O</td></tr>
+<tr><td>Show/Hide Quick Access Panel: </td><td>Ctrl+Alt+Q / Ctrl+P</td></tr>
+</table>

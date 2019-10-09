@@ -1,0 +1,15 @@
+directory
+stdclass
+__php_incomplete_class
+exception
+errorexception
+php_user_filter
+closure
+generator
+arithmeticerror
+assertionerror
+divisionbyzeroerror
+error
+throwable
+parseerror
+typeerror

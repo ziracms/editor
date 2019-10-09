@@ -1,0 +1,34 @@
+QTextEdit,
+QPlainTextEdit,
+QTextBrowser
+{
+    color: #a5a9ad;
+    background: #0f0f10;
+    selection-background-color: #008dc1;
+}
+
+Search QCheckBox
+{
+    color: #c4c8cc;
+}
+
+Search QLineEdit[results="found"]
+{
+    background: #3a4a50;
+    color: #ffffff;
+}
+
+Search QLineEdit[results="notfound"]
+{
+    background: #710044;
+    color: #ffffff;
+}
+
+QLabel[abstract_label="true"]
+{
+    color: #fff;
+    font-size: 17px;
+    background-image: url(:image/abstract);
+    background-position: left bottom;
+    background-repeat: repeat-x;
+}

@@ -1,0 +1,29 @@
+<RCC>
+    <qresource prefix="/image">
+        <file alias="abstract">resources/images/abstract.png</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file alias="application-exit.png">resources/images/icons/application-exit.png</file>
+        <file alias="color-management.png">resources/images/icons/color-management.png</file>
+        <file alias="configure.png">resources/images/icons/configure.png</file>
+        <file alias="document-new.png">resources/images/icons/document-new.png</file>
+        <file alias="document-open.png">resources/images/icons/document-open.png</file>
+        <file alias="document-save-all.png">resources/images/icons/document-save-all.png</file>
+        <file alias="document-save-as.png">resources/images/icons/document-save-as.png</file>
+        <file alias="document-save.png">resources/images/icons/document-save.png</file>
+        <file alias="edit-redo.png">resources/images/icons/edit-redo.png</file>
+        <file alias="edit-undo.png">resources/images/icons/edit-undo.png</file>
+        <file alias="folder-new.png">resources/images/icons/folder-new.png</file>
+        <file alias="go-next.png">resources/images/icons/go-next.png</file>
+        <file alias="go-previous.png">resources/images/icons/go-previous.png</file>
+        <file alias="help-info.png">resources/images/icons/help-info.png</file>
+        <file alias="quickopen.png">resources/images/icons/quickopen.png</file>
+        <file alias="file.png">resources/images/icons/application-text.png</file>
+        <file alias="folder.png">resources/images/icons/folder.png</file>
+        <file alias="zira.png">resources/images/icons/zira.png</file>
+        <file alias="zira-cms.png">resources/images/icons/zira-cms.png</file>
+        <file alias="edit.png">resources/images/icons/edit.png</file>
+        <file alias="view-refresh.png">resources/images/icons/view-refresh.png</file>
+        <file alias="edit-delete.png">resources/images/icons/edit-delete.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,971 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string/>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../qrc/image.qrc">
+    <normaloff>:/icons/zira.png</normaloff>:/icons/zira.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="tabPosition">
+       <enum>QTabWidget::North</enum>
+      </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Rounded</enum>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="minimumSize">
+     <size>
+      <width>150</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="title">
+     <string>Fi&amp;le</string>
+    </property>
+    <widget class="QMenu" name="menuCreate">
+     <property name="minimumSize">
+      <size>
+       <width>150</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>&amp;Create</string>
+     </property>
+     <addaction name="actionNewFile"/>
+     <addaction name="actionNewFolder"/>
+     <addaction name="separator"/>
+     <addaction name="actionNewProject"/>
+    </widget>
+    <addaction name="actionOpenFile"/>
+    <addaction name="menuCreate"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenProject"/>
+    <addaction name="actionUpdateProject"/>
+    <addaction name="actionRescanProject"/>
+    <addaction name="separator"/>
+    <addaction name="actionEditProject"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaveAll"/>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaveAs"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose"/>
+    <addaction name="actionCloseProject"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+    <addaction name="separator"/>
+    <addaction name="actionBack"/>
+    <addaction name="actionForward"/>
+    <addaction name="separator"/>
+    <addaction name="actionFindReplace"/>
+    <addaction name="actionSearchInFiles"/>
+    <addaction name="separator"/>
+    <addaction name="actionSettings"/>
+   </widget>
+   <widget class="QMenu" name="menuGit">
+    <property name="title">
+     <string>&amp;Git</string>
+    </property>
+    <addaction name="actionGitStatus"/>
+    <addaction name="actionGitLog"/>
+    <addaction name="actionGitDiffTree"/>
+    <addaction name="separator"/>
+    <addaction name="actionGitDiffAll"/>
+    <addaction name="actionGitDiffCurrent"/>
+    <addaction name="separator"/>
+    <addaction name="actionGitDiffAllCommit"/>
+    <addaction name="actionGitDiffCurrentCommit"/>
+    <addaction name="separator"/>
+    <addaction name="actionGitDiscardChanges"/>
+    <addaction name="actionGitDiscardCommit"/>
+    <addaction name="actionGitRevert"/>
+    <addaction name="separator"/>
+    <addaction name="actionGitAddAll"/>
+    <addaction name="actionGitAddCurrent"/>
+    <addaction name="separator"/>
+    <addaction name="actionGitResetAll"/>
+    <addaction name="actionGitResetCurrent"/>
+    <addaction name="separator"/>
+    <addaction name="actionGitCommit"/>
+    <addaction name="separator"/>
+    <addaction name="actionGitPush"/>
+    <addaction name="separator"/>
+    <addaction name="actionGitPull"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionServersStatus"/>
+    <addaction name="separator"/>
+    <addaction name="actionStartServers"/>
+    <addaction name="actionStopServers"/>
+    <addaction name="separator"/>
+    <addaction name="actionColorPicker"/>
+    <addaction name="separator"/>
+    <addaction name="actionCompileSass"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="actionShowHideSidebar"/>
+    <addaction name="actionShowHideToolbar"/>
+    <addaction name="actionShowHideOutput"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuickAccess"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHelpContact"/>
+    <addaction name="actionHelpDonate"/>
+    <addaction name="separator"/>
+    <addaction name="actionHelpZiraCMS"/>
+    <addaction name="separator"/>
+    <addaction name="actionHelpShortcuts"/>
+    <addaction name="actionHelpAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuGit"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Toolbar</string>
+   </property>
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonFollowStyle</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpenFile"/>
+   <addaction name="actionSaveAll"/>
+   <addaction name="separator"/>
+   <addaction name="actionUndo"/>
+   <addaction name="actionRedo"/>
+   <addaction name="separator"/>
+   <addaction name="actionBack"/>
+   <addaction name="actionForward"/>
+   <addaction name="separator"/>
+   <addaction name="actionColorPicker"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="sidebarDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>200</width>
+     <height>300</height>
+    </size>
+   </property>
+   <property name="baseSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Sideba&amp;r</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="sidebarDockWidgetContents">
+    <layout class="QVBoxLayout" name="sidebar_dock_layout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QWidget" name="sidebarProgressBarWrapperWidget" native="true">
+       <layout class="QHBoxLayout" name="sidebarProgressBarLayout">
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="sidebarProgressBarLabel">
+          <property name="text">
+           <string>Scanning</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QProgressBar" name="sidebarProgressBar">
+          <property name="value">
+           <number>24</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTabWidget" name="sidebarTabWidget">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="tabPosition">
+        <enum>QTabWidget::West</enum>
+       </property>
+       <property name="tabShape">
+        <enum>QTabWidget::Rounded</enum>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="fileBrowserTab">
+        <attribute name="title">
+         <string>File browser</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="fileBrowserTabLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLineEdit" name="fileBrowserPathLine">
+           <property name="clearButtonEnabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTreeWidget" name="fileBrowserTreeWidget">
+           <property name="sizeAdjustPolicy">
+            <enum>QAbstractScrollArea::AdjustIgnored</enum>
+           </property>
+           <property name="textElideMode">
+            <enum>Qt::ElideRight</enum>
+           </property>
+           <property name="animated">
+            <bool>false</bool>
+           </property>
+           <property name="headerHidden">
+            <bool>true</bool>
+           </property>
+           <property name="expandsOnDoubleClick">
+            <bool>false</bool>
+           </property>
+           <column>
+            <property name="text">
+             <string>Files</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="navigatorTab">
+        <attribute name="title">
+         <string>Navigator</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="navigatorTabLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTreeWidget" name="navigatorTreeWidget">
+           <property name="animated">
+            <bool>false</bool>
+           </property>
+           <property name="expandsOnDoubleClick">
+            <bool>false</bool>
+           </property>
+           <attribute name="headerVisible">
+            <bool>false</bool>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>Symbols</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="outputDockWidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>200</width>
+     <height>166</height>
+    </size>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllDockWidgetAreas</set>
+   </property>
+   <property name="windowTitle">
+    <string>O&amp;utput</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="outputDockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTabWidget" name="outputTabWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="messagesTab">
+        <attribute name="title">
+         <string>Messages</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="messagesTabLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTextBrowser" name="messagesBrowser"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="helpTab">
+        <attribute name="title">
+         <string>Help</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="helpTabLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTextBrowser" name="helpBrowser"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="searchTab">
+        <attribute name="title">
+         <string>Search</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="searchTabLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QListWidget" name="searchListWidget"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="outputTab">
+        <attribute name="title">
+         <string>Output</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTextEdit" name="outputEdit">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="todoTab">
+        <attribute name="title">
+         <string>TODO</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="todoTabLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTextEdit" name="todoEdit"/>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionOpenFile">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/document-open.png</normaloff>:/icons/document-open.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Open</string>
+   </property>
+   <property name="toolTip">
+    <string>Open file</string>
+   </property>
+  </action>
+  <action name="actionNewFile">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/document-new.png</normaloff>:/icons/document-new.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;New file</string>
+   </property>
+  </action>
+  <action name="actionNewFolder">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/folder-new.png</normaloff>:/icons/folder-new.png</iconset>
+   </property>
+   <property name="text">
+    <string>New &amp;folder</string>
+   </property>
+  </action>
+  <action name="actionSaveAll">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/document-save-all.png</normaloff>:/icons/document-save-all.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Save All</string>
+   </property>
+   <property name="toolTip">
+    <string>Save All</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/document-save.png</normaloff>:/icons/document-save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Sa&amp;ve Current</string>
+   </property>
+   <property name="toolTip">
+    <string>Save Current</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/document-save-as.png</normaloff>:/icons/document-save-as.png</iconset>
+   </property>
+   <property name="text">
+    <string>Sav&amp;e As</string>
+   </property>
+   <property name="toolTip">
+    <string>Save As</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>C&amp;lose file</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/application-exit.png</normaloff>:/icons/application-exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="actionNewProject">
+   <property name="text">
+    <string>New &amp;project</string>
+   </property>
+  </action>
+  <action name="actionOpenProject">
+   <property name="text">
+    <string>Open pro&amp;ject</string>
+   </property>
+  </action>
+  <action name="actionCloseProject">
+   <property name="text">
+    <string>Close p&amp;roject</string>
+   </property>
+  </action>
+  <action name="actionRescanProject">
+   <property name="text">
+    <string>Resca&amp;n project</string>
+   </property>
+  </action>
+  <action name="actionUpdateProject">
+   <property name="text">
+    <string>&amp;Update project</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/edit-undo.png</normaloff>:/icons/edit-undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/edit-redo.png</normaloff>:/icons/edit-redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Redo</string>
+   </property>
+  </action>
+  <action name="actionBack">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/go-previous.png</normaloff>:/icons/go-previous.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Back</string>
+   </property>
+   <property name="toolTip">
+    <string>Go to previous cursor location</string>
+   </property>
+  </action>
+  <action name="actionForward">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/go-next.png</normaloff>:/icons/go-next.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Forward</string>
+   </property>
+   <property name="toolTip">
+    <string>Go to next cursor location</string>
+   </property>
+  </action>
+  <action name="actionColorPicker">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/color-management.png</normaloff>:/icons/color-management.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Color picker</string>
+   </property>
+  </action>
+  <action name="actionSearchInFiles">
+   <property name="text">
+    <string>&amp;Search in files</string>
+   </property>
+  </action>
+  <action name="actionFindReplace">
+   <property name="text">
+    <string>F&amp;ind \ Replace</string>
+   </property>
+  </action>
+  <action name="actionGitStatus">
+   <property name="text">
+    <string>&amp;Show status</string>
+   </property>
+  </action>
+  <action name="actionGitLog">
+   <property name="text">
+    <string>Show &amp;log</string>
+   </property>
+  </action>
+  <action name="actionGitDiffAll">
+   <property name="text">
+    <string>&amp;Diff All (unstaged)</string>
+   </property>
+  </action>
+  <action name="actionGitDiffCurrent">
+   <property name="text">
+    <string>D&amp;iff Current (unstaged)</string>
+   </property>
+  </action>
+  <action name="actionGitDiscardChanges">
+   <property name="text">
+    <string>Discard &amp;uncommitted</string>
+   </property>
+  </action>
+  <action name="actionGitRevert">
+   <property name="text">
+    <string>&amp;Revert to previous commit</string>
+   </property>
+  </action>
+  <action name="actionGitResetAll">
+   <property name="text">
+    <string>R&amp;eset All</string>
+   </property>
+  </action>
+  <action name="actionGitAddAll">
+   <property name="text">
+    <string>&amp;Add All</string>
+   </property>
+  </action>
+  <action name="actionGitCommit">
+   <property name="text">
+    <string>&amp;Commit</string>
+   </property>
+  </action>
+  <action name="actionGitAddCurrent">
+   <property name="text">
+    <string>Add Curre&amp;nt</string>
+   </property>
+  </action>
+  <action name="actionGitResetCurrent">
+   <property name="text">
+    <string>Reset Current</string>
+   </property>
+  </action>
+  <action name="actionGitDiscardCommit">
+   <property name="text">
+    <string>Und&amp;o previous commit</string>
+   </property>
+  </action>
+  <action name="actionGitDiffTree">
+   <property name="text">
+    <string>S&amp;how last committed</string>
+   </property>
+  </action>
+  <action name="actionGitDiffAllCommit">
+   <property name="text">
+    <string>Diff All (last co&amp;mmit)</string>
+   </property>
+  </action>
+  <action name="actionGitDiffCurrentCommit">
+   <property name="text">
+    <string>Diff Current (last commit)</string>
+   </property>
+  </action>
+  <action name="actionGitPush">
+   <property name="text">
+    <string>&amp;Push to master</string>
+   </property>
+  </action>
+  <action name="actionGitPull">
+   <property name="text">
+    <string>Pull &amp;from master</string>
+   </property>
+  </action>
+  <action name="actionStartServers">
+   <property name="text">
+    <string>Sta&amp;rt servers</string>
+   </property>
+  </action>
+  <action name="actionStopServers">
+   <property name="text">
+    <string>St&amp;op servers</string>
+   </property>
+  </action>
+  <action name="actionServersStatus">
+   <property name="text">
+    <string>&amp;Servers status</string>
+   </property>
+  </action>
+  <action name="actionEditProject">
+   <property name="text">
+    <string>&amp;Project settings</string>
+   </property>
+  </action>
+  <action name="actionShowHideSidebar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Show \ Hide Sidebar</string>
+   </property>
+  </action>
+  <action name="actionShowHideToolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show \ &amp;Hide Toolbar</string>
+   </property>
+  </action>
+  <action name="actionShowHideOutput">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show \ Hide &amp;Output</string>
+   </property>
+  </action>
+  <action name="actionQuickAccess">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/quickopen.png</normaloff>:/icons/quickopen.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Quick Access</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/configure.png</normaloff>:/icons/configure.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Preferences</string>
+   </property>
+  </action>
+  <action name="actionHelpShortcuts">
+   <property name="text">
+    <string>&amp;Shortcuts</string>
+   </property>
+  </action>
+  <action name="actionHelpAbout">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/help-info.png</normaloff>:/icons/help-info.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionHelpContact">
+   <property name="text">
+    <string>&amp;Contact</string>
+   </property>
+  </action>
+  <action name="actionHelpDonate">
+   <property name="text">
+    <string>&amp;Donate</string>
+   </property>
+  </action>
+  <action name="actionHelpZiraCMS">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/zira-cms.png</normaloff>:/icons/zira-cms.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Zira CMS</string>
+   </property>
+  </action>
+  <action name="actionCompileSass">
+   <property name="text">
+    <string>Compile Sass</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="../qrc/image.qrc"/>
+ </resources>
+ <connections/>
+</ui>
