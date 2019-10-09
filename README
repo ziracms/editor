@@ -1,0 +1,19 @@
+Zira Editor is a lightweight PHP Editor with syntax highlighting and autocomplete.
+
+Main features:
+- syntax highlighting for PHP, JavaScript, CSS, HTML
+- autocomplete of PHP built-in functions and classes
+- autocomplete for JS, CSS, HTML
+- project support
+- autocomplete of project classes, functions, variables
+- unused variables highlighting (experimental)
+- file symbols navigator
+- built-in PHP manual (download required)
+- git support
+- sass support
+- quick access panel
+- search in files
+- go to declaration
+- built-in colorpicker
+
+Tested on OpenSuSe Leap 15.0 with QT 5.9.4
