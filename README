@@ -6,7 +6,10 @@ Main features:
 - syntax highlighting for PHP, JavaScript, CSS, HTML
 - autocomplete (PHP built-in functions and classes / project classes, functions, variables / JS, CSS, HTML)
 - unused variables highlighting (experimental)
+- files tree
 - file symbols navigator
+- matching braces, parentheses and tags highlighting
+- function arguments popup
 - built-in PHP manual (download required)
 - git support
 - sass support
@@ -14,6 +17,7 @@ Main features:
 - search in files
 - go to declaration
 - built-in colorpicker
+- both light and dark themes support
 
 Tested on OpenSuSe Leap 15.0 with QT 5.9.4
-Compiled binary can be found in bin folder.
+Compiled binary (x86-64) can be found in bin folder.
