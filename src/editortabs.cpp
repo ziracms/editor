@@ -36,6 +36,8 @@ EditorTabs::EditorTabs(QTabWidget * widget, Settings * settings, HighlightWords 
     QString shortcutSearchInFilesStr = QString::fromStdString(settings->get("shortcut_search_in_files"));
     QShortcut * shortcutSearchInFIles = new QShortcut(QKeySequence(shortcutSearchInFilesStr), tabWidget);
     connect(shortcutSearchInFIles, SIGNAL(activated()), this, SLOT(searchInFilesRequested()));
+
+    tabWidget->setCursor(Qt::ArrowCursor);
 }
 
 EditorTabs::~EditorTabs()

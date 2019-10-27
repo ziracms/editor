@@ -9,6 +9,7 @@
 LineNumber::LineNumber(Editor * codeEditor) : QWidget(codeEditor)
 {
     editor = codeEditor;
+    setCursor(Qt::ArrowCursor);
 }
 
 LineNumber::~LineNumber()

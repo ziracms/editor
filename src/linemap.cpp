@@ -10,7 +10,7 @@
 LineMap::LineMap(Editor * codeEditor) : QWidget(codeEditor)
 {
     editor = codeEditor;
-    //setCursor(Qt::PointingHandCursor);
+    setCursor(Qt::ArrowCursor);
     setMouseTracking(true);
 }
 

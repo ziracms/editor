@@ -350,6 +350,10 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     cleanBeforeSave = false;
     std::string cleanBeforeSaveStr = settings->get("editor_clean_before_save");
     if (cleanBeforeSaveStr == "yes") cleanBeforeSave = true;
+
+    // cursor is not set to default sometimes
+    horizontalScrollBar()->setCursor(Qt::ArrowCursor);
+    verticalScrollBar()->setCursor(Qt::ArrowCursor);
 }
 
 Editor::~Editor()
