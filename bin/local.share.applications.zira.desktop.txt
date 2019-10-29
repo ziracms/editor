@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Zira Editor
+Comment=Lightweight PHP Editor
+Exec=/path/to/Zira/Zira
+Icon=/path/to/Zira/zira.png
+Categories=Application;Development;IDE
+Version=1.0
+Type=Application
+Terminal=0 
