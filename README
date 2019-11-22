@@ -11,6 +11,8 @@ Main features:
 - matching braces, parentheses and tags highlighting
 - function arguments popup
 - built-in PHP manual (download required)
+- php lint support
+- php code sniffer support
 - git support
 - sass support
 - quick access panel
