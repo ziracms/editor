@@ -2360,7 +2360,7 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
                     expectedFuncArgsPHP.append(varName);
                     expectedFuncArgsPHPPositions.append(keywordPHPStart);
                     expectedFuncArgsPHPBlocks.append(cBlock.blockNumber());
-                } else if (keywordPHPprevString.toLower() != "self" || keywordPHPprevStringPrevChar == "$") {
+                } else if ((keywordPHPprevString.toLower() != "self" && keywordPHPprevString.toLower() != "static") || keywordPHPprevStringPrevChar == "$") {
                     QString ns = "\\";
                     if (nsNamePHP.size() > 0) ns += nsNamePHP + "\\";
                     QString _clsName = clsNamePHP.size() > 0 ? ns + clsNamePHP : "";
@@ -2389,7 +2389,7 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
                     if (highlightVarsMode || firstRunMode) {
                         usedVars[k.toStdString()] = usedVarsChainPHP.toStdString();
                     }
-                } else if (keywordPHPprevString.toLower() == "self" && keywordPHPprevStringPrevChar != "$") {
+                } else if ((keywordPHPprevString.toLower() == "self" || keywordPHPprevString.toLower() == "static") && keywordPHPprevStringPrevChar != "$") {
                     clsPropsIterator = clsProps.find(varName.toStdString());
                     if (clsPropsIterator != clsProps.end()) {
                         known = true;
@@ -2407,7 +2407,7 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
             }
             if (!known) {
                 bool unused = false;
-                if (keywordPHPprevChar == "$" && (keywordPHPprevString.toLower() != "self" || keywordPHPprevStringPrevChar == "$")) {
+                if (keywordPHPprevChar == "$" && ((keywordPHPprevString.toLower() != "self" && keywordPHPprevString.toLower() != "static") || keywordPHPprevStringPrevChar == "$")) {
                     QString ns = "\\";
                     if (nsNamePHP.size() > 0) ns += nsNamePHP + "\\";
                     QString _clsName = clsNamePHP.size() > 0 ? ns + clsNamePHP : "";
