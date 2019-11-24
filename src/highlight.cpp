@@ -2455,6 +2455,10 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
         keywordPHPStartPrev = keywordPHPStart;
         keywordPHPLengthPrev = keywordPHPLength;
     }
+    if (c == ';') {
+        keywordPHPprevString = "";
+        keywordPHPprevStringPrevChar = "";
+    }
     if (keywordPHPStartPrev>=0 && keywordPHPLengthPrev>0) {
         // php functions
         if (c == "(") {
