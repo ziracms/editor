@@ -3495,6 +3495,7 @@ void Editor::followTooltip()
             } while(tooltipStart < 0 && cursor.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor));
             int tooltipOffset = 0;
             if (tooltipStart >= 0) {
+                bool strSQOpen = false, strDQOpen = false;
                 int pCo = 0;
                 int blockNumber = cursor.block().blockNumber();
                 QString blockText = cursor.block().text();
@@ -3509,10 +3510,12 @@ void Editor::followTooltip()
                     int pos = cursor.positionInBlock();
                     if (blockNumber == blockNumberStart && pos > cursPosStart) break;
                     if (pos > 0) c = blockText[pos-1];
-                    if (c == ")") pCo--;
-                    if (c == "(") pCo++;
-                    if (c == "," && pCo == 1) tooltipOffset++;
-                    if ((c == ")" && pCo <= 0) || c == ";" || c == "{" || c == "}") {
+                    if (c == "'" && !strDQOpen) strSQOpen = !strSQOpen;
+                    if (c == "\"" && !strSQOpen) strDQOpen = !strDQOpen;
+                    if (c == ")" && !strSQOpen && !strDQOpen) pCo--;
+                    if (c == "(" && !strSQOpen && !strDQOpen) pCo++;
+                    if (c == "," && pCo == 1 && !strSQOpen && !strDQOpen) tooltipOffset++;
+                    if ((c == ")" && pCo <= 0 && !strSQOpen && !strDQOpen) || c == ";" || c == "{" || c == "}") {
                         tooltipOffset = -1;
                         break;
                     }
