@@ -161,7 +161,9 @@ private slots:
     void switchOverwrite();
     void completePopupSelected(QString text, QString data);
     void tooltip(int offset = 0);
+    void parseResultChanged();
     void parseResultPHPChanged(bool async = true);
+    void parseResultJSChanged(bool async = true);
     void showDeclarationRequested();
     void showHelpRequested();
     void showSearchRequested();
@@ -263,6 +265,7 @@ private:
 
     ParsePHP parserPHP;
     ParsePHP::ParseResult parseResultPHP;
+    ParseJS parserJS;
     ParseJS::ParseResult parseResultJS;
 
     QString fileName;
@@ -303,6 +306,7 @@ private:
     int lastCursorPositionBlockNumber;
 
     bool parsePHPEnabled;
+    bool parseJSEnabled;
     QColor unusedVariableColor;
     QList<QTextEdit::ExtraSelection> wordsExtraSelections;
     bool experimentalMode;
@@ -317,6 +321,7 @@ signals:
     void showDeclaration(int index, QString name);
     void showHelp(int index, QString name);
     void parsePHP(int index, QString text);
+    void parseJS(int index, QString text);
     void undoRedoChanged(int index);
     void backForwardChanged(int index);
     void searchInFiles(QString text);

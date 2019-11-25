@@ -98,6 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(editorTabs, SIGNAL(editorShowDeclaration(QString)), this, SLOT(editorShowDeclaration(QString)));
     connect(editorTabs, SIGNAL(editorShowHelp(QString)), this, SLOT(editorShowHelp(QString)));
     connect(editorTabs, SIGNAL(editorParsePHPRequested(int,QString)), this, SLOT(editorParsePHPRequested(int,QString)));
+    connect(editorTabs, SIGNAL(editorParseJSRequested(int,QString)), this, SLOT(editorParseJSRequested(int,QString)));
     connect(editorTabs, SIGNAL(editorUndoRedoChanged()), this, SLOT(editorUndoRedoChanged()));
     connect(editorTabs, SIGNAL(editorBackForwardChanged()), this, SLOT(editorBackForwardChanged()));
     connect(editorTabs, SIGNAL(editorSearchInFilesRequested(QString)), this, SLOT(editorSearchInFilesRequested(QString)));
@@ -1495,6 +1496,12 @@ void MainWindow::editorParsePHPRequested(int index, QString text)
 {
     if (!parsePHPEnabled) return;
     emit parseMixed(index, text);
+}
+
+void MainWindow::editorParseJSRequested(int index, QString text)
+{
+    if (!parseJSEnabled) return;
+    emit parseJS(index, text);
 }
 
 void MainWindow::clearMessagesTabText()

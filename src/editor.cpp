@@ -41,7 +41,6 @@ const std::string LF = "lf";
 const int INTERVAL_SCROLL_HIGHLIGHT_MILLISECONDS = 500;
 const int INTERVAL_TEXT_CHANGED_MILLISECONDS = 200;
 const int INTERVAL_CURSOR_POS_CHANGED_MILLISECONDS = 200;
-const int INTERVAL_PARSE_RESULT_CHANGED_MILLISECONDS = 1000;
 const int INTERVAL_PARSE_RESULT_CHANGED_LONG_MILLISECONDS = 5000;
 
 const int TOOLTIP_OFFSET = 20;
@@ -346,6 +345,10 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     parsePHPEnabled = false;
     std::string parsePHPEnabledStr = settings->get("parser_enable_parse_php");
     if (parsePHPEnabledStr == "yes") parsePHPEnabled = true;
+
+    parseJSEnabled = false;
+    std::string parseJSEnabledStr = settings->get("parser_enable_parse_js");
+    if (parseJSEnabledStr == "yes") parseJSEnabled = true;
 
     cleanBeforeSave = false;
     std::string cleanBeforeSaveStr = settings->get("editor_clean_before_save");
@@ -1908,7 +1911,7 @@ void Editor::textChanged()
     // parse
     if (!parseLocked && isReady()) {
         parseLocked = true;
-        QTimer::singleShot(INTERVAL_PARSE_RESULT_CHANGED_LONG_MILLISECONDS, this, SLOT(parseResultPHPChanged()));
+        QTimer::singleShot(INTERVAL_PARSE_RESULT_CHANGED_LONG_MILLISECONDS, this, SLOT(parseResultChanged()));
     }
 }
 
@@ -2255,6 +2258,18 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
                 }
             }
         }
+        // parsed vars
+        if (completePopup->count() < completePopup->limit()) {
+            for (int i=0; i<parseResultJS.variables.size(); i++){
+                ParseJS::ParseResultVariable _variable = parseResultJS.variables.at(i);
+                //if (_variable.clsName.size() > 0) continue;
+                QString k = _variable.name;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(k, k);
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+        }
     } else if (prevChar == ".") {
         // object context
         QString k = "prototype";
@@ -2270,6 +2285,18 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
                 QString p = "( " + func.args + " )";
                 if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
                     completePopup->addItem(k, p);
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+        }
+        // parsed props
+        if (completePopup->count() < completePopup->limit()) {
+            for (int i=0; i<parseResultJS.variables.size(); i++){
+                ParseJS::ParseResultVariable _variable = parseResultJS.variables.at(i);
+                if (_variable.clsName.size() == 0) continue;
+                QString k = _variable.name;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(k, k);
                     if (completePopup->count() >= completePopup->limit()) break;
                 }
             }
@@ -2444,10 +2471,27 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
             QString ns = "\\";
             if (nsName.size() > 0) ns += nsName + "\\";
             QString _clsName = clsName.size() > 0 ? ns + clsName : "";
+            /*
+            QHash<QString,QString> addedVars;
             QStringList vars = highlight->getKnownVars(_clsName, funcName);
             for (int i=vars.size()-1; i>=0; i--) {
                 QString k = vars.at(i);
                 if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(k, k);
+                    addedVars.insert(k, k);
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+            */
+            QString _funcName = funcName;
+            if (_clsName.size() == 0 && _funcName.size() > 0) _funcName = ns + _funcName;
+            for (int i=0; i<parseResultPHP.variables.size(); i++) {
+                ParsePHP::ParseResultVariable _variable = parseResultPHP.variables.at(i);
+                QString k = _variable.name;
+                if (_variable.clsName != _clsName || _variable.funcName != _funcName) continue;
+                if (k == text) continue;
+                //if (addedVars.contains(k)) continue;
                 if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
                     completePopup->addItem(k, k);
                     if (completePopup->count() >= completePopup->limit()) break;
@@ -3106,7 +3150,7 @@ void Editor::detectCompleteTextPHP(QString text, int cursorTextPos)
 
 void Editor::detectCompleteText(QString text, QChar cursorTextPrevChar, int cursorTextPos, std::string mode)
 {
-    if (text.size() < 1) return;
+    if (text.size() < 2) return;
     completePopup->clearItems();
 
     if (mode == MODE_HTML) {
@@ -3280,6 +3324,16 @@ void Editor::completePopupSelected(QString text, QString data)
     hideCompletePopup();
 }
 
+void Editor::parseResultChanged()
+{
+    std::string modeType = highlight->getModeType();
+    if (modeType == MODE_MIXED) {
+        parseResultPHPChanged();
+    } else if (modeType == MODE_JS) {
+        parseResultJSChanged();
+    }
+}
+
 void Editor::parseResultPHPChanged(bool async)
 {
     if (!parsePHPEnabled) return;
@@ -3294,6 +3348,23 @@ void Editor::parseResultPHPChanged(bool async)
     QString content = getContent();
     if (!async) parseResultPHP = parserPHP.parse(content);
     else emit parsePHP(getTabIndex(), content);
+    parseLocked = false;
+}
+
+void Editor::parseResultJSChanged(bool async)
+{
+    if (!parseJSEnabled) return;
+    QTextCursor curs = textCursor();
+    QTextBlock block = curs.block();
+    int pos = curs.positionInBlock();
+    std::string mode = highlight->findModeAtCursor(& block, pos);
+    if (mode != MODE_JS) {
+        parseLocked = false;
+        return;
+    }
+    QString content = getContent();
+    if (!async) parseResultJS = parserJS.parse(content);
+    else emit parseJS(getTabIndex(), content);
     parseLocked = false;
 }
 
