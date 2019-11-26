@@ -275,7 +275,6 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
     background: none;
 }
 
-QTextEdit,
 QPlainTextEdit,
 QTextBrowser,
 QTreeView,
@@ -285,13 +284,17 @@ QListView
     border: 1px solid #444;
 }
 
-QTextEdit:hover, QTextEdit:focus,
 QPlainTextEdit:hover, QPlainTextEdit:focus,
 QTextBrowser:hover, QTextBrowser:focus,
 QTreeView:hover, QTreeView:focus,
 QListView:hover, QListView:focus
 {
     border: 1px solid #444;
+}
+
+QTextEdit, QTextEdit:hover, QTextEdit:focus
+{
+    border: none;
 }
 
 QTreeView
