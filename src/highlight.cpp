@@ -979,7 +979,7 @@ bool Highlight::detectSLCommentPHP(const QChar c, int pos)
 bool Highlight::detectStringSQHTML(const QChar c, int pos)
 {
     bool opened = stringSQOpenedHTML >= 0 || stringDQOpenedHTML >= 0 || commentHTMLOpened >= 0;
-    if (!opened && c == "'") {
+    if (!opened && tagOpened >= 0 && c == "'") {
         stringSQOpenedHTML = pos;
         prevPrevState = prevState;
         prevState = state;
@@ -998,7 +998,7 @@ bool Highlight::detectStringSQHTML(const QChar c, int pos)
 bool Highlight::detectStringDQHTML(const QChar c, int pos)
 {
     bool opened = stringSQOpenedHTML >= 0 || stringDQOpenedHTML >= 0 || commentHTMLOpened >= 0;
-    if (!opened && c == "\"") {
+    if (!opened && tagOpened >= 0 && c == "\"") {
         stringDQOpenedHTML = pos;
         prevPrevState = prevState;
         prevState = state;
