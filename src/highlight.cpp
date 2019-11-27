@@ -2311,7 +2311,7 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
         highlightChar(pos, HW->expressionFormat);
     }
     bool forceDetectKeyword = false;
-    if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPScopedOpened < 0 && keywordPHPprevChar == "$" && stringEscVariablePHP.size()%2 == 0) {
+    if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPprevChar == "$" && stringEscVariablePHP.size()%2 == 0) {
         forceDetectKeyword = true;
     }
     if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPScopedOpened < 0 && c == "\\") {
