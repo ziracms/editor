@@ -629,7 +629,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
         if ((((prevPrevPrevK.size() == 0 || prevPrevPrevK == ";" || prevPrevPrevK == "{" || prevPrevPrevK == "}" || prevPrevPrevK == ">" || prevPrevPrevK == ":") && prevPrevK.size() > 0 && prevK == "=") || prevK.toLower() == "return") && k == "new" && anonymClassScope < 0) {
             expected_class_name = prevPrevK;
         }
-        if (expect < 0 && k.toLower() == "class" && (prevK == ";" || prevK == "{" || prevK == "}" || prevK == "=" || prevK.size() == 0 || prevK.toLower() == "new" || prevK.toLower() == "abstract") && anonymClassScope < 0) {
+        if (expect < 0 && k.toLower() == "class" && (prevK == ";" || prevK == "{" || prevK == "}" || prevK == "=" || prevK.size() == 0 || prevK.toLower() == "new" || prevK.toLower() == "abstract" || prevK.toLower() == "final") && anonymClassScope < 0) {
             expect = EXPECT_CLASS;
             expectName = "";
             current_class_is_abstract = (prevK.toLower() == "abstract");
