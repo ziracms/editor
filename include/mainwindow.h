@@ -157,6 +157,7 @@ private slots:
     void switchToTabRequested(int index);
     void closeAllTabsRequested(void);
     void projectLoadOnStart(void);
+    void openFromArgs(void);
     void editorShowDeclaration(QString name);
     void editorShowHelp(QString name);
     void helpBrowserAnchorClicked(QUrl url);
@@ -216,6 +217,7 @@ private:
     bool gitCommandsEnabled;
     bool serverCommandsEnabled;
     QuickAccess * qa;
+    QStringList args;
 signals:
     void disableWorker();
     void parseLint(int tabIndex, QString path);

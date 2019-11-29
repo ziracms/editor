@@ -438,7 +438,7 @@ void EditorTabs::reloaded(int index)
 void EditorTabs::fileBrowserCreated(QString path)
 {
     openFile(path);
-    emit updateProject();
+    //emit updateProject();
 }
 
 void EditorTabs::fileBrowserRenamed(QString oldpath, QString newpath)

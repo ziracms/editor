@@ -321,7 +321,12 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     setWindowTitleText("");
-    QTimer::singleShot(PROJECT_LOAD_DELAY, this, SLOT(projectLoadOnStart()));
+    args = QCoreApplication::arguments();
+    if (args.length() <= 1) {
+        QTimer::singleShot(PROJECT_LOAD_DELAY, this, SLOT(projectLoadOnStart()));
+    } else {
+        QTimer::singleShot(PROJECT_LOAD_DELAY, this, SLOT(openFromArgs()));
+    }
 
     // shortcuts
     QString shortcutSidebarStr = QString::fromStdString(settings->get("shortcut_sidebar"));
@@ -563,6 +568,18 @@ void MainWindow::projectLoadOnStart()
     if (projectPath.size() > 0 && Helper::folderExists(projectPath) && project->exists(projectPath)) {
         projectOpenRequested(projectPath);
     }
+}
+
+void MainWindow::openFromArgs() {
+    if (args.length() <= 1) return;
+    QStringList files;
+    for (int i=1; i<args.length(); i++) {
+        QString arg = args[i];
+        if (!Helper::fileExists(arg)) continue;
+        files.append(arg);
+    }
+    openTabsRequested(files, false);
+    editorTabs->initHighlighters();
 }
 
 void MainWindow::on_actionOpenFile_triggered()
