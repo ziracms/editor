@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Name=Zira Editor
 Comment=Lightweight PHP Editor
-Exec=/path/to/Zira/Zira
+Exec=/path/to/Zira/Zira %F
 Icon=/path/to/Zira/zira.png
 Categories=Application;Development;IDE
 Version=1.0
