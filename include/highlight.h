@@ -147,6 +147,9 @@ private:
     std::unordered_map<std::string, std::string> knownFunctions;
     std::unordered_map<std::string, std::string>::iterator knownFunctionsIterator;
 
+    std::unordered_map<std::string, std::string> jsNames;
+    std::unordered_map<std::string, std::string>::iterator jsNamesIterator;
+
     QVector<QChar> specialChars;
     QVector<int> specialCharsPos;
     QVector<QString> specialWords;

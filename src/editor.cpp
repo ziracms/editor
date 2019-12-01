@@ -4760,6 +4760,8 @@ void Editor::findToggle()
         if (curs.hasSelection()) {
             searchString = curs.selectedText();
             static_cast<Search *>(search)->setFindEditText(searchString);
+        } else {
+            static_cast<Search *>(search)->setFindEditText("");
         }
         showSearch();
         highlightExtras();

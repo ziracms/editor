@@ -1895,7 +1895,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
                     keywordCSSStart = -1;
                     kFound = true;
                 }
-                if (!kFound) {
+                if (!kFound && cssValuePart) {
                     // css selectors
                     HW->htmlwordsIterator = HW->htmlwords.find(keywordStringCSS.toLower().toStdString());
                     if (HW->htmlwordsIterator != HW->htmlwords.end()) {
@@ -1914,7 +1914,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
                     highlightString(keywordCSSStart, keywordCSSLength, HW->propertyFormat);
                 }
             }
-        } else if (keywordCSSprevChar == "#" || keywordCSSprevChar == ".") {
+        } else if ((keywordCSSprevChar == "#" || keywordCSSprevChar == ".") && cssValuePart) {
             // css id & class selectors
             if (keywordCSSStart > 0) {
                 keywordCSSStart -= 1;
@@ -2107,9 +2107,17 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 keywordJSStart = -1;
                 known = true;
             }
+            if (!known) {
+                jsNamesIterator = jsNames.find(keywordStringJS.toStdString());
+                if (jsNamesIterator != jsNames.end()) {
+                    highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
+                    known = true;
+                }
+            }
         }
         if (!known) {
             if ((keywordJSprevString == "var" || keywordJSprevString == "let" || keywordJSprevString == "const") && keywordJSprevStringPrevChar != ".") {
+                jsNames[keywordStringJS.toStdString()] = keywordStringJS.toStdString();
                 highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
             } else if (keywordJSprevChar != "." && c == ".") {
                 highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
