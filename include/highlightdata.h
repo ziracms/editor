@@ -107,6 +107,8 @@ public:
     QString expectedFuncVarJS;
     int expectedFuncParsJS;
     int funcScopeJS;
+    QString varsChainJS;
+    QStringList expectedFuncArgsJS;
     QString mediaNameCSS;
     QVector<int> mediaStartsCSS;
     QVector<int> mediaEndsCSS;

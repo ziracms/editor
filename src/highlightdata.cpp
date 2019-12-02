@@ -110,6 +110,8 @@ void HighlightData::reset()
     expectedFuncVarJS = "";
     expectedFuncParsJS = -1;
     funcScopeJS = -1;
+    varsChainJS = "";
+    expectedFuncArgsJS.clear();
     mediaNameCSS = "";
     mediaStartsCSS.clear();
     mediaEndsCSS.clear();

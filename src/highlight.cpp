@@ -298,6 +298,8 @@ void Highlight::reset()
     expectedFuncVarJS = "";
     expectedFuncParsJS = -1;
     funcScopeJS = -1;
+    varsChainJS = "";
+    expectedFuncArgsJS.clear();
     mediaNameCSS = "";
     mediaStartsCSS.clear();
     mediaEndsCSS.clear();
@@ -312,6 +314,7 @@ void Highlight::reset()
     variables.clear();
     usedVariables.clear();
     clsProps.clear();
+    jsNames.clear();
 }
 
 void Highlight::addSpecialChar(QChar c, int pos)
@@ -1498,6 +1501,8 @@ void Highlight::restoreState() {
             expectedFuncVarJS = prevBlockData->expectedFuncVarJS;
             expectedFuncParsJS = prevBlockData->expectedFuncParsJS;
             funcScopeJS = prevBlockData->funcScopeJS;
+            varsChainJS = prevBlockData->varsChainJS;
+            expectedFuncArgsJS = prevBlockData->expectedFuncArgsJS;
             mediaNameCSS = prevBlockData->mediaNameCSS;
             expectedMediaNameCSS = prevBlockData->expectedMediaNameCSS;
             expectedMediaParsCSS = prevBlockData->expectedMediaParsCSS;
@@ -2117,12 +2122,16 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         }
         if (!known) {
             if ((keywordJSprevString == "var" || keywordJSprevString == "let" || keywordJSprevString == "const") && keywordJSprevStringPrevChar != ".") {
-                jsNames[keywordStringJS.toStdString()] = keywordStringJS.toStdString();
+                if (varsChainJS.size() > 0) varsChainJS += ",";
+                varsChainJS += keywordStringJS;
                 highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
             } else if (keywordJSprevChar != "." && c == ".") {
                 highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
             } else if (keywordJSprevChar == ".") {
                 highlightString(keywordJSStart, keywordJSLength, HW->propertyFormat);
+            } else if (expectedFuncNameJS.size() > 0) { // add arg if var is unknown
+                expectedFuncArgsJS.append(keywordStringJS);
+                highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
             }
         }
         if (keywordStringJS.size()>0) {
@@ -2131,6 +2140,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 expectedFuncNameJS = "";
                 expectedFuncVarJS = keywordStringJS;
                 expectedFuncParsJS = -1;
+                expectedFuncArgsJS.clear();
             } else if (expectedFuncNameJS.size() == 0 && expectedFuncVarJS.size() > 0 && keywordStringJS == "function" && expectedFuncVarJS.indexOf("=") > 0) {
                 QStringList expectedFuncNameJSList = expectedFuncVarJS.split("=");
                 if (expectedFuncNameJSList.size() == 2 && expectedFuncNameJSList.at(1) == "function") {
@@ -2142,10 +2152,12 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                     expectedFuncVarJS = "";
                     expectedFuncParsJS = -1;
                 }
+                expectedFuncArgsJS.clear();
             } else if (keywordStringJS.size() > 0 && ((keywordStringJS == "function" && expectedFuncNameJS.size() == 0) || expectedFuncNameJS == "function")) {
                 expectedFuncNameJS = keywordStringJS;
                 expectedFuncVarJS = "";
                 expectedFuncParsJS = parensJS;
+                expectedFuncArgsJS.clear();
             } else {
                 expectedFuncVarJS = "";
             }
@@ -2186,6 +2198,13 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             if (funcChainJS.size() > 0) funcChainJS += ",";
             funcChainJS += cFuncNameJS;
             funcScopeChainJS.append(cFuncScopeJS);
+            if (expectedFuncArgsJS.size() > 0) {
+                for (int i=0; i<expectedFuncArgsJS.size(); i++) {
+                    if (varsChainJS.size() > 0) varsChainJS += ",";
+                    varsChainJS += expectedFuncArgsJS.at(i);
+                }
+            }
+            expectedFuncArgsJS.clear();
         }
     } else if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c == "}") {
         bracesJS--;
@@ -2197,6 +2216,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             funcEndsJS.append(pos);
             expectedFuncNameJS = "";
             expectedFuncParsJS = -1;
+            expectedFuncArgsJS.clear();
             // set parent function
             int parentFuncScopeJS = -1;
             QString parentFuncJS = "", parentFuncChainJS = "";
@@ -2226,6 +2246,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
     ) {
         expectedFuncNameJS = "";
         expectedFuncParsJS = -1;
+        expectedFuncArgsJS.clear();
     }
 
     if (keywordJSStart < 0 && expectedFuncVarJS.size() > 0 && expectedFuncParsJS < 0 && !isWSpace && (isAlnum || c == "=")) {
@@ -2951,6 +2972,13 @@ void Highlight::openBlockDataLists()
         tagChainStartsHTML.append(0);
         tagChainsHTML.append(tagChainHTML);
     }
+    if (varsChainJS.size() > 0) {
+        QStringList varsChainList = varsChainJS.split(",");
+        for (int i=0; i<varsChainList.size(); i++) {
+            QString varName = varsChainList.at(i);
+            jsNames[varName.toStdString()] = varName.toStdString();
+        }
+    }
 }
 
 void Highlight::closeBlockDataLists(int textSize)
@@ -3104,10 +3132,12 @@ bool Highlight::parseBlock(const QString & text)
     QString _expectedFuncNameJS = expectedFuncNameJS;
     int _expectedFuncParsJS = expectedFuncParsJS;
     QString _expectedFuncVarJS = expectedFuncVarJS;
+    QString _varsChainJS = varsChainJS;
     QString _expectedMediaNameCSS = expectedMediaNameCSS;
     int _expectedMediaParsCSS = expectedMediaParsCSS;
     QString _funcNameJS = funcNameJS;
     QString _funcChainJS = funcChainJS;
+    QString _expectedFuncArgsJSChain = expectedFuncArgsJS.join(",");
     QString _mediaNameCSS = mediaNameCSS;
     QString _tagChainHTML = tagChainHTML;
 
@@ -3157,10 +3187,12 @@ bool Highlight::parseBlock(const QString & text)
         _expectedFuncNameJS = blockData->expectedFuncNameJS;
         _expectedFuncParsJS = blockData->expectedFuncParsJS;
         _expectedFuncVarJS = blockData->expectedFuncVarJS;
+        _varsChainJS = blockData->varsChainJS;
         _expectedMediaNameCSS = blockData->expectedMediaNameCSS;
         _expectedMediaParsCSS = blockData->expectedMediaParsCSS;
         _funcNameJS = blockData->funcNameJS;
         _funcChainJS = blockData->funcChainJS;
+        _expectedFuncArgsJSChain = blockData->expectedFuncArgsJS.join(",");
         _mediaNameCSS = blockData->mediaNameCSS;
         _tagChainHTML = blockData->tagChainHTML;
     }
@@ -3254,6 +3286,8 @@ bool Highlight::parseBlock(const QString & text)
         _expectedFuncNameJS != expectedFuncNameJS ||
         _expectedFuncParsJS != expectedFuncParsJS ||
         _expectedFuncVarJS != expectedFuncVarJS ||
+        _varsChainJS != varsChainJS ||
+        _expectedFuncArgsJSChain != expectedFuncArgsJS.join(",") ||
         _expectedMediaNameCSS != expectedMediaNameCSS ||
         _expectedMediaParsCSS != expectedMediaParsCSS ||
         _funcNameJS != funcNameJS ||
@@ -3351,10 +3385,12 @@ bool Highlight::parseBlock(const QString & text)
     blockData->funcStartsJS= funcStartsJS;
     blockData->funcEndsJS = funcEndsJS;
     blockData->funcNamesJS = funcNamesJS;
+    blockData->expectedFuncArgsJS = expectedFuncArgsJS;
     blockData->expectedFuncNameJS = expectedFuncNameJS;
     blockData->expectedFuncVarJS = expectedFuncVarJS;
     blockData->expectedFuncParsJS = expectedFuncParsJS;
     blockData->funcScopeJS = funcScopeJS;
+    blockData->varsChainJS = varsChainJS;
     blockData->mediaNameCSS = mediaNameCSS;
     blockData->mediaStartsCSS = mediaStartsCSS;
     blockData->mediaEndsCSS = mediaEndsCSS;
