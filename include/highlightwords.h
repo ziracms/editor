@@ -48,6 +48,7 @@ public:
     QTextCharFormat expressionFormat;
     QTextCharFormat spaceFormat;
     QTextCharFormat tabFormat;
+    QTextCharFormat colorFormat;
     std::unordered_map<std::string, QTextCharFormat> phpwords;
     std::unordered_map<std::string, QTextCharFormat>::iterator phpwordsIterator;
     std::unordered_map<std::string, QTextCharFormat> phpwordsCS;

@@ -307,6 +307,7 @@ void Highlight::reset()
     expectedMediaNameCSS = "";
     expectedMediaParsCSS = -1;
     mediaScopeCSS = -1;
+    isColorKeyword = true;
     tagChainHTML = "";
     tagChainStartsHTML.clear();
     tagChainEndsHTML.clear();
@@ -1292,6 +1293,7 @@ int Highlight::detectKeywordHTML(QChar c, int pos, bool isAlpha, bool isAlnum, b
 int Highlight::detectKeywordCSS(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
     if (!isAlpha && c == "-") isAlpha = true;
     if (!isAlnum && c == "-") isAlnum = true;
+    if (!isAlpha && isAlnum && keywordCSSprevChar == "#") isAlpha = true;
     bool opened = stringSQOpenedCSS >= 0 || stringDQOpenedCSS >= 0 || commentMLOpenedCSS >= 0 || keywordCSSOpened >= 0;
     if (!opened && keywordCSSOpened!=-2 && isAlnum && !isAlpha) {
         keywordCSSOpened = -2;
@@ -1302,11 +1304,17 @@ int Highlight::detectKeywordCSS(QChar c, int pos, bool isAlpha, bool isAlnum, bo
     } else if (!opened && keywordCSSOpened!=-2 && isAlpha) {
         keywordStringCSS = c;
         keywordCSSOpened = pos;
+        if (keywordCSSprevChar == "#") isColorKeyword = true;
+        else isColorKeyword = false;
     } else if (keywordCSSOpened>=0 && isAlnum) {
         keywordStringCSS += c;
     } else if (keywordCSSOpened<0) {
         keywordCSSprevPrevChar = keywordCSSprevChar;
         keywordCSSprevChar = c;
+    }
+    if (keywordCSSOpened>=0 && isColorKeyword && isAlnum && !isdigit(c.toLatin1())) {
+        QChar _c = c.toLower();
+        if (_c != "a" && _c != "b" && _c != "c" && _c != "d" && _c != "e" && _c != "f") isColorKeyword = false;
     }
     if (keywordCSSOpened>=0 && (!isAlnum || isLast)) {
         int kOpened = keywordCSSOpened;
@@ -1929,6 +1937,14 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
         } else if (keywordCSSprevChar == ":") {
             // css pseudo classes
             highlightString(keywordCSSStart, keywordCSSLength, HW->pseudoClassFormat);
+        } else if (keywordCSSprevChar == "#" && !cssValuePart && isColorKeyword && (keywordStringCSS.length() == 3 || keywordStringCSS.length() == 6 || keywordStringCSS.length() == 8) && QColor::isValidColor(keywordCSSprevChar+keywordStringCSS)) {
+            // colors
+            if (keywordCSSStart > 0) {
+                keywordCSSStart -= 1;
+                keywordCSSLength += 1;
+            }
+            HW->colorFormat.setUnderlineColor(QColor(keywordCSSprevChar+keywordStringCSS));
+            highlightString(keywordCSSStart, keywordCSSLength, HW->colorFormat);
         }
         keywordCSSprevChar = c;
         keywordCSSprevPrevChar = c;

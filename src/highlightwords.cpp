@@ -106,6 +106,8 @@ HighlightWords::HighlightWords(Settings * settings)
     spaceFormat.setUnderlineStyle(QTextCharFormat::DotLine);
     tabFormat.setUnderlineColor(tabColor);
     tabFormat.setUnderlineStyle(QTextCharFormat::SingleUnderline);
+    colorFormat.setUnderlineColor(tabColor);
+    colorFormat.setUnderlineStyle(QTextCharFormat::DashUnderline);
 
     QTimer::singleShot(LOAD_DELAY, this, SLOT(load()));
 }

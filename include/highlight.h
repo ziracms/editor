@@ -321,6 +321,7 @@ private:
     QString expectedMediaNameCSS;
     int expectedMediaParsCSS;
     int mediaScopeCSS;
+    bool isColorKeyword;
     QString tagChainHTML;
     QVector<int> tagChainStartsHTML;
     QVector<int> tagChainEndsHTML;
