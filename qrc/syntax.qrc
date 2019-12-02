@@ -16,5 +16,6 @@
         <file alias="php_consts">resources/syntax/php/consts</file>
         <file alias="php_function_types">resources/syntax/php/function_types</file>
         <file alias="php_class_method_types">resources/syntax/php/class_method_types</file>
+        <file alias="css_pseudo">resources/syntax/css/pseudo</file>
     </qresource>
 </RCC>

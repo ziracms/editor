@@ -2203,6 +2203,28 @@ void Editor::detectCompleteTextCSS(QString text)
             }
         }
     }
+    if ((text.mid(0, 1) == "#" || text.mid(0, 1) == ".") && completePopup->count() < completePopup->limit()) {
+        // css id & class selectors
+        QStringList cssNames = highlight->getCSSNames();
+        for (int i=cssNames.size()-1; i>=0; i--) {
+            QString k = cssNames.at(i);
+            if (k == text) continue;
+            if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                completePopup->addItem(k, k);
+                if (completePopup->count() >= completePopup->limit()) break;
+            }
+        }
+    } else if (completePopup->count() < completePopup->limit()) {
+        // css pseudo
+        for (auto & it : CW->cssPseudoComplete) {
+            QString k = QString::fromStdString(it.first);
+            //if (k == text) continue;
+            if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                if (completePopup->count() >= completePopup->limit()) break;
+            }
+        }
+    }
 }
 
 void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
@@ -2260,7 +2282,7 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
         }
         // parsed vars
         if (completePopup->count() < completePopup->limit()) {
-            for (int i=0; i<parseResultJS.variables.size(); i++){
+            for (int i=parseResultJS.variables.size()-1; i>=0; i--){
                 ParseJS::ParseResultVariable _variable = parseResultJS.variables.at(i);
                 //if (_variable.clsName.size() > 0) continue;
                 QString k = _variable.name;
@@ -2486,7 +2508,7 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
             */
             QString _funcName = funcName;
             if (_clsName.size() == 0 && _funcName.size() > 0) _funcName = ns + _funcName;
-            for (int i=0; i<parseResultPHP.variables.size(); i++) {
+            for (int i=parseResultPHP.variables.size()-1; i>=0; i--) {
                 ParsePHP::ParseResultVariable _variable = parseResultPHP.variables.at(i);
                 QString k = _variable.name;
                 if (_variable.clsName != _clsName || _variable.funcName != _funcName) continue;

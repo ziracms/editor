@@ -32,6 +32,7 @@ public:
 
     std::map<std::string, std::string> htmlAllTagsComplete;
     std::map<std::string, std::string> cssPropertiesComplete;
+    std::map<std::string, std::string> cssPseudoComplete;
     std::map<std::string, std::string> jsObjectsComplete;
     std::map<std::string, std::string> jsSpecialsComplete;
     std::map<std::string, std::string> phpFunctionsComplete;

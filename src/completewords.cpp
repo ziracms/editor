@@ -69,6 +69,17 @@ void CompleteWords::loadCSSWords()
         HW->addCSSProperty(k);
     }
     pf.close();
+
+    // css pseudo
+    QFile psf(":/syntax/css_pseudo");
+    psf.open(QIODevice::ReadOnly);
+    QTextStream psin(&psf);
+    while (!psin.atEnd()) {
+        k = psin.readLine();
+        if (k == "") continue;
+        cssPseudoComplete[k.toStdString()] = k.toStdString();
+    }
+    psf.close();
 }
 
 void CompleteWords::loadHTMLWords()

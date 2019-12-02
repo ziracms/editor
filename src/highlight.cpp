@@ -584,6 +584,16 @@ QStringList Highlight::getKnownFunctions(QString clsName)
     return funcs;
 }
 
+QStringList Highlight::getCSSNames()
+{
+    QStringList names;
+    for (auto it : cssNames) {
+        QString k = QString::fromStdString(it.first);
+        names.append(k);
+    }
+    return names;
+}
+
 void Highlight::setHighlightVarsMode(bool varsMode)
 {
     highlightVarsMode = varsMode;
@@ -1927,21 +1937,45 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
                     highlightString(keywordCSSStart, keywordCSSLength, HW->propertyFormat);
                 }
             }
-        } else if ((keywordCSSprevChar == "#" || keywordCSSprevChar == ".") && cssValuePart) {
+        } else if ((keywordCSSprevChar == "#" || keywordCSSprevChar == ".") && parensCSS == 0) {
             // css id & class selectors
             if (keywordCSSStart > 0) {
                 keywordCSSStart -= 1;
                 keywordCSSLength += 1;
             }
-            highlightString(keywordCSSStart, keywordCSSLength, HW->selectorFormat);
+            QString cssName = keywordCSSprevChar + keywordStringCSS;
+            QString cssNameKey = Helper::intToStr(cBlock.blockNumber()) + ":" + Helper::intToStr(keywordCSSStart);
+            cssNamesIterator = cssNames.find(cssName.toStdString());
+            if (cssNamesIterator != cssNames.end()) {
+                cssNameKeysIterator = cssNameKeys.find(cssNameKey.toStdString());
+                if (cssNameKeysIterator != cssNameKeys.end() && cssName.toStdString() != cssNameKeysIterator->second) {
+                    std::string foundName = cssNameKeysIterator->second;
+                    cssNames.erase(foundName);
+                    cssNameKeys.erase(cssNameKey.toStdString());
+                }
+                highlightString(keywordCSSStart, keywordCSSLength, HW->selectorFormat);
+            } else if (!isColorKeyword) {
+                cssNamesIterator = cssNames.find(cssName.toStdString());
+                if (cssNamesIterator == cssNames.end()) {
+                    cssNameKeysIterator = cssNameKeys.find(cssNameKey.toStdString());
+                    if (cssNameKeysIterator != cssNameKeys.end()) {
+                        std::string foundName = cssNameKeysIterator->second;
+                        cssNames.erase(foundName);
+                    }
+                    cssNames[cssName.toStdString()] = cssNameKey.toStdString();
+                    cssNameKeys[cssNameKey.toStdString()] = cssName.toStdString();
+                }
+                highlightString(keywordCSSStart, keywordCSSLength, HW->selectorFormat);
+            }
         } else if (keywordCSSprevChar == ":") {
             // css pseudo classes
             highlightString(keywordCSSStart, keywordCSSLength, HW->pseudoClassFormat);
-        } else if (keywordCSSprevChar == "#" && !cssValuePart && isColorKeyword && (keywordStringCSS.length() == 3 || keywordStringCSS.length() == 6 || keywordStringCSS.length() == 8) && QColor::isValidColor(keywordCSSprevChar+keywordStringCSS)) {
+        }
+        if (keywordCSSprevChar == "#" && !cssValuePart && isColorKeyword && (keywordStringCSS.length() == 3 || keywordStringCSS.length() == 6 || keywordStringCSS.length() == 8) && QColor::isValidColor(keywordCSSprevChar+keywordStringCSS)) {
             // colors
-            if (keywordCSSStart > 0) {
-                keywordCSSStart -= 1;
-                keywordCSSLength += 1;
+            if (keywordCSSStart > 0 && parensCSS == 0) {
+                keywordCSSStart += 1;
+                keywordCSSLength -= 1;
             }
             HW->colorFormat.setUnderlineColor(QColor(keywordCSSprevChar+keywordStringCSS));
             highlightString(keywordCSSStart, keywordCSSLength, HW->colorFormat);
