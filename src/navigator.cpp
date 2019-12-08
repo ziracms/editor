@@ -348,6 +348,15 @@ void Navigator::build(ParseCSS::ParseResult result)
         item->setData(0, Qt::UserRole, QVariant(selector.line));
         treeWidget->addTopLevelItem(item);
     }
+    // ids & classes
+    for (int i=0; i<result.names.size(); i++) {
+        ParseCSS::ParseResultName nm = result.names.at(i);
+        QTreeWidgetItem * item = new QTreeWidgetItem();
+        item->setText(0, nm.name);
+        item->setToolTip(0, nm.name);
+        item->setData(0, Qt::UserRole, QVariant(nm.line));
+        treeWidget->addTopLevelItem(item);
+    }
     // font-face
     if (result.fonts.size() > 0) {
         QTreeWidgetItem * parent = new QTreeWidgetItem();

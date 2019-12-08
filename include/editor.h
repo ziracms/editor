@@ -19,6 +19,7 @@
 #include "tooltip.h"
 #include "parsephp.h"
 #include "parsejs.h"
+#include "parsecss.h"
 
 class Editor : public QTextEdit
 {
@@ -80,6 +81,7 @@ public:
     int getCursorLine();
     void setParseResult(ParsePHP::ParseResult result);
     void setParseResult(ParseJS::ParseResult result);
+    void setParseResult(ParseCSS::ParseResult result);
     bool isUndoable();
     bool isRedoable();
     bool isBackable();
@@ -164,6 +166,7 @@ private slots:
     void parseResultChanged();
     void parseResultPHPChanged(bool async = true);
     void parseResultJSChanged(bool async = true);
+    void parseResultCSSChanged(bool async = true);
     void showDeclarationRequested();
     void showHelpRequested();
     void showSearchRequested();
@@ -267,6 +270,8 @@ private:
     ParsePHP::ParseResult parseResultPHP;
     ParseJS parserJS;
     ParseJS::ParseResult parseResultJS;
+    ParseCSS parserCSS;
+    ParseCSS::ParseResult parseResultCSS;
 
     QString fileName;
     QString extension;
@@ -307,6 +312,7 @@ private:
 
     bool parsePHPEnabled;
     bool parseJSEnabled;
+    bool parseCSSEnabled;
     QColor unusedVariableColor;
     QList<QTextEdit::ExtraSelection> wordsExtraSelections;
     bool experimentalMode;
@@ -322,6 +328,7 @@ signals:
     void showHelp(int index, QString name);
     void parsePHP(int index, QString text);
     void parseJS(int index, QString text);
+    void parseCSS(int index, QString text);
     void undoRedoChanged(int index);
     void backForwardChanged(int index);
     void searchInFiles(QString text);

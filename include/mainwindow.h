@@ -164,6 +164,7 @@ private slots:
     void messagesBrowserAnchorClicked(QUrl url);
     void editorParsePHPRequested(int index, QString text);
     void editorParseJSRequested(int index, QString text);
+    void editorParseCSSRequested(int index, QString text);
     void menuEditOnShow();
     void menuViewOnShow();
     void menuToolsOnShow();

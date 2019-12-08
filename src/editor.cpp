@@ -41,7 +41,7 @@ const std::string LF = "lf";
 const int INTERVAL_SCROLL_HIGHLIGHT_MILLISECONDS = 500;
 const int INTERVAL_TEXT_CHANGED_MILLISECONDS = 200;
 const int INTERVAL_CURSOR_POS_CHANGED_MILLISECONDS = 200;
-const int INTERVAL_PARSE_RESULT_CHANGED_LONG_MILLISECONDS = 5000;
+const int INTERVAL_PARSE_RESULT_CHANGED_MILLISECONDS = 5000;
 
 const int TOOLTIP_OFFSET = 20;
 const int TOOLTIP_SCREEN_MARGIN = 10;
@@ -350,6 +350,10 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     std::string parseJSEnabledStr = settings->get("parser_enable_parse_js");
     if (parseJSEnabledStr == "yes") parseJSEnabled = true;
 
+    parseCSSEnabled = false;
+    std::string parseCSSEnabledStr = settings->get("parser_enable_parse_css");
+    if (parseCSSEnabledStr == "yes") parseCSSEnabled = true;
+
     cleanBeforeSave = false;
     std::string cleanBeforeSaveStr = settings->get("editor_clean_before_save");
     if (cleanBeforeSaveStr == "yes") cleanBeforeSave = true;
@@ -527,6 +531,11 @@ void Editor::setParseResult(ParsePHP::ParseResult result)
 void Editor::setParseResult(ParseJS::ParseResult result)
 {
     parseResultJS = result;
+}
+
+void Editor::setParseResult(ParseCSS::ParseResult result)
+{
+    parseResultCSS = result;
 }
 
 int Editor::lineNumberAreaWidth()
@@ -1911,7 +1920,7 @@ void Editor::textChanged()
     // parse
     if (!parseLocked && isReady()) {
         parseLocked = true;
-        QTimer::singleShot(INTERVAL_PARSE_RESULT_CHANGED_LONG_MILLISECONDS, this, SLOT(parseResultChanged()));
+        QTimer::singleShot(INTERVAL_PARSE_RESULT_CHANGED_MILLISECONDS, this, SLOT(parseResultChanged()));
     }
 }
 
@@ -2205,10 +2214,9 @@ void Editor::detectCompleteTextCSS(QString text, QChar cursorTextPrevChar)
     }
     if (completePopup->count() < completePopup->limit()) {
         // css id & class selectors
-        QStringList cssNames = highlight->getCSSNames();
-        for (int i=cssNames.size()-1; i>=0; i--) {
-            QString k = cssNames.at(i);
-            if (k == text) continue;
+        for (int i=parseResultCSS.names.size()-1; i>=0; i--){
+            ParseCSS::ParseResultName _name = parseResultCSS.names.at(i);
+            QString k = _name.name;
             if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
                 completePopup->addItem(k, k);
                 if (completePopup->count() >= completePopup->limit()) break;
@@ -3354,6 +3362,8 @@ void Editor::parseResultChanged()
         parseResultPHPChanged();
     } else if (modeType == MODE_JS) {
         parseResultJSChanged();
+    } else if (modeType == MODE_CSS) {
+        parseResultCSSChanged();
     }
 }
 
@@ -3388,6 +3398,23 @@ void Editor::parseResultJSChanged(bool async)
     QString content = getContent();
     if (!async) parseResultJS = parserJS.parse(content);
     else emit parseJS(getTabIndex(), content);
+    parseLocked = false;
+}
+
+void Editor::parseResultCSSChanged(bool async)
+{
+    if (!parseCSSEnabled) return;
+    QTextCursor curs = textCursor();
+    QTextBlock block = curs.block();
+    int pos = curs.positionInBlock();
+    std::string mode = highlight->findModeAtCursor(& block, pos);
+    if (mode != MODE_CSS) {
+        parseLocked = false;
+        return;
+    }
+    QString content = getContent();
+    if (!async) parseResultCSS = parserCSS.parse(content);
+    else emit parseCSS(getTabIndex(), content);
     parseLocked = false;
 }
 

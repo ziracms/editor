@@ -364,6 +364,16 @@ void QuickAccess::setParseResult(ParseCSS::ParseResult result, QString file)
             resultsList->addItem(item);
         }
     }
+    // ids & classes
+    for (int i=0; i<result.names.size(); i++) {
+        ParseCSS::ParseResultName nm = result.names.at(i);
+        QListWidgetItem * item = new QListWidgetItem();
+        item->setText("> "+nm.name);
+        item->setToolTip(nm.name);
+        item->setData(Qt::UserRole, QVariant(file));
+        item->setData(Qt::UserRole+1, QVariant(nm.line));
+        resultsList->addItem(item);
+    }
     resultsList->sortItems();
 }
 

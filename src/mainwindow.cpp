@@ -99,6 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(editorTabs, SIGNAL(editorShowHelp(QString)), this, SLOT(editorShowHelp(QString)));
     connect(editorTabs, SIGNAL(editorParsePHPRequested(int,QString)), this, SLOT(editorParsePHPRequested(int,QString)));
     connect(editorTabs, SIGNAL(editorParseJSRequested(int,QString)), this, SLOT(editorParseJSRequested(int,QString)));
+    connect(editorTabs, SIGNAL(editorParseCSSRequested(int,QString)), this, SLOT(editorParseCSSRequested(int,QString)));
     connect(editorTabs, SIGNAL(editorUndoRedoChanged()), this, SLOT(editorUndoRedoChanged()));
     connect(editorTabs, SIGNAL(editorBackForwardChanged()), this, SLOT(editorBackForwardChanged()));
     connect(editorTabs, SIGNAL(editorSearchInFilesRequested(QString)), this, SLOT(editorSearchInFilesRequested(QString)));
@@ -1369,6 +1370,7 @@ void MainWindow::parseCSSFinished(int tabIndex, ParseCSS::ParseResult result)
     Editor * textEditor = editorTabs->getActiveEditor();
     if (textEditor == nullptr) return;
     if (tabIndex != textEditor->getTabIndex()) return;
+    textEditor->setParseResult(result);
     navigator->build(result);
     qa->setParseResult(result, textEditor->getFileName());
 }
@@ -1519,6 +1521,12 @@ void MainWindow::editorParseJSRequested(int index, QString text)
 {
     if (!parseJSEnabled) return;
     emit parseJS(index, text);
+}
+
+void MainWindow::editorParseCSSRequested(int index, QString text)
+{
+    if (!parseCSSEnabled) return;
+    emit parseCSS(index, text);
 }
 
 void MainWindow::clearMessagesTabText()

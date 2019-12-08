@@ -64,7 +64,6 @@ public:
     QStringList getKnownVars(QString clsName, QString funcName);
     QStringList getUsedVars(QString clsName, QString funcName);
     QStringList getKnownFunctions(QString clsName = "");
-    QStringList getCSSNames();
     int getKnownVarPosition(QString clsName, QString funcName, QString varName);
     int getKnownVarBlockNumber(QString clsName, QString funcName, QString varName);
     void setHighlightVarsMode(bool varsMode);
@@ -152,8 +151,6 @@ private:
     std::unordered_map<std::string, std::string>::iterator jsNamesIterator;
     std::unordered_map<std::string, std::string> cssNames;
     std::unordered_map<std::string, std::string>::iterator cssNamesIterator;
-    std::unordered_map<std::string, std::string> cssNameKeys;
-    std::unordered_map<std::string, std::string>::iterator cssNameKeysIterator;
 
     QVector<QChar> specialChars;
     QVector<int> specialCharsPos;
@@ -324,6 +321,7 @@ private:
     QVector<int> mediaEndsCSS;
     QVector<QString> mediaNamesCSS;
     QString expectedMediaNameCSS;
+    QString cssNamesChain;
     int expectedMediaParsCSS;
     int mediaScopeCSS;
     bool isColorKeyword;

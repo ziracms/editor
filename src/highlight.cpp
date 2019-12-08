@@ -305,6 +305,7 @@ void Highlight::reset()
     mediaEndsCSS.clear();
     mediaNamesCSS.clear();
     expectedMediaNameCSS = "";
+    cssNamesChain = "";
     expectedMediaParsCSS = -1;
     mediaScopeCSS = -1;
     isColorKeyword = true;
@@ -316,6 +317,7 @@ void Highlight::reset()
     usedVariables.clear();
     clsProps.clear();
     jsNames.clear();
+    cssNames.clear();
 }
 
 void Highlight::addSpecialChar(QChar c, int pos)
@@ -582,16 +584,6 @@ QStringList Highlight::getKnownFunctions(QString clsName)
         funcs.append(k);
     }
     return funcs;
-}
-
-QStringList Highlight::getCSSNames()
-{
-    QStringList names;
-    for (auto it : cssNames) {
-        QString k = QString::fromStdString(it.first);
-        names.append(k);
-    }
-    return names;
 }
 
 void Highlight::setHighlightVarsMode(bool varsMode)
@@ -1530,6 +1522,7 @@ void Highlight::restoreState() {
             keywordPHPprevStringPrevChar = prevBlockData->keywordPHPprevStringPrevChar;
             keywordJSprevString = prevBlockData->keywordJSprevString;
             keywordJSprevStringPrevChar = prevBlockData->keywordJSprevStringPrevChar;
+            cssNamesChain = prevBlockData->cssNamesChain;
         }
     }
 
@@ -1944,27 +1937,12 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
                 keywordCSSLength += 1;
             }
             QString cssName = keywordCSSprevChar + keywordStringCSS;
-            QString cssNameKey = Helper::intToStr(cBlock.blockNumber()) + ":" + Helper::intToStr(keywordCSSStart);
             cssNamesIterator = cssNames.find(cssName.toStdString());
             if (cssNamesIterator != cssNames.end()) {
-                cssNameKeysIterator = cssNameKeys.find(cssNameKey.toStdString());
-                if (cssNameKeysIterator != cssNameKeys.end() && cssName.toStdString() != cssNameKeysIterator->second) {
-                    std::string foundName = cssNameKeysIterator->second;
-                    cssNames.erase(foundName);
-                    cssNameKeys.erase(cssNameKey.toStdString());
-                }
                 highlightString(keywordCSSStart, keywordCSSLength, HW->selectorFormat);
             } else if (!isColorKeyword) {
-                cssNamesIterator = cssNames.find(cssName.toStdString());
-                if (cssNamesIterator == cssNames.end()) {
-                    cssNameKeysIterator = cssNameKeys.find(cssNameKey.toStdString());
-                    if (cssNameKeysIterator != cssNameKeys.end()) {
-                        std::string foundName = cssNameKeysIterator->second;
-                        cssNames.erase(foundName);
-                    }
-                    cssNames[cssName.toStdString()] = cssNameKey.toStdString();
-                    cssNameKeys[cssNameKey.toStdString()] = cssName.toStdString();
-                }
+                if (cssNamesChain.size() > 0) cssNamesChain += ",";
+                cssNamesChain += cssName;
                 highlightString(keywordCSSStart, keywordCSSLength, HW->selectorTagFormat);
             }
         }
@@ -3026,6 +3004,13 @@ void Highlight::openBlockDataLists()
             jsNames[varName.toStdString()] = varName.toStdString();
         }
     }
+    if (cssNamesChain.size() > 0) {
+        QStringList cssNamesChainList = cssNamesChain.split(",");
+        for (int i=0; i<cssNamesChainList.size(); i++) {
+            QString cssName = cssNamesChainList.at(i);
+            cssNames[cssName.toStdString()] = cssName.toStdString();
+        }
+    }
 }
 
 void Highlight::closeBlockDataLists(int textSize)
@@ -3187,6 +3172,7 @@ bool Highlight::parseBlock(const QString & text)
     QString _expectedFuncArgsJSChain = expectedFuncArgsJS.join(",");
     QString _mediaNameCSS = mediaNameCSS;
     QString _tagChainHTML = tagChainHTML;
+    QString _cssNamesChain = cssNamesChain;
 
     // load current block data
     if (blockData == nullptr) {
@@ -3242,6 +3228,7 @@ bool Highlight::parseBlock(const QString & text)
         _expectedFuncArgsJSChain = blockData->expectedFuncArgsJS.join(",");
         _mediaNameCSS = blockData->mediaNameCSS;
         _tagChainHTML = blockData->tagChainHTML;
+        _cssNamesChain = blockData->cssNamesChain;
     }
 
     if (!highlightVarsMode && !firstRunMode && !rehighlightBlockMode && lastVisibleBlockNumber >= 0 && cBlock.blockNumber() > lastVisibleBlockNumber + EXTRA_HIGHLIGHT_BLOCKS_COUNT) {
@@ -3340,7 +3327,8 @@ bool Highlight::parseBlock(const QString & text)
         _funcNameJS != funcNameJS ||
         _funcChainJS != funcChainJS ||
         _mediaNameCSS != mediaNameCSS ||
-        _tagChainHTML != tagChainHTML
+        _tagChainHTML != tagChainHTML ||
+        _cssNamesChain != cssNamesChain
     ) {
         changeBlockState();
     }
@@ -3453,6 +3441,7 @@ bool Highlight::parseBlock(const QString & text)
     blockData->keywordPHPprevStringPrevChar = keywordPHPprevStringPrevChar;
     blockData->keywordJSprevString = keywordJSprevString;
     blockData->keywordJSprevStringPrevChar = keywordJSprevStringPrevChar;
+    blockData->cssNamesChain = cssNamesChain;
     cBlock.setUserData(blockData);
 
     return true;

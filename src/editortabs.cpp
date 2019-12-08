@@ -97,6 +97,7 @@ void EditorTabs::createTab(QString filepath, bool initHighlight)
     connect(editor, SIGNAL(showHelp(int,QString)), this, SLOT(showHelp(int,QString)));
     connect(editor, SIGNAL(parsePHP(int,QString)), this, SLOT(parsePHP(int,QString)));
     connect(editor, SIGNAL(parseJS(int,QString)), this, SLOT(parseJS(int,QString)));
+    connect(editor, SIGNAL(parseCSS(int,QString)), this, SLOT(parseCSS(int,QString)));
     connect(editor, SIGNAL(undoRedoChanged(int)), this, SLOT(undoRedoChanged(int)));
     connect(editor, SIGNAL(backForwardChanged(int)), this, SLOT(backForwardChanged(int)));
     connect(editor, SIGNAL(searchInFiles(QString)), this, SLOT(searchInFiles(QString)));
@@ -519,6 +520,12 @@ void EditorTabs::parseJS(int index, QString text)
 {
     if (editor == nullptr || editor->getTabIndex() != index || !editor->isReady()) return;
     emit editorParseJSRequested(index, text);
+}
+
+void EditorTabs::parseCSS(int index, QString text)
+{
+    if (editor == nullptr || editor->getTabIndex() != index || !editor->isReady()) return;
+    emit editorParseCSSRequested(index, text);
 }
 
 void EditorTabs::undoRedoChanged(int index)

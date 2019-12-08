@@ -20,6 +20,10 @@ public:
         QString name;
         int line;
     };
+    struct ParseResultName {
+        QString name;
+        int line;
+    };
     struct ParseResultMedia {
         QString name;
         int line;
@@ -40,6 +44,7 @@ public:
     struct ParseResult
     {
         QVector<ParseResultSelector> selectors;
+        QVector<ParseResultName> names;
         QVector<ParseResultMedia> medias;
         QVector<ParseResultKeyframe> keyframes;
         QVector<ParseResultFont> fonts;
@@ -53,7 +58,9 @@ protected:
     void reset();
     QString cleanUp(QString text);
     bool isValidName(QString name);
+    bool isColor(QString name);
     void addSelector(QString name, int line);
+    void addName(QString name, int line);
     void addMedia(QString name, int line);
     void addKeyframe(QString name, int line);
     void addFont(QString name, int line);
@@ -64,11 +71,14 @@ private:
 
     QRegularExpression parseExpression;
     QRegularExpression nameExpression;
+    QRegularExpression colorExpression;
 
     std::unordered_map<std::string, std::string>::iterator mainTagsIterator;
 
     std::unordered_map<std::string, int> selectorIndexes;
     std::unordered_map<std::string, int>::iterator selectorIndexesIterator;
+    std::unordered_map<std::string, int> nameIndexes;
+    std::unordered_map<std::string, int>::iterator nameIndexesIterator;
     std::unordered_map<std::string, int> mediaIndexes;
     std::unordered_map<std::string, int>::iterator mediaIndexesIterator;
     std::unordered_map<std::string, int> keyframeIndexes;

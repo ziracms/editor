@@ -58,6 +58,7 @@ signals:
     void editorShowHelp(QString name);
     void editorParsePHPRequested(int index, QString text);
     void editorParseJSRequested(int index, QString text);
+    void editorParseCSSRequested(int index, QString text);
     void editorUndoRedoChanged();
     void editorBackForwardChanged();
     void editorSearchInFilesRequested(QString text);
@@ -88,6 +89,7 @@ private slots:
     void showHelp(int index, QString name);
     void parsePHP(int index, QString text);
     void parseJS(int index, QString text);
+    void parseCSS(int index, QString text);
     void undoRedoChanged(int index);
     void backForwardChanged(int index);
     void searchInFiles(QString text);

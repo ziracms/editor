@@ -22,6 +22,7 @@ ParseCSS::ParseCSS()
 {
     parseExpression = QRegularExpression("([a-zA-Z0-9_\\-]+|[\\$\\(\\)\\{\\}\\[\\]\\.,=;:!@#%^&*+/\\|<>\\?\\\\])", QRegularExpression::DotMatchesEverythingOption);
     nameExpression = QRegularExpression("^[#\\.]?[a-zA-Z_][a-zA-Z0-9_\\-#\\.: ]*$");
+    colorExpression = QRegularExpression("^[#](?:[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9])(?:[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9])?(?:[a-fA-F0-9][a-fA-F0-9])?$");
 
     if (mainTags.size() == 0) {
         QFile sf(":/syntax/html_alltags");
@@ -96,6 +97,12 @@ bool ParseCSS::isValidName(QString name)
     return (m.capturedStart()==0);
 }
 
+bool ParseCSS::isColor(QString name)
+{
+    QRegularExpressionMatch m = colorExpression.match(name);
+    return (m.capturedStart()==0);
+}
+
 void ParseCSS::addSelector(QString name, int line) {
     if (!isValidName(name)) return;
     selectorIndexesIterator = selectorIndexes.find(name.toStdString());
@@ -105,6 +112,17 @@ void ParseCSS::addSelector(QString name, int line) {
     selector.line = line;
     result.selectors.append(selector);
     selectorIndexes[name.toStdString()] = result.selectors.size() - 1;
+}
+
+void ParseCSS::addName(QString name, int line) {
+    if (!isValidName(name) || isColor(name)) return;
+    nameIndexesIterator = nameIndexes.find(name.toStdString());
+    if (nameIndexesIterator != nameIndexes.end()) return;
+    ParseResultName nm;
+    nm.name = name;
+    nm.line = line;
+    result.names.append(nm);
+    nameIndexes[name.toStdString()] = result.names.size() - 1;
 }
 
 void ParseCSS::addMedia(QString name, int line) {
@@ -210,6 +228,13 @@ void ParseCSS::parseCode(QString & code, QString & origText)
             selectorScope = scope;
             expect = -1;
             expectName = "";
+        }
+
+        // ids & classes
+        if ((prevK == "#" || prevK == ".") && k.size() > 0 && pars == 0) {
+            int line = getLine(origText, m.capturedStart(1));
+            QString name = prevK + k;
+            addName(name, line);
         }
 
         // media

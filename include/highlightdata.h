@@ -114,6 +114,7 @@ public:
     QVector<int> mediaEndsCSS;
     QVector<QString> mediaNamesCSS;
     QString expectedMediaNameCSS;
+    QString cssNamesChain;
     int expectedMediaParsCSS;
     int mediaScopeCSS;
     QString tagChainHTML;

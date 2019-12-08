@@ -117,6 +117,7 @@ void HighlightData::reset()
     mediaEndsCSS.clear();
     mediaNamesCSS.clear();
     expectedMediaNameCSS = "";
+    cssNamesChain = "";
     expectedMediaParsCSS = -1;
     mediaScopeCSS = -1;
     tagChainHTML = "";
