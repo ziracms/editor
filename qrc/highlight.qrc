@@ -10,5 +10,6 @@
         <file alias="js_props">resources/highlight/js/props</file>
         <file alias="css_keys">resources/highlight/css/keywords</file>
         <file alias="css_spec">resources/highlight/css/special</file>
+        <file alias="css_pseudo">resources/highlight/css/pseudo</file>
     </qresource>
 </RCC>

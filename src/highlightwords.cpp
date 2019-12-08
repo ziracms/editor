@@ -247,6 +247,17 @@ void HighlightWords::loadCSSWords()
         csswords[k.toStdString()] = cssSpecialFormat;
     }
     sf.close();
+
+    // types
+    QFile tf(":/highlight/css_pseudo");
+    tf.open(QIODevice::ReadOnly);
+    QTextStream tin(&tf);
+    while (!tin.atEnd()) {
+        k = tin.readLine();
+        if (k == "") continue;
+        csswords[k.toStdString()] = pseudoClassFormat;
+    }
+    tf.close();
 }
 
 void HighlightWords::addPHPClass(QString k)

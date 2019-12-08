@@ -1907,7 +1907,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
             keywordCSSStart -= 1;
             keywordCSSLength += 1;
         }
-        if (keywordCSSprevChar != "#" && keywordCSSprevChar != "." && keywordCSSprevChar != ":" && keywordCSSprevPrevChar != "&") {
+        if (keywordCSSprevChar != "#" && keywordCSSprevChar != "." && keywordCSSprevPrevChar != "&") {
             bool kFound = false;
             if (keywordCSSprevChar != "$" && keywordCSSprevChar != "%") {
                 // css keywords
@@ -1965,11 +1965,8 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
                     cssNames[cssName.toStdString()] = cssNameKey.toStdString();
                     cssNameKeys[cssNameKey.toStdString()] = cssName.toStdString();
                 }
-                highlightString(keywordCSSStart, keywordCSSLength, HW->selectorFormat);
+                highlightString(keywordCSSStart, keywordCSSLength, HW->selectorTagFormat);
             }
-        } else if (keywordCSSprevChar == ":") {
-            // css pseudo classes
-            highlightString(keywordCSSStart, keywordCSSLength, HW->pseudoClassFormat);
         }
         if (keywordCSSprevChar == "#" && !cssValuePart && isColorKeyword && (keywordStringCSS.length() == 3 || keywordStringCSS.length() == 6 || keywordStringCSS.length() == 8) && QColor::isValidColor(keywordCSSprevChar+keywordStringCSS)) {
             // colors
