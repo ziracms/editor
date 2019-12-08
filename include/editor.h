@@ -124,7 +124,7 @@ protected:
     void hideCompletePopup();
     void detectCompleteText(QString text, QChar cursorTextPrevChar, int cursorTextPos, std::string mode);
     void detectCompleteTextHTML(QString text, QChar cursorTextPrevChar);
-    void detectCompleteTextCSS(QString text);
+    void detectCompleteTextCSS(QString text, QChar cursorTextPrevChar);
     void detectCompleteTextJS(QString text, int cursorTextPos);
     void detectCompleteTextPHP(QString text, int cursorTextPos);
     void detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos, QChar prevChar, QChar prevPrevChar, QString prevWord, QTextCursor curs);

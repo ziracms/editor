@@ -2172,7 +2172,7 @@ void Editor::detectCompleteTextHTML(QString text, QChar cursorTextPrevChar)
     }
 }
 
-void Editor::detectCompleteTextCSS(QString text)
+void Editor::detectCompleteTextCSS(QString text, QChar cursorTextPrevChar)
 {
     QTextCursor curs = textCursor();
     int pos = curs.positionInBlock();
@@ -2203,7 +2203,7 @@ void Editor::detectCompleteTextCSS(QString text)
             }
         }
     }
-    if ((text.mid(0, 1) == "#" || text.mid(0, 1) == ".") && completePopup->count() < completePopup->limit()) {
+    if (completePopup->count() < completePopup->limit()) {
         // css id & class selectors
         QStringList cssNames = highlight->getCSSNames();
         for (int i=cssNames.size()-1; i>=0; i--) {
@@ -2214,7 +2214,8 @@ void Editor::detectCompleteTextCSS(QString text)
                 if (completePopup->count() >= completePopup->limit()) break;
             }
         }
-    } else if (completePopup->count() < completePopup->limit()) {
+    }
+    if (cursorTextPrevChar == ":" && completePopup->count() < completePopup->limit()) {
         // css pseudo
         for (auto & it : CW->cssPseudoComplete) {
             QString k = QString::fromStdString(it.first);
@@ -3178,7 +3179,7 @@ void Editor::detectCompleteText(QString text, QChar cursorTextPrevChar, int curs
     if (mode == MODE_HTML) {
         detectCompleteTextHTML(text, cursorTextPrevChar);
     } else if (mode == MODE_CSS) {
-        detectCompleteTextCSS(text);
+        detectCompleteTextCSS(text, cursorTextPrevChar);
     } else if (mode == MODE_JS) {
         detectCompleteTextJS(text, cursorTextPos);
     } else if (mode == MODE_PHP) {
