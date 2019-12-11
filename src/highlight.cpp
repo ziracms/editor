@@ -2414,7 +2414,7 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
                     expectedFuncArgsPHP.append(varName);
                     expectedFuncArgsPHPPositions.append(keywordPHPStart);
                     expectedFuncArgsPHPBlocks.append(cBlock.blockNumber());
-                } else if ((keywordPHPprevString.toLower() != "self" && keywordPHPprevString.toLower() != "static") || keywordPHPprevStringPrevChar == "$") {
+                } else if (keywordPHPprevPrevChar != ":" || keywordPHPprevStringPrevChar == "$") {
                     QString ns = "\\";
                     if (nsNamePHP.size() > 0) ns += nsNamePHP + "\\";
                     QString _clsName = clsNamePHP.size() > 0 ? ns + clsNamePHP : "";

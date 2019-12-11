@@ -2455,7 +2455,7 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
                     if (_cls.name == "\\"+ns+clsName) {
                         QString parentClass = _cls.parent;
                         if (parentClass.size() > 0 && parentClass.at(0) == "\\") parentClass = parentClass.mid(1);
-                        if (parentClass > 0) {
+                        if (parentClass.size() > 0) {
                             _clsName = parentClass;
                         }
                         break;
