@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QScrollBar>
 #include <QFontDatabase>
+#include <QPropertyAnimation>
 #include "helper.h"
 
 const int WIDGET_MIN_WIDTH = 200;
@@ -21,6 +22,9 @@ const int PARSE_RESULT_TYPE_JS = 1;
 const int PARSE_RESULT_TYPE_CSS = 2;
 
 const int SEARCH_DELAY_MILLISECONDS = 500;
+
+const int ANIMATION_DURATION = 200;
+const int ANIMATION_OFFSET = 150;
 
 QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
 {
@@ -51,7 +55,8 @@ QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
     findEdit->installEventFilter(this);
     resultsList->installEventFilter(this);
 
-    setVisible(false);
+    hide();
+
     lastSearch = "";
     parseResultFile = "";
     parseResultType = -1;
@@ -81,8 +86,59 @@ QSize QuickAccess::sizeHint() const {
     return QSize(WIDGET_MIN_WIDTH, WIDGET_MIN_HEIGHT);
 }
 
-void QuickAccess::display(int x, int y, int width, int height)
+void QuickAccess::animateIn()
 {
+    QRect rect = geometry();
+
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
+    animation->setDuration(ANIMATION_DURATION);
+    animation->setStartValue(QRect(rect.x()+ANIMATION_OFFSET, rect.y(), rect.width(), rect.height()));
+    animation->setEndValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
+
+    QEasingCurve easing(QEasingCurve::OutCubic);
+    animation->setEasingCurve(easing);
+
+    animation->start();
+}
+
+void QuickAccess::animateOut()
+{
+    QRect rect = geometry();
+
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
+    animation->setDuration(ANIMATION_DURATION);
+    animation->setStartValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
+    animation->setEndValue(QRect(rect.x()+ANIMATION_OFFSET, rect.y(), rect.width(), rect.height()));
+
+    QEasingCurve easing(QEasingCurve::InCubic);
+    animation->setEasingCurve(easing);
+
+    animation->start();
+}
+
+void QuickAccess::hide()
+{
+    setVisible(false);
+    animationInProgress = false;
+}
+
+void QuickAccess::displayed()
+{
+    animationInProgress = false;
+}
+
+void QuickAccess::slideOut()
+{
+    if (animationInProgress) return;
+    animationInProgress = true;
+    animateOut();
+    QTimer::singleShot(ANIMATION_DURATION, this, SLOT(hide()));
+}
+
+void QuickAccess::slideIn(int x, int y, int width, int height)
+{
+    if (animationInProgress) return;
+
     if (width < WIDGET_MIN_WIDTH) width = WIDGET_MIN_WIDTH;
     if (height < WIDGET_MIN_HEIGHT) height = WIDGET_MIN_HEIGHT;
 
@@ -94,6 +150,12 @@ void QuickAccess::display(int x, int y, int width, int height)
     int hOffset = findEdit->height() + 3 * vLayout->spacing();
     resultsList->setMinimumHeight(height - hOffset);
     resultsList->setMaximumHeight(height - hOffset);
+
+    raise();
+
+    animationInProgress = true;
+    animateIn();
+    QTimer::singleShot(ANIMATION_DURATION, this, SLOT(displayed()));
 }
 
 void QuickAccess::setParseResult(ParsePHP::ParseResult result, QString file)

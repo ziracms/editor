@@ -65,6 +65,8 @@ signals:
     void updateProject(void);
     void editorFocused(void);
     void editorBreadcrumbsClick(void);
+    void editorShowPopupTextRequested(QString text);
+    void editorShowPopupErrorRequested(QString text);
 public slots:
     void openFile(QString filepath, bool initHighlight = true);
     void fileBrowserCreated(QString path);
@@ -97,6 +99,8 @@ private slots:
     void focusIn(int index);
     void breadcrumbsClick(int index);
     void warning(int index, QString slug, QString text);
+    void showPopupText(int index, QString text);
+    void showPopupError(int index, QString text);
 };
 
 #endif // EDITORTABS_H

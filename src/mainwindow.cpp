@@ -106,6 +106,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(editorTabs, SIGNAL(updateProject()), this, SLOT(on_actionUpdateProject_triggered()));
     connect(editorTabs, SIGNAL(editorFocused()), this, SLOT(editorFocused()));
     connect(editorTabs, SIGNAL(editorBreadcrumbsClick()), this, SLOT(on_actionQuickAccess_triggered()));
+    connect(editorTabs, SIGNAL(editorShowPopupTextRequested(QString)), this, SLOT(showPopupText(QString)));
+    connect(editorTabs, SIGNAL(editorShowPopupErrorRequested(QString)), this, SLOT(showPopupError(QString)));
 
     // filebrowser
     filebrowser = new FileBrowser(ui->fileBrowserTreeWidget, ui->fileBrowserPathLine, settings);
@@ -140,6 +142,9 @@ MainWindow::MainWindow(QWidget *parent) :
     qa = new QuickAccess(settings, this);
     connect(qa, SIGNAL(quickAccessRequested(QString,int)), this, SLOT(quickAccessRequested(QString,int)));
     connect(qa, SIGNAL(quickFindRequested(QString)), this, SLOT(quickFindRequested(QString)));
+
+    // messages popup
+    popup = new Popup(settings, this);
 
     // enable php lint & cs
     parsePHPLintEnabled = false;
@@ -1172,14 +1177,29 @@ void MainWindow::showQAPanel()
     int h = editorTabsRectM.height();
     int offsetX = editorTabsRectM.width() - w - 1;
     int offsetY = editorTabsRectM.height() - h + 1;
-    qa->display(px + offsetX, py + offsetY, w, h - 2);
-    qa->raise();
+    qa->slideIn(px + offsetX, py + offsetY, w, h - 2);
+}
+
+void MainWindow::showPopupText(QString text)
+{
+    QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
+    int px = editorTabsRectM.x();
+    int py = editorTabsRectM.y();
+    popup->displayText(px, py, text);
+}
+
+void MainWindow::showPopupError(QString text)
+{
+    QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
+    int px = editorTabsRectM.x();
+    int py = editorTabsRectM.y();
+    popup->displayError(px, py, text);
 }
 
 void MainWindow::hideQAPanel()
 {
     if (!qa->isVisible()) return;
-    qa->hide();
+    qa->slideOut();
 }
 
 void MainWindow::quickAccessRequested(QString file, int line)
@@ -1324,6 +1344,9 @@ void MainWindow::parseLintFinished(int tabIndex, QStringList errorTexts, QString
         scrollMessagesTabToTop();
     } else {
         setStatusBarText(tr("PARSE OK"));
+    }
+    if (errorTexts.size() > 0 && errorLines.size() > 0) {
+        showPopupError("["+tr("Line")+": "+errorLines.at(0)+"] "+errorTexts.at(0));
     }
 }
 

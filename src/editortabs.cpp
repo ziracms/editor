@@ -104,6 +104,8 @@ void EditorTabs::createTab(QString filepath, bool initHighlight)
     connect(editor, SIGNAL(focusIn(int)), this, SLOT(focusIn(int)));
     connect(editor, SIGNAL(breadcrumbsClick(int)), this, SLOT(breadcrumbsClick(int)));
     connect(editor, SIGNAL(warning(int,QString,QString)), this, SLOT(warning(int,QString,QString)));
+    connect(editor, SIGNAL(showPopupText(int,QString)), this, SLOT(showPopupText(int,QString)));
+    connect(editor, SIGNAL(showPopupError(int,QString)), this, SLOT(showPopupError(int,QString)));
 
     if (filepath.size() > 0 && Helper::fileExists(filepath)) {
         QString txt = Helper::loadFile(filepath, editor->getEncoding(), editor->getFallbackEncoding());
@@ -596,4 +598,16 @@ void EditorTabs::warning(int index, QString slug, QString text)
     if (tabText.indexOf("[")>0) tabText = tabText.mid(0, tabText.indexOf("["));
     tabWidget->setTabText(index, tabText+" ["+slug+"]");
     tabWidget->setTabToolTip(index, text);
+}
+
+void EditorTabs::showPopupText(int index, QString text)
+{
+    if (editor == nullptr || editor->getTabIndex() != index) return;
+    emit editorShowPopupTextRequested(text);
+}
+
+void EditorTabs::showPopupError(int index, QString text)
+{
+    if (editor == nullptr || editor->getTabIndex() != index) return;
+    emit editorShowPopupErrorRequested(text);
 }

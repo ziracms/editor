@@ -3289,6 +3289,7 @@ void Editor::completePopupSelected(QString text, QString data)
                         cursor.endEditBlock();
                         blockSignals(false);
                         text = clsName;
+                        emit showPopupText(tabIndex, insertImportText);
                     } else if (ns.name == nsName && line > 0 && imp.name == clsName && imp.path != "\\"+text) {
                         text = "\\" + text;
                     } else if (ns.name == nsName && line > 0) {
@@ -3357,6 +3358,7 @@ void Editor::completePopupSelected(QString text, QString data)
 
 void Editor::parseResultChanged()
 {
+    parseLocked = false;
     std::string modeType = highlight->getModeType();
     if (modeType == MODE_MIXED) {
         parseResultPHPChanged();
@@ -3374,48 +3376,26 @@ void Editor::parseResultPHPChanged(bool async)
     QTextBlock block = curs.block();
     int pos = curs.positionInBlock();
     std::string mode = highlight->findModeAtCursor(& block, pos);
-    if (mode != MODE_PHP) {
-        parseLocked = false;
-        return;
-    }
+    if (mode != MODE_PHP) return;
     QString content = getContent();
     if (!async) parseResultPHP = parserPHP.parse(content);
     else emit parsePHP(getTabIndex(), content);
-    parseLocked = false;
 }
 
 void Editor::parseResultJSChanged(bool async)
 {
     if (!parseJSEnabled) return;
-    QTextCursor curs = textCursor();
-    QTextBlock block = curs.block();
-    int pos = curs.positionInBlock();
-    std::string mode = highlight->findModeAtCursor(& block, pos);
-    if (mode != MODE_JS) {
-        parseLocked = false;
-        return;
-    }
     QString content = getContent();
     if (!async) parseResultJS = parserJS.parse(content);
     else emit parseJS(getTabIndex(), content);
-    parseLocked = false;
 }
 
 void Editor::parseResultCSSChanged(bool async)
 {
     if (!parseCSSEnabled) return;
-    QTextCursor curs = textCursor();
-    QTextBlock block = curs.block();
-    int pos = curs.positionInBlock();
-    std::string mode = highlight->findModeAtCursor(& block, pos);
-    if (mode != MODE_CSS) {
-        parseLocked = false;
-        return;
-    }
     QString content = getContent();
     if (!async) parseResultCSS = parserCSS.parse(content);
     else emit parseCSS(getTabIndex(), content);
-    parseLocked = false;
 }
 
 void Editor::tooltip(int offset)
@@ -4879,6 +4859,11 @@ void Editor::searchText(QString searchTxt, bool CaSe, bool Word, bool RegE, bool
         setTextCursor(resCurs);
         static_cast<Search *>(search)->setFindEditBg(searchInputBgColor);
         static_cast<Search *>(search)->setFindEditProp("results", "found");
+        if (fromStart && !backwards) {
+            emit showPopupText(tabIndex, tr("Searching from beginning..."));
+        } else if (fromStart && backwards) {
+            emit showPopupText(tabIndex, tr("Searching from end..."));
+        }
     } else {
         if (!fromStart) return searchText(searchTxt, CaSe, Word, RegE, backwards, true);
         else {

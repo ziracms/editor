@@ -61,7 +61,8 @@ SOURCES += \
     src/editprojectdialog.cpp \
     src/quickaccess.cpp \
     src/settingsdialog.cpp \
-    src/helpdialog.cpp
+    src/helpdialog.cpp \
+    src/popup.cpp
 
 HEADERS += \
     include/mainwindow.h \
@@ -100,7 +101,8 @@ HEADERS += \
     include/quickaccess.h \
     include/types.h \
     include/settingsdialog.h \
-    include/helpdialog.h
+    include/helpdialog.h \
+    include/popup.h
 
 FORMS += \
     ui/mainwindow.ui \

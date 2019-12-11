@@ -335,6 +335,8 @@ signals:
     void focusIn(int index);
     void breadcrumbsClick(int index);
     void warning(int index, QString slug, QString text);
+    void showPopupText(int index, QString text);
+    void showPopupError(int index, QString text);
 };
 
 #endif // EDITOR_H

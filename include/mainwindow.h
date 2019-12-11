@@ -22,6 +22,7 @@
 #include "project.h"
 #include "git.h"
 #include "quickaccess.h"
+#include "popup.h"
 #include "types.h"
 
 namespace Ui {
@@ -184,6 +185,8 @@ private slots:
     void hideQAPanel();
     void quickAccessRequested(QString file, int line);
     void quickFindRequested(QString text);
+    void showPopupText(QString text);
+    void showPopupError(QString text);
 private:
     Ui::MainWindow *ui;
     Settings * settings;
@@ -218,6 +221,7 @@ private:
     bool gitCommandsEnabled;
     bool serverCommandsEnabled;
     QuickAccess * qa;
+    Popup * popup;
     QStringList args;
 signals:
     void disableWorker();

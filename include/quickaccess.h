@@ -23,13 +23,16 @@ public:
     explicit QuickAccess(Settings * settings, QWidget *parent = nullptr);
     ~QuickAccess();
     QSize sizeHint() const override;
-    void display(int x, int y, int width, int height);
+    void slideIn(int x, int y, int width, int height);
+    void slideOut();
     void setParseResult(ParsePHP::ParseResult result, QString file);
     void setParseResult(ParseJS::ParseResult result, QString file);
     void setParseResult(ParseCSS::ParseResult result, QString file);
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
     void restoreResults();
+    void animateIn();
+    void animateOut();
     QLineEdit * findEdit;
     QListWidget * resultsList;
     QVBoxLayout * vLayout;
@@ -41,6 +44,7 @@ private:
     QString parseResultFile;
     int parseResultType;
     bool findLocked;
+    bool animationInProgress;
 signals:
     void quickAccessRequested(QString file, int line);
     void quickFindRequested(QString text);
@@ -50,6 +54,8 @@ public slots:
     void findTextChanged(QString text);
     void quickFound(QString text, QString info, QString file, int line);
     void findTextDelayed();
+    void hide();
+    void displayed();
 };
 
 #endif // QUICKACCESS_H
