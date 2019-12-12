@@ -265,6 +265,7 @@ private:
     QRegularExpression functionParamsExpr;
     QRegularExpression functionWordExpr;
     QRegularExpression classNameExpr;
+    QRegularExpression colorExpr;
 
     ParsePHP parserPHP;
     ParsePHP::ParseResult parseResultPHP;

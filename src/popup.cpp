@@ -1,8 +1,9 @@
 #include "popup.h"
 #include <QTimer>
 #include <QPropertyAnimation>
+#include <QFontDatabase>
 
-const int WIDGET_MIN_WIDTH = 450;
+const int WIDGET_MIN_WIDTH = 600;
 const int WIDGET_MIN_HEIGHT = 75;
 const int IMAGE_WIDTH = 150;
 const QString PADDING = "5px 10px";
@@ -20,6 +21,8 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     std::string tooltipColorStr = settings->get("editor_tooltip_color");
     std::string widgetBorderColorStr = settings->get("editor_widget_border_color");
 
+    QFont sysFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+
     hLayout = new QHBoxLayout(this);
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
@@ -36,6 +39,7 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     textLabel->setWordWrap(true);
     textLabel->setAlignment(Qt::AlignTop);
     textLabel->setMinimumWidth(WIDGET_MIN_WIDTH - IMAGE_WIDTH);
+    textLabel->setFont(sysFont);
     textLabel->setStyleSheet("background:"+QString::fromStdString(tooltipBgColorStr)+";color:"+QString::fromStdString(tooltipColorStr)+";padding:"+PADDING+";font-weight:bold;");
     hLayout->addWidget(textLabel);
 
@@ -97,6 +101,8 @@ void Popup::animateOut()
 
 void Popup::display(int x, int y, QString text)
 {
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
     QRect rect = geometry();
     rect.setTop(y);
     rect.setLeft(x);

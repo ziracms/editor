@@ -61,6 +61,7 @@ const QString BREADCRUMBS_DELIMITER = " \u21e2 ";
 
 const QString TOOLTIP_DELIMITER = "[:OR:]";
 const QString TOOLTIP_PAGER_TPL = " | <b>[<u>%1</u>/%2]</b>";
+const QString TOOLTIP_COLOR_TPL = "<span style=\"background:%1;\">&nbsp;&nbsp;&nbsp;</span>";
 
 Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, QWidget * parent) : QTextEdit(parent)
 {
@@ -214,6 +215,7 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     functionParamsExpr = QRegularExpression("^([^(]+)[(](.*)[)](.*)$");
     functionWordExpr = QRegularExpression("(?:^|[^a-zA-Z0-9_\\$]+)function(?:[^a-zA-Z0-9_]+|$)");
     classNameExpr = QRegularExpression("([a-zA-Z0-9_\\\\]+)[\\s]*[(]");
+    colorExpr = QRegularExpression("^[#](?:[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9])(?:[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9])?(?:[a-fA-F0-9][a-fA-F0-9])?$");
 
     // some features is enabled only in experimental mode
     experimentalMode = false;
@@ -725,7 +727,7 @@ void Editor::showTooltip(int x, int y, QString text, bool richText, int fixedWid
     QFontMetrics fm = tooltipLabel.fontMetrics();
     QMargins mm = tooltipLabel.contentsMargins();
     QString strippedText(text.replace("\t", QString(" ").repeated(tabWidth)));
-    if (richText) strippedText.replace("&lt;", "<").replace("&gt;", ">").replace("<br />","\n").replace(stripTagsExpr,"");
+    if (richText) strippedText.replace("&lt;", "<").replace("&gt;", ">").replace("<br />","\n").replace(stripTagsExpr,"").replace("&nbsp;"," ");
     int textLineWidth = 0;
     QStringList strippedList;
     strippedList = strippedText.split("\n");
@@ -931,6 +933,11 @@ bool Editor::event(QEvent *e)
                         }
                         QString tooltipText = fName + " " + params;
                         showTooltip(& curs, tooltipText);
+                    } else {
+                        QRegularExpressionMatch m = colorExpr.match(cursorText);
+                        if (m.capturedStart()==0 && QColor::isValidColor(cursorText)) {
+                            showTooltip(& curs, TOOLTIP_COLOR_TPL.arg(cursorText)+" "+cursorText);
+                        }
                     }
                 }
             } else {
@@ -4860,9 +4867,9 @@ void Editor::searchText(QString searchTxt, bool CaSe, bool Word, bool RegE, bool
         static_cast<Search *>(search)->setFindEditBg(searchInputBgColor);
         static_cast<Search *>(search)->setFindEditProp("results", "found");
         if (fromStart && !backwards) {
-            emit showPopupText(tabIndex, tr("Searching from beginning..."));
+            emit showPopupText(tabIndex, tr("Searching from the beginning..."));
         } else if (fromStart && backwards) {
-            emit showPopupText(tabIndex, tr("Searching from end..."));
+            emit showPopupText(tabIndex, tr("Searching from the end..."));
         }
     } else {
         if (!fromStart) return searchText(searchTxt, CaSe, Word, RegE, backwards, true);
