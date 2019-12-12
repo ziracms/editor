@@ -17,7 +17,6 @@ class FileBrowser : public QObject
     Q_OBJECT
 public:
     FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * settings);
-    ~FileBrowser();
     void showCreateFileDialog(QString startDir = "");
     void showCreateFolderDialog(QString startDir = "");
     void showCreateProjectDialog(bool phpLintEnabled, bool phpCSEnabled, QString startDir = "");

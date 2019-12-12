@@ -27,11 +27,6 @@ CompletePopup::CompletePopup(QWidget * parent) : QListWidget(parent)
     textStartPos = -1;
 }
 
-CompletePopup::~CompletePopup()
-{
-
-}
-
 void CompletePopup::setTextStartPos(int pos)
 {
     textStartPos = pos;

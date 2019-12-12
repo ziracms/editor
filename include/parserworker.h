@@ -19,7 +19,6 @@ class ParserWorker : public QObject
     Q_OBJECT
 public:
     explicit ParserWorker(Settings * settings, QObject *parent = nullptr);
-    ~ParserWorker();
 protected:
     void parseProjectDir(QString dir, QStringList & files);
     void parseProjectFile(QString file, QVariantMap & map);

@@ -15,7 +15,6 @@ class LineNumber : public QWidget
     Q_OBJECT
 public:
     explicit LineNumber(Editor * editor);
-    ~LineNumber();
     QSize sizeHint() const override;
 protected:
     void paintEvent(QPaintEvent *event) override;

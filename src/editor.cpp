@@ -705,7 +705,7 @@ QString Editor::cleanUpText(QString blockText)
             bOffset = bStart + bLength;
         }
     } while (bStart>=0);
-    bStart = -1, bLength = -1, bOffset = 0;
+    bStart = -1; bLength = -1; bOffset = 0;
     do {
         QRegularExpressionMatch match = strExpr.match(blockText, bOffset);
         bStart = match.capturedStart();
@@ -755,7 +755,7 @@ void Editor::showTooltip(int x, int y, QString text, bool richText, int fixedWid
     int extraLinesCo = 0;
     for (int i=0; i<strippedList.size(); i++) {
         int textLineW = fm.width(strippedList.at(i)) + mm.left() + mm.right() + 1;
-        if (textLineW > tooltipWidth) extraLinesCo += std::ceil((double)textLineW / tooltipWidth)-1;
+        if (textLineW > tooltipWidth) extraLinesCo += std::ceil(static_cast<double>(textLineW) / tooltipWidth)-1;
     }
     tooltipLabel.setFixedHeight(fm.height()*(strippedList.size()+extraLinesCo) + mm.top() + mm.bottom());
     if (richText) tooltipLabel.setTextFormat(Qt::RichText);
@@ -1989,7 +1989,7 @@ QChar Editor::findPrevCharNonSpaceAtCursos(QTextCursor & curs)
         int pos = curs.positionInBlock();
         if (pos >= blockText.size()) continue;
         prevChar = blockText[pos];
-        if (!iswspace(prevChar.toLatin1())) {
+        if (!prevChar.isSpace()) {
             break;
         }
     }
@@ -2008,7 +2008,7 @@ QChar Editor::findNextCharNonSpaceAtCursos(QTextCursor & curs)
         int pos = curs.positionInBlock();
         if (pos >= blockText.size()) continue;
         nextChar = blockText[pos];
-        if (!iswspace(nextChar.toLatin1())) {
+        if (!nextChar.isSpace()) {
             break;
         }
     }
@@ -2026,7 +2026,7 @@ QString Editor::findPrevWordNonSpaceAtCursor(QTextCursor & curs, std::string mod
         int pos = curs.positionInBlock();
         if (pos >= blockText.size()) continue;
         QChar c = blockText[pos];
-        if (prevText.size() == 0 && iswspace(c.toLatin1())) continue;
+        if (prevText.size() == 0 && c.isSpace()) continue;
         if (mode == MODE_PHP || mode == MODE_JS) {
             if (isalnum(c.toLatin1()) || c=="$" || c=="_") {
                 prevText = c + prevText;
@@ -2062,7 +2062,7 @@ QString Editor::findNextWordNonSpaceAtCursor(QTextCursor & curs, std::string mod
         int pos = curs.positionInBlock();
         if (pos >= blockText.size()) continue;
         QChar c = blockText[pos];
-        if (nextText.size() == 0 && iswspace(c.toLatin1())) continue;
+        if (nextText.size() == 0 && c.isSpace()) continue;
         if (mode == MODE_PHP || mode == MODE_JS) {
             if (isalnum(c.toLatin1()) || c=="$" || c=="_") {
                 nextText += c;
@@ -2150,7 +2150,7 @@ QString Editor::completeClassNamePHPAtCursor(QTextCursor & curs, QString prevWor
 
 void Editor::showCompletePopup()
 {
-    int blockHeight = document()->documentLayout()->blockBoundingRect(textCursor().block()).height();
+    int blockHeight = static_cast<int>(document()->documentLayout()->blockBoundingRect(textCursor().block()).height());
     int viewLeft = viewport()->geometry().left();
     int viewTop = viewport()->geometry().top();
     int viewWidth = viewport()->geometry().width();
@@ -3006,7 +3006,7 @@ QString Editor::detectCompleteTypeAtCursorPHP(QTextCursor & curs, QString nsName
                 if (_cls.name == "\\"+ns+clsName) {
                     QString parentClass = _cls.parent;
                     if (parentClass.size() > 0 && parentClass.at(0) == "\\") parentClass = parentClass.mid(1);
-                    if (parentClass > 0) {
+                    if (parentClass.size() > 0) {
                         prevType = parentClass;
                     }
                     break;
@@ -3421,11 +3421,11 @@ void Editor::tooltip(int offset)
     QChar prevChar = '\0', prevPrevChar = '\0';
     int cursorTextPos = cursPos;
     if (cursPos > 1 && blockText[cursPos-1] == ":" && blockText[cursPos-2] == ":") {
-        prevChar = ':', prevPrevChar = ':';
+        prevChar = ':'; prevPrevChar = ':';
         cursPos -= 2;
         while (cursPos > 0) {
             QChar _prevChar = blockText[cursPos-1];
-            if (!iswspace(_prevChar.toLatin1())) break;
+            if (!_prevChar.isSpace()) break;
             cursPos--;
         }
     }
@@ -3462,7 +3462,7 @@ void Editor::tooltip(int offset)
                     if (_cls.name == "\\"+ns+clsName) {
                         QString parentClass = _cls.parent;
                         if (parentClass.size() > 0 && parentClass.at(0) == "\\") parentClass = parentClass.mid(1);
-                        if (parentClass > 0) {
+                        if (parentClass.size() > 0) {
                             prevText = parentClass;
                         }
                         break;
@@ -3782,7 +3782,7 @@ int Editor::findFirstVisibleBlockIndex()
     for(int i = 0; i < document()->blockCount(); i++)
     {
         QTextBlock block = curs.block();
-        int block_y = document()->documentLayout()->blockBoundingRect(block).y();
+        int block_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(block).y());
         if (verticalScrollBar()->sliderPosition()<=block_y) {
             return i;
         }
@@ -3798,7 +3798,7 @@ int Editor::findLastVisibleBlockIndex()
     for(int i = 0; i < document()->blockCount(); i++)
     {
         QTextBlock block = curs.block();
-        int block_y = document()->documentLayout()->blockBoundingRect(block).y();
+        int block_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(block).y());
         if (size().height()+verticalScrollBar()->sliderPosition()<=block_y) {
             return i;
         }
@@ -3816,7 +3816,7 @@ int Editor::getFirstVisibleBlockIndex()
     slider_pos -= fRect.y();
     if (slider_pos<=0) return 0;
     if (document()->blockCount()<2) return 0;
-    int block_d = slider_pos / fRect.height() + 1;
+    int block_d = static_cast<int>(slider_pos / fRect.height()) + 1;
     return block_d;
 }
 
@@ -3826,7 +3826,7 @@ int Editor::getLastVisibleBlockIndex()
     int slider_pos = verticalScrollBar()->sliderPosition();
     QTextBlock first = document()->findBlockByNumber(0);
     QRectF fRect = document()->documentLayout()->blockBoundingRect(first);
-    int block_d = (size().height() + slider_pos) / fRect.height();
+    int block_d = static_cast<int>((size().height() + slider_pos) / fRect.height());
     if (block_d >= document()->blockCount()) block_d = document()->blockCount()-1;
     return block_d;
 }
@@ -3913,12 +3913,12 @@ void Editor::lineMarkAreaPaintEvent(QPaintEvent *event)
         top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
     } else {
         QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
-        int prev_y = document()->documentLayout()->blockBoundingRect(prev_block).y();
-        int prev_h = document()->documentLayout()->blockBoundingRect(prev_block).height();
+        int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
+        int prev_h = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).height());
         top += prev_y + prev_h - verticalScrollBar()->sliderPosition();
     }
 
-    int bottom = top + document()->documentLayout()->blockBoundingRect(block).height();
+    int bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
 
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible()) {
@@ -3946,7 +3946,7 @@ void Editor::lineMarkAreaPaintEvent(QPaintEvent *event)
         }
         block = block.next();
         top = bottom;
-        bottom = top + document()->documentLayout()->blockBoundingRect(block).height();
+        bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
         blockNumber++;
     }
 }
@@ -4025,12 +4025,12 @@ void Editor::lineNumberAreaPaintEvent(QPaintEvent *event)
         top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
     } else {
         QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
-        int prev_y = document()->documentLayout()->blockBoundingRect(prev_block).y();
-        int prev_h = document()->documentLayout()->blockBoundingRect(prev_block).height();
+        int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
+        int prev_h = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).height());
         top += prev_y + prev_h - verticalScrollBar()->sliderPosition();
     }
 
-    int bottom = top + document()->documentLayout()->blockBoundingRect(block).height();
+    int bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
 
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible()) {
@@ -4040,7 +4040,7 @@ void Editor::lineNumberAreaPaintEvent(QPaintEvent *event)
         }
         block = block.next();
         top = bottom;
-        bottom = top + document()->documentLayout()->blockBoundingRect(block).height();
+        bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
         blockNumber++;
     }
 }
@@ -4243,7 +4243,7 @@ void Editor::highlightCloseTagPair(QString tagName, int pos, QList<QTextEdit::Ex
 
                         QTextCursor cursorPair = textCursor();
                         _found = false;
-                        _start = -1, _length = 0, _offset = 0;
+                        _start = -1; _length = 0; _offset = 0;
                         QString blockTextPair = cleanUpText(cursorPair.block().text());
                         do {
                             QRegularExpressionMatch _match = tagExpr.match(blockTextPair, _offset);
@@ -4336,7 +4336,7 @@ void Editor::highlightOpenTagPair(QString tagName, int pos, QList<QTextEdit::Ext
 
                         QTextCursor cursorPair = textCursor();
                         _found = false;
-                        _start = -1, _length = 0, _offset = 0;
+                        _start = -1; _length = 0; _offset = 0;
                         QString blockTextPair = cleanUpText(cursorPair.block().text());
                         do {
                             QRegularExpressionMatch _match = tagExpr.match(blockTextPair, _offset);
@@ -4443,7 +4443,7 @@ void Editor::highlightPHPCloseSpecialTagPair(QString tagName, int pos, QList<QTe
             }
         } while(start>=0);
         if (!sFound) break;
-        offset = 0, start = -1;
+        offset = 0; start = -1;
         do {
             QRegularExpressionMatch match = openTagExpr.match(blockText, offset);
             start = match.capturedStart();
@@ -4570,7 +4570,7 @@ void Editor::highlightPHPOpenSpecialTagPair(QString tagName, int pos, QList<QTex
             }
         } while(start>=0);
         if (!sFound) break;
-        offset = 0, start = -1;
+        offset = 0; start = -1;
         do {
             QRegularExpressionMatch match = closeTagExpr.match(blockText, offset);
             start = match.capturedStart();
@@ -4701,7 +4701,7 @@ void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPre
         if (search->isVisible() && searchString.size() > 0) {
             static_cast<LineMap *>(lineMap)->clearMarks();
             QTextCursor searchWordCursor(document());
-            QTextDocument::FindFlags findFlags = 0;
+            QTextDocument::FindFlags findFlags = nullptr;
             if (searchCaSe) findFlags |= QTextDocument::FindCaseSensitively;
             if (searchWord) findFlags |= QTextDocument::FindWholeWords;
             searchWordCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
@@ -4852,7 +4852,7 @@ void Editor::searchText(QString searchTxt, bool CaSe, bool Word, bool RegE, bool
         else curs.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
     }
     if (backwards && curs.positionInBlock() == 0) curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor); // bug ?
-    QTextDocument::FindFlags flags = 0;
+    QTextDocument::FindFlags flags = nullptr;
     if (CaSe) flags |= QTextDocument::FindCaseSensitively;
     if (Word) flags |= QTextDocument::FindWholeWords;
     if (backwards) flags |= QTextDocument::FindBackward;
@@ -4903,7 +4903,7 @@ void Editor::replaceAllText(QString searchTxt, QString replaceTxt, bool CaSe, bo
     if (searchTxt.size() == 0) return;
     curs.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
     curs.beginEditBlock();
-    QTextDocument::FindFlags flags = 0;
+    QTextDocument::FindFlags flags = nullptr;
     if (CaSe) flags |= QTextDocument::FindCaseSensitively;
     if (Word) flags |= QTextDocument::FindWholeWords;
     QTextCursor resCurs;
@@ -4962,7 +4962,7 @@ void Editor::gotoLine(int line, bool focus) {
         int pos = cursor.positionInBlock();
         if (pos >= blockText.size()) break;
         QChar c = blockText[pos];
-        if (!iswspace(c.toLatin1())) break;
+        if (!c.isSpace()) break;
     } while(cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor));
     setTextCursor(cursor);
     if (focus) setFocus();
@@ -5045,12 +5045,12 @@ void Editor::showLineMark(int y)
         top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
     } else {
         QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
-        int prev_y = document()->documentLayout()->blockBoundingRect(prev_block).y();
-        int prev_h = document()->documentLayout()->blockBoundingRect(prev_block).height();
+        int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
+        int prev_h = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).height());
         top += prev_y + prev_h - verticalScrollBar()->sliderPosition();
     }
 
-    int bottom = top + document()->documentLayout()->blockBoundingRect(block).height();
+    int bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
 
     QString tooltipText = "";
     while (block.isValid() && top < y) {
@@ -5073,7 +5073,7 @@ void Editor::showLineMark(int y)
         }
         block = block.next();
         top = bottom;
-        bottom = top + document()->documentLayout()->blockBoundingRect(block).height();
+        bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
         blockNumber++;
     }
 
@@ -5108,12 +5108,12 @@ void Editor::addLineMark(int y)
         top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
     } else {
         QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
-        int prev_y = document()->documentLayout()->blockBoundingRect(prev_block).y();
-        int prev_h = document()->documentLayout()->blockBoundingRect(prev_block).height();
+        int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
+        int prev_h = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).height());
         top += prev_y + prev_h - verticalScrollBar()->sliderPosition();
     }
 
-    int bottom = top + document()->documentLayout()->blockBoundingRect(block).height();
+    int bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
 
     bool changed = false;
     while (block.isValid() && top < y) {
@@ -5141,7 +5141,7 @@ void Editor::addLineMark(int y)
         }
         block = block.next();
         top = bottom;
-        bottom = top + document()->documentLayout()->blockBoundingRect(block).height();
+        bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
         blockNumber++;
     }
 
@@ -5251,7 +5251,7 @@ void Editor::cleanForSave()
             int pos = curs.positionInBlock();
             if (pos <= 0) break;
             QChar c = blockText.at(pos-1);
-            if (!iswspace(c.toLatin1())) break;
+            if (!c.isSpace()) break;
         } while(curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor));
         if (curs.hasSelection()) {
             curs.deleteChar();
@@ -5719,7 +5719,7 @@ void Editor::scrollToMiddle(QTextCursor cursor, int line)
         int v = verticalScrollBar()->value();
         int firstVisibleBlockIndex = getFirstVisibleBlockIndex();
         int lastVisibleBlockIndex = getLastVisibleBlockIndex();
-        int blockHeight = document()->documentLayout()->blockBoundingRect(cursor.block()).height();
+        int blockHeight = static_cast<int>(document()->documentLayout()->blockBoundingRect(cursor.block()).height());
         int visibleBlocksCount = lastVisibleBlockIndex - firstVisibleBlockIndex;
         int middleLine = firstVisibleBlockIndex + visibleBlocksCount / 2 + 1;
         if (middleLine > line) {

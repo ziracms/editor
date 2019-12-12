@@ -11,11 +11,6 @@ Tooltip::Tooltip()
 
 }
 
-Tooltip::~Tooltip()
-{
-
-}
-
 void Tooltip::mousePressEvent(QMouseEvent * /*e*/)
 {
     hide();

@@ -15,22 +15,17 @@ EditorTab::EditorTab(QWidget *parent) : QWidget(parent)
     setLayout(layout);
 }
 
-EditorTab::~EditorTab()
-{
-
-}
-
 void EditorTab::setEditor(Editor * editor)
 {
-    if (layout() == 0) return;
+    if (layout() == nullptr) return;
     layout()->addWidget(editor);
 }
 
 Editor * EditorTab::getEditor()
 {
-    if (layout() == 0 || layout()->count() != 1) return nullptr;
+    if (layout() == nullptr || layout()->count() != 1) return nullptr;
     QLayoutItem * textEditItem = layout()->itemAt(0);
-    if (textEditItem == 0) return nullptr;
+    if (textEditItem == nullptr) return nullptr;
     QWidget * textEdit = textEditItem->widget();
     if (textEdit == nullptr) return nullptr;
     Editor * textEditor = static_cast<Editor *>(textEdit);

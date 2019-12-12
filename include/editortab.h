@@ -15,7 +15,6 @@ class EditorTab : public QWidget
     Q_OBJECT
 public:
     explicit EditorTab(QWidget *parent = nullptr);
-    ~EditorTab();
     void setEditor(Editor * editor);
     Editor * getEditor();
 signals:

@@ -11,7 +11,6 @@ class Popup : public QWidget
     Q_OBJECT
 public:
     explicit Popup(Settings * settings, QWidget *parent = nullptr);
-    ~Popup();
     QSize sizeHint() const override;
     void displayText(int x, int y, QString text);
     void displayError(int x, int y, QString text);

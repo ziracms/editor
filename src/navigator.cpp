@@ -14,11 +14,6 @@ Navigator::Navigator(QTreeWidget * widget, Settings * /*settings*/) : treeWidget
     connect(treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(navigatorCollapsed(QTreeWidgetItem*)));
 }
 
-Navigator::~Navigator()
-{
-
-}
-
 void Navigator::clear()
 {
     treeWidget->clear();
@@ -430,7 +425,7 @@ void Navigator::build(ParseCSS::ParseResult result)
 
 void Navigator::navigatorDoubleClicked(QTreeWidgetItem * item, int column)
 {
-    if (item == 0) return;
+    if (item == nullptr) return;
     if (column != 0) return;
     int line = item->data(0, Qt::UserRole).toInt();
     if (line == 0) return;
@@ -439,12 +434,12 @@ void Navigator::navigatorDoubleClicked(QTreeWidgetItem * item, int column)
 
 void Navigator::navigatorExpanded(QTreeWidgetItem * item)
 {
-    if (item == 0) return;
+    if (item == nullptr) return;
     treeWidget->resizeColumnToContents(0);
 }
 
 void Navigator::navigatorCollapsed(QTreeWidgetItem * item)
 {
-    if (item == 0) return;
+    if (item == nullptr) return;
     treeWidget->resizeColumnToContents(0);
 }

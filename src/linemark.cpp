@@ -100,13 +100,13 @@ void LineMark::mousePressEvent(QMouseEvent *event)
 }
 
 int LineMark::getErrorsCount() {
-    return errors.size();
+    return static_cast<int>(errors.size());
 }
 
 int LineMark::getWarningsCount() {
-    return warnings.size();
+    return static_cast<int>(warnings.size());
 }
 
 int LineMark::getMarksCount() {
-    return marks.size();
+    return static_cast<int>(marks.size());
 }

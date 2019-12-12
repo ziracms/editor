@@ -77,11 +77,6 @@ Settings::Settings(QObject * parent) : QObject(parent)
     };
 }
 
-Settings::~Settings()
-{
-
-}
-
 void Settings::applyLightColors()
 {
     data["editor_line_number_bg_color"] = "#eeeeee";

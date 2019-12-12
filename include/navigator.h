@@ -19,7 +19,6 @@ class Navigator : public QObject
     Q_OBJECT
 public:
     explicit Navigator(QTreeWidget * widget, Settings * settings);
-    ~Navigator();
     void build(ParsePHP::ParseResult result);
     void build(ParseJS::ParseResult result);
     void build(ParseCSS::ParseResult result);

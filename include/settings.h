@@ -22,7 +22,6 @@ class Settings : public QObject
     Q_OBJECT
 public:
     Settings(QObject *parent = nullptr);
-    ~Settings();
     void applyLightColors();
     void applyDarkColors();
     void set(std::string k, std::string v);

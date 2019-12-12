@@ -46,8 +46,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override;
     static int const EXIT_CODE_RESTART;
 protected:
     void closeEvent(QCloseEvent *event) override;

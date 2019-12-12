@@ -16,7 +16,7 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 public:
     SettingsDialog(Settings * settings, QWidget * parent);
-    ~SettingsDialog();
+    ~SettingsDialog() override;
     std::unordered_map<std::string, std::string> getData();
 private:
     Ui::SettingsDialog * ui;

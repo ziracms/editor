@@ -15,7 +15,7 @@ class CreateFolderDialog : public QDialog
     Q_OBJECT
 public:
     CreateFolderDialog(QWidget * parent);
-    ~CreateFolderDialog();
+    ~CreateFolderDialog() override;
     void setDirectory(QString path);
     void setName(QString path);
     QString getDirectory();

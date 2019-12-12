@@ -40,11 +40,6 @@ EditorTabs::EditorTabs(QTabWidget * widget, Settings * settings, HighlightWords 
     tabWidget->setCursor(Qt::ArrowCursor);
 }
 
-EditorTabs::~EditorTabs()
-{
-
-}
-
 Editor * EditorTabs::getActiveEditor()
 {
     return editor;
@@ -53,7 +48,7 @@ Editor * EditorTabs::getActiveEditor()
 Editor * EditorTabs::getTabEditor(int index)
 {
     QWidget * tab = tabWidget->widget(index);
-    if (tab == 0) return nullptr;
+    if (tab == nullptr) return nullptr;
     EditorTab * editorTab = static_cast<EditorTab *>(tab);
     return editorTab->getEditor();
 }
@@ -160,7 +155,7 @@ void EditorTabs::closeTab(int index)
     QWidget * tab = tabWidget->widget(index);
     tabWidget->removeTab(index);
     // switchTab slot called here (emit blocked)
-    if (tab != 0) tab->deleteLater();
+    if (tab != nullptr) tab->deleteLater();
     // update indexes
     for (int i=0; i<tabWidget->count(); i++) {
         Editor * textEditor = getTabEditor(i);

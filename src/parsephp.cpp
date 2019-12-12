@@ -26,7 +26,6 @@ const int EXPECT_FUNCTION_RETURN_TYPE = 12;
 const int EXPECT_VARIABLE = 13;
 const int EXPECT_CONST = 14;
 const int EXPECT_CONST_VALUE = 15;
-const int EXPECT_COMMENT = 16;
 
 const QString IMPORT_TYPE_CLASS = "class";
 const QString IMPORT_TYPE_FUNCTION = "function";
@@ -1328,7 +1327,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                     QString argType, argName, argDefault;
                     argsList = current_function_args.split(",");
                     for (int i=0; i<argsList.size(); i++) {
-                        argType = "", argName = "", argDefault = "";
+                        argType = ""; argName = ""; argDefault = "";
                         argsDefaultsList = argsList.at(i).trimmed().split("=");
                         if (argsDefaultsList.size() == 2) {
                             argDefault = argsDefaultsList.at(1).trimmed();

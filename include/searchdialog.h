@@ -15,7 +15,7 @@ class SearchDialog : public QDialog
     Q_OBJECT
 public:
     SearchDialog(QWidget * parent);
-    ~SearchDialog();
+    ~SearchDialog() override;
     void setDirectory(QString path);
     void setText(QString text);
     void setExtensions(QString text);

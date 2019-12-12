@@ -14,7 +14,6 @@ const int EXPECT_MEDIA = 1;
 const int EXPECT_KEYFRAMES = 2;
 const int EXPECT_FONT_FACE = 3;
 const int EXPECT_FONT_FAMILY = 4;
-const int EXPECT_COMMENT = 5;
 
 std::unordered_map<std::string, std::string> ParseCSS::mainTags = {};
 

@@ -15,8 +15,8 @@ class HelpDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit HelpDialog(QWidget *parent = 0);
-    ~HelpDialog();
+    explicit HelpDialog(QWidget *parent = nullptr);
+    ~HelpDialog() override;
     void shortcutsContent();
     void aboutContent();
 private:

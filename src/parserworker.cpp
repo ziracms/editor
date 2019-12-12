@@ -97,11 +97,6 @@ ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(paren
     quickBreaked = false;
 }
 
-ParserWorker::~ParserWorker()
-{
-
-}
-
 void ParserWorker::disable()
 {
     enabled = false;

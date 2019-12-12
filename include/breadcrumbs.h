@@ -15,7 +15,6 @@ class Breadcrumbs : public QWidget
     Q_OBJECT
 public:
     explicit Breadcrumbs(Editor * codeEditor);
-    ~Breadcrumbs();
     QSize sizeHint() const override;
     void setText(QString txt);
     QString getText();

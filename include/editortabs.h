@@ -15,7 +15,6 @@ class EditorTabs : public QObject
     Q_OBJECT
 public:
     EditorTabs(QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords);
-    ~EditorTabs();
     void createTab(QString filepath, bool initHighlight = true);
     bool closeWindowAllowed();
     Editor * getActiveEditor();

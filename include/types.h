@@ -7,6 +7,9 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <list>
+#include <unordered_map>
+
 typedef std::list<std::unordered_map<std::string, std::string>> WordsMapList;
 
 #endif // TYPES_H

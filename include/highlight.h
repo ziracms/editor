@@ -43,7 +43,6 @@ class Highlight : public QObject
     Q_OBJECT
 public:
     Highlight(Settings * settings, HighlightWords * HW, QTextDocument * parent);
-    ~Highlight();
     void rehighlight();
     void rehighlightBlock(QTextBlock & block);
     void highlightChanges(QTextCursor curs);

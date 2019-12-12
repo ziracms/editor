@@ -12,7 +12,6 @@ const int EXPECT_FUNCTION = 0;
 const int EXPECT_VARIABLE = 1;
 const int EXPECT_CONST = 2;
 const int EXPECT_CONST_VALUE = 3;
-const int EXPECT_COMMENT = 4;
 
 ParseJS::ParseJS()
 {
@@ -584,7 +583,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
                     QString argName, argDefault;
                     argsList = current_function_args.split(",");
                     for (int i=0; i<argsList.size(); i++) {
-                        argName = "", argDefault = "";
+                        argName = ""; argDefault = "";
                         argsDefaultsList = argsList.at(i).trimmed().split("=");
                         if (argsDefaultsList.size() == 2) {
                             argDefault = argsDefaultsList.at(1).trimmed();

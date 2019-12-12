@@ -32,15 +32,10 @@ const QString FB_ACTION_NAME_PASTE = "fb_paste";
 FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * settings):
     treeWidget(widget), pathLine(line)
 {
-    fbpath = "", fbcopypath = "", fbcutpath = "";
-    fbcopyitem = nullptr, fbcutitem = nullptr;
+    fbpath = ""; fbcopypath = ""; fbcutpath = "";
+    fbcopyitem = nullptr; fbcutitem = nullptr;
     fileBrowserHomeDir = QString::fromStdString(settings->get("file_browser_home"));
     initFileBrowser(fileBrowserHomeDir);
-}
-
-FileBrowser::~FileBrowser()
-{
-
 }
 
 void FileBrowser::initFileBrowser(QString homeDir)
@@ -67,7 +62,7 @@ void FileBrowser::initFileBrowser(QString homeDir)
 void FileBrowser::buildFileBrowserTree(QString startDir, QTreeWidgetItem * parent)
 {
     if (parent == nullptr) {
-        fbcopyitem = nullptr, fbcutitem = nullptr;
+        fbcopyitem = nullptr; fbcutitem = nullptr;
     }
     if (startDir.size() > 1 && startDir.at(startDir.size()-1) == "/") startDir = startDir.mid(0, startDir.size()-1);
     QFileInfo startDirInfo(startDir);
@@ -155,7 +150,7 @@ void FileBrowser::fileBrowserCollapsed(QTreeWidgetItem * item)
 
 void FileBrowser::fileBrowserDoubleClicked(QTreeWidgetItem * item, int column)
 {
-    if (item == 0) return;
+    if (item == nullptr) return;
     if (column != 0) return;
     QString path = item->data(0, Qt::UserRole).toString();
     if (path.size() == 0) return;
@@ -252,7 +247,7 @@ void FileBrowser::fileBrowserContextMenuRequested(QPoint p)
     if (disabled || item == nullptr) deleteAction->setDisabled(true);
 
     QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));
-    if (selectedAction == 0) return;
+    if (selectedAction == nullptr) return;
 
     QString actionName = selectedAction->data().toString();
     if (actionName.size() == 0) return;
@@ -346,8 +341,8 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
             emit fileDeleted(path);
         }
     }
-    fbcopypath = "", fbcutpath = "";
-    fbcopyitem = nullptr, fbcutitem = nullptr;
+    fbcopypath = ""; fbcutpath = "";
+    fbcopyitem = nullptr; fbcutitem = nullptr;
 }
 
 void FileBrowser::fileBrowserItemChanged(QTreeWidgetItem * item, int col)
@@ -389,8 +384,8 @@ void FileBrowser::fileBrowserItemChanged(QTreeWidgetItem * item, int col)
         if (parent != nullptr) fbReloadItem(parent);
         else rebuildFileBrowserTree(path);
     }
-    fbcopypath = "", fbcutpath = "";
-    fbcopyitem = nullptr, fbcutitem = nullptr;
+    fbcopypath = ""; fbcutpath = "";
+    fbcopyitem = nullptr; fbcutitem = nullptr;
 }
 
 void FileBrowser::fileBrowserItemSelectionChanged()
@@ -468,8 +463,8 @@ void FileBrowser::fbPasteItem(QTreeWidgetItem * item)
                 // reload
                 fbReloadItem(item);
             }
-            fbcopypath = "", fbcutpath = "";
-            fbcopyitem = nullptr, fbcutitem = nullptr;
+            fbcopypath = ""; fbcutpath = "";
+            fbcopyitem = nullptr; fbcutitem = nullptr;
         } else {
             QMessageBox msgBox;
             msgBox.setText(QObject::tr("File or folder with such name already exists."));
@@ -494,8 +489,8 @@ void FileBrowser::fbPasteItem(QTreeWidgetItem * item)
                 }
                 emit fileDeleted(fbcutpath);
             }
-            fbcopypath = "", fbcutpath = "";
-            fbcopyitem = nullptr, fbcutitem = nullptr;
+            fbcopypath = ""; fbcutpath = "";
+            fbcopyitem = nullptr; fbcutitem = nullptr;
         } else {
             QMessageBox msgBox;
             msgBox.setText(QObject::tr("File or folder with such name already exists."));
@@ -530,8 +525,8 @@ void FileBrowser::showCreateFileDialog(QString startDir)
         msgBox.setText(QObject::tr("File or folder with such name already exists."));
         msgBox.exec();
     }
-    fbcopypath = "", fbcutpath = "";
-    fbcopyitem = nullptr, fbcutitem = nullptr;
+    fbcopypath = ""; fbcutpath = "";
+    fbcopyitem = nullptr; fbcutitem = nullptr;
 }
 
 void FileBrowser::showCreateFolderDialog(QString startDir)
@@ -560,8 +555,8 @@ void FileBrowser::showCreateFolderDialog(QString startDir)
         msgBox.setText(QObject::tr("File or folder with such name already exists."));
         msgBox.exec();
     }
-    fbcopypath = "", fbcutpath = "";
-    fbcopyitem = nullptr, fbcutitem = nullptr;
+    fbcopypath = ""; fbcutpath = "";
+    fbcopyitem = nullptr; fbcutitem = nullptr;
 }
 
 void FileBrowser::showCreateProjectDialog(bool phpLintEnabled, bool phpCSEnabled, QString startDir)
@@ -586,8 +581,8 @@ void FileBrowser::showCreateProjectDialog(bool phpLintEnabled, bool phpCSEnabled
         msgBox.setText(QObject::tr("Folder with such name not found."));
         msgBox.exec();
     }
-    fbcopypath = "", fbcutpath = "";
-    fbcopyitem = nullptr, fbcutitem = nullptr;
+    fbcopypath = ""; fbcutpath = "";
+    fbcopyitem = nullptr; fbcutitem = nullptr;
 }
 
 void FileBrowser::showEditProjectDialog(QString title, QString path, bool phpLintEnabled, bool phpCSEnabled)
@@ -606,8 +601,8 @@ void FileBrowser::showEditProjectDialog(QString title, QString path, bool phpLin
     bool csEnabled = dialog.getCSEnabled();
     if (name.size() == 0) return;
     emit projectEditRequested(name, path, lintEnabled, csEnabled);
-    fbcopypath = "", fbcutpath = "";
-    fbcopyitem = nullptr, fbcutitem = nullptr;
+    fbcopypath = ""; fbcutpath = "";
+    fbcopyitem = nullptr; fbcutitem = nullptr;
 }
 
 void FileBrowser::openProject(QString startDir)
@@ -623,8 +618,8 @@ void FileBrowser::openProject(QString startDir)
         msgBox.setText(QObject::tr("Folder with such name not found."));
         msgBox.exec();
     }
-    fbcopypath = "", fbcutpath = "";
-    fbcopyitem = nullptr, fbcutitem = nullptr;
+    fbcopypath = ""; fbcutpath = "";
+    fbcopyitem = nullptr; fbcutitem = nullptr;
 }
 
 void FileBrowser::refreshFileBrowserDirectory(QString directory)
@@ -657,7 +652,7 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
 {
     // refresh file browser selected item
     if(watched == treeWidget && event->type() == QEvent::KeyRelease) {
-        QKeyEvent * keyEvent = (QKeyEvent *)event;
+        QKeyEvent * keyEvent = static_cast<QKeyEvent *>(event);
         if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Escape || keyEvent->key() == Qt::Key_Tab) {
             fileBrowserRemoveEmptyItems();
         }

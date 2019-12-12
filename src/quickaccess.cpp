@@ -77,11 +77,6 @@ QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
     resultsList->setFont(outputFont);
 }
 
-QuickAccess::~QuickAccess()
-{
-
-}
-
 QSize QuickAccess::sizeHint() const {
     return QSize(WIDGET_MIN_WIDTH, WIDGET_MIN_HEIGHT);
 }
@@ -503,7 +498,7 @@ void QuickAccess::quickFound(QString text, QString info, QString file, int line)
 bool QuickAccess::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched == findEdit && event->type() == QEvent::KeyPress) {
-        QKeyEvent * keyEvent = (QKeyEvent *)event;
+        QKeyEvent * keyEvent = static_cast<QKeyEvent *>(event);
         if (keyEvent->key() == Qt::Key_Down && resultsList->count() > 0) {
             int current = resultsList->currentRow();
             if (current < resultsList->count()-1) current++;
@@ -519,7 +514,7 @@ bool QuickAccess::eventFilter(QObject *watched, QEvent *event)
         }
     }
     if(watched == resultsList && event->type() == QEvent::KeyPress) {
-        QKeyEvent * keyEvent = (QKeyEvent *)event;
+        QKeyEvent * keyEvent = static_cast<QKeyEvent *>(event);
         if (keyEvent->key() == Qt::Key_Down && resultsList->count() > 0 && resultsList->currentRow() == resultsList->count()-1) {
             resultsList->setCurrentRow(0);
             return true;

@@ -133,11 +133,11 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
 
     if (ui->filesEncodingLineEdit->text().size() > 0) {
         std::string encoding = ui->filesEncodingLineEdit->text().toStdString();
-        if (QTextCodec::codecForName(encoding.c_str()) != 0) dataMap["editor_encoding"] = encoding;
+        if (QTextCodec::codecForName(encoding.c_str()) != nullptr) dataMap["editor_encoding"] = encoding;
     }
     if (ui->filesFallbackEncodingLineEdit->text().size() > 0) {
         std::string encoding = ui->filesFallbackEncodingLineEdit->text().toStdString();
-        if (QTextCodec::codecForName(encoding.c_str()) != 0) dataMap["editor_fallback_encoding"] = encoding;
+        if (QTextCodec::codecForName(encoding.c_str()) != nullptr) dataMap["editor_fallback_encoding"] = encoding;
     }
 
     if (newLineMode == NEW_LINE_LF || newLineMode == NEW_LINE_CR || newLineMode == NEW_LINE_CRLF) dataMap["editor_new_line_mode"] = newLineMode;

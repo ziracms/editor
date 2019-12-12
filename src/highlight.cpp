@@ -90,11 +90,6 @@ Highlight::Highlight(Settings * settings, HighlightWords * hWords, QTextDocument
     HW = hWords;
 }
 
-Highlight::~Highlight()
-{
-
-}
-
 void Highlight::setFormat(int start, int count, const QTextCharFormat &format)
 {
     if (start < 0 || start >= formatChanges.count()) return;
@@ -609,7 +604,7 @@ void Highlight::highlightChar(int start, const QTextCharFormat format)
 void Highlight::changeBlockState()
 {
     if (highlightVarsMode || firstRunMode) return;
-    cBlock.setUserState(++block_state);
+    cBlock.setUserState(static_cast<int>(++block_state));
 }
 
 bool Highlight::detectMode(const QChar & c, int pos, bool isWSpace, bool isLast)
@@ -3252,7 +3247,7 @@ bool Highlight::parseBlock(const QString & text)
         bool isLast = (i == text.size()-1) ? true : false;
         bool isAlpha = isalpha(c.toLatin1()) > 0 || c == "_" ? true : false;
         bool isAlnum = isalnum(c.toLatin1()) > 0 || c == "_" ? true : false;
-        bool isWSpace = iswspace(c.toLatin1()) > 0 ? true : false;
+        bool isWSpace = c.isSpace();
 
         // detect highlight mode
         if (parseMode(c, i, isWSpace, isLast, pMode, pState)) continue;

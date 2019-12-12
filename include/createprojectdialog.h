@@ -15,7 +15,7 @@ class CreateProjectDialog : public QDialog
     Q_OBJECT
 public:
     CreateProjectDialog(QWidget * parent);
-    ~CreateProjectDialog();
+    ~CreateProjectDialog() override;
     void setDirectory(QString path);
     void setName(QString name);
     void setLintEnabled(bool enabled);

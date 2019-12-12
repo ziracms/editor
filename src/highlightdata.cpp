@@ -11,11 +11,6 @@ HighlightData::HighlightData()
     reset();
 }
 
-HighlightData::~HighlightData()
-{
-
-}
-
 void HighlightData::reset()
 {
     stringBlock = "";

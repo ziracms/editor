@@ -13,6 +13,7 @@ class Parse
 {
 public:
     Parse();
+    virtual ~Parse();
     virtual void prepare(QString & text);
     virtual QString strip(QRegularExpressionMatch & match, QString & text, int group);
     virtual int getLine(QString & text, int offset);

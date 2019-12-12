@@ -14,7 +14,6 @@ class CompletePopup : public QListWidget
     Q_OBJECT
 public:
     explicit CompletePopup(QWidget * parent);
-    ~CompletePopup();
     void clearItems();
     void addItem(QString str, QString data, QString delimiter = "");
     void showPopup(int cursLeft, int cursTop, int viewLeft, int viewTop, int viewWidth, int viewHeight, int blockHeight);

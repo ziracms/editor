@@ -13,7 +13,6 @@ class HighlightData : public QTextBlockUserData
 {
 public:
     HighlightData();
-    ~HighlightData();
     void reset();
     QString stringBlock;
     QString mode;

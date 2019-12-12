@@ -15,7 +15,7 @@ class CreateFileDialog : public QDialog
     Q_OBJECT
 public:
     CreateFileDialog(QWidget * parent);
-    ~CreateFileDialog();
+    ~CreateFileDialog() override;
     void setDirectory(QString path);
     void setName(QString path);
     QString getDirectory();

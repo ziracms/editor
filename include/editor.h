@@ -25,8 +25,8 @@ class Editor : public QTextEdit
 {
     Q_OBJECT
 public:
-    Editor(Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, QWidget * parent = 0);
-    ~Editor();
+    Editor(Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, QWidget * parent = nullptr);
+    ~Editor() override;
     void init();
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     void lineMarkAreaPaintEvent(QPaintEvent *event);

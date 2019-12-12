@@ -15,6 +15,11 @@ Parse::Parse()
     backtickExpression = QRegularExpression("(?:^|[^\\\\])[`](.*?[^\\\\])[`]", QRegularExpression::DotMatchesEverythingOption);
 }
 
+Parse::~Parse()
+{
+
+}
+
 void Parse::prepare(QString & text)
 {
     text.replace("\\\\", "  ");
@@ -57,7 +62,7 @@ int Parse::getFirstNotEmptyLineTo(QString & text, int offset)
     while(offsetPart > 0) {
         offsetPart--;
         QChar c = textPart[offsetPart];
-        if (!std::iswspace(c.toLatin1())) {
+        if (!c.isSpace()) {
             line = getLine(textPart, offsetPart+1);
             break;
         }

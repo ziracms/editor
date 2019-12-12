@@ -56,11 +56,6 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     hide();
 }
 
-Popup::~Popup()
-{
-
-}
-
 QSize Popup::sizeHint() const {
     return QSize(WIDGET_MIN_WIDTH, WIDGET_MIN_HEIGHT);
 }

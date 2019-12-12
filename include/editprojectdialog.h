@@ -15,7 +15,7 @@ class EditProjectDialog : public QDialog
     Q_OBJECT
 public:
     EditProjectDialog(QWidget * parent);
-    ~EditProjectDialog();
+    ~EditProjectDialog() override;
     void setPath(QString path);
     void setName(QString name);
     void setLintEnabled(bool enabled);

@@ -31,7 +31,7 @@ const int OUTPUT_TAB_MESSAGES_INDEX = 0;
 const int OUTPUT_TAB_HELP_INDEX = 1;
 const int OUTPUT_TAB_SEARCH_INDEX = 2;
 const int OUTPUT_TAB_GIT_INDEX = 3;
-const int OUTPUT_TAB_TODO_INDEX = 4;
+//const int OUTPUT_TAB_TODO_INDEX = 4;
 
 const int PROJECT_LOAD_DELAY = 500;
 

@@ -12,11 +12,6 @@ LineNumber::LineNumber(Editor * codeEditor) : QWidget(codeEditor)
     setCursor(Qt::ArrowCursor);
 }
 
-LineNumber::~LineNumber()
-{
-
-}
-
 QSize LineNumber::sizeHint() const {
     return QSize(editor->lineNumberAreaWidth(), 0);
 }

@@ -12,11 +12,6 @@ Breadcrumbs::Breadcrumbs(Editor * codeEditor) : QWidget(codeEditor)
     setCursor(Qt::PointingHandCursor);
 }
 
-Breadcrumbs::~Breadcrumbs()
-{
-
-}
-
 QSize Breadcrumbs::sizeHint() const {
     return QSize(0, editor->breadcrumbsHeight());
 }

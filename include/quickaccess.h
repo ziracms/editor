@@ -21,7 +21,6 @@ class QuickAccess : public QFrame
     Q_OBJECT
 public:
     explicit QuickAccess(Settings * settings, QWidget *parent = nullptr);
-    ~QuickAccess();
     QSize sizeHint() const override;
     void slideIn(int x, int y, int width, int height);
     void slideOut();
