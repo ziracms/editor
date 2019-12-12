@@ -10,7 +10,7 @@ Main features:
 - file symbols navigator
 - matching braces, parentheses and tags highlighting
 - function arguments popup
-- built-in PHP manual (download required)
+- show PHP manual docs (download required)
 - php lint support
 - php code sniffer support
 - git support
@@ -22,4 +22,6 @@ Main features:
 - both light and dark themes support
 
 Tested on OpenSuSe Leap 15.0 with QT 5.9.4
+      and OpenSuSe Leap 15.1 with QT 5.9.7
+
 Compiled binary (x86-64) can be found in bin folder.
