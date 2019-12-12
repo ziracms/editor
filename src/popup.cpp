@@ -2,11 +2,15 @@
 #include <QTimer>
 #include <QPropertyAnimation>
 #include <QFontDatabase>
+#include <QPainter>
+#include <QPaintEvent>
+#include "math.h"
 
 const int WIDGET_MIN_WIDTH = 600;
-const int WIDGET_MIN_HEIGHT = 75;
+const int WIDGET_MIN_HEIGHT = 60;
 const int IMAGE_WIDTH = 150;
-const QString PADDING = "5px 10px";
+const int PADDING = 10;
+const int BORDER = 2;
 
 const int ANIMATION_DURATION = 200;
 const int ANIMATION_OFFSET = 150;
@@ -25,6 +29,7 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
 
     hLayout = new QHBoxLayout(this);
     hLayout->setContentsMargins(0, 0, 0, 0);
+    hLayout->setMargin(0);
     hLayout->setSpacing(0);
 
     imgLabel = new QLabel();
@@ -32,6 +37,7 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     imgLabel->setPixmap(pm);
     imgLabel->setScaledContents(false);
     imgLabel->setFixedWidth(IMAGE_WIDTH);
+    imgLabel->setAlignment(Qt::AlignVCenter);
     hLayout->addWidget(imgLabel);
 
     textLabel = new QLabel();
@@ -40,12 +46,13 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     textLabel->setAlignment(Qt::AlignTop);
     textLabel->setMinimumWidth(WIDGET_MIN_WIDTH - IMAGE_WIDTH);
     textLabel->setFont(sysFont);
-    textLabel->setStyleSheet("background:"+QString::fromStdString(tooltipBgColorStr)+";color:"+QString::fromStdString(tooltipColorStr)+";padding:"+PADDING+";font-weight:bold;");
+    textLabel->setContentsMargins(0, 0, 0, 0);
+    textLabel->setMargin(PADDING);
+    textLabel->setStyleSheet("background:"+QString::fromStdString(tooltipBgColorStr)+";color:"+QString::fromStdString(tooltipColorStr)+";");
     hLayout->addWidget(textLabel);
 
     hLayout->addStretch();
-
-    setStyleSheet("background:"+QString::fromStdString(tooltipBgColorStr)+";border:1px solid "+QString::fromStdString(widgetBorderColorStr)+";");
+    setStyleSheet("background:"+QString::fromStdString(widgetBorderColorStr)+";border:"+QString::number(BORDER)+"px solid "+QString::fromStdString(widgetBorderColorStr)+";");
     hide();
 }
 
@@ -108,6 +115,16 @@ void Popup::display(int x, int y, QString text)
     rect.setLeft(x);
     setGeometry(rect);
     textLabel->setText(text);
+
+    QFontMetrics fm(textLabel->font());
+    int w = geometry().width() - IMAGE_WIDTH - 2*PADDING;
+    int tw = fm.width(text);
+    if (tw > w) {
+        int l = static_cast<int>(ceil(static_cast<double>(tw) / static_cast<double>(w)));
+        setFixedHeight(fm.height()*l+2*PADDING+2*BORDER);
+    } else {
+        setFixedHeight(fm.height()+2*PADDING+2*BORDER);
+    }
 
     setVisible(true);
     raise();

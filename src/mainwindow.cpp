@@ -1462,7 +1462,7 @@ void MainWindow::projectOpenRequested(QString path)
     ui->outputEdit->clear();
     enableActionsForOpenProject();
     setStatusBarText(tr("Scanning project..."));
-    showPopupText(tr("Project '%1' loaded.").arg(project->getName()));
+    showPopupText(tr("Project '%1'.").arg(project->getName()));
     emit parseProject(project->getPath());
 }
 
