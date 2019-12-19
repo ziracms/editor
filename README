@@ -1,6 +1,6 @@
 Zira Editor is a lightweight PHP Editor for Linux with syntax highlighting and autocomplete.
-If you are looking for Geany alternative for KDE, try Zira Editor.
-It's written in QT.
+If you're looking for Geany alternative for KDE, you should try Zira Editor.
+It's written in QT and looks native in KDE. But it also can be run in Gnome.
 
 Main features:
 - syntax highlighting for PHP, JavaScript, CSS, HTML
@@ -9,9 +9,9 @@ Main features:
 - files tree
 - file symbols navigator
 - matching braces, parentheses and tags highlighting
-- function arguments popup
-- show PHP manual docs (download required)
-- php lint support
+- function arguments tooltip
+- F1 / Help : show functions and classes docs from PHP manual (download required)
+- php lint support (syntax check)
 - php code sniffer support
 - git support
 - sass support
@@ -19,7 +19,8 @@ Main features:
 - search in files
 - go to declaration
 - built-in colorpicker
-- both light and dark themes support
+- built-in light and dark themes
+- custom themes support
 
 Tested on OpenSuSe Leap 15.0 with QT 5.9.4
       and OpenSuSe Leap 15.1 with QT 5.9.7
