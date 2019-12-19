@@ -17,6 +17,10 @@ extern const QString THEME_SYSTEM;
 extern const QString THEME_LIGHT;
 extern const QString THEME_DARK;
 
+extern const QString CUSTOM_THEME_CSS_FILE;
+extern const QString CUSTOM_THEME_SCHEME_FILE;
+extern const QString CUSTOM_THEME_COLORS_FILE;
+
 class Settings : public QObject
 {
     Q_OBJECT
@@ -24,6 +28,7 @@ public:
     Settings(QObject *parent = nullptr);
     void applyLightColors();
     void applyDarkColors();
+    void applyCustomColors(QString path);
     void set(std::string k, std::string v);
     std::string get(std::string k);
     void load();

@@ -9,6 +9,7 @@
 #include <QFontDatabase>
 #include <QTextCodec>
 #include <QFileDialog>
+#include <QDirIterator>
 #include "helper.h"
 
 const std::string CHECKED_YES = "yes";
@@ -76,14 +77,45 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->sasscPathLineEdit->setText(QString::fromStdString(settings->get("parser_sassc_path")));
     ui->phpmanualLineEdit->setText(QString::fromStdString(settings->get("php_manual_path")));
 
+    QString customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
+    ui->customThemesFolderLineEdit->setText(customThemesPath);
+
+    QStringList customThemesList;
+    if (customThemesPath.size() > 0 && Helper::folderExists(customThemesPath)) {
+        QDirIterator it(customThemesPath, QDir::Dirs | QDir::NoDotAndDotDot);
+        while (it.hasNext()) {
+            QString path = it.next();
+            QFileInfo fInfo(path);
+            if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isDir()) continue;
+            if (!Helper::fileExists(path + "/" + CUSTOM_THEME_CSS_FILE)) continue;
+            if (!Helper::fileExists(path + "/" + CUSTOM_THEME_SCHEME_FILE)) continue;
+            if (!Helper::fileExists(path + "/" + CUSTOM_THEME_COLORS_FILE)) continue;
+            if (fInfo.fileName() == THEME_SYSTEM || fInfo.fileName() == THEME_LIGHT || fInfo.fileName() == THEME_DARK) continue;
+            if (fInfo.fileName() == COLOR_SCHEME_LIGHT || fInfo.fileName() == COLOR_SCHEME_DARK) continue;
+            customThemesList.append(fInfo.fileName());
+        }
+    }
+    for (auto customTheme : customThemesList) {
+        ui->generalThemeCombobox->addItem(customTheme);
+        ui->generalColorSchemeCombobox->addItem(customTheme);
+    }
+
     QString theme = QString::fromStdString(settings->get("theme"));
     QString themeStr = theme;
     if (themeStr.size() > 0) themeStr = themeStr.at(0).toUpper() + themeStr.mid(1);
-    ui->generalThemeCombobox->setCurrentText(themeStr);
+    if (theme == THEME_SYSTEM || theme == THEME_LIGHT || theme == THEME_DARK) {
+        ui->generalThemeCombobox->setCurrentText(themeStr);
+    } else {
+        ui->generalThemeCombobox->setCurrentText(theme);
+    }
     QString colorScheme = QString::fromStdString(settings->get("color_scheme"));
     QString colorSchemeStr = colorScheme;
     if (colorSchemeStr.size() > 0) colorSchemeStr = colorSchemeStr.at(0).toUpper() + colorSchemeStr.mid(1);
-    ui->generalColorSchemeCombobox->setCurrentText(colorSchemeStr);
+    if (colorScheme == COLOR_SCHEME_LIGHT || colorScheme == COLOR_SCHEME_DARK) {
+        ui->generalColorSchemeCombobox->setCurrentText(colorSchemeStr);
+    } else {
+        ui->generalColorSchemeCombobox->setCurrentText(colorScheme);
+    }
 
     connect(ui->projectsHomeButton, SIGNAL(pressed()), this, SLOT(projectHomeButtonPressed()));
     connect(ui->editorTabTypeTabsRadio, SIGNAL(toggled(bool)), this, SLOT(editorTabTypeTabsToggled(bool)));
@@ -275,27 +307,40 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     QString bashPathStr = ui->bashPathLineEdit->text();
     QString sasscPathStr = ui->sasscPathLineEdit->text();
     QString phpmanualPathStr = ui->phpmanualLineEdit->text();
+    QString customThemesPathStr = ui->customThemesFolderLineEdit->text();
+    QString customThemesPath("");
     if (phpPathStr.size() > 1 && phpPathStr.at(phpPathStr.size()-1) == "/") phpPathStr = phpPathStr.mid(0, phpPathStr.size()-1);
     if (phpcsPathStr.size() > 1 && phpcsPathStr.at(phpcsPathStr.size()-1) == "/") phpcsPathStr = phpcsPathStr.mid(0, phpcsPathStr.size()-1);
     if (gitPathStr.size() > 1 && gitPathStr.at(gitPathStr.size()-1) == "/") gitPathStr = gitPathStr.mid(0, gitPathStr.size()-1);
     if (bashPathStr.size() > 1 && bashPathStr.at(bashPathStr.size()-1) == "/") bashPathStr = bashPathStr.mid(0, bashPathStr.size()-1);
     if (sasscPathStr.size() > 1 && sasscPathStr.at(sasscPathStr.size()-1) == "/") sasscPathStr = sasscPathStr.mid(0, sasscPathStr.size()-1);
     if (phpmanualPathStr.size() > 1 && phpmanualPathStr.at(phpmanualPathStr.size()-1) == "/") phpmanualPathStr = phpmanualPathStr.mid(0, phpmanualPathStr.size()-1);
+    if (customThemesPathStr.size() > 1 && customThemesPathStr.at(customThemesPathStr.size()-1) == "/") customThemesPathStr = customThemesPathStr.mid(0, customThemesPathStr.size()-1);
     if (Helper::fileOrFolderExists(phpPathStr) || phpPathStr.size() == 0) dataMap["parser_php_path"] = phpPathStr.toStdString();
     if (Helper::fileOrFolderExists(phpcsPathStr) || phpcsPathStr.size() == 0) dataMap["parser_phpcs_path"] = phpcsPathStr.toStdString();
     if (Helper::fileOrFolderExists(gitPathStr) || gitPathStr.size() == 0) dataMap["parser_git_path"] = gitPathStr.toStdString();
     if (Helper::fileOrFolderExists(bashPathStr) || bashPathStr.size() == 0) dataMap["parser_bash_path"] = bashPathStr.toStdString();
     if (Helper::fileOrFolderExists(sasscPathStr) || sasscPathStr.size() == 0) dataMap["parser_sassc_path"] = sasscPathStr.toStdString();
-    if (Helper::fileOrFolderExists(phpmanualPathStr) || phpmanualPathStr.size() == 0) dataMap["php_manual_path"] = phpmanualPathStr.toStdString();
+    if (Helper::folderExists(phpmanualPathStr) || phpmanualPathStr.size() == 0) dataMap["php_manual_path"] = phpmanualPathStr.toStdString();
+    if (Helper::folderExists(customThemesPathStr) || customThemesPathStr.size() == 0) {
+        dataMap["custom_themes_path"] = customThemesPathStr.toStdString();
+        customThemesPath = customThemesPathStr;
+    }
 
     QString themeStr = ui->generalThemeCombobox->currentText();
-    if (themeStr.size() > 0) themeStr = themeStr.at(0).toLower() + themeStr.mid(1);
-    if (themeStr == THEME_SYSTEM || themeStr == THEME_LIGHT || themeStr == THEME_DARK) {
+    QString themeStrL = themeStr;
+    if (themeStr.size() > 0) themeStrL = themeStr.at(0).toLower() + themeStr.mid(1);
+    if (themeStrL == THEME_SYSTEM || themeStrL == THEME_LIGHT || themeStrL == THEME_DARK) {
+        dataMap["theme"] = themeStrL.toStdString();
+    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + themeStr + "/" + CUSTOM_THEME_CSS_FILE)) {
         dataMap["theme"] = themeStr.toStdString();
     }
     QString colorSchemeStr = ui->generalColorSchemeCombobox->currentText();
-    if (colorSchemeStr.size() > 0) colorSchemeStr = colorSchemeStr.at(0).toLower() + colorSchemeStr.mid(1);
-    if (colorSchemeStr == COLOR_SCHEME_LIGHT || colorSchemeStr == COLOR_SCHEME_DARK) {
+    QString colorSchemeStrL = colorSchemeStr;
+    if (colorSchemeStr.size() > 0) colorSchemeStrL = colorSchemeStr.at(0).toLower() + colorSchemeStr.mid(1);
+    if (colorSchemeStrL == COLOR_SCHEME_LIGHT || colorSchemeStrL == COLOR_SCHEME_DARK) {
+        dataMap["color_scheme"] = colorSchemeStrL.toStdString();
+    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + themeStr + "/" + CUSTOM_THEME_SCHEME_FILE) && Helper::fileExists(customThemesPath + "/" + themeStr + "/" + CUSTOM_THEME_COLORS_FILE)) {
         dataMap["color_scheme"] = colorSchemeStr.toStdString();
     }
 

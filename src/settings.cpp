@@ -6,6 +6,9 @@
 
 #include "settings.h"
 #include <QSettings>
+#include <QFile>
+#include <QTextStream>
+#include <QColor>
 
 const QString COLOR_SCHEME_LIGHT = "light";
 const QString COLOR_SCHEME_DARK = "dark";
@@ -13,6 +16,10 @@ const QString COLOR_SCHEME_DARK = "dark";
 const QString THEME_SYSTEM = "system";
 const QString THEME_LIGHT = "light";
 const QString THEME_DARK = "dark";
+
+const QString CUSTOM_THEME_CSS_FILE = "theme.css";
+const QString CUSTOM_THEME_SCHEME_FILE = "scheme.css";
+const QString CUSTOM_THEME_COLORS_FILE = "colors";
 
 Settings::Settings(QObject * parent) : QObject(parent)
 {
@@ -73,7 +80,8 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"shortcut_delete_line", "Ctrl+Alt+D"},
         {"experimental_mode_enabled", "yes"},
         {"color_scheme", "light"},
-        {"theme", "system"}
+        {"theme", "system"},
+        {"custom_themes_path", ""}
     };
 }
 
@@ -207,6 +215,24 @@ void Settings::applyDarkColors()
     data["git_output_error_color"] = "#fb1727";
     data["git_output_message_color"] = "#05d24e";
     data["git_output_info_color"] = "#0483ce";
+}
+
+void Settings::applyCustomColors(QString path)
+{
+    QString s, k, v;
+    QFile f(path);
+    f.open(QIODevice::ReadOnly);
+    QTextStream in(&f);
+    while (!in.atEnd()) {
+        s = in.readLine();
+        if (s.size() == 0 || s.indexOf("=") < 0) continue;
+        k = s.mid(0, s.indexOf("=")).trimmed();
+        v = s.mid(s.indexOf("=")+1).trimmed();
+        if (k.size() == 0 || v.size() == 0) continue;
+        if (!QColor::isValidColor(v)) continue;
+        data[k.toStdString()] = v.toStdString();
+    }
+    f.close();
 }
 
 void Settings::set(std::string k, std::string v)

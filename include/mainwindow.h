@@ -213,6 +213,7 @@ private:
     QColor outputBgColor;
     QString colorSheme;
     QString theme;
+    QString customThemesPath;
     bool parsePHPLintEnabled;
     bool parsePHPCSEnabled;
     bool parsePHPEnabled;

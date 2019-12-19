@@ -58,8 +58,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     theme = QString::fromStdString(settings->get("theme"));
     colorSheme = QString::fromStdString(settings->get("color_scheme"));
+    customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
     if (colorSheme == COLOR_SCHEME_DARK) settings->applyDarkColors();
-    else settings->applyLightColors();
+    else if (colorSheme == COLOR_SCHEME_LIGHT) settings->applyLightColors();
+    else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyCustomColors(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_COLORS_FILE);
 
     ui->setupUi(this);
     setAcceptDrops(true);
@@ -1462,7 +1464,7 @@ void MainWindow::projectOpenRequested(QString path)
     ui->outputEdit->clear();
     enableActionsForOpenProject();
     setStatusBarText(tr("Scanning project..."));
-    showPopupText(tr("Project '%1'.").arg(project->getName()));
+    showPopupText(tr("Project '%1'").arg(project->getName()));
     emit parseProject(project->getPath());
 }
 
@@ -1736,6 +1738,12 @@ void MainWindow::applyThemeColors()
         QTextStream in(&f);
         style += in.readAll() + "\n";
         f.close();
+    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_CSS_FILE)) {
+        QFile f(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_CSS_FILE);
+        f.open(QIODevice::ReadOnly);
+        QTextStream in(&f);
+        style += in.readAll() + "\n";
+        f.close();
     }
 
     if (colorSheme == COLOR_SCHEME_DARK) {
@@ -1744,8 +1752,14 @@ void MainWindow::applyThemeColors()
         QTextStream in(&f);
         style += in.readAll() + "\n";
         f.close();
-    } else {
+    } else if (colorSheme == COLOR_SCHEME_LIGHT) {
         QFile f(":/styles/light/scheme");
+        f.open(QIODevice::ReadOnly);
+        QTextStream in(&f);
+        style += in.readAll() + "\n";
+        f.close();
+    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_SCHEME_FILE)) {
+        QFile f(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_SCHEME_FILE);
         f.open(QIODevice::ReadOnly);
         QTextStream in(&f);
         style += in.readAll() + "\n";

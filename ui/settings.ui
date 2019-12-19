@@ -155,6 +155,12 @@
          </item>
          <item>
           <widget class="QComboBox" name="generalThemeCombobox">
+           <property name="minimumSize">
+            <size>
+             <width>200</width>
+             <height>0</height>
+            </size>
+           </property>
            <item>
             <property name="text">
              <string notr="true">System</string>
@@ -210,6 +216,12 @@
          </item>
          <item>
           <widget class="QComboBox" name="generalColorSchemeCombobox">
+           <property name="minimumSize">
+            <size>
+             <width>200</width>
+             <height>0</height>
+            </size>
+           </property>
            <item>
             <property name="text">
              <string notr="true">Light</string>
@@ -1184,6 +1196,35 @@
             <string>https://www.php.net/download-docs.php (many html files)</string>
            </property>
           </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="customThemesFolderLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>10</number>
+         </property>
+         <property name="bottomMargin">
+          <number>10</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="customThemesFolderLabel">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Custom themes folder</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="customThemesFolderLineEdit"/>
          </item>
         </layout>
        </item>
