@@ -10,7 +10,7 @@ const int WIDGET_MIN_WIDTH = 600;
 const int WIDGET_MIN_HEIGHT = 60;
 const int IMAGE_WIDTH = 150;
 const int PADDING = 10;
-const int BORDER = 2;
+const int BORDER = 1;
 
 const int ANIMATION_DURATION = 200;
 const int ANIMATION_OFFSET = 150;
@@ -21,9 +21,9 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     setMinimumWidth(WIDGET_MIN_WIDTH);
     setMinimumHeight(WIDGET_MIN_HEIGHT);
 
-    std::string tooltipBgColorStr = settings->get("editor_tooltip_bg_color");
-    std::string tooltipColorStr = settings->get("editor_tooltip_color");
-    std::string widgetBorderColorStr = settings->get("editor_widget_border_color");
+    std::string bgColorStr = settings->get("popup_bg_color");
+    std::string colorStr = settings->get("popup_color");
+    std::string borderColorStr = settings->get("popup_border_color");
 
     QFont sysFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
 
@@ -48,11 +48,11 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     textLabel->setFont(sysFont);
     textLabel->setContentsMargins(0, 0, 0, 0);
     textLabel->setMargin(PADDING);
-    textLabel->setStyleSheet("background:"+QString::fromStdString(tooltipBgColorStr)+";color:"+QString::fromStdString(tooltipColorStr)+";");
+    textLabel->setStyleSheet("background:"+QString::fromStdString(bgColorStr)+";color:"+QString::fromStdString(colorStr)+";");
     hLayout->addWidget(textLabel);
 
     hLayout->addStretch();
-    setStyleSheet("background:"+QString::fromStdString(widgetBorderColorStr)+";border:"+QString::number(BORDER)+"px solid "+QString::fromStdString(widgetBorderColorStr)+";");
+    setStyleSheet("background:"+QString::fromStdString(borderColorStr)+";border:"+QString::number(BORDER)+"px solid "+QString::fromStdString(borderColorStr)+";");
     hide();
 }
 

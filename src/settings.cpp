@@ -149,6 +149,9 @@ void Settings::applyLightColors()
     data["git_output_error_color"] = "#b10814";
     data["git_output_message_color"] = "#00842f";
     data["git_output_info_color"] = "#005384";
+    data["popup_bg_color"] = "#7aedc8";
+    data["popup_color"] = "#092c21";
+    data["popup_border_color"] = "#0aac79";
 }
 
 void Settings::applyDarkColors()
@@ -215,6 +218,9 @@ void Settings::applyDarkColors()
     data["git_output_error_color"] = "#fb1727";
     data["git_output_message_color"] = "#05d24e";
     data["git_output_info_color"] = "#0483ce";
+    data["popup_bg_color"] = "#2d6099";
+    data["popup_color"] = "#f1f1f1";
+    data["popup_border_color"] = "#2a4d74";
 }
 
 void Settings::applyCustomColors(QString path)

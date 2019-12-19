@@ -1408,6 +1408,7 @@ void MainWindow::parseProjectFinished()
     setStatusBarText(tr(""));
     if (ui->sidebarProgressBarWrapperWidget->isVisible()) ui->sidebarProgressBarWrapperWidget->hide();
     editorTabs->initHighlighters();
+    showPopupText(tr("Project '%1' updated").arg(project->getName()));
 }
 
 void MainWindow::projectCreateRequested(QString name, QString path, bool lintEnabled, bool csEnabled)
@@ -1464,7 +1465,6 @@ void MainWindow::projectOpenRequested(QString path)
     ui->outputEdit->clear();
     enableActionsForOpenProject();
     setStatusBarText(tr("Scanning project..."));
-    showPopupText(tr("Project '%1'").arg(project->getName()));
     emit parseProject(project->getPath());
 }
 
