@@ -4786,12 +4786,14 @@ void Editor::clearErrors()
 {
     static_cast<LineMap *>(lineMap)->clearErrors();
     static_cast<LineMark *>(lineMark)->clearErrors();
+    breadcrumbs->setToolTip("");
 }
 
 void Editor::setError(int line, QString text)
 {
     static_cast<LineMap *>(lineMap)->addError(line);
     static_cast<LineMark *>(lineMark)->addError(line, text);
+    breadcrumbs->setToolTip(text+" ["+tr("Line")+": "+Helper::intToStr(line)+"]");
 }
 
 void Editor::updateMarksAndMapArea()
