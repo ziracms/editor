@@ -4,6 +4,7 @@ QTextBrowser
 {
     color: #333333;
     background: #ffffff;
+    selection-color: #ffffff;
     selection-background-color: #1666e0;
 }
 

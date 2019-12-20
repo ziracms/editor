@@ -337,9 +337,10 @@ QToolButton:pressed
 QProgressBar
 {
     border: 1px solid #0076af;
-    border-radius: 0px;
+    border-radius: 3px;
     text-align: center;
-    height: 14px;
+    height: 10px;
+    margin: 2px 4px;
 }
 
 QProgressBar::chunk
