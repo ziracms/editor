@@ -263,6 +263,13 @@ void ParseJS::addComment(QString text, int line) {
     result.comments.append(comment);
 }
 
+void ParseJS::addError(QString text, int line) {
+    ParseResultError error;
+    error.text = text;
+    error.line = line;
+    result.errors.append(error);
+}
+
 void ParseJS::parseCode(QString & code, QString & origText)
 {
     // parse data
@@ -282,6 +289,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
     int scope = 0;
     int functionScope = -1;
     int pars = 0;
+    int curlyBrackets = 0, roundBrackets = 0, squareBrackets = 0;
     int functionArgPars = -1;
     int functionArgsStart = -1;
     int constantValueStart = -1;
@@ -545,10 +553,12 @@ void ParseJS::parseCode(QString & code, QString & origText)
         // braces
         if (k == "{") {
             scope++;
+            curlyBrackets++;
         }
         if (k == "}") {
             scope--;
             if (scope < 0) scope = 0;
+            curlyBrackets--;
             // function close
             if (current_function.size() > 0 && functionScope >= 0 && functionScope == scope) {
                 current_function = "";
@@ -569,10 +579,12 @@ void ParseJS::parseCode(QString & code, QString & origText)
         // parens
         if (k == "(") {
             pars++;
+            roundBrackets++;
         }
         if (k == ")") {
             pars--;
             if (pars < 0) pars = 0;
+            roundBrackets--;
             // function args
             if (functionArgPars >= 0 && functionArgPars == pars && functionArgsStart >= 0) {
                 current_function_args = origText.mid(functionArgsStart+1, m.capturedStart(1)-functionArgsStart-1).trimmed();
@@ -611,6 +623,13 @@ void ParseJS::parseCode(QString & code, QString & origText)
                 functionArgsStart = -1;
             }
         }
+        // brackets
+        if (k == "[") {
+            squareBrackets++;
+        }
+        if (k == "]") {
+            squareBrackets--;
+        }
         prevPrevPrevPrevPrevPrevPrevPrevPrevK = prevPrevPrevPrevPrevPrevPrevPrevK;
         prevPrevPrevPrevPrevPrevPrevPrevK = prevPrevPrevPrevPrevPrevPrevK;
         prevPrevPrevPrevPrevPrevPrevK = prevPrevPrevPrevPrevPrevK;
@@ -621,6 +640,13 @@ void ParseJS::parseCode(QString & code, QString & origText)
         prevPrevK = prevK;
         prevK = k;
     }
+    int line = origText.count("\n") + 1;
+    if (curlyBrackets > 0) addError(QObject::tr("Unclosed brace"), line);
+    else if (curlyBrackets < 0) addError(QObject::tr("Excess brace"), line);
+    if (roundBrackets > 0) addError(QObject::tr("Unclosed parenthesis"), line);
+    else if (roundBrackets < 0) addError(QObject::tr("Excess parenthesis"), line);
+    if (squareBrackets > 0) addError(QObject::tr("Unclosed bracket"), line);
+    else if (squareBrackets < 0) addError(QObject::tr("Excess bracket"), line);
 }
 
 void ParseJS::reset()

@@ -470,6 +470,13 @@ void ParsePHP::addComment(QString text, int line) {
     result.comments.append(comment);
 }
 
+void ParsePHP::addError(QString text, int line) {
+    ParseResultError error;
+    error.text = text;
+    error.line = line;
+    result.errors.append(error);
+}
+
 void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
 {
     // parse data
@@ -505,6 +512,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
     int scope = 0;
     int namespaceScope = -1, classScope = -1, interfaceScope = -1, traitScope = -1, functionScope = -1, anonymFunctionScope = -1, anonymClassScope = -1;
     int pars = 0;
+    int curlyBrackets = 0, roundBrackets = 0, squareBrackets = 0;
     int functionArgPars = -1;
     int functionArgsStart = -1;
     int constantValueStart = -1;
@@ -1231,10 +1239,12 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
         // braces
         if (k == "{") {
             scope++;
+            curlyBrackets++;
         }
         if (k == "}") {
             scope--;
             if (scope < 0) scope = 0;
+            curlyBrackets--;
             // namespace close
             if (current_namespace.size() > 0 && namespaceScope >= 0 && namespaceScope == scope) {
                 current_namespace = "";
@@ -1313,10 +1323,12 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
         // parens
         if (k == "(") {
             pars++;
+            roundBrackets++;
         }
         if (k == ")") {
             pars--;
             if (pars < 0) pars = 0;
+            roundBrackets--;
             // function args
             if (functionArgPars >= 0 && functionArgPars == pars && functionArgsStart >= 0) {
                 current_function_args = origText.mid(textOffset+functionArgsStart+1, m.capturedStart(1)-functionArgsStart-1).trimmed();
@@ -1377,6 +1389,13 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                 functionArgsStart = -1;
             }
         }
+        // brackets
+        if (k == "[") {
+            squareBrackets++;
+        }
+        if (k == "]") {
+            squareBrackets--;
+        }
         prevPrevPrevPrevPrevPrevPrevPrevK = prevPrevPrevPrevPrevPrevPrevK;
         prevPrevPrevPrevPrevPrevPrevK = prevPrevPrevPrevPrevPrevK;
         prevPrevPrevPrevPrevPrevK = prevPrevPrevPrevPrevK;
@@ -1386,6 +1405,13 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
         prevPrevK = prevK;
         prevK = k;
     }
+    int line = origText.count("\n") + 1;
+    if (curlyBrackets > 0) addError(QObject::tr("Unclosed brace"), line);
+    else if (curlyBrackets < 0) addError(QObject::tr("Excess brace"), line);
+    if (roundBrackets > 0) addError(QObject::tr("Unclosed parenthesis"), line);
+    else if (roundBrackets < 0) addError(QObject::tr("Excess parenthesis"), line);
+    if (squareBrackets > 0) addError(QObject::tr("Unclosed bracket"), line);
+    else if (squareBrackets < 0) addError(QObject::tr("Excess bracket"), line);
 }
 
 void ParsePHP::reset()

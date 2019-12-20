@@ -1335,6 +1335,9 @@ void MainWindow::parseLintFinished(int tabIndex, QStringList errorTexts, QString
             textEditor->setError(lineStr.toInt(), errorStr);
             addMessagesTabText(outputMsgErrorTpl.arg(lineStr).arg(errorStr));
         }
+        textEditor->setParseError(true);
+    } else {
+        textEditor->setParseError(false);
     }
     textEditor->updateMarksAndMapArea();
     if (errorTexts.size() > 0 && errorTexts.size() == errorLines.size()) {
@@ -1375,6 +1378,16 @@ void MainWindow::parseMixedFinished(int tabIndex, ParsePHP::ParseResult result)
     Editor * textEditor = editorTabs->getActiveEditor();
     if (textEditor == nullptr) return;
     if (tabIndex != textEditor->getTabIndex()) return;
+    if (!textEditor->getParseError()) {
+        textEditor->clearErrors();
+        if (result.errors.size()) {
+            for (int i=0; i<result.errors.size(); i++) {
+                ParsePHP::ParseResultError error = result.errors.at(i);
+                textEditor->setError(error.line, error.text);
+            }
+        }
+        textEditor->updateMarksAndMapArea();
+    }
     textEditor->setParseResult(result);
     navigator->build(result);
     qa->setParseResult(result, textEditor->getFileName());
@@ -1385,6 +1398,14 @@ void MainWindow::parseJSFinished(int tabIndex, ParseJS::ParseResult result)
     Editor * textEditor = editorTabs->getActiveEditor();
     if (textEditor == nullptr) return;
     if (tabIndex != textEditor->getTabIndex()) return;
+    textEditor->clearErrors();
+    if (result.errors.size()) {
+        for (int i=0; i<result.errors.size(); i++) {
+            ParseJS::ParseResultError error = result.errors.at(i);
+            textEditor->setError(error.line, error.text);
+        }
+    }
+    textEditor->updateMarksAndMapArea();
     textEditor->setParseResult(result);
     navigator->build(result);
     qa->setParseResult(result, textEditor->getFileName());
@@ -1395,6 +1416,14 @@ void MainWindow::parseCSSFinished(int tabIndex, ParseCSS::ParseResult result)
     Editor * textEditor = editorTabs->getActiveEditor();
     if (textEditor == nullptr) return;
     if (tabIndex != textEditor->getTabIndex()) return;
+    textEditor->clearErrors();
+    if (result.errors.size()) {
+        for (int i=0; i<result.errors.size(); i++) {
+            ParseCSS::ParseResultError error = result.errors.at(i);
+            textEditor->setError(error.line, error.text);
+        }
+    }
+    textEditor->updateMarksAndMapArea();
     textEditor->setParseResult(result);
     navigator->build(result);
     qa->setParseResult(result, textEditor->getFileName());

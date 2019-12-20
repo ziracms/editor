@@ -54,6 +54,10 @@ public:
         QString text;
         int line;
     };
+    struct ParseResultError {
+        QString text;
+        int line;
+    };
     struct ParseResult
     {
         QVector<ParseResultClass> classes;
@@ -61,6 +65,7 @@ public:
         QVector<ParseResultVariable> variables;
         QVector<ParseResultConstant> constants;
         QVector<ParseResultComment> comments;
+        QVector<ParseResultError> errors;
     };
 
     ParseJS::ParseResult parse(QString text);
@@ -76,6 +81,7 @@ protected:
     void updateVariableType(QString clsName, QString funcName, QString varName, QString type);
     void addConstant(QString clsName, QString funcName, QString name, QString value, int line);
     void addComment(QString text, int line);
+    void addError(QString text, int line);
 
     QRegularExpression commentSLExpression;
     QRegularExpression regexpExpression;

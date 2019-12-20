@@ -436,6 +436,7 @@ void Editor::reset()
     backPositions.clear();
     forwardPositions.clear();
     lastCursorPositionBlockNumber = -1;
+    isParseError = false;
 }
 
 void Editor::highlightProgressChanged(int percent)
@@ -471,6 +472,16 @@ void Editor::setModified(bool m)
 {
     modified = m;
     emit modifiedStateChanged(tabIndex, modified);
+}
+
+void Editor::setParseError(bool error)
+{
+    isParseError = error;
+}
+
+bool Editor::getParseError()
+{
+    return isParseError;
 }
 
 QString Editor::getFileExtension()

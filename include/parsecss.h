@@ -41,6 +41,10 @@ public:
         QString text;
         int line;
     };
+    struct ParseResultError {
+        QString text;
+        int line;
+    };
     struct ParseResult
     {
         QVector<ParseResultSelector> selectors;
@@ -49,6 +53,7 @@ public:
         QVector<ParseResultKeyframe> keyframes;
         QVector<ParseResultFont> fonts;
         QVector<ParseResultComment> comments;
+        QVector<ParseResultError> errors;
     };
 
     ParseCSS::ParseResult parse(QString text);
@@ -65,6 +70,7 @@ protected:
     void addKeyframe(QString name, int line);
     void addFont(QString name, int line);
     void addComment(QString text, int line);
+    void addError(QString text, int line);
     void parseCode(QString & code, QString & origText);
 private:
     ParseCSS::ParseResult result;

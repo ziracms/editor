@@ -180,6 +180,13 @@ void ParseCSS::addComment(QString text, int line) {
     result.comments.append(comment);
 }
 
+void ParseCSS::addError(QString text, int line) {
+    ParseResultError error;
+    error.text = text;
+    error.line = line;
+    result.errors.append(error);
+}
+
 void ParseCSS::parseCode(QString & code, QString & origText)
 {
     // parse data
@@ -191,6 +198,7 @@ void ParseCSS::parseCode(QString & code, QString & origText)
     int scope = 0;
     int selectorScope = -1, mediaScope = -1, keyframeScope = -1, fontScope = -1;
     int pars = 0;
+    int curlyBrackets = 0, roundBrackets = 0, squareBrackets = 0;
     int mediaArgPars = -1;
     int mediaArgsStart = -1;
     int fontFamilyStart = -1;
@@ -302,10 +310,12 @@ void ParseCSS::parseCode(QString & code, QString & origText)
         // braces
         if (k == "{") {
             scope++;
+            curlyBrackets++;
         }
         if (k == "}") {
             scope--;
             if (scope < 0) scope = 0;
+            curlyBrackets--;
             // selector close
             if (current_selector.size() > 0 && selectorScope >= 0 && selectorScope == scope) {
                 current_selector = "";
@@ -330,16 +340,25 @@ void ParseCSS::parseCode(QString & code, QString & origText)
         // parens
         if (k == "(") {
             pars++;
+            roundBrackets++;
         }
         if (k == ")") {
             pars--;
             if (pars < 0) pars = 0;
+            roundBrackets--;
             // media args
             if (mediaArgPars >= 0 && mediaArgPars == pars && mediaArgsStart >= 0 && expectName.size() == 0) {
                 expectName = origText.mid(mediaArgsStart+1, m.capturedStart(1)-mediaArgsStart-1).trimmed().replace(QRegularExpression("[\\s]+"), " ");
                 mediaArgPars = -1;
                 mediaArgsStart = -1;
             }
+        }
+        // brackets
+        if (k == "[") {
+            squareBrackets++;
+        }
+        if (k == "]") {
+            squareBrackets--;
         }
         prevPrevPrevPrevPrevPrevPrevPrevPrevK = prevPrevPrevPrevPrevPrevPrevPrevK;
         prevPrevPrevPrevPrevPrevPrevPrevK = prevPrevPrevPrevPrevPrevPrevK;
@@ -351,6 +370,13 @@ void ParseCSS::parseCode(QString & code, QString & origText)
         prevPrevK = prevK;
         prevK = k;
     }
+    int line = origText.count("\n") + 1;
+    if (curlyBrackets > 0) addError(QObject::tr("Unclosed brace"), line);
+    else if (curlyBrackets < 0) addError(QObject::tr("Excess brace"), line);
+    if (roundBrackets > 0) addError(QObject::tr("Unclosed parenthesis"), line);
+    else if (roundBrackets < 0) addError(QObject::tr("Excess parenthesis"), line);
+    if (squareBrackets > 0) addError(QObject::tr("Unclosed bracket"), line);
+    else if (squareBrackets < 0) addError(QObject::tr("Excess bracket"), line);
 }
 
 void ParseCSS::reset()

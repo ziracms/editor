@@ -88,6 +88,8 @@ public:
     bool isForwadable();
     void highlightUnusedVars(bool update = true);
     void resetExtraSelections();
+    void setParseError(bool error);
+    bool getParseError();
 protected:
     void focusInEvent(QFocusEvent *e) override;
     void focusOutEvent(QFocusEvent *e) override;
@@ -311,6 +313,7 @@ private:
     QVector<int> forwardPositions;
     int lastCursorPositionBlockNumber;
 
+    bool isParseError;
     bool parsePHPEnabled;
     bool parseJSEnabled;
     bool parseCSSEnabled;
