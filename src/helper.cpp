@@ -15,7 +15,7 @@
 #include <QDir>
 
 const QString APPLICATION_NAME = "Zira Editor";
-const QString APPLICATION_VERSION = "1.3.6";
+const QString APPLICATION_VERSION = "1.3.7";
 const QString ORGANIZATION_NAME = "Zira";
 const QString AUTHOR_EMAIL_USERNAME = "ziracms";
 const QString AUTHOR_EMAIL_DOMAIN = "gmail.com";
