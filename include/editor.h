@@ -90,6 +90,7 @@ public:
     void resetExtraSelections();
     void setParseError(bool error);
     bool getParseError();
+    void highlightError(int pos, int length);
 protected:
     void focusInEvent(QFocusEvent *e) override;
     void focusOutEvent(QFocusEvent *e) override;
@@ -101,6 +102,7 @@ protected:
     bool event(QEvent *e) override;
     void paintEvent(QPaintEvent *e) override;
     void clearTextHoverFormat();
+    void clearErrorsFormat();
     void insertFromMimeData(const QMimeData *source) override;
     void updateWidgetsGeometry();
     void setTabsSettings();
@@ -319,6 +321,7 @@ private:
     bool parseCSSEnabled;
     QColor unusedVariableColor;
     QList<QTextEdit::ExtraSelection> wordsExtraSelections;
+    QList<QTextEdit::ExtraSelection> errorsExtraSelections;
     bool experimentalMode;
 signals:
     void ready(int index);

@@ -80,6 +80,7 @@ public:
     struct ParseResultError {
         QString text;
         int line;
+        int symbol;
     };
     struct ParseResult
     {
@@ -112,7 +113,7 @@ protected:
     void updateVariableType(QString clsName, QString funcName, QString varName, QString type);
     void addConstant(QString clsName, QString name, QString value, int line);
     void addComment(QString text, int line);
-    void addError(QString text, int line);
+    void addError(QString text, int line, int symbol);
 
     QRegularExpression phpExpression;
     QRegularExpression phpStartExpression;

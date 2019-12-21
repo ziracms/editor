@@ -470,10 +470,11 @@ void ParsePHP::addComment(QString text, int line) {
     result.comments.append(comment);
 }
 
-void ParsePHP::addError(QString text, int line) {
+void ParsePHP::addError(QString text, int line, int symbol) {
     ParseResultError error;
     error.text = text;
     error.line = line;
+    error.symbol = symbol;
     result.errors.append(error);
 }
 
@@ -513,6 +514,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
     int namespaceScope = -1, classScope = -1, interfaceScope = -1, traitScope = -1, functionScope = -1, anonymFunctionScope = -1, anonymClassScope = -1;
     int pars = 0;
     int curlyBrackets = 0, roundBrackets = 0, squareBrackets = 0;
+    QVector<int> curlyBracketsList, roundBracketsList, squareBracketsList;
     int functionArgPars = -1;
     int functionArgsStart = -1;
     int constantValueStart = -1;
@@ -1240,11 +1242,13 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
         if (k == "{") {
             scope++;
             curlyBrackets++;
+            curlyBracketsList.append(m.capturedStart(1)+1);
         }
         if (k == "}") {
             scope--;
             if (scope < 0) scope = 0;
             curlyBrackets--;
+            curlyBracketsList.append(-1 * (m.capturedStart(1)+1));
             // namespace close
             if (current_namespace.size() > 0 && namespaceScope >= 0 && namespaceScope == scope) {
                 current_namespace = "";
@@ -1324,11 +1328,13 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
         if (k == "(") {
             pars++;
             roundBrackets++;
+            roundBracketsList.append(m.capturedStart(1)+1);
         }
         if (k == ")") {
             pars--;
             if (pars < 0) pars = 0;
             roundBrackets--;
+            roundBracketsList.append(-1 * (m.capturedStart(1)+1));
             // function args
             if (functionArgPars >= 0 && functionArgPars == pars && functionArgsStart >= 0) {
                 current_function_args = origText.mid(textOffset+functionArgsStart+1, m.capturedStart(1)-functionArgsStart-1).trimmed();
@@ -1392,9 +1398,11 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
         // brackets
         if (k == "[") {
             squareBrackets++;
+            squareBracketsList.append(m.capturedStart(1)+1);
         }
         if (k == "]") {
             squareBrackets--;
+            squareBracketsList.append(-1 * (m.capturedStart(1)+1));
         }
         prevPrevPrevPrevPrevPrevPrevPrevK = prevPrevPrevPrevPrevPrevPrevK;
         prevPrevPrevPrevPrevPrevPrevK = prevPrevPrevPrevPrevPrevK;
@@ -1405,13 +1413,39 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
         prevPrevK = prevK;
         prevK = k;
     }
-    int line = origText.count("\n") + 1;
-    if (curlyBrackets > 0) addError(QObject::tr("Unclosed brace"), line);
-    else if (curlyBrackets < 0) addError(QObject::tr("Excess brace"), line);
-    if (roundBrackets > 0) addError(QObject::tr("Unclosed parenthesis"), line);
-    else if (roundBrackets < 0) addError(QObject::tr("Excess parenthesis"), line);
-    if (squareBrackets > 0) addError(QObject::tr("Unclosed bracket"), line);
-    else if (squareBrackets < 0) addError(QObject::tr("Excess bracket"), line);
+    if (curlyBrackets > 0) {
+        int offset = findOpenScope(curlyBracketsList);
+        if (offset != 0) offset = abs(offset) - 1;
+        int line = getLine(origText, textOffset + offset);
+        addError(QObject::tr("Unclosed brace"), line, textOffset + offset);
+    } else if (curlyBrackets < 0) {
+        int offset = findCloseScope(curlyBracketsList);
+        if (offset != 0) offset = abs(offset) - 1;
+        int line = getLine(origText, textOffset + offset);
+        addError(QObject::tr("Excess brace"), line, textOffset + offset);
+    }
+    if (roundBrackets > 0) {
+        int offset = findOpenScope(roundBracketsList);
+        if (offset != 0) offset = abs(offset) - 1;
+        int line = getLine(origText, textOffset + offset);
+        addError(QObject::tr("Unclosed parenthesis"), line, textOffset + offset);
+    } else if (roundBrackets < 0) {
+        int offset = findCloseScope(roundBracketsList);
+        if (offset != 0) offset = abs(offset) - 1;
+        int line = getLine(origText, textOffset + offset);
+        addError(QObject::tr("Excess parenthesis"), line, textOffset + offset);
+    }
+    if (squareBrackets > 0) {
+        int offset = findOpenScope(squareBracketsList);
+        if (offset != 0) offset = abs(offset) - 1;
+        int line = getLine(origText, textOffset + offset);
+        addError(QObject::tr("Unclosed bracket"), line, textOffset + offset);
+    } else if (squareBrackets < 0) {
+        int offset = findCloseScope(squareBracketsList);
+        if (offset != 0) offset = abs(offset) - 1;
+        int line = getLine(origText, textOffset + offset);
+        addError(QObject::tr("Excess bracket"), line, textOffset + offset);
+    }
 }
 
 void ParsePHP::reset()

@@ -1384,6 +1384,7 @@ void MainWindow::parseMixedFinished(int tabIndex, ParsePHP::ParseResult result)
             for (int i=0; i<result.errors.size(); i++) {
                 ParsePHP::ParseResultError error = result.errors.at(i);
                 textEditor->setError(error.line, error.text);
+                textEditor->highlightError(error.symbol, 1);
             }
         }
         textEditor->updateMarksAndMapArea();
@@ -1403,6 +1404,7 @@ void MainWindow::parseJSFinished(int tabIndex, ParseJS::ParseResult result)
         for (int i=0; i<result.errors.size(); i++) {
             ParseJS::ParseResultError error = result.errors.at(i);
             textEditor->setError(error.line, error.text);
+            textEditor->highlightError(error.symbol, 1);
         }
     }
     textEditor->updateMarksAndMapArea();
@@ -1421,6 +1423,7 @@ void MainWindow::parseCSSFinished(int tabIndex, ParseCSS::ParseResult result)
         for (int i=0; i<result.errors.size(); i++) {
             ParseCSS::ParseResultError error = result.errors.at(i);
             textEditor->setError(error.line, error.text);
+            textEditor->highlightError(error.symbol, 1);
         }
     }
     textEditor->updateMarksAndMapArea();

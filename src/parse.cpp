@@ -6,6 +6,7 @@
 
 #include "parse.h"
 #include "helper.h"
+#include <QVector>
 
 Parse::Parse()
 {
@@ -68,4 +69,38 @@ int Parse::getFirstNotEmptyLineTo(QString & text, int offset)
         }
     }
     return line;
+}
+
+int Parse::findOpenScope(QVector<int> list)
+{
+    int s = 0;
+    for (int i=list.size()-1; i>=0; i--) {
+        int v = list.at(i);
+        if (v < 0) {
+            s--;
+        } else if (v > 0) {
+            s++;
+        }
+        if (s > 0) {
+            return v;
+        }
+    }
+    return !list.isEmpty() ? list.last() : 0;
+}
+
+int Parse::findCloseScope(QVector<int> list)
+{
+    int s = 0;
+    for (int i=0; i<list.size(); i++) {
+        int v = list.at(i);
+        if (v > 0) {
+            s++;
+        } else if (v < 0) {
+            s--;
+        }
+        if (s < 0) {
+            return v;
+        }
+    }
+    return !list.isEmpty() ? list.last() : 0;
 }

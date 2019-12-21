@@ -19,6 +19,8 @@ public:
     virtual int getLine(QString & text, int offset);
     virtual QString getLineText(QString & text, int offset);
     virtual int getFirstNotEmptyLineTo(QString & text, int offset);
+    virtual int findOpenScope(QVector<int> list);
+    virtual int findCloseScope(QVector<int> list);
 protected:
     QRegularExpression stringDQExpression;
     QRegularExpression stringSQExpression;

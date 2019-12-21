@@ -44,6 +44,7 @@ public:
     struct ParseResultError {
         QString text;
         int line;
+        int symbol;
     };
     struct ParseResult
     {
@@ -70,7 +71,7 @@ protected:
     void addKeyframe(QString name, int line);
     void addFont(QString name, int line);
     void addComment(QString text, int line);
-    void addError(QString text, int line);
+    void addError(QString text, int line, int symbol);
     void parseCode(QString & code, QString & origText);
 private:
     ParseCSS::ParseResult result;

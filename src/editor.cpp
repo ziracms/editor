@@ -968,6 +968,29 @@ void Editor::clearTextHoverFormat()
     }
 }
 
+void Editor::clearErrorsFormat()
+{
+    if (errorsExtraSelections.size() > 0) {
+        errorsExtraSelections.clear();
+        highlightExtras();
+    }
+}
+
+void Editor::highlightError(int pos, int length)
+{
+    if (pos < 0) return;
+    // show wave underline
+    QTextCursor cursor = textCursor();
+    cursor.setPosition(pos);
+    cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, length);
+    QTextEdit::ExtraSelection errorSelection;
+    errorSelection.format.setUnderlineColor(lineErrorColor);
+    errorSelection.format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
+    errorSelection.cursor = cursor;
+    errorsExtraSelections.append(errorSelection);
+    highlightExtras();
+}
+
 void Editor::updateSizes()
 {
     updateViewportMargins();
@@ -4766,6 +4789,11 @@ void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPre
         for (int i=0; i<wordsExtraSelections.size(); i++) {
             extraSelections.append(wordsExtraSelections.at(i));
         }
+
+        // errors
+        for (int i=0; i<errorsExtraSelections.size(); i++) {
+            extraSelections.append(errorsExtraSelections.at(i));
+        }
     }
     setExtraSelections(extraSelections);
 }
@@ -4787,6 +4815,7 @@ void Editor::clearErrors()
     static_cast<LineMap *>(lineMap)->clearErrors();
     static_cast<LineMark *>(lineMark)->clearErrors();
     breadcrumbs->setToolTip("");
+    clearErrorsFormat();
 }
 
 void Editor::setError(int line, QString text)
