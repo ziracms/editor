@@ -106,15 +106,20 @@ QLineEdit
     padding: 5px;
 }
 
-QDockWidget QLineEdit
+QTreeWidget QLineEdit
+{
+    padding: 0;
+}
+
+QDialog QLineEdit
+{
+    padding: 5px;
+}
+
+QLineEdit#fileBrowserPathLine
 {
     border-radius: 0;
     border-color: #d6e0e4;
-}
-
-QTreeView QLineEdit
-{
-    padding: 0;
 }
 
 QPushButton
