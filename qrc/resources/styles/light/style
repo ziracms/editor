@@ -552,4 +552,13 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
         stop: 0.25 #333333,
         stop: 0.3 transparent
     );
-} 
+}
+
+QDialogButtonBox
+{
+    dialogbuttonbox-buttons-have-icons: 1;
+    icon-size: 64px 64px;
+    dialog-ok-icon: url(:/styles/light/ok.png);
+    dialog-cancel-icon: url(:/styles/light/cancel.png);
+}
+

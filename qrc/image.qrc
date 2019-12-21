@@ -27,5 +27,7 @@
         <file alias="edit.png">resources/images/icons/edit.png</file>
         <file alias="view-refresh.png">resources/images/icons/view-refresh.png</file>
         <file alias="edit-delete.png">resources/images/icons/edit-delete.png</file>
+        <file alias="cancel.png">resources/images/icons/cancel.png</file>
+        <file alias="ok.png">resources/images/icons/ok.png</file>
     </qresource>
 </RCC>

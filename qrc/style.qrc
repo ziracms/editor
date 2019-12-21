@@ -4,11 +4,15 @@
         <file alias="handle.png">resources/styles/dark/images/handle.png</file>
         <file alias="down_arrow.png">resources/styles/dark/images/down_arrow.png</file>
         <file alias="scheme">resources/styles/dark/scheme</file>
+        <file alias="cancel.png">resources/styles/dark/images/cancel.png</file>
+        <file alias="ok.png">resources/styles/dark/images/ok.png</file>
     </qresource>
     <qresource prefix="/styles/light">
         <file alias="style">resources/styles/light/style</file>
         <file alias="scheme">resources/styles/light/scheme</file>
         <file alias="down_arrow.png">resources/styles/light/images/down_arrow.png</file>
         <file alias="handle.png">resources/styles/light/images/handle.png</file>
+        <file alias="cancel.png">resources/styles/light/images/cancel.png</file>
+        <file alias="ok.png">resources/styles/light/images/ok.png</file>
     </qresource>
 </RCC>
