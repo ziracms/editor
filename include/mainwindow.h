@@ -224,6 +224,7 @@ private:
     QuickAccess * qa;
     Popup * popup;
     QStringList args;
+    bool tmpDisableParser;
 signals:
     void disableWorker();
     void parseLint(int tabIndex, QString path);

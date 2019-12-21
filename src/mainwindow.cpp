@@ -203,6 +203,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(parserWorker, SIGNAL(quickFound(QString,QString,QString,int)), qa, SLOT(quickFound(QString,QString,QString,int)));
     parserThread.start();
 
+    tmpDisableParser = false;
+
     // message templates
     QString outputMsgErrorColor = QString::fromStdString(settings->get("messages_error_color"));
     QString outputMsgWarningColor = QString::fromStdString(settings->get("messages_warning_color"));
@@ -1306,6 +1308,7 @@ QString MainWindow::getTmpDirPath()
 
 void MainWindow::parseTab()
 {
+    if (tmpDisableParser) return;
     Editor * textEditor = editorTabs->getActiveEditor();
     if (textEditor == nullptr) return;
     int tabIndex = textEditor->getTabIndex();
@@ -1525,7 +1528,9 @@ void MainWindow::showTodoRequested(QString text)
 
 void MainWindow::closeAllTabsRequested()
 {
+    tmpDisableParser = true;
     editorTabs->closeSaved();
+    tmpDisableParser = false;
 }
 
 void MainWindow::reloadWords()
