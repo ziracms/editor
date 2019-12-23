@@ -6,6 +6,8 @@
         <file alias="scheme">resources/styles/dark/scheme</file>
         <file alias="cancel.png">resources/styles/dark/images/cancel.png</file>
         <file alias="ok.png">resources/styles/dark/images/ok.png</file>
+        <file alias="up.png">resources/styles/dark/images/up.png</file>
+        <file alias="down.png">resources/styles/dark/images/down.png</file>
     </qresource>
     <qresource prefix="/styles/light">
         <file alias="style">resources/styles/light/style</file>
@@ -14,5 +16,7 @@
         <file alias="handle.png">resources/styles/light/images/handle.png</file>
         <file alias="cancel.png">resources/styles/light/images/cancel.png</file>
         <file alias="ok.png">resources/styles/light/images/ok.png</file>
+        <file alias="down.png">resources/styles/light/images/down.png</file>
+        <file alias="up.png">resources/styles/light/images/up.png</file>
     </qresource>
 </RCC>

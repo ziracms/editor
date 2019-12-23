@@ -101,7 +101,7 @@ QLineEdit
 {
     background-color: #3a3c3e;
     border-style: solid;
-    border: 1px solid #5f5f5f;
+    border: 1px solid #444;
     border-radius: 3;
     padding: 5px;
 }
@@ -119,14 +119,14 @@ QDialog QLineEdit
 QLineEdit#fileBrowserPathLine
 {
     border-radius: 0;
-    border-color: #333237;
+    border-bottom: none;
 }
 
 QPushButton
 {
     color: #e5e8ea;
     background-color: #383a3c;
-    border: 1px solid #1e1e1e;
+    border: 1px solid #444;
     border-radius: 3;
     padding: 5px 10px 5px 10px;
 }
@@ -138,6 +138,12 @@ QPushButton#gitTabCommitButton
 {
     border-radius: 0;
     border: none;
+    margin: 1px 0px 0px 1px;
+}
+
+QPushButton#gitTabPushButton
+{
+    margin-right: 1px;
 }
 
 QPushButton:hover
@@ -156,16 +162,18 @@ QPushButton:pressed
     background-color:  #474a4d;
 }
 
-QComboBox
+QComboBox,
+QSpinBox
 {
     /*selection-background-color: #ffaa00;*/
-    background-color: #333237;
-    border: 1px solid #1e1e1e;
+    background-color: #383a3c;
+    border: 1px solid #444;
     border-radius: 3;
     padding: 5px;
 }
 
-QComboBox:hover
+QComboBox:hover,
+QSpinBox:hover
 {
     border: 1px solid #4d5052;
 }
@@ -199,6 +207,32 @@ QComboBox::drop-down
 QComboBox::down-arrow
 {
     image: url(:/styles/dark/down_arrow.png);
+}
+
+QSpinBox::up-button,
+QSpinBox::down-button
+{ 
+    width: 16px;
+    background: #444;
+    padding: 2px;
+}
+
+QSpinBox::up-button
+{
+    image: url(:/styles/dark/up.png);
+    border-top-right-radius: 3px;
+}
+
+QSpinBox::down-button
+{
+    image: url(:/styles/dark/down.png);
+    border-bottom-right-radius: 3px;
+}
+
+QSpinBox::up-button:hover,
+QSpinBox::down-button:hover
+{
+    background:  #55595c;
 }
 
 QGroupBox:focus
@@ -439,7 +473,7 @@ QTabBar::tab:bottom:last, QTabBar::tab:bottom:only-one
 
 QTabBar::tab:left
 {
-    border-left: 1px solid #444;
+    border-right: 1px solid #444;
     border-bottom: 1px solid #444;
     padding: 10px 5px;
     min-height: 100px;
@@ -458,7 +492,7 @@ QTabBar::tab:left:last, QTabBar::tab:left:only-one
 
 QTabBar::tab:right
 {
-    border-right: 1px solid #444;
+    border-left: 1px solid #444;
     border-bottom: 1px solid #444;
     padding: 10px 5px;
     min-height: 100px;
