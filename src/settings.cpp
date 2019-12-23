@@ -142,7 +142,7 @@ void Settings::applyLightColors()
     data["highlight_space_color"] = "#000000";
     data["highlight_tab_color"] = "#cecece";
     data["messages_error_color"] = "#bd0606";
-    data["messages_warning_color"] = "#4c6b00";
+    data["messages_warning_color"] = "#006b37";
     data["search_results_color"] = "#314d5d";
     data["output_color"] = "#333333";
     data["output_bg_color"] = "#ffffff";
@@ -211,7 +211,7 @@ void Settings::applyDarkColors()
     data["highlight_space_color"] = "#888888";
     data["highlight_tab_color"] = "#333333";
     data["messages_error_color"] = "#f12d2d";
-    data["messages_warning_color"] = "#729c0c";
+    data["messages_warning_color"] = "#0c9c5d";
     data["search_results_color"] = "#4495c3";
     data["output_color"] = "#c4c8cc";
     data["output_bg_color"] = "#0f0f10";

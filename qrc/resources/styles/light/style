@@ -125,10 +125,25 @@ QLineEdit#fileBrowserPathLine
 QPushButton
 {
     color: #000000;
-    background-color: #f2fbff;
+    background-color: #d6e0e4;
     border: 1px solid #c5cfd6;
     border-radius: 3;
     padding: 5px 10px 5px 10px;
+}
+
+QPushButton#gitTabPullButton,
+QPushButton#gitTabPushButton,
+QPushButton#gitTabRefreshButton,
+QPushButton#gitTabCommitButton
+{
+    border-radius: 0;
+    border: none;
+}
+
+QPushButton:hover
+{
+    border: 1px solid #1666e0;
+    background:  #81c6e0;
 }
 
 QPushButton:focus
@@ -151,7 +166,7 @@ QComboBox
     padding: 5px;
 }
 
-QComboBox:hover,QPushButton:hover
+QComboBox:hover
 {
     border: 1px solid #1666e0;
 }
@@ -386,6 +401,12 @@ QTabBar::tab:top
     border-top: 1px solid #c7c7c7;
     border-right: 1px solid #c7c7c7;
     padding: 5px 10px;
+    min-width: 100px;
+}
+
+#SettingsDialog QTabBar::tab:top
+{
+    min-width: 50px;
 }
 
 QTabBar::tab:top:first, QTabBar::tab:top:only-one
@@ -404,6 +425,7 @@ QTabBar::tab:bottom
     border-bottom: 1px solid #c7c7c7;
     border-right: 1px solid #c7c7c7;
     padding: 5px 10px;
+    min-width: 100px;
 }
 
 QTabBar::tab:bottom:first, QTabBar::tab:bottom:only-one
@@ -422,6 +444,7 @@ QTabBar::tab:left
     border-left: 1px solid #c7c7c7;
     border-bottom: 1px solid #c7c7c7;
     padding: 10px 5px;
+    min-height: 100px;
 }
 
 QTabBar::tab:left:first, QTabBar::tab:left:only-one
@@ -440,6 +463,7 @@ QTabBar::tab:right
     border-right: 1px solid #c7c7c7;
     border-bottom: 1px solid #c7c7c7;
     padding: 10px 5px;
+    min-height: 100px;
 }
 
 QTabBar::tab:right:first, QTabBar::tab:right:only-one
