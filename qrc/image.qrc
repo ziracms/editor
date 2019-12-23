@@ -29,5 +29,7 @@
         <file alias="edit-delete.png">resources/images/icons/edit-delete.png</file>
         <file alias="cancel.png">resources/images/icons/cancel.png</file>
         <file alias="ok.png">resources/images/icons/ok.png</file>
+        <file alias="plus.png">resources/images/icons/plus.png</file>
+        <file alias="minus.png">resources/images/icons/minus.png</file>
     </qresource>
 </RCC>

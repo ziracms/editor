@@ -67,7 +67,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>30</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -144,6 +144,7 @@
     <addaction name="actionGitDiffCurrentCommit"/>
     <addaction name="separator"/>
     <addaction name="actionGitDiscardChanges"/>
+    <addaction name="actionGitCancelCommit"/>
     <addaction name="actionGitDiscardCommit"/>
     <addaction name="actionGitRevert"/>
     <addaction name="separator"/>
@@ -244,7 +245,7 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>200</width>
+     <width>313</width>
      <height>300</height>
     </size>
    </property>
@@ -425,6 +426,102 @@
            <column>
             <property name="text">
              <string>Symbols</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="gitTab">
+        <attribute name="title">
+         <string>Git</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="gitTabLayout">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="gitTabPullButton">
+             <property name="toolTip">
+              <string>Pull from master</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../qrc/image.qrc">
+               <normaloff>:/icons/document-save.png</normaloff>:/icons/document-save.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="gitTabRefreshButton">
+             <property name="toolTip">
+              <string>Refresh status</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../qrc/image.qrc">
+               <normaloff>:/icons/view-refresh.png</normaloff>:/icons/view-refresh.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="gitTabCommitButton">
+             <property name="toolTip">
+              <string>Add + Commit</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../qrc/image.qrc">
+               <normaloff>:/icons/ok.png</normaloff>:/icons/ok.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="gitTabPushButton">
+             <property name="toolTip">
+              <string>Push to master</string>
+             </property>
+             <property name="icon">
+              <iconset resource="../qrc/image.qrc">
+               <normaloff>:/icons/document-open.png</normaloff>:/icons/document-open.png</iconset>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QTreeWidget" name="gitTabTreeWidget">
+           <property name="columnCount">
+            <number>2</number>
+           </property>
+           <attribute name="headerVisible">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="headerDefaultSectionSize">
+            <number>200</number>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>File</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Status</string>
             </property>
            </column>
           </widget>
@@ -834,7 +931,7 @@
   </action>
   <action name="actionGitDiscardCommit">
    <property name="text">
-    <string>Und&amp;o previous commit</string>
+    <string>Und&amp;o last commit</string>
    </property>
   </action>
   <action name="actionGitDiffTree">
@@ -960,6 +1057,11 @@
   <action name="actionCompileSass">
    <property name="text">
     <string>Compile Sass</string>
+   </property>
+  </action>
+  <action name="actionGitCancelCommit">
+   <property name="text">
+    <string>Cancel last commit</string>
    </property>
   </action>
  </widget>

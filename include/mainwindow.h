@@ -18,6 +18,7 @@
 #include "filebrowser.h"
 #include "editortabs.h"
 #include "navigator.h"
+#include "gitbrowser.h"
 #include "helpwords.h"
 #include "project.h"
 #include "git.h"
@@ -107,13 +108,14 @@ private slots:
     void on_actionGitDiffAllCommit_triggered();
     void on_actionGitDiffCurrentCommit_triggered();
     void on_actionGitDiscardChanges_triggered();
+    void on_actionGitCancelCommit_triggered();
     void on_actionGitDiscardCommit_triggered();
     void on_actionGitRevert_triggered();
     void on_actionGitResetAll_triggered();
     void on_actionGitResetCurrent_triggered();
     void on_actionGitAddAll_triggered();
     void on_actionGitAddCurrent_triggered();
-    void on_actionGitCommit_triggered();
+    void on_actionGitCommit_triggered(bool add = false);
     void on_actionGitPush_triggered();
     void on_actionGitPull_triggered();
     void on_actionStartServers_triggered();
@@ -176,8 +178,8 @@ private slots:
     void sidebarDockLocationChanged(Qt::DockWidgetArea area);
     void toolbarOrientationChanged(Qt::Orientation orientation);
     void workerMessage(QString text);
-    void runGitCommand(QString path, QString command, QStringList attrs);
-    void gitCommandFinished(QString output);
+    void runGitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
+    void gitCommandFinished(QString output, bool outputResult = true);
     void serversCommandFinished(QString output);
     void sassCommandFinished(QString output);
     void editorFocused();
@@ -187,6 +189,10 @@ private slots:
     void quickFindRequested(QString text);
     void showPopupText(QString text);
     void showPopupError(QString text);
+    void gitTabRefreshRequested();
+    void gitTabAddAndCommitRequested();
+    void gitTabAddRequested(QString path);
+    void gitTabResetRequested(QString path);
 private:
     Ui::MainWindow *ui;
     Settings * settings;
@@ -198,6 +204,7 @@ private:
     QThread parserThread;
     FileBrowser * filebrowser;
     Navigator * navigator;
+    GitBrowser * gitBrowser;
     EditorTabs * editorTabs;
     Project * project;
     Git * git;
@@ -234,7 +241,7 @@ signals:
     void parseCSS(int tabIndex, QString content);
     void parseProject(QString path);
     void searchInFiles(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp);
-    void gitCommand(QString path, QString command, QStringList attrs);
+    void gitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
     void serversCommand(QString command, QString pwd);
     void sassCommand(QString src, QString dst);
     void quickFind(QString dir, QString text, WordsMapList words, QStringList wordPrefixes);

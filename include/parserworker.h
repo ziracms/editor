@@ -54,7 +54,7 @@ signals:
     void searchInFilesFound(QString file, QString lineText, int line, int symbol);
     void searchInFilesFinished();
     void message(QString text);
-    void gitCommandFinished(QString output);
+    void gitCommandFinished(QString output, bool outputResult = true);
     void serversCommandFinished(QString output);
     void sassCommandFinished(QString output);
     void quickFound(QString text, QString info, QString file, int line);
@@ -67,7 +67,7 @@ public slots:
     void parseCSS(int tabIndex, QString text);
     void parseProject(QString path);
     void searchInFiles(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp);
-    void gitCommand(QString path, QString command, QStringList attrs);
+    void gitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
     void serversCommand(QString command, QString pwd);
     void sassCommand(QString src, QString dst);
     void quickFind(QString dir, QString text, WordsMapList words, QStringList wordPrefixes);

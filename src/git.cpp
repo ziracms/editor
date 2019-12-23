@@ -6,7 +6,8 @@
 
 #include "git.h"
 #include <QRegularExpression>
-#include "helper.h"
+
+const QString GIT_DIRECTORY = ".git";
 
 Git::Git(Settings * settings, QObject *parent) : QObject(parent)
 {
@@ -26,6 +27,11 @@ bool Git::isCommandSafe(QString command)
 void Git::showStatus(QString path)
 {
     emit runGitCommand(path, "status", QStringList());
+}
+
+void Git::showStatusShort(QString path, bool outputResult)
+{
+    emit runGitCommand(path, "status", QStringList() << "--short", outputResult);
 }
 
 void Git::showLog(QString path)
@@ -73,6 +79,11 @@ void Git::resetHardUncommitted(QString path)
     emit runGitCommand(path, "reset", QStringList() << "--hard" << "HEAD");
 }
 
+void Git::resetToPreviousCommit(QString path)
+{
+    emit runGitCommand(path, "reset", QStringList() << "HEAD~");
+}
+
 void Git::resetHardToPreviousCommit(QString path)
 {
     emit runGitCommand(path, "reset", QStringList() << "--hard" << "HEAD~");
@@ -96,6 +107,12 @@ void Git::addCurrent(QString path, QString fileName)
 void Git::commit(QString path, QString msg)
 {
     emit runGitCommand(path, "commit", QStringList() << "-m" << msg);
+}
+
+void Git::addAndCommit(QString path, QString msg)
+{
+    addAll(path);
+    commit(path, msg);
 }
 
 void Git::pushOriginMaster(QString path)

@@ -62,7 +62,8 @@ SOURCES += \
     src/quickaccess.cpp \
     src/settingsdialog.cpp \
     src/helpdialog.cpp \
-    src/popup.cpp
+    src/popup.cpp \
+    src/gitbrowser.cpp
 
 HEADERS += \
     include/mainwindow.h \
@@ -102,7 +103,8 @@ HEADERS += \
     include/types.h \
     include/settingsdialog.h \
     include/helpdialog.h \
-    include/popup.h
+    include/popup.h \
+    include/gitbrowser.h
 
 FORMS += \
     ui/mainwindow.ui \

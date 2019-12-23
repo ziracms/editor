@@ -437,6 +437,7 @@ void EditorTabs::fileBrowserCreated(QString path)
 {
     openFile(path);
     //emit updateProject();
+    emit gitTabRefreshRequested();
 }
 
 void EditorTabs::fileBrowserRenamed(QString oldpath, QString newpath)
@@ -445,6 +446,7 @@ void EditorTabs::fileBrowserRenamed(QString oldpath, QString newpath)
     QFileInfo nInfo(newpath);
     if (nInfo.isFile()) fileBrowserFileRenamed(oldpath, newpath);
     if (nInfo.isDir()) fileBrowserFolderRenamed(oldpath, newpath);
+    emit gitTabRefreshRequested();
 }
 
 void EditorTabs::fileBrowserFileRenamed(QString oldpath, QString newpath)
@@ -498,6 +500,7 @@ void EditorTabs::fileBrowserDeleted(QString path)
             break;
         }
     }
+    emit gitTabRefreshRequested();
 }
 
 void EditorTabs::ready(int index)

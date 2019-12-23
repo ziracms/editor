@@ -10,6 +10,8 @@
 #include <QObject>
 #include "settings.h"
 
+extern const QString GIT_DIRECTORY;
+
 class Git : public QObject
 {
     Q_OBJECT
@@ -17,6 +19,7 @@ public:
     explicit Git(Settings * settings, QObject *parent = nullptr);
     bool isCommandSafe(QString command);
     void showStatus(QString path);
+    void showStatusShort(QString path, bool outputResult = true);
     void showLog(QString path);
     void showLastCommitDiffTree(QString path);
     void showUncommittedDiffAll(QString path);
@@ -26,11 +29,13 @@ public:
     void resetAll(QString path);
     void resetCurrent(QString path, QString fileName);
     void resetHardUncommitted(QString path);
+    void resetToPreviousCommit(QString path);
     void resetHardToPreviousCommit(QString path);
     void revertLastCommit(QString path);
     void addAll(QString path);
     void addCurrent(QString path, QString fileName);
     void commit(QString path, QString msg);
+    void addAndCommit(QString path, QString msg);
     void pushOriginMaster(QString path);
     void pullOriginMaster(QString path);
     QString highlightCommand(QString & text);
@@ -42,7 +47,7 @@ protected:
     QString msgTpl;
     QString infoTpl;
 signals:
-    void runGitCommand(QString path, QString command, QStringList attrs);
+    void runGitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
 public slots:
 };
 

@@ -78,7 +78,7 @@ void CreateProjectDialog::setDirectory(QString path)
 QString CreateProjectDialog::getDirectory()
 {
     QString directory = ui->createProjectDialogDirectoryLineEdit->text();
-    if (directory.size() > 0 && directory.mid(directory.size()-1, 1) == "/") directory = directory.mid(0, directory.size()-1);
+    if (directory.size() > 0 && directory.mid(directory.size()-1, 1) == QDir::separator()) directory = directory.mid(0, directory.size()-1);
     return directory;
 }
 
@@ -117,7 +117,7 @@ bool CreateProjectDialog::getCSEnabled()
 QString CreateProjectDialog::getPath()
 {
     QString directory = getDirectory();
-    if (directory.size() > 0 && directory.mid(directory.size()-1, 1) == "/") directory = directory.mid(0, directory.size()-1);
+    if (directory.size() > 0 && directory.mid(directory.size()-1, 1) == QDir::separator()) directory = directory.mid(0, directory.size()-1);
     if (directory.size() > 0) {
         return directory;
     }

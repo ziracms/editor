@@ -66,6 +66,7 @@ signals:
     void editorBreadcrumbsClick(void);
     void editorShowPopupTextRequested(QString text);
     void editorShowPopupErrorRequested(QString text);
+    void gitTabRefreshRequested();
 public slots:
     void openFile(QString filepath, bool initHighlight = true);
     void fileBrowserCreated(QString path);

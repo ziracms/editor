@@ -36,7 +36,7 @@ void CreateFolderDialog::directoryChanged(QString path)
 {
     QString filename = getName();
     if (path.size() > 0 && filename.size() > 0) {
-        ui->createFolderDialogResultLabel->setText(path + "/" + filename);
+        ui->createFolderDialogResultLabel->setText(path + QDir::separator() + filename);
     } else {
         ui->createFolderDialogResultLabel->setText("");
     }
@@ -47,7 +47,7 @@ void CreateFolderDialog::nameChanged(QString path)
 {
     QString directory = getDirectory();
     if (path.size() > 0 && directory.size() > 0) {
-        ui->createFolderDialogResultLabel->setText(directory + "/" + path);
+        ui->createFolderDialogResultLabel->setText(directory + QDir::separator() + path);
         ui->createFolderDialogPathLabel->setVisible(true);
     } else {
         ui->createFolderDialogResultLabel->setText("");
@@ -68,7 +68,7 @@ void CreateFolderDialog::checkPath(QString directory, QString name)
 {
     if (directory.size() == 0 || name.size() == 0 ||
         !Helper::fileOrFolderExists(directory) ||
-        Helper::fileOrFolderExists(directory + "/" + name)
+        Helper::fileOrFolderExists(directory + QDir::separator() + name)
     ) {
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     } else {
@@ -84,7 +84,7 @@ void CreateFolderDialog::setDirectory(QString path)
 QString CreateFolderDialog::getDirectory()
 {
     QString directory = ui->createFolderDialogDirectoryLineEdit->text();
-    if (directory.size() > 0 && directory.mid(directory.size()-1, 1) == "/") directory = directory.mid(0, directory.size()-1);
+    if (directory.size() > 0 && directory.mid(directory.size()-1, 1) == QDir::separator()) directory = directory.mid(0, directory.size()-1);
     return directory;
 }
 
@@ -96,7 +96,7 @@ void CreateFolderDialog::setName(QString path)
 QString CreateFolderDialog::getName()
 {
     QString filename = ui->createFolderDialogFileLineEdit->text();
-    if (filename.size() > 0 && filename.mid(0, 1) == "/") filename = filename.mid(1);
+    if (filename.size() > 0 && filename.mid(0, 1) == QDir::separator()) filename = filename.mid(1);
     return filename;
 }
 
@@ -104,10 +104,10 @@ QString CreateFolderDialog::getPath()
 {
     QString directory = getDirectory();
     QString filename = getName();
-    if (directory.size() > 0 && directory.mid(directory.size()-1, 1) == "/") directory = directory.mid(0, directory.size()-1);
-    if (filename.size() > 0 && filename.mid(0, 1) == "/") filename = filename.mid(1);
+    if (directory.size() > 0 && directory.mid(directory.size()-1, 1) == QDir::separator()) directory = directory.mid(0, directory.size()-1);
+    if (filename.size() > 0 && filename.mid(0, 1) == QDir::separator()) filename = filename.mid(1);
     if (directory.size() > 0 && filename.size() > 0) {
-        return directory + "/" + filename;
+        return directory + QDir::separator() + filename;
     }
     return "";
 }

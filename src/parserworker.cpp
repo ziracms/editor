@@ -368,7 +368,7 @@ void ParserWorker::searchInFilesResultFound(QString file, QString lineText, int 
     }
 }
 
-void ParserWorker::gitCommand(QString path, QString command, QStringList attrs)
+void ParserWorker::gitCommand(QString path, QString command, QStringList attrs, bool outputResult)
 {
     if (gitPath.size() == 0) {
         emit message(tr("Git not found."));
@@ -381,7 +381,7 @@ void ParserWorker::gitCommand(QString path, QString command, QStringList attrs)
     if (!process.waitForFinished()) return;
     QString result = QString(process.readAllStandardOutput());
     if (result.size() == 0) result = QString(process.readAllStandardError());
-    emit gitCommandFinished(result.trimmed());
+    emit gitCommandFinished(result, outputResult);
 }
 
 void ParserWorker::serversCommand(QString command, QString pwd)

@@ -30,7 +30,7 @@
 const int OUTPUT_TAB_MESSAGES_INDEX = 0;
 const int OUTPUT_TAB_HELP_INDEX = 1;
 const int OUTPUT_TAB_SEARCH_INDEX = 2;
-const int OUTPUT_TAB_GIT_INDEX = 3;
+const int OUTPUT_TAB_RESULTS_INDEX = 3;
 //const int OUTPUT_TAB_TODO_INDEX = 4;
 
 const int PROJECT_LOAD_DELAY = 500;
@@ -110,6 +110,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(editorTabs, SIGNAL(editorBreadcrumbsClick()), this, SLOT(on_actionQuickAccess_triggered()));
     connect(editorTabs, SIGNAL(editorShowPopupTextRequested(QString)), this, SLOT(showPopupText(QString)));
     connect(editorTabs, SIGNAL(editorShowPopupErrorRequested(QString)), this, SLOT(showPopupError(QString)));
+    connect(editorTabs, SIGNAL(gitTabRefreshRequested()), this, SLOT(gitTabRefreshRequested()));
 
     // filebrowser
     filebrowser = new FileBrowser(ui->fileBrowserTreeWidget, ui->fileBrowserPathLine, settings);
@@ -138,7 +139,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // git
     git = new Git(settings);
-    connect(git, SIGNAL(runGitCommand(QString,QString,QStringList)), this, SLOT(runGitCommand(QString,QString,QStringList)));
+    connect(git, SIGNAL(runGitCommand(QString,QString,QStringList,bool)), this, SLOT(runGitCommand(QString,QString,QStringList,bool)));
+
+    gitBrowser = new GitBrowser(ui->gitTabTreeWidget, settings);
+    connect(ui->gitTabPullButton, SIGNAL(pressed()), this, SLOT(on_actionGitPull_triggered()));
+    connect(ui->gitTabPushButton, SIGNAL(pressed()), this, SLOT(on_actionGitPush_triggered()));
+    connect(ui->gitTabRefreshButton, SIGNAL(pressed()), this, SLOT(gitTabRefreshRequested()));
+    connect(ui->gitTabCommitButton, SIGNAL(pressed()), this, SLOT(gitTabAddAndCommitRequested()));
+    connect(gitBrowser, SIGNAL(addRequested(QString)), this, SLOT(gitTabAddRequested(QString)));
+    connect(gitBrowser, SIGNAL(resetRequested(QString)), this, SLOT(gitTabResetRequested(QString)));
+    connect(gitBrowser, SIGNAL(commitRequested()), this, SLOT(on_actionGitCommit_triggered()));
 
     // quick access widget
     qa = new QuickAccess(settings, this);
@@ -183,7 +193,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(parseCSS(int,QString)), parserWorker, SLOT(parseCSS(int,QString)));
     connect(this, SIGNAL(parseProject(QString)), parserWorker, SLOT(parseProject(QString)));
     connect(this, SIGNAL(searchInFiles(QString,QString,QString,bool,bool,bool)), parserWorker, SLOT(searchInFiles(QString,QString,QString,bool,bool,bool)));
-    connect(this, SIGNAL(gitCommand(QString, QString, QStringList)), parserWorker, SLOT(gitCommand(QString, QString, QStringList)));
+    connect(this, SIGNAL(gitCommand(QString, QString, QStringList, bool)), parserWorker, SLOT(gitCommand(QString, QString, QStringList, bool)));
     connect(this, SIGNAL(serversCommand(QString, QString)), parserWorker, SLOT(serversCommand(QString,QString)));
     connect(this, SIGNAL(sassCommand(QString, QString)), parserWorker, SLOT(sassCommand(QString,QString)));
     connect(this, SIGNAL(quickFind(QString, QString, WordsMapList, QStringList)), parserWorker, SLOT(quickFind(QString, QString, WordsMapList, QStringList)));
@@ -197,7 +207,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(parserWorker, SIGNAL(searchInFilesFound(QString,QString,int,int)), this, SLOT(searchInFilesFound(QString,QString,int,int)));
     connect(parserWorker, SIGNAL(searchInFilesFinished()), this, SLOT(searchInFilesFinished()));
     connect(parserWorker, SIGNAL(message(QString)), this, SLOT(workerMessage(QString)));
-    connect(parserWorker, SIGNAL(gitCommandFinished(QString)), this, SLOT(gitCommandFinished(QString)));
+    connect(parserWorker, SIGNAL(gitCommandFinished(QString, bool)), this, SLOT(gitCommandFinished(QString, bool)));
     connect(parserWorker, SIGNAL(serversCommandFinished(QString)), this, SLOT(serversCommandFinished(QString)));
     connect(parserWorker, SIGNAL(sassCommandFinished(QString)), this, SLOT(sassCommandFinished(QString)));
     connect(parserWorker, SIGNAL(quickFound(QString,QString,QString,int)), qa, SLOT(quickFound(QString,QString,QString,int)));
@@ -372,6 +382,7 @@ MainWindow::~MainWindow()
     delete editorTabs;
     delete project;
     delete git;
+    delete gitBrowser;
     delete settings;
     delete highlightWords;
     delete completeWords;
@@ -648,6 +659,7 @@ void MainWindow::on_actionCloseProject_triggered()
     filebrowser->rebuildFileBrowserTree(filebrowser->getHomeDir());
     // update window title
     setWindowTitleText("");
+    gitTabRefreshRequested();
 }
 
 void MainWindow::on_actionSave_triggered()
@@ -815,7 +827,7 @@ void MainWindow::runServersCommand(QString command, QString pwd, QString descrip
     if (!serverCommandsEnabled) return;
     hideQAPanel();
     if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
-    ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_GIT_INDEX);
+    ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
     ui->outputEdit->clear();
     ui->outputEdit->setHtml(Servers::highlightServersCommand(description, settings));
     emit serversCommand(command, pwd);
@@ -851,7 +863,7 @@ void MainWindow::compileSass(QString src, QString dst)
     if (!Helper::fileExists(src) || dst.size() == 0) return;
     hideQAPanel();
     if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
-    ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_GIT_INDEX);
+    ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
     ui->outputEdit->clear();
     ui->outputEdit->setText(src + " >> " + dst + "\n");
     emit sassCommand(src, dst);
@@ -922,6 +934,11 @@ void MainWindow::on_actionGitDiscardChanges_triggered()
     git->resetHardUncommitted(getGitWorkingDir());
 }
 
+void MainWindow::on_actionGitCancelCommit_triggered()
+{
+    git->resetToPreviousCommit(getGitWorkingDir());
+}
+
 void MainWindow::on_actionGitDiscardCommit_triggered()
 {
     git->resetHardToPreviousCommit(getGitWorkingDir());
@@ -956,12 +973,13 @@ void MainWindow::on_actionGitAddCurrent_triggered()
     git->addCurrent(getGitWorkingDir(), fileName);
 }
 
-void MainWindow::on_actionGitCommit_triggered()
+void MainWindow::on_actionGitCommit_triggered(bool add)
 {
     bool ok;
     QString msg = QInputDialog::getText(this, tr("Commit message"), tr("Message:"), QLineEdit::Normal, "", &ok);
     if (!ok || msg.isEmpty()) return;
-    git->commit(getGitWorkingDir(), msg);
+    if (!add) git->commit(getGitWorkingDir(), msg);
+    else git->addAndCommit(getGitWorkingDir(), msg);
 }
 
 void MainWindow::on_actionGitPush_triggered()
@@ -974,7 +992,7 @@ void MainWindow::on_actionGitPull_triggered()
     git->pullOriginMaster(getGitWorkingDir());
 }
 
-void MainWindow::runGitCommand(QString path, QString command, QStringList attrs)
+void MainWindow::runGitCommand(QString path, QString command, QStringList attrs, bool outputResult)
 {
     if (!gitCommandsEnabled) return;
     if (!git->isCommandSafe(command) &&
@@ -982,29 +1000,69 @@ void MainWindow::runGitCommand(QString path, QString command, QStringList attrs)
         return;
     }
     hideQAPanel();
-    if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
-    ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_GIT_INDEX);
-    ui->outputEdit->clear();
-    QString attrStr = "";
-    for (int i=0; i<attrs.size(); i++) {
-        QString attr = attrs.at(i);
-        if (attrStr.size() > 0) attrStr += " ";
-        if (attr.indexOf(" ") >= 0) attrStr += "'" + attr + "'";
-        else attrStr += attr;
+    if (outputResult) {
+        if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
+        ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
+        ui->outputEdit->clear();
+        QString attrStr = "";
+        for (int i=0; i<attrs.size(); i++) {
+            QString attr = attrs.at(i);
+            if (attrStr.size() > 0) attrStr += " ";
+            if (attr.indexOf(" ") >= 0) attrStr += "'" + attr + "'";
+            else attrStr += attr;
+        }
+        QString cmdStr = path+"> git "+command+" "+attrStr;
+        ui->outputEdit->setHtml(git->highlightCommand(cmdStr));
     }
-    QString cmdStr = path+"> git "+command+" "+attrStr;
-    ui->outputEdit->setHtml(git->highlightCommand(cmdStr));
-    emit gitCommand(path, command, attrs);
+    emit gitCommand(path, command, attrs, outputResult);
 }
 
-void MainWindow::gitCommandFinished(QString output)
+void MainWindow::gitCommandFinished(QString output, bool outputResult)
 {
+    if (!outputResult) {
+        gitBrowser->build(output);
+        return;
+    }
     if (output.size() == 0) output = tr("Finished.");
     ui->outputEdit->append(git->highlightOutput(output));
     QTextCursor cursor = ui->outputEdit->textCursor();
     cursor.movePosition(QTextCursor::Start);
     ui->outputEdit->setTextCursor(cursor);
     ui->outputEdit->setFocus();
+    gitTabRefreshRequested();
+}
+
+void MainWindow::gitTabRefreshRequested()
+{
+    gitBrowser->clear();
+    QString dir = getGitWorkingDir();
+    if (!Helper::folderExists(dir+"/"+GIT_DIRECTORY)) return;
+    git->showStatusShort(getGitWorkingDir(), false);
+}
+
+void MainWindow::gitTabAddAndCommitRequested()
+{
+    on_actionGitCommit_triggered(true);
+}
+
+void MainWindow::gitTabAddRequested(QString path)
+{
+    if (path.size() == 0) return;
+    QString fileName = getGitWorkingDir() + "/" + path;
+    //bool isFolder = path.mid(path.size()-1) == QDir::separator() ? true : false;
+    //if (!isFolder && !Helper::fileExists(fileName)) return;
+    //else if (isFolder && !Helper::folderExists(fileName)) return;
+    git->addCurrent(getGitWorkingDir(), fileName);
+}
+
+void MainWindow::gitTabResetRequested(QString path)
+{
+    if (path.size() == 0) return;
+    QString fileName = getGitWorkingDir() + "/" + path;
+    //bool isFolder = path.mid(path.size()-1) == QDir::separator() ? true : false;
+    //if (!isFolder && !Helper::fileExists(fileName)) return;
+    //else if (isFolder && !Helper::folderExists(fileName)) return;
+    git->resetCurrent(getGitWorkingDir(), fileName);
 }
 
 void MainWindow::on_actionSettings_triggered()
@@ -1292,6 +1350,7 @@ void MainWindow::editorSaved(int index)
     Editor * textEditor = editorTabs->getActiveEditor();
     if (textEditor == nullptr || textEditor->getTabIndex() != index) return;
     parseTab();
+    gitTabRefreshRequested();
 }
 
 void MainWindow::editorReady(int index)
@@ -1501,6 +1560,7 @@ void MainWindow::projectOpenRequested(QString path)
     enableActionsForOpenProject();
     setStatusBarText(tr("Scanning project..."));
     emit parseProject(project->getPath());
+    gitTabRefreshRequested();
 }
 
 void MainWindow::openTabsRequested(QStringList files, bool initHighlight)
