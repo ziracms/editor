@@ -551,6 +551,11 @@ void Editor::setParseResult(ParseCSS::ParseResult result)
     parseResultCSS = result;
 }
 
+void Editor::setGitAnnotations(QHash<int, Git::Annotation> annotations)
+{
+    gitAnnotations = annotations;
+}
+
 int Editor::lineNumberAreaWidth()
 {
     int digits = 1;
@@ -5022,6 +5027,64 @@ void Editor::gotoLineSymbol(int line, int symbol) {
     }
 }
 
+void Editor::showLineNumber(int y)
+{
+    if (gitAnnotations.size() == 0) return;
+    if (y < 0) return;
+    Qt::KeyboardModifiers modifiers  = QApplication::queryKeyboardModifiers();
+    if (!(modifiers & Qt::ControlModifier)) return;
+    int blockNumber = getFirstVisibleBlockIndex();
+    if (blockNumber < 0) return;
+    if (blockNumber>0) blockNumber--;
+
+    QTextBlock block = document()->findBlockByNumber(blockNumber);
+    //int top = viewport()->geometry().top();
+    int top = contentsMargins().top();
+
+    if (blockNumber == 0) {
+        top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
+    } else {
+        QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
+        int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
+        int prev_h = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).height());
+        top += prev_y + prev_h - verticalScrollBar()->sliderPosition();
+    }
+
+    int bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
+
+    QString tooltipText = "";
+    while (block.isValid() && top < y) {
+        if (block.isVisible() && top < y && bottom > y) {
+            int line = blockNumber + 1;
+            if (gitAnnotations.contains(line)) {
+                tooltipText = "";
+                Git::Annotation annotation = gitAnnotations.value(line);
+                tooltipText += tr("Line") + " " + Helper::intToStr(annotation.line) + ": " + annotation.committer + " [" + annotation.committerDate + "] \"" + annotation.comment.replace("\n"," ") + "\"";
+            }
+            break;
+        }
+        block = block.next();
+        top = bottom;
+        bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
+        blockNumber++;
+    }
+
+    if (tooltipText.size() > 0) {
+        /*
+        QFontMetrics fm(editorTooltipFont);
+        int linesCo = tooltipText.split("\n").size();
+        if (y < fm.height()*linesCo) y += fm.height()*linesCo;
+        showTooltip(lineMark->geometry().x()+lineMark->geometry().width()+TOOLTIP_OFFSET, y+TOOLTIP_OFFSET, tooltipText, false);
+        */
+        QTextCursor curs = textCursor();
+        curs.movePosition(QTextCursor::Start);
+        if (blockNumber > 0) curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, blockNumber);
+        showTooltip(&curs, tooltipText, false);
+    } else {
+        hideTooltip();
+    }
+}
+
 void Editor::showLineMap(int y)
 {
     if (y < 0 || !verticalScrollBar()->isVisible()) return;
@@ -5110,8 +5173,8 @@ void Editor::showLineMark(int y)
                 } else if (mark > 0 && markText.size() > 0) {
                     tooltipText = markText.replace("\t", QString(" ").repeated(tabWidth));
                 }
-                break;
             }
+            break;
         }
         block = block.next();
         top = bottom;

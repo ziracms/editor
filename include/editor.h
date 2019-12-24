@@ -10,6 +10,7 @@
 #include <QTextEdit>
 #include <QRegularExpression>
 #include <QLabel>
+#include <QHash>
 #include "settings.h"
 #include "highlight.h"
 #include "completepopup.h"
@@ -20,6 +21,7 @@
 #include "parsephp.h"
 #include "parsejs.h"
 #include "parsecss.h"
+#include "git.h"
 
 class Editor : public QTextEdit
 {
@@ -64,6 +66,7 @@ public:
     void clearErrors();
     void setError(int line, QString text = "");
     void scrollLineMap(int y);
+    void showLineNumber(int y);
     void showLineMap(int y);
     void showLineMark(int y);
     void addLineMark(int y);
@@ -82,6 +85,7 @@ public:
     void setParseResult(ParsePHP::ParseResult result);
     void setParseResult(ParseJS::ParseResult result);
     void setParseResult(ParseCSS::ParseResult result);
+    void setGitAnnotations(QHash<int, Git::Annotation> annotations);
     bool isUndoable();
     bool isRedoable();
     bool isBackable();
@@ -277,6 +281,7 @@ private:
     ParseJS::ParseResult parseResultJS;
     ParseCSS parserCSS;
     ParseCSS::ParseResult parseResultCSS;
+    QHash<int, Git::Annotation> gitAnnotations;
 
     QString fileName;
     QString extension;

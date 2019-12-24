@@ -207,7 +207,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(parserWorker, SIGNAL(searchInFilesFound(QString,QString,int,int)), this, SLOT(searchInFilesFound(QString,QString,int,int)));
     connect(parserWorker, SIGNAL(searchInFilesFinished()), this, SLOT(searchInFilesFinished()));
     connect(parserWorker, SIGNAL(message(QString)), this, SLOT(workerMessage(QString)));
-    connect(parserWorker, SIGNAL(gitCommandFinished(QString, bool)), this, SLOT(gitCommandFinished(QString, bool)));
+    connect(parserWorker, SIGNAL(gitCommandFinished(QString,QString,bool)), this, SLOT(gitCommandFinished(QString,QString,bool)));
     connect(parserWorker, SIGNAL(serversCommandFinished(QString)), this, SLOT(serversCommandFinished(QString)));
     connect(parserWorker, SIGNAL(sassCommandFinished(QString)), this, SLOT(sassCommandFinished(QString)));
     connect(parserWorker, SIGNAL(quickFound(QString,QString,QString,int)), qa, SLOT(quickFound(QString,QString,QString,int)));
@@ -1017,10 +1017,18 @@ void MainWindow::runGitCommand(QString path, QString command, QStringList attrs,
     emit gitCommand(path, command, attrs, outputResult);
 }
 
-void MainWindow::gitCommandFinished(QString output, bool outputResult)
+void MainWindow::gitCommandFinished(QString command, QString output, bool outputResult)
 {
     if (!outputResult) {
-        gitBrowser->build(output);
+        if (command == GIT_STATUS_COMMAND) {
+            gitBrowser->build(output);
+        } else if (command == GIT_ANNOTATION_COMMAND) {
+            QHash<int, Git::Annotation> annotations = git->parseAnnotationOutput(output);
+            Editor * textEditor = editorTabs->getActiveEditor();
+            if (textEditor != nullptr && annotations.size() > 0 && annotations.contains(1) && textEditor->getFileName() == getGitWorkingDir() + "/" + annotations.value(1).file) {
+                textEditor->setGitAnnotations(annotations);
+            }
+        }
         return;
     }
     if (output.size() == 0) output = tr("Finished.");
@@ -1030,6 +1038,12 @@ void MainWindow::gitCommandFinished(QString output, bool outputResult)
     ui->outputEdit->setTextCursor(cursor);
     ui->outputEdit->setFocus();
     gitTabRefreshRequested();
+    if (command == GIT_COMMIT_COMMAND) {
+        Editor * textEditor = editorTabs->getActiveEditor();
+        if (textEditor != nullptr && textEditor->isReady()) {
+            gitAnnotationRequested(textEditor->getFileName());
+        }
+    }
 }
 
 void MainWindow::gitTabRefreshRequested()
@@ -1049,9 +1063,7 @@ void MainWindow::gitTabAddRequested(QString path)
 {
     if (path.size() == 0) return;
     QString fileName = getGitWorkingDir() + "/" + path;
-    //bool isFolder = path.mid(path.size()-1) == QDir::separator() ? true : false;
-    //if (!isFolder && !Helper::fileExists(fileName)) return;
-    //else if (isFolder && !Helper::folderExists(fileName)) return;
+    // no existence check
     git->addCurrent(getGitWorkingDir(), fileName);
 }
 
@@ -1059,10 +1071,15 @@ void MainWindow::gitTabResetRequested(QString path)
 {
     if (path.size() == 0) return;
     QString fileName = getGitWorkingDir() + "/" + path;
-    //bool isFolder = path.mid(path.size()-1) == QDir::separator() ? true : false;
-    //if (!isFolder && !Helper::fileExists(fileName)) return;
-    //else if (isFolder && !Helper::folderExists(fileName)) return;
+    // no existence check
     git->resetCurrent(getGitWorkingDir(), fileName);
+}
+
+void MainWindow::gitAnnotationRequested(QString path)
+{
+    QString dir = getGitWorkingDir();
+    if (!Helper::folderExists(dir+"/"+GIT_DIRECTORY)) return;
+    git->showAnnotation(getGitWorkingDir(), path, false);
 }
 
 void MainWindow::on_actionSettings_triggered()
@@ -1382,6 +1399,7 @@ void MainWindow::parseTab()
     if (modeType == MODE_JS && textEditor->isReady() && parseJSEnabled) emit parseJS(tabIndex, textEditor->getContent());
     if (modeType == MODE_CSS && textEditor->isReady() && parseCSSEnabled) emit parseCSS(tabIndex, textEditor->getContent());
     if ((!project->isOpen() && parsePHPCSEnabled) || (project->isOpen() && project->isPHPCSEnabled())) emit parsePHPCS(tabIndex, path);
+    if (gitCommandsEnabled && textEditor->isReady()) gitAnnotationRequested(textEditor->getFileName());
 }
 
 void MainWindow::parseLintFinished(int tabIndex, QStringList errorTexts, QStringList errorLines, QString output)

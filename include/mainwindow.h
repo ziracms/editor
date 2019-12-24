@@ -179,7 +179,7 @@ private slots:
     void toolbarOrientationChanged(Qt::Orientation orientation);
     void workerMessage(QString text);
     void runGitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
-    void gitCommandFinished(QString output, bool outputResult = true);
+    void gitCommandFinished(QString command, QString output, bool outputResult = true);
     void serversCommandFinished(QString output);
     void sassCommandFinished(QString output);
     void editorFocused();
@@ -193,6 +193,7 @@ private slots:
     void gitTabAddAndCommitRequested();
     void gitTabAddRequested(QString path);
     void gitTabResetRequested(QString path);
+    void gitAnnotationRequested(QString path);
 private:
     Ui::MainWindow *ui;
     Settings * settings;

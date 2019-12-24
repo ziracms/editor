@@ -10,6 +10,7 @@ LineNumber::LineNumber(Editor * codeEditor) : QWidget(codeEditor)
 {
     editor = codeEditor;
     setCursor(Qt::ArrowCursor);
+    setMouseTracking(true);
 }
 
 QSize LineNumber::sizeHint() const {
@@ -19,4 +20,9 @@ QSize LineNumber::sizeHint() const {
 void LineNumber::paintEvent(QPaintEvent *event)
 {
     editor->lineNumberAreaPaintEvent(event);
+}
+
+void LineNumber::mouseMoveEvent(QMouseEvent *event)
+{
+    editor->showLineNumber(event->y());
 }

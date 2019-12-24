@@ -931,7 +931,7 @@
   </action>
   <action name="actionGitDiscardCommit">
    <property name="text">
-    <string>Und&amp;o last commit</string>
+    <string>Reset to previous commit</string>
    </property>
   </action>
   <action name="actionGitDiffTree">

@@ -6,8 +6,13 @@
 
 #include "git.h"
 #include <QRegularExpression>
+#include <QDateTime>
 
 const QString GIT_DIRECTORY = ".git";
+
+const QString GIT_STATUS_COMMAND = "status";
+const QString GIT_ANNOTATION_COMMAND = "blame";
+const QString GIT_COMMIT_COMMAND = "commit";
 
 Git::Git(Settings * settings, QObject *parent) : QObject(parent)
 {
@@ -31,7 +36,7 @@ void Git::showStatus(QString path)
 
 void Git::showStatusShort(QString path, bool outputResult)
 {
-    emit runGitCommand(path, "status", QStringList() << "--short", outputResult);
+    emit runGitCommand(path, "status", QStringList() << "--short" << "--porcelain", outputResult);
 }
 
 void Git::showLog(QString path)
@@ -125,6 +130,11 @@ void Git::pullOriginMaster(QString path)
     emit runGitCommand(path, "pull", QStringList() << "origin" << "master");
 }
 
+void Git::showAnnotation(QString path, QString fileName, bool outputResult)
+{
+    emit runGitCommand(path, "blame", QStringList() <<  "--line-porcelain" << fileName, outputResult);
+}
+
 QString Git::highlightCommand(QString & text)
 {
     int p = text.indexOf(" ");
@@ -177,4 +187,83 @@ QString Git::highlightOutput(QString & output)
         result += lineTpl.arg(lineText);
     }
     return result;
+}
+
+QHash<int, Git::Annotation> Git::parseAnnotationOutput(QString & output)
+{
+    QHash<int, Git::Annotation> annotations;
+    if (output.size() > 0) {
+        int p = 0, offset = 0;
+        QString lineStr;
+        bool isAnnotationStart = true, isAnnotationEnd = false;
+        int line  = -1;
+        QString k = "", v = "";
+        QDateTime ts;
+        QString author = "", authorDate = "", committer = "", committerDate = "", comment = "", commitID = "", file = "";
+        do {
+            p = output.indexOf("\n", offset);
+            if (p < 0) {
+                lineStr = output.mid(offset).trimmed();
+            } else {
+                lineStr = output.mid(offset, p-offset).trimmed();
+                offset = p + 1;
+            }
+            if (!isAnnotationStart && isAnnotationEnd) {
+                isAnnotationStart = true;
+                isAnnotationEnd = false;
+                continue;
+            }
+            int s = lineStr.indexOf(" ");
+            if (s < 0) continue; // boundary ?
+            if (isAnnotationStart) {
+                isAnnotationStart = false;
+                author = ""; authorDate = ""; committer = ""; committerDate = ""; comment = ""; commitID = ""; file = "";
+                QStringList lineStrParts = lineStr.split(" ");
+                if (lineStrParts.size() < 3 || lineStrParts.at(0).size() != 40) break; // something wrong
+                commitID = lineStrParts.at(0);
+                line = lineStrParts.at(2).toInt();
+                continue;
+            }
+            k = lineStr.mid(0, s);
+            v = lineStr.mid(s+1);
+            if (k == "author") {
+                author += v;
+            } else if (k == "author-mail") {
+                author += v;
+            } else if (k == "author-time") {
+                ts.setTime_t(v.toUInt());
+                authorDate += ts.toString("yyyy, MMMM d");
+            } else if (k == "author-tz") {
+                //authorDate += " "+v;
+            } else if (k == "committer") {
+                committer += v;
+            } else if (k == "committer-mail") {
+                committer += v;
+            } else if (k == "committer-time") {
+                ts.setTime_t(v.toUInt());
+                committerDate += ts.toString("yyyy, MMMM d");
+            } else if (k == "committer-tz") {
+                //committerDate += " "+v;
+            } else if (k == "summary") {
+                comment = v;
+            } else if (k == "filename") {
+                file = v;
+                isAnnotationEnd = true;
+            }
+            if (isAnnotationEnd) {
+                Git::Annotation annotation;
+                annotation.line = line;
+                annotation.author = author;
+                annotation.authorDate = authorDate;
+                annotation.committer = committer;
+                annotation.committerDate = committerDate;
+                annotation.comment = comment;
+                annotation.commitID = commitID;
+                annotation.file = file;
+                annotations.insert(line, annotation);
+                continue;
+            }
+        } while(p >= 0);
+    }
+    return annotations;
 }

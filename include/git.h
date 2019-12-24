@@ -8,9 +8,13 @@
 #define GIT_H
 
 #include <QObject>
+#include <QHash>
 #include "settings.h"
 
 extern const QString GIT_DIRECTORY;
+extern const QString GIT_STATUS_COMMAND;
+extern const QString GIT_ANNOTATION_COMMAND;
+extern const QString GIT_COMMIT_COMMAND;
 
 class Git : public QObject
 {
@@ -38,8 +42,21 @@ public:
     void addAndCommit(QString path, QString msg);
     void pushOriginMaster(QString path);
     void pullOriginMaster(QString path);
+    void showAnnotation(QString path, QString fileName, bool outputResult = true);
     QString highlightCommand(QString & text);
     QString highlightOutput(QString & output);
+
+    struct Annotation {
+        int line;
+        QString author;
+        QString authorDate;
+        QString committer;
+        QString committerDate;
+        QString comment;
+        QString commitID;
+        QString file;
+    };
+    QHash<int,Annotation> parseAnnotationOutput(QString & output);
 protected:
     QString cmdTpl;
     QString lineTpl;
