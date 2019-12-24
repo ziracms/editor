@@ -5,7 +5,7 @@
  *******************************************/
 
 #include "linenumber.h"
-#include "helper.h"
+
 LineNumber::LineNumber(Editor * codeEditor) : QWidget(codeEditor)
 {
     editor = codeEditor;

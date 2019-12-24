@@ -10,6 +10,7 @@
 #include "linemap.h"
 #include "breadcrumbs.h"
 #include "completepopup.h"
+#include "annotation.h"
 #include "search.h"
 #include <QScrollBar>
 #include <QPainter>
@@ -231,7 +232,8 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
 
     // update area slots
     connect(this->document(), SIGNAL(blockCountChanged(int)), this, SLOT(blockCountChanged(int)));
-    connect(this->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollbarValueChanged(int)));
+    connect(this->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(verticalScrollbarValueChanged(int)));
+    connect(this->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollbarValueChanged(int)));
     connect(this, SIGNAL(textChanged()), this, SLOT(textChanged()));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChanged()));
 
@@ -273,12 +275,15 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     QShortcut * shortcutDelete = new QShortcut(QKeySequence(shortcutDeleteStr), this);
     connect(shortcutDelete, SIGNAL(activated()), this, SLOT(deleteLine()));
 
+    // annotation
+    lineAnnotation = new Annotation(this, settings);
     // line number area
     lineNumber = new LineNumber(this);
     // line mark area
     lineMark = new LineMark(this);
     // line map area
     lineMap = new LineMap(this);
+
     // breadcrumbs
     breadcrumbs = new Breadcrumbs(this);
     breadcrumbs->setFont(editorBreadcrumbsFont);
@@ -437,6 +442,7 @@ void Editor::reset()
     forwardPositions.clear();
     lastCursorPositionBlockNumber = -1;
     isParseError = false;
+    gitAnnotationLastLineNumber = -1;
 }
 
 void Editor::highlightProgressChanged(int percent)
@@ -554,6 +560,8 @@ void Editor::setParseResult(ParseCSS::ParseResult result)
 void Editor::setGitAnnotations(QHash<int, Git::Annotation> annotations)
 {
     gitAnnotations = annotations;
+    gitAnnotationLastLineNumber = -1;
+    showLineAnnotation();
 }
 
 int Editor::lineNumberAreaWidth()
@@ -606,10 +614,77 @@ void Editor::updateViewportMargins()
     setViewportMargins(lineW + markW, breadcrumbsH, mapW, searchH);
 }
 
-void Editor::updateLineNumberArea()
+void Editor::updateLineWidgetsArea()
 {
       lineNumber->update();
       lineMark->update();
+}
+
+void Editor::updateLineAnnotationView()
+{
+    lineAnnotation->hide();
+    if (static_cast<Annotation *>(lineAnnotation)->getText().size() == 0) return;
+
+    int blockNumber = getFirstVisibleBlockIndex();
+    if (blockNumber < 0) return;
+    if (blockNumber>0) blockNumber--;
+
+    QTextBlock block = document()->findBlockByNumber(blockNumber);
+    //int top = viewport()->geometry().top();
+    int top = contentsMargins().top();
+
+    if (blockNumber == 0) {
+        top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
+    } else {
+        QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
+        int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
+        int prev_h = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).height());
+        top += prev_y + prev_h - verticalScrollBar()->sliderPosition();
+    }
+
+    int bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
+
+    while (block.isValid()) {
+        if (block.isVisible() && block.blockNumber() == textCursor().block().blockNumber()) {
+            int y = top;
+            if (breadcrumbs->isVisible()) y += breadcrumbs->geometry().height();
+            int x = static_cast<int>(document()->documentLayout()->blockBoundingRect(block).width());
+            x += lineNumber->geometry().width() + lineMark->geometry().width();
+            x += 50;
+            QFontMetrics fm(lineAnnotation->font());
+            int tw = fm.width(static_cast<Annotation *>(lineAnnotation)->getText());
+            int bw = geometry().width() - lineMap->geometry().width();
+            bw -= 10;
+            if (x + tw < bw) x += bw - x - tw;
+            if (horizontalScrollBar()->isVisible()) x -= horizontalScrollBar()->value();
+            lineAnnotation->move(x, y);
+            static_cast<Annotation *>(lineAnnotation)->setSize(tw, bottom - top);
+            lineAnnotation->show();
+            break;
+        }
+        block = block.next();
+        top = bottom;
+        bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
+        blockNumber++;
+    }
+}
+
+void Editor::showLineAnnotation()
+{
+    if (gitAnnotations.size() == 0) return;
+    QTextBlock block = textCursor().block();
+    int line = block.blockNumber() + 1;
+    if (gitAnnotationLastLineNumber == line) {
+        static_cast<Annotation *>(lineAnnotation)->setText("");
+        return;
+    }
+    if (gitAnnotations.contains(line)) {
+        Git::Annotation annotation = gitAnnotations.value(line);
+        QString annotationText = tr("Git") + ": " + annotation.comment + " / " + annotation.committer + " [" + annotation.committerDate + "]";
+        static_cast<Annotation *>(lineAnnotation)->setText(annotationText);
+        updateLineAnnotationView();
+        gitAnnotationLastLineNumber = line;
+    }
 }
 
 std::string Editor::getTabType()
@@ -1860,8 +1935,8 @@ void Editor::insertFromMimeData(const QMimeData *source)
 void Editor::blockCountChanged(int /*blockCount*/)
 {
     updateViewportMargins();
-    updateLineNumberArea();
-
+    updateLineWidgetsArea();
+    lineAnnotation->hide();
     // updating mark points
     markPoints.clear();
     QTextCursor curs = textCursor();
@@ -1876,10 +1951,16 @@ void Editor::blockCountChanged(int /*blockCount*/)
     emit statusBarText(tabIndex, ""); // update status bar
 }
 
-void Editor::scrollbarValueChanged(int /* sliderPos */)
+void Editor::horizontalScrollbarValueChanged(int /* sliderPos */)
+{
+    updateLineAnnotationView();
+}
+
+void Editor::verticalScrollbarValueChanged(int /* sliderPos */)
 {
     hidePopups();
-    updateLineNumberArea();
+    updateLineWidgetsArea();
+    updateLineAnnotationView();
     lineMap->update();
 
     if (is_ready && !scrollBarValueChangeLocked) {
@@ -1888,7 +1969,7 @@ void Editor::scrollbarValueChanged(int /* sliderPos */)
     }
 }
 
-void Editor::scrollbarValueChangedDelayed()
+void Editor::verticalScrollbarValueChangedDelayed()
 {
     highlight->updateBlocks(getLastVisibleBlockIndex());
     scrollBarValueChangeLocked = false;
@@ -3699,6 +3780,7 @@ void Editor::cursorPositionChanged()
         highlightCurrentLine(& extraSelections);
     }
     setExtraSelections(extraSelections);
+    lineAnnotation->hide();
     if (!cursorPositionChangeLocked) {
         cursorPositionChangeLocked = true;
         QTimer::singleShot(INTERVAL_CURSOR_POS_CHANGED_MILLISECONDS, this, SLOT(cursorPositionChangedDelayed()));
@@ -3811,6 +3893,7 @@ void Editor::cursorPositionChangedDelayed()
         }
         setBreadcrumbsText(scopeName.trimmed());
     }
+    showLineAnnotation();
     if (isReady()) emit statusBarText(tabIndex, ""); // update status bar
 }
 
@@ -5057,9 +5140,8 @@ void Editor::showLineNumber(int y)
         if (block.isVisible() && top < y && bottom > y) {
             int line = blockNumber + 1;
             if (gitAnnotations.contains(line)) {
-                tooltipText = "";
                 Git::Annotation annotation = gitAnnotations.value(line);
-                tooltipText += tr("Line") + " " + Helper::intToStr(annotation.line) + ": " + annotation.committer + " [" + annotation.committerDate + "] \"" + annotation.comment.replace("\n"," ") + "\"";
+                tooltipText = tr("Line") + " " + Helper::intToStr(annotation.line) + ": " + annotation.comment + "\n" + annotation.committer + " [" + annotation.committerDate + "]";
             }
             break;
         }

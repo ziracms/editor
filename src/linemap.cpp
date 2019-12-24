@@ -5,7 +5,6 @@
  *******************************************/
 
 #include "linemap.h"
-#include "helper.h"
 
 LineMap::LineMap(Editor * codeEditor) : QWidget(codeEditor)
 {

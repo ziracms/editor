@@ -111,7 +111,9 @@ protected:
     void updateWidgetsGeometry();
     void setTabsSettings();
     void updateViewportMargins();
-    void updateLineNumberArea();
+    void updateLineWidgetsArea();
+    void updateLineAnnotationView();
+    void showLineAnnotation();
     QString cleanUpText(QString blockText);
     void cleanForSave();
     void showTooltip(int x, int y, QString text, bool richText = true, int fixedWidth = 0);
@@ -160,8 +162,9 @@ protected slots:
     void resizeEvent(QResizeEvent *event) override;
 private slots:
     void blockCountChanged(int);
-    void scrollbarValueChanged(int);
-    void scrollbarValueChangedDelayed();
+    void horizontalScrollbarValueChanged(int);
+    void verticalScrollbarValueChanged(int);
+    void verticalScrollbarValueChangedDelayed();
     void textChanged();
     void textChangedDelayed();
     void cursorPositionChanged();
@@ -213,6 +216,7 @@ private:
     QWidget * search;
     Highlight * highlight;
     QWidget * breadcrumbs;
+    QWidget * lineAnnotation;
 
     QFont editorFont;
     QFont editorPopupFont;
@@ -328,6 +332,7 @@ private:
     QList<QTextEdit::ExtraSelection> wordsExtraSelections;
     QList<QTextEdit::ExtraSelection> errorsExtraSelections;
     bool experimentalMode;
+    int gitAnnotationLastLineNumber;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);
