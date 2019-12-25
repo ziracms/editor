@@ -11,8 +11,6 @@
 #include <QTimer>
 #include <QScrollBar>
 #include <QFontDatabase>
-#include <QPropertyAnimation>
-#include "helper.h"
 
 const int WIDGET_MIN_WIDTH = 200;
 const int WIDGET_MIN_HEIGHT = 100;
@@ -23,7 +21,7 @@ const int PARSE_RESULT_TYPE_CSS = 2;
 
 const int SEARCH_DELAY_MILLISECONDS = 500;
 
-const int ANIMATION_DURATION = 200;
+const int ANIMATION_DURATION = 100;
 const int ANIMATION_OFFSET = 150;
 
 QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
@@ -55,6 +53,20 @@ QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
     findEdit->installEventFilter(this);
     resultsList->installEventFilter(this);
 
+    animationInProgress = false;
+    QEasingCurve easingIn(QEasingCurve::OutCubic);
+    QEasingCurve easingOut(QEasingCurve::InCubic);
+
+    animationIn = new QPropertyAnimation(this, "geometry");
+    animationIn->setDuration(ANIMATION_DURATION);
+    animationIn->setEasingCurve(easingIn);
+    connect(animationIn, SIGNAL(finished()), this, SLOT(animationInFinished()));
+
+    animationOut = new QPropertyAnimation(this, "geometry");
+    animationOut->setDuration(ANIMATION_DURATION);
+    animationOut->setEasingCurve(easingOut);
+    connect(animationOut, SIGNAL(finished()), this, SLOT(animationOutFinished()));
+
     hide();
 
     lastSearch = "";
@@ -83,74 +95,55 @@ QSize QuickAccess::sizeHint() const {
 
 void QuickAccess::animateIn()
 {
+    if (animationInProgress) return;
+    animationInProgress = true;
+    if (!isVisible()) setVisible(true);
+    raise();
     QRect rect = geometry();
-
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
-    animation->setDuration(ANIMATION_DURATION);
-    animation->setStartValue(QRect(rect.x()+ANIMATION_OFFSET, rect.y(), rect.width(), rect.height()));
-    animation->setEndValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
-
-    QEasingCurve easing(QEasingCurve::OutCubic);
-    animation->setEasingCurve(easing);
-
-    animation->start();
+    animationIn->setStartValue(QRect(rect.x()+ANIMATION_OFFSET, rect.y(), rect.width(), rect.height()));
+    animationIn->setEndValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
+    animationIn->start();
 }
 
 void QuickAccess::animateOut()
 {
+    if (!isVisible()) return;
+    if (animationInProgress) return;
+    animationInProgress = true;
     QRect rect = geometry();
-
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
-    animation->setDuration(ANIMATION_DURATION);
-    animation->setStartValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
-    animation->setEndValue(QRect(rect.x()+ANIMATION_OFFSET, rect.y(), rect.width(), rect.height()));
-
-    QEasingCurve easing(QEasingCurve::InCubic);
-    animation->setEasingCurve(easing);
-
-    animation->start();
+    animationOut->setStartValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
+    animationOut->setEndValue(QRect(rect.x()+ANIMATION_OFFSET, rect.y(), rect.width(), rect.height()));
+    animationOut->start();
 }
 
-void QuickAccess::hide()
+void QuickAccess::animationInFinished()
 {
-    setVisible(false);
     animationInProgress = false;
+    findEdit->setFocus();
 }
 
-void QuickAccess::displayed()
+void QuickAccess::animationOutFinished()
 {
     animationInProgress = false;
+    hide();
 }
 
 void QuickAccess::slideOut()
 {
-    if (animationInProgress) return;
-    animationInProgress = true;
     animateOut();
-    QTimer::singleShot(ANIMATION_DURATION, this, SLOT(hide()));
 }
 
 void QuickAccess::slideIn(int x, int y, int width, int height)
 {
-    if (animationInProgress) return;
-
     if (width < WIDGET_MIN_WIDTH) width = WIDGET_MIN_WIDTH;
     if (height < WIDGET_MIN_HEIGHT) height = WIDGET_MIN_HEIGHT;
 
     setGeometry(x, y, width, height);
-    setVisible(true);
-
-    findEdit->setFocus();
-
     int hOffset = findEdit->height() + 3 * vLayout->spacing();
     resultsList->setMinimumHeight(height - hOffset);
     resultsList->setMaximumHeight(height - hOffset);
 
-    raise();
-
-    animationInProgress = true;
     animateIn();
-    QTimer::singleShot(ANIMATION_DURATION, this, SLOT(displayed()));
 }
 
 void QuickAccess::setParseResult(ParsePHP::ParseResult result, QString file)

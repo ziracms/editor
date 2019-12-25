@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPropertyAnimation>
 #include "settings.h"
 
 class Popup : public QWidget
@@ -21,6 +22,8 @@ protected:
     QLabel * imgLabel;
     QLabel * textLabel;
 private:
+    QPropertyAnimation *animationIn;
+    QPropertyAnimation *animationOut;
     bool animationInProgress;
 signals:
 
@@ -28,6 +31,8 @@ public slots:
     void hide();
     void animateIn();
     void animateOut();
+    void animationInFinished();
+    void animationOutFinished();
 };
 
 #endif // POPUP_H

@@ -11,6 +11,7 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QVBoxLayout>
+#include <QPropertyAnimation>
 #include "settings.h"
 #include "parsephp.h"
 #include "parsejs.h"
@@ -43,6 +44,8 @@ private:
     QString parseResultFile;
     int parseResultType;
     bool findLocked;
+    QPropertyAnimation *animationIn;
+    QPropertyAnimation *animationOut;
     bool animationInProgress;
 signals:
     void quickAccessRequested(QString file, int line);
@@ -53,8 +56,8 @@ public slots:
     void findTextChanged(QString text);
     void quickFound(QString text, QString info, QString file, int line);
     void findTextDelayed();
-    void hide();
-    void displayed();
+    void animationInFinished();
+    void animationOutFinished();
 };
 
 #endif // QUICKACCESS_H

@@ -2,6 +2,8 @@
 #define ANNOTATION_H
 
 #include <QWidget>
+#include <QPropertyAnimation>
+#include <QGraphicsOpacityEffect>
 #include "editor.h"
 
 class Annotation : public QWidget
@@ -13,14 +15,22 @@ public:
     void setText(QString text);
     QString getText();
     void setSize(int w, int h);
+    void fadeIn();
+    void fadeOut();
 protected:
-    void mouseMoveEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 private:
     Editor * editor;
     QLabel * label;
+    QPropertyAnimation *animationIn;
+    QPropertyAnimation *animationOut;
+    QGraphicsOpacityEffect *opacityEffect;
+    bool animationInProgress;
 signals:
 
 public slots:
+    void animationInFinished();
+    void animationOutFinished();
 };
 
 #endif // ANNOTATION_H

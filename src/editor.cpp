@@ -275,6 +275,7 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     QShortcut * shortcutDelete = new QShortcut(QKeySequence(shortcutDeleteStr), this);
     connect(shortcutDelete, SIGNAL(activated()), this, SLOT(deleteLine()));
 
+    // order matters
     // annotation
     lineAnnotation = new Annotation(this, settings);
     // line number area
@@ -622,7 +623,6 @@ void Editor::updateLineWidgetsArea()
 
 void Editor::updateLineAnnotationView()
 {
-    lineAnnotation->hide();
     if (static_cast<Annotation *>(lineAnnotation)->getText().size() == 0) return;
 
     int blockNumber = getFirstVisibleBlockIndex();
@@ -659,14 +659,15 @@ void Editor::updateLineAnnotationView()
             if (horizontalScrollBar()->isVisible()) x -= horizontalScrollBar()->value();
             lineAnnotation->move(x, y);
             static_cast<Annotation *>(lineAnnotation)->setSize(tw, bottom - top);
-            lineAnnotation->show();
-            break;
+            if (!lineAnnotation->isVisible()) static_cast<Annotation *>(lineAnnotation)->fadeIn();
+            return;
         }
         block = block.next();
         top = bottom;
         bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
         blockNumber++;
     }
+    lineAnnotation->hide();
 }
 
 void Editor::showLineAnnotation()

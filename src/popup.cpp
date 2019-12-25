@@ -1,6 +1,5 @@
 #include "popup.h"
 #include <QTimer>
-#include <QPropertyAnimation>
 #include <QFontDatabase>
 #include <QPainter>
 #include <QPaintEvent>
@@ -14,7 +13,7 @@ const int BORDER = 1;
 
 const int ANIMATION_DURATION = 200;
 const int ANIMATION_OFFSET = 150;
-const int HIDE_DELAY = 4000;
+const int HIDE_DELAY = 3000;
 
 Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
 {
@@ -53,6 +52,20 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
 
     hLayout->addStretch();
     setStyleSheet("background:"+QString::fromStdString(borderColorStr)+";border:"+QString::number(BORDER)+"px solid "+QString::fromStdString(borderColorStr)+";");
+
+    animationInProgress = false;
+    QEasingCurve easing(QEasingCurve::OutCubic);
+
+    animationIn = new QPropertyAnimation(this, "geometry");
+    animationIn->setDuration(ANIMATION_DURATION);
+    animationIn->setEasingCurve(easing);
+    connect(animationIn, SIGNAL(finished()), this, SLOT(animationInFinished()));
+
+    animationOut = new QPropertyAnimation(this, "geometry");
+    animationOut->setDuration(ANIMATION_DURATION);
+    animationOut->setEasingCurve(easing);
+    connect(animationOut, SIGNAL(finished()), this, SLOT(animationOutFinished()));
+
     hide();
 }
 
@@ -73,32 +86,37 @@ void Popup::hide()
 
 void Popup::animateIn()
 {
+    if (animationInProgress) return;
+    animationInProgress = true;
+    if (!isVisible()) setVisible(true);
+    raise();
     QRect rect = geometry();
-
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
-    animation->setDuration(ANIMATION_DURATION);
-    animation->setStartValue(QRect(rect.x(), rect.y()-ANIMATION_OFFSET, rect.width(), rect.height()));
-    animation->setEndValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
-
-    QEasingCurve easing(QEasingCurve::OutCubic);
-    animation->setEasingCurve(easing);
-
-    animation->start();
+    animationIn->setStartValue(QRect(rect.x(), rect.y()-ANIMATION_OFFSET, rect.width(), rect.height()));
+    animationIn->setEndValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
+    animationIn->start();
 }
 
 void Popup::animateOut()
 {
+    if (!isVisible()) return;
+    if (animationInProgress) return;
+    animationInProgress = true;
     QRect rect = geometry();
+    animationOut->setStartValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
+    animationOut->setEndValue(QRect(rect.x(), rect.y()-ANIMATION_OFFSET, rect.width(), rect.height()));
+    animationOut->start();
+}
 
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
-    animation->setDuration(ANIMATION_DURATION);
-    animation->setStartValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
-    animation->setEndValue(QRect(rect.x(), rect.y()-ANIMATION_OFFSET, rect.width(), rect.height()));
+void Popup::animationInFinished()
+{
+    animationInProgress = false;
+    QTimer::singleShot(HIDE_DELAY, this, SLOT(animateOut()));
+}
 
-    QEasingCurve easing(QEasingCurve::InCubic);
-    animation->setEasingCurve(easing);
-
-    animation->start();
+void Popup::animationOutFinished()
+{
+    animationInProgress = false;
+    hide();
 }
 
 void Popup::display(int x, int y, QString text)
@@ -121,15 +139,7 @@ void Popup::display(int x, int y, QString text)
         setFixedHeight(fm.height()+2*PADDING+2*BORDER);
     }
 
-    setVisible(true);
-    raise();
-
-    if (!animationInProgress) {
-        animationInProgress = true;
-        animateIn();
-        QTimer::singleShot(HIDE_DELAY-2*ANIMATION_DURATION, this, SLOT(animateOut()));
-        QTimer::singleShot(HIDE_DELAY, this, SLOT(hide()));
-    }
+    animateIn();
 }
 
 void Popup::displayText(int x, int y, QString text)
