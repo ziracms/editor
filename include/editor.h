@@ -95,6 +95,7 @@ public:
     void setParseError(bool error);
     bool getParseError();
     void highlightError(int pos, int length);
+    void highlightErrorLine(int line);
 protected:
     void focusInEvent(QFocusEvent *e) override;
     void focusOutEvent(QFocusEvent *e) override;
@@ -333,6 +334,8 @@ private:
     QList<QTextEdit::ExtraSelection> errorsExtraSelections;
     bool experimentalMode;
     int gitAnnotationLastLineNumber;
+    bool annotationsEnabled;
+    int parseResultChangedDelay;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

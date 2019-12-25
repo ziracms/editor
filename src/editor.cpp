@@ -42,7 +42,6 @@ const std::string LF = "lf";
 const int INTERVAL_SCROLL_HIGHLIGHT_MILLISECONDS = 500;
 const int INTERVAL_TEXT_CHANGED_MILLISECONDS = 200;
 const int INTERVAL_CURSOR_POS_CHANGED_MILLISECONDS = 200;
-const int INTERVAL_PARSE_RESULT_CHANGED_MILLISECONDS = 5000;
 
 const int TOOLTIP_OFFSET = 20;
 const int TOOLTIP_SCREEN_MARGIN = 10;
@@ -366,6 +365,14 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     std::string cleanBeforeSaveStr = settings->get("editor_clean_before_save");
     if (cleanBeforeSaveStr == "yes") cleanBeforeSave = true;
 
+    annotationsEnabled = false;
+    std::string annotationsEnabledStr = settings->get("editor_show_annotations");
+    if (annotationsEnabledStr == "yes") annotationsEnabled = true;
+
+    int parseResultChangedDelayMS = std::stoi(settings->get("editor_parse_interval"));
+    if (parseResultChangedDelayMS >= 1000) parseResultChangedDelay = parseResultChangedDelayMS;
+    else parseResultChangedDelay = 5000;
+
     // cursor is not set to default sometimes
     horizontalScrollBar()->setCursor(Qt::ArrowCursor);
     verticalScrollBar()->setCursor(Qt::ArrowCursor);
@@ -444,6 +451,7 @@ void Editor::reset()
     lastCursorPositionBlockNumber = -1;
     isParseError = false;
     gitAnnotationLastLineNumber = -1;
+    gitAnnotations.clear();
 }
 
 void Editor::highlightProgressChanged(int percent)
@@ -623,6 +631,7 @@ void Editor::updateLineWidgetsArea()
 
 void Editor::updateLineAnnotationView()
 {
+    if (!annotationsEnabled) return;
     if (static_cast<Annotation *>(lineAnnotation)->getText().size() == 0) return;
 
     int blockNumber = getFirstVisibleBlockIndex();
@@ -650,11 +659,12 @@ void Editor::updateLineAnnotationView()
             if (breadcrumbs->isVisible()) y += breadcrumbs->geometry().height();
             int x = static_cast<int>(document()->documentLayout()->blockBoundingRect(block).width());
             x += lineNumber->geometry().width() + lineMark->geometry().width();
-            x += 50;
+            x += ANNOTATION_LEFT_MARGIN;
             QFontMetrics fm(lineAnnotation->font());
             int tw = fm.width(static_cast<Annotation *>(lineAnnotation)->getText());
+            tw += bottom - top; // icon
             int bw = geometry().width() - lineMap->geometry().width();
-            bw -= 10;
+            bw -= ANNOTATION_RIGHT_MARGIN;
             if (x + tw < bw) x += bw - x - tw;
             if (horizontalScrollBar()->isVisible()) x -= horizontalScrollBar()->value();
             lineAnnotation->move(x, y);
@@ -672,16 +682,22 @@ void Editor::updateLineAnnotationView()
 
 void Editor::showLineAnnotation()
 {
-    if (gitAnnotations.size() == 0) return;
+    if (!annotationsEnabled || gitAnnotations.size() == 0) return;
     QTextBlock block = textCursor().block();
     int line = block.blockNumber() + 1;
     if (gitAnnotationLastLineNumber == line) {
         static_cast<Annotation *>(lineAnnotation)->setText("");
         return;
     }
-    if (gitAnnotations.contains(line)) {
+    QString annotationText = "";
+    int error = static_cast<LineMark *>(lineMark)->getError(line, annotationText);
+    if (error > 0 && annotationText.size() > 0) {
+        annotationText = annotationText.replace("\t", QString(" ").repeated(tabWidth));
+    } else if (gitAnnotations.contains(line)) {
         Git::Annotation annotation = gitAnnotations.value(line);
-        QString annotationText = tr("Git") + ": " + annotation.comment + " / " + annotation.committer + " [" + annotation.committerDate + "]";
+        annotationText = tr("git") + ": " + annotation.comment + " / " + annotation.committer + " [" + annotation.committerDate + "]";
+    }
+    if (annotationText.size() > 0) {
         static_cast<Annotation *>(lineAnnotation)->setText(annotationText);
         updateLineAnnotationView();
         gitAnnotationLastLineNumber = line;
@@ -1062,8 +1078,33 @@ void Editor::highlightError(int pos, int length)
     if (pos < 0) return;
     // show wave underline
     QTextCursor cursor = textCursor();
+    cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
+    if (pos > cursor.position()) return;
     cursor.setPosition(pos);
     cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, length);
+    QTextEdit::ExtraSelection errorSelection;
+    errorSelection.format.setUnderlineColor(lineErrorColor);
+    errorSelection.format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
+    errorSelection.cursor = cursor;
+    errorsExtraSelections.append(errorSelection);
+    highlightExtras();
+}
+
+void Editor::highlightErrorLine(int line)
+{
+    if (line < 1) return;
+    // show wave underline
+    QTextCursor cursor = textCursor();
+    cursor.movePosition(QTextCursor::Start);
+    if (line > 1) cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
+    QString blockText = cursor.block().text();
+    do {
+        int pos = cursor.positionInBlock();
+        if (pos >= blockText.size()) break;
+        QChar c = blockText[pos];
+        if (!c.isSpace()) break;
+    } while(cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor));
+    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
     QTextEdit::ExtraSelection errorSelection;
     errorSelection.format.setUnderlineColor(lineErrorColor);
     errorSelection.format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
@@ -2048,7 +2089,7 @@ void Editor::textChanged()
     // parse
     if (!parseLocked && isReady()) {
         parseLocked = true;
-        QTimer::singleShot(INTERVAL_PARSE_RESULT_CHANGED_MILLISECONDS, this, SLOT(parseResultChanged()));
+        QTimer::singleShot(parseResultChangedDelay, this, SLOT(parseResultChanged()));
     }
 }
 
@@ -5089,12 +5130,13 @@ void Editor::gotoLine(int line, bool focus) {
     cursor.movePosition(QTextCursor::Start);
     if (line > 1) cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
     QString blockText = cursor.block().text();
-    do {
-        int pos = cursor.positionInBlock();
-        if (pos >= blockText.size()) break;
-        QChar c = blockText[pos];
-        if (!c.isSpace()) break;
-    } while(cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor));
+//    do {
+//        int pos = cursor.positionInBlock();
+//        if (pos >= blockText.size()) break;
+//        QChar c = blockText[pos];
+//        if (!c.isSpace()) break;
+//    } while(cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor));
+    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
     setTextCursor(cursor);
     if (focus) setFocus();
     scrollToMiddle(cursor, line);

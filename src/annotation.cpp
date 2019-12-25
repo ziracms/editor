@@ -1,6 +1,9 @@
 #include "annotation.h"
 #include <QScrollBar>
 
+const int ANNOTATION_LEFT_MARGIN = 20;
+const int ANNOTATION_RIGHT_MARGIN = 10;
+
 const int ANIMATION_DURATION = 200;
 
 Annotation::Annotation(Editor * editor, Settings * settings) :
@@ -10,18 +13,36 @@ Annotation::Annotation(Editor * editor, Settings * settings) :
     setCursor(Qt::IBeamCursor);
     setMouseTracking(true);
 
-    label = new QLabel(this);
-    label->setTextFormat(Qt::PlainText);
-    label->setWordWrap(false);
-    label->setAlignment(Qt::AlignRight);
-    label->setMinimumWidth(0);
-    label->setFont(editor->font());
-    label->setContentsMargins(0, 0, 0, 0);
-    label->setMargin(0);
-    label->setMouseTracking(true);
+    hLayout = new QHBoxLayout(this);
+    hLayout->setContentsMargins(0, 0, 0, 0);
+    hLayout->setMargin(0);
+    hLayout->setSpacing(0);
 
-    QString colorStr = QString::fromStdString(settings->get("highlight_single_line_comment_color"));
-    label->setStyleSheet("background:none;color:"+colorStr+";");
+    imgLabel = new QLabel();
+    QPixmap pm(":/icons/annotation.png");
+    imgLabel->setPixmap(pm);
+    imgLabel->setScaledContents(true);
+    imgLabel->setCursor(Qt::ArrowCursor);
+    imgLabel->setObjectName("annotationIcon");
+
+    hLayout->addWidget(imgLabel);
+
+    txtLabel = new QLabel();
+    txtLabel->setTextFormat(Qt::PlainText);
+    txtLabel->setWordWrap(false);
+    txtLabel->setAlignment(Qt::AlignRight);
+    txtLabel->setMinimumWidth(0);
+    txtLabel->setFont(editor->font());
+    txtLabel->setContentsMargins(0, 0, 0, 0);
+    txtLabel->setMargin(0);
+    txtLabel->setMouseTracking(true);
+
+    hLayout->addWidget(txtLabel);
+
+    imgLabel->setStyleSheet("#annotationIcon{background:none;}");
+
+    QString colorStr = QString::fromStdString(settings->get("annotation_color"));
+    txtLabel->setStyleSheet("background:none;color:"+colorStr+";");
 
     animationInProgress = false;
     QEasingCurve easing(QEasingCurve::InCubic);
@@ -84,16 +105,19 @@ void Annotation::wheelEvent(QWheelEvent */*event*/)
 
 void Annotation::setText(QString text)
 {
-    label->setText(text);
+    txtLabel->setText(text);
+    imgLabel->setToolTip(text);
 }
 
 QString Annotation::getText()
 {
-    return label->text();
+    return txtLabel->text();
 }
 
 void Annotation::setSize(int w, int h)
 {
-    label->setFixedSize(w, h);
+    if (w < h) w = h;
+    imgLabel->setFixedSize(h, h);
+    txtLabel->setFixedSize(w - h, h);
     setFixedSize(w, h);
 }

@@ -59,6 +59,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     if (settings->get("editor_clean_before_save") == CHECKED_YES) ui->filesCleanForSaveCheckbox->setChecked(true);
     if (settings->get("editor_breadcrumbs_enabled") == CHECKED_YES) ui->breadcrumbsCheckbox->setChecked(true);
     if (settings->get("highlight_spaces") == CHECKED_YES) ui->highlightSpacesCheckbox->setChecked(true);
+    if (settings->get("editor_show_annotations") == CHECKED_YES) ui->editorAnnotationsCheckBox->setChecked(true);
     ui->phpTypesEdit->setPlainText(QString::fromStdString(settings->get("highlight_php_extensions")).replace(" ", "").replace(",","\n"));
     ui->jsTypesEdit->setPlainText(QString::fromStdString(settings->get("highlight_js_extensions")).replace(" ", "").replace(",","\n"));
     ui->cssTypesEdit->setPlainText(QString::fromStdString(settings->get("highlight_css_extensions")).replace(" ", "").replace(",","\n"));
@@ -68,6 +69,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->phpcsStandardLineEdit->setText(QString::fromStdString(settings->get("parser_phpcs_standard")));
     ui->phpcsErrorSpinBox->setValue(std::stoi(settings->get("parser_phpcs_error_severity")));
     ui->phpcsWarningSpinBox->setValue(std::stoi(settings->get("parser_phpcs_warning_severity")));
+    ui->editorParseIntervalSpinBox->setValue(std::stoi(settings->get("editor_parse_interval")) / 1000);
     if (settings->get("parser_enable_git") == CHECKED_YES) ui->gitCheckbox->setChecked(true);
     if (settings->get("parser_enable_servers") == CHECKED_YES) ui->serversCheckbox->setChecked(true);
     ui->phpPathLineEdit->setText(QString::fromStdString(settings->get("parser_php_path")));
@@ -79,6 +81,12 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
 
     QString customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
     ui->customThemesFolderLineEdit->setText(customThemesPath);
+
+    if (customThemesPath.size() == 0) {
+        QDir customThemesPathDir = QDir("./"+CUSTOM_THEMES_FALLBACK_FOLDER);
+        customThemesPath = customThemesPathDir.absolutePath();
+        if (!Helper::folderExists(customThemesPath)) customThemesPath = "";
+    }
 
     QStringList customThemesList;
     if (customThemesPath.size() > 0 && Helper::folderExists(customThemesPath)) {
@@ -182,6 +190,9 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
 
     if (ui->highlightSpacesCheckbox->isChecked()) dataMap["highlight_spaces"] = CHECKED_YES;
     else dataMap["highlight_spaces"] = CHECKED_NO;
+
+    if (ui->editorAnnotationsCheckBox->isChecked()) dataMap["editor_show_annotations"] = CHECKED_YES;
+    else dataMap["editor_show_annotations"] = CHECKED_NO;
 
     QString projectTypes = "";
     QString phpTypes = "";
@@ -295,6 +306,10 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
         dataMap["parser_phpcs_warning_severity"] = Helper::intToStr(ui->phpcsWarningSpinBox->value()).toStdString();
     }
 
+    if (ui->editorParseIntervalSpinBox->value() >= 1 && ui->editorParseIntervalSpinBox->value() <= 9) {
+        dataMap["editor_parse_interval"] = Helper::intToStr(ui->editorParseIntervalSpinBox->value() * 1000).toStdString();
+    }
+
     if (ui->gitCheckbox->isChecked()) dataMap["parser_enable_git"] = CHECKED_YES;
     else dataMap["parser_enable_git"] = CHECKED_NO;
 
@@ -325,6 +340,12 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     if (Helper::folderExists(customThemesPathStr) || customThemesPathStr.size() == 0) {
         dataMap["custom_themes_path"] = customThemesPathStr.toStdString();
         customThemesPath = customThemesPathStr;
+    }
+
+    if (customThemesPath.size() == 0) {
+        QDir customThemesPathDir = QDir("./"+CUSTOM_THEMES_FALLBACK_FOLDER);
+        customThemesPath = customThemesPathDir.absolutePath();
+        if (!Helper::folderExists(customThemesPath)) customThemesPath = "";
     }
 
     QString themeStr = ui->generalThemeCombobox->currentText();

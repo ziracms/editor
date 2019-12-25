@@ -21,6 +21,9 @@ const QString CUSTOM_THEME_CSS_FILE = "theme.css";
 const QString CUSTOM_THEME_SCHEME_FILE = "scheme.css";
 const QString CUSTOM_THEME_COLORS_FILE = "colors";
 
+const QString CUSTOM_THEMES_FALLBACK_FOLDER = "themes";
+const QString PHP_MANUAL_FALLBACK_FOLDER = "php-chunked-xhtml";
+
 Settings::Settings(QObject * parent) : QObject(parent)
 {
     data = {
@@ -41,6 +44,8 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"editor_fallback_encoding", "CP-1251"},
         {"editor_clean_before_save", "no"},
         {"editor_breadcrumbs_enabled", "yes"},
+        {"editor_show_annotations", "yes"},
+        {"editor_parse_interval", "5000"},
         {"highlight_spaces", "no"},
         {"highlight_tabs", "no"},
         {"highlight_php_extensions", "php, phtml, tpl, html"},
@@ -152,6 +157,7 @@ void Settings::applyLightColors()
     data["popup_bg_color"] = "#7aedc8";
     data["popup_color"] = "#092c21";
     data["popup_border_color"] = "#0aac79";
+    data["annotation_color"] = "#8f8576";
 }
 
 void Settings::applyDarkColors()
@@ -221,6 +227,7 @@ void Settings::applyDarkColors()
     data["popup_bg_color"] = "#2d6099";
     data["popup_color"] = "#f1f1f1";
     data["popup_border_color"] = "#2a4d74";
+    data["annotation_color"] = "#5e839b";
 }
 
 void Settings::applyCustomColors(QString path)

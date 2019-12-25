@@ -59,8 +59,13 @@ MainWindow::MainWindow(QWidget *parent) :
     theme = QString::fromStdString(settings->get("theme"));
     colorSheme = QString::fromStdString(settings->get("color_scheme"));
     customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
+    if (customThemesPath.size() == 0) {
+        QDir customThemesPathDir = QDir("./"+CUSTOM_THEMES_FALLBACK_FOLDER);
+        customThemesPath = customThemesPathDir.absolutePath();
+        if (!Helper::folderExists(customThemesPath)) customThemesPath = "";
+    }
     if (colorSheme == COLOR_SCHEME_DARK) settings->applyDarkColors();
-    else if (colorSheme == COLOR_SCHEME_LIGHT) settings->applyLightColors();
+    else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyLightColors();
     else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyCustomColors(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_COLORS_FILE);
 
     ui->setupUi(this);
@@ -1416,6 +1421,8 @@ void MainWindow::parseLintFinished(int tabIndex, QStringList errorTexts, QString
             addMessagesTabText(outputMsgErrorTpl.arg(lineStr).arg(errorStr));
         }
         textEditor->setParseError(true);
+        textEditor->gotoLine(errorLines.at(0).toInt());
+        textEditor->highlightErrorLine(errorLines.at(0).toInt());
     } else {
         textEditor->setParseError(false);
     }
@@ -1643,6 +1650,11 @@ void MainWindow::editorShowHelp(QString name)
     if (name.size() > 0 && name.at(0) == "\\") name = name.mid(1);
     if (name.size() == 0) return;
     QString php_manual_path = QString::fromStdString(settings->get("php_manual_path"));
+    if (php_manual_path.size() == 0) {
+        QDir phpManDir = QDir("./"+PHP_MANUAL_FALLBACK_FOLDER);
+        php_manual_path = phpManDir.absolutePath();
+        if (!Helper::folderExists(php_manual_path)) php_manual_path = "";
+    }
     if (php_manual_path.size() == 0 || !Helper::folderExists(php_manual_path)) return;
     QString file = helpWords->findHelpFile(name);
     if (file.size() > 0 && Helper::fileExists(php_manual_path + "/" + file)) {
@@ -1867,7 +1879,7 @@ void MainWindow::applyThemeColors()
         QTextStream in(&f);
         style += in.readAll() + "\n";
         f.close();
-    } else if (colorSheme == COLOR_SCHEME_LIGHT) {
+    } else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_SCHEME_FILE)) {
         QFile f(":/styles/light/scheme");
         f.open(QIODevice::ReadOnly);
         QTextStream in(&f);

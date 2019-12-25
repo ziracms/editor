@@ -33,5 +33,7 @@
         <file alias="minus.png">resources/images/icons/minus.png</file>
         <file alias="up.png">resources/images/icons/up.png</file>
         <file alias="down.png">resources/images/icons/down.png</file>
+        <file alias="annotation.png">resources/images/icons/annotation.png</file>
+        <file alias="reset.png">resources/images/icons/reset.png</file>
     </qresource>
 </RCC>

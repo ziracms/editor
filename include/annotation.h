@@ -2,9 +2,13 @@
 #define ANNOTATION_H
 
 #include <QWidget>
+#include <QHBoxLayout>
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include "editor.h"
+
+extern const int ANNOTATION_LEFT_MARGIN;
+extern const int ANNOTATION_RIGHT_MARGIN;
 
 class Annotation : public QWidget
 {
@@ -21,7 +25,9 @@ protected:
     void wheelEvent(QWheelEvent *event) override;
 private:
     Editor * editor;
-    QLabel * label;
+    QHBoxLayout * hLayout;
+    QLabel * imgLabel;
+    QLabel * txtLabel;
     QPropertyAnimation *animationIn;
     QPropertyAnimation *animationOut;
     QGraphicsOpacityEffect *opacityEffect;

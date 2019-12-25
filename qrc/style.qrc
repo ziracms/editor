@@ -8,6 +8,7 @@
         <file alias="ok.png">resources/styles/dark/images/ok.png</file>
         <file alias="up.png">resources/styles/dark/images/up.png</file>
         <file alias="down.png">resources/styles/dark/images/down.png</file>
+        <file alias="reset.png">resources/styles/dark/images/reset.png</file>
     </qresource>
     <qresource prefix="/styles/light">
         <file alias="style">resources/styles/light/style</file>
@@ -18,5 +19,6 @@
         <file alias="ok.png">resources/styles/light/images/ok.png</file>
         <file alias="down.png">resources/styles/light/images/down.png</file>
         <file alias="up.png">resources/styles/light/images/up.png</file>
+        <file alias="reset.png">resources/styles/light/images/reset.png</file>
     </qresource>
 </RCC>

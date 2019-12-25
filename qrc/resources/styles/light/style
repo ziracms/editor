@@ -622,5 +622,6 @@ QDialogButtonBox
     icon-size: 64px 64px;
     dialog-ok-icon: url(:/styles/light/ok.png);
     dialog-cancel-icon: url(:/styles/light/cancel.png);
+    dialog-reset-icon: url(:/styles/light/reset.png);
 }
 

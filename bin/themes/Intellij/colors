@@ -63,3 +63,4 @@ git_output_info_color = #2caaf3
 popup_bg_color = #992d4e
 popup_color = #f1f1f1
 popup_border_color = #5b5b5b
+annotation_color = #5e839b
