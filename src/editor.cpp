@@ -554,16 +554,19 @@ void Editor::paintEvent(QPaintEvent *e)
 void Editor::setParseResult(ParsePHP::ParseResult result)
 {
     parseResultPHP = result;
+    parseLocked = false;
 }
 
 void Editor::setParseResult(ParseJS::ParseResult result)
 {
     parseResultJS = result;
+    parseLocked = false;
 }
 
 void Editor::setParseResult(ParseCSS::ParseResult result)
 {
     parseResultCSS = result;
+    parseLocked = false;
 }
 
 void Editor::setGitAnnotations(QHash<int, Git::Annotation> annotations)
@@ -3527,7 +3530,6 @@ void Editor::completePopupSelected(QString text, QString data)
 
 void Editor::parseResultChanged()
 {
-    parseLocked = false;
     std::string modeType = highlight->getModeType();
     if (modeType == MODE_MIXED) {
         parseResultPHPChanged();
