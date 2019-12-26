@@ -521,6 +521,17 @@ QTabBar QToolButton:hover
     background-color: #abc5ec;
 }
 
+QTabBar::close-button
+{
+    image: url(:/styles/light/close.png);
+    subcontrol-position: right;
+}
+
+QTabBar::close-button:hover
+{
+    image: url(:/styles/light/close-hover.png);
+}
+
 QTabWidget::pane 
 {
     border: 1px solid #c7c7c7;
