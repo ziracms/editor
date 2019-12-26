@@ -65,8 +65,8 @@ MainWindow::MainWindow(QWidget *parent) :
         if (!Helper::folderExists(customThemesPath)) customThemesPath = "";
     }
     if (colorSheme == COLOR_SCHEME_DARK) settings->applyDarkColors();
-    else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyLightColors();
-    else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyCustomColors(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_COLORS_FILE);
+    else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyLightColors();
+    else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyCustomColors(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE);
 
     ui->setupUi(this);
     setAcceptDrops(true);
@@ -1896,14 +1896,14 @@ void MainWindow::applyThemeColors()
         QTextStream in(&f);
         style += in.readAll() + "\n";
         f.close();
-    } else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_SCHEME_FILE)) {
+    } else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_SCHEME_FILE)) {
         QFile f(":/styles/light/scheme");
         f.open(QIODevice::ReadOnly);
         QTextStream in(&f);
         style += in.readAll() + "\n";
         f.close();
-    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_SCHEME_FILE)) {
-        QFile f(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_SCHEME_FILE);
+    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_SCHEME_FILE)) {
+        QFile f(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_SCHEME_FILE);
         f.open(QIODevice::ReadOnly);
         QTextStream in(&f);
         style += in.readAll() + "\n";

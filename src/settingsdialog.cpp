@@ -361,7 +361,7 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     if (colorSchemeStr.size() > 0) colorSchemeStrL = colorSchemeStr.at(0).toLower() + colorSchemeStr.mid(1);
     if (colorSchemeStrL == COLOR_SCHEME_LIGHT || colorSchemeStrL == COLOR_SCHEME_DARK) {
         dataMap["color_scheme"] = colorSchemeStrL.toStdString();
-    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + themeStr + "/" + CUSTOM_THEME_SCHEME_FILE) && Helper::fileExists(customThemesPath + "/" + themeStr + "/" + CUSTOM_THEME_COLORS_FILE)) {
+    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + colorSchemeStr + "/" + CUSTOM_THEME_SCHEME_FILE) && Helper::fileExists(customThemesPath + "/" + colorSchemeStr + "/" + CUSTOM_THEME_COLORS_FILE)) {
         dataMap["color_scheme"] = colorSchemeStr.toStdString();
     }
 
