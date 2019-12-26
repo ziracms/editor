@@ -107,6 +107,9 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     // colors
     std::string lineNumberBgColorStr = settings->get("editor_line_number_bg_color");
     std::string lineNumberColorStr = settings->get("editor_line_number_color");
+    std::string lineNumberModifiedBgColorStr = settings->get("editor_line_number_modified_bg_color");
+    std::string lineNumberModifiedColorStr = settings->get("editor_line_number_modified_color");
+    std::string lineNumberDeletedBorderColorStr = settings->get("editor_line_number_deleted_border_color");
     std::string lineMarkBgColorStr = settings->get("editor_line_mark_bg_color");
     std::string lineMapBgColorStr = settings->get("editor_line_map_bg_color");
     std::string lineMapScrollBgColorStr = settings->get("editor_line_map_scroll_bg_color");
@@ -139,6 +142,9 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
 
     lineNumberBgColor = QColor(lineNumberBgColorStr.c_str());
     lineNumberColor = QColor(lineNumberColorStr.c_str());
+    lineNumberModifiedBgColor = QColor(lineNumberModifiedBgColorStr.c_str());
+    lineNumberModifiedColor = QColor(lineNumberModifiedColorStr.c_str());
+    lineNumberDeletedBorderColor = QColor(lineNumberDeletedBorderColorStr.c_str());
     lineMarkBgColor = QColor(lineMarkBgColorStr.c_str());
     lineMapBgColor = QColor(lineMapBgColorStr.c_str());
     lineMapScrollBgColor = QColor(lineMapScrollBgColorStr.c_str());
@@ -452,6 +458,7 @@ void Editor::reset()
     isParseError = false;
     gitAnnotationLastLineNumber = -1;
     gitAnnotations.clear();
+    gitDiffLines.clear();
 }
 
 void Editor::highlightProgressChanged(int percent)
@@ -574,6 +581,12 @@ void Editor::setGitAnnotations(QHash<int, Git::Annotation> annotations)
     gitAnnotations = annotations;
     gitAnnotationLastLineNumber = -1;
     showLineAnnotation();
+}
+
+void Editor::setGitDiffLines(QHash<int, Git::DiffLine> mLines)
+{
+    gitDiffLines = mLines;
+    updateLineWidgetsArea();
 }
 
 int Editor::lineNumberAreaWidth()
@@ -4089,6 +4102,15 @@ void Editor::lineMarkAreaPaintEvent(QPaintEvent *event)
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible()) {
             int line = blockNumber + 1;
+            if (gitDiffLines.size() > 0 && gitDiffLines.contains(line)) {
+                Git::DiffLine mLine = gitDiffLines.value(line);
+                if (mLine.isModified) {
+                    painter.fillRect(0, top, markW, bottom - top, lineNumberModifiedBgColor);
+                }
+                if (mLine.isDeleted) {
+                    painter.fillRect(0, top, markW, 1, lineNumberDeletedBorderColor);
+                }
+            }
             QString errorText = "", warningText = "", markText = "";
             int error = static_cast<LineMark *>(lineMark)->getError(line, errorText);
             int warning = static_cast<LineMark *>(lineMark)->getWarning(line, warningText);
@@ -4201,7 +4223,20 @@ void Editor::lineNumberAreaPaintEvent(QPaintEvent *event)
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(lineNumberColor);
+            if (gitDiffLines.size() > 0 && gitDiffLines.contains(blockNumber + 1)) {
+                Git::DiffLine mLine = gitDiffLines.value(blockNumber + 1);
+                if (mLine.isModified) {
+                    painter.fillRect(0, top, lineNumber->width(), bottom - top, lineNumberModifiedBgColor);
+                    painter.setPen(lineNumberModifiedColor);
+                } else {
+                    painter.setPen(lineNumberColor);
+                }
+                if (mLine.isDeleted) {
+                    painter.fillRect(0, top, lineNumber->width(), 1, lineNumberDeletedBorderColor);
+                }
+            } else {
+                painter.setPen(lineNumberColor);
+            }
             painter.drawText(0, top, lineNumber->width(), fm.height(), Qt::AlignRight, number);
         }
         block = block.next();

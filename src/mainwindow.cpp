@@ -1033,6 +1033,13 @@ void MainWindow::gitCommandFinished(QString command, QString output, bool output
             if (textEditor != nullptr && annotations.size() > 0 && annotations.contains(1) && textEditor->getFileName() == getGitWorkingDir() + "/" + annotations.value(1).file) {
                 textEditor->setGitAnnotations(annotations);
             }
+        } else if (command == GIT_DIFF_COMMAND) {
+            QString file = "";
+            QHash<int,Git::DiffLine> mLines = git->parseDiffUnifiedOutput(output, file);
+            Editor * textEditor = editorTabs->getActiveEditor();
+            if (textEditor != nullptr && (textEditor->getFileName() == getGitWorkingDir() + "/" + file || mLines.size() == 0)) {
+                textEditor->setGitDiffLines(mLines);
+            }
         }
         return;
     }
@@ -1085,6 +1092,13 @@ void MainWindow::gitAnnotationRequested(QString path)
     QString dir = getGitWorkingDir();
     if (!Helper::folderExists(dir+"/"+GIT_DIRECTORY)) return;
     git->showAnnotation(getGitWorkingDir(), path, false);
+}
+
+void MainWindow::gitDiffUnifiedRequested(QString path)
+{
+    QString dir = getGitWorkingDir();
+    if (!Helper::folderExists(dir+"/"+GIT_DIRECTORY)) return;
+    git->showUncommittedDiffCurrentUnified(getGitWorkingDir(), path, false);
 }
 
 void MainWindow::on_actionSettings_triggered()
@@ -1404,7 +1418,10 @@ void MainWindow::parseTab()
     if (modeType == MODE_JS && textEditor->isReady() && parseJSEnabled) emit parseJS(tabIndex, textEditor->getContent());
     if (modeType == MODE_CSS && textEditor->isReady() && parseCSSEnabled) emit parseCSS(tabIndex, textEditor->getContent());
     if ((!project->isOpen() && parsePHPCSEnabled) || (project->isOpen() && project->isPHPCSEnabled())) emit parsePHPCS(tabIndex, path);
-    if (gitCommandsEnabled && textEditor->isReady()) gitAnnotationRequested(textEditor->getFileName());
+    if (gitCommandsEnabled && textEditor->isReady()) {
+        gitAnnotationRequested(textEditor->getFileName());
+        gitDiffUnifiedRequested(textEditor->getFileName());
+    }
 }
 
 void MainWindow::parseLintFinished(int tabIndex, QStringList errorTexts, QStringList errorLines, QString output)

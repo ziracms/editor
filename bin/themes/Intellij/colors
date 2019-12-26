@@ -64,3 +64,6 @@ popup_bg_color = #992d4e
 popup_color = #f1f1f1
 popup_border_color = #5b5b5b
 annotation_color = #5e839b
+editor_line_number_modified_bg_color = #0b463a
+editor_line_number_modified_color = #999999
+editor_line_number_deleted_border_color = #ba1205

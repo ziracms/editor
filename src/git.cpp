@@ -12,6 +12,7 @@ const QString GIT_DIRECTORY = ".git";
 
 const QString GIT_STATUS_COMMAND = "status";
 const QString GIT_ANNOTATION_COMMAND = "blame";
+const QString GIT_DIFF_COMMAND = "diff";
 const QString GIT_COMMIT_COMMAND = "commit";
 
 Git::Git(Settings * settings, QObject *parent) : QObject(parent)
@@ -57,6 +58,11 @@ void Git::showUncommittedDiffAll(QString path)
 void Git::showUncommittedDiffCurrent(QString path, QString fileName)
 {
     emit runGitCommand(path, "diff", QStringList() << fileName);
+}
+
+void Git::showUncommittedDiffCurrentUnified(QString path, QString fileName, bool outputResult)
+{
+    emit runGitCommand(path, "diff", QStringList() << "--unified=0" << "--no-color" << fileName, outputResult);
 }
 
 void Git::showLastCommitDiffAll(QString path)
@@ -239,12 +245,16 @@ QHash<int, Git::Annotation> Git::parseAnnotationOutput(QString & output)
                 committer += v;
             } else if (k == "committer-mail") {
                 committer += v;
+                if (v == "<not.committed.yet>") {
+                    committer = "<"+tr("you")+">";
+                    comment = tr("not committed yet");
+                }
             } else if (k == "committer-time") {
                 ts.setTime_t(v.toUInt());
                 committerDate += ts.toString("yyyy, MMMM d");
             } else if (k == "committer-tz") {
                 //committerDate += " "+v;
-            } else if (k == "summary") {
+            } else if (k == "summary" && comment.size() == 0) {
                 comment = v;
             } else if (k == "filename") {
                 file = v;
@@ -266,4 +276,68 @@ QHash<int, Git::Annotation> Git::parseAnnotationOutput(QString & output)
         } while(p >= 0);
     }
     return annotations;
+}
+
+QHash<int, Git::DiffLine> Git::parseDiffUnifiedOutput(QString & output, QString & fileName)
+{
+    QHash<int,Git::DiffLine> mLines;
+    QStringList lines = output.split("\n");
+    QRegularExpression expr("^[@][@]\\s([-][0-9,]+)\\s([+][0-9,]+)\\s[@][@]");
+    QRegularExpressionMatch m;
+    QString delPart = "", addPart = "";
+    int delLine = 0, addLine = 0, delCount = 0, addCount = 0, p = -1, lineInt = 0;
+    QString fileA = "", fileB = "";
+    for (QString line : lines) {
+        if (line.indexOf("--- a/") == 0 && line.size() > 6 && fileA.size() == 0) fileA = line.mid(6);
+        if (line.indexOf("+++ b/") == 0 && line.size() > 6 && fileB.size() == 0) fileB = line.mid(6);
+        if (fileA.size() == 0 || fileB.size() == 0) continue;
+        if (fileA != fileB) break; // something wrong
+        fileName = fileB;
+        if (line.indexOf("@@") != 0) continue;
+        m = expr.match(line);
+        if (m.capturedStart(0) != 0) continue;
+        delPart = line.mid(m.capturedStart(1), m.capturedLength(1));
+        addPart = line.mid(m.capturedStart(2), m.capturedLength(2));
+        if (delPart.indexOf("-") != 0) continue;
+        delPart = delPart.mid(1);
+        if (addPart.indexOf("+") != 0) continue;
+        addPart = addPart.mid(1);
+        p = delPart.indexOf(",");
+        if (p > 0) {
+            delLine = delPart.mid(0, p).toInt();
+            delCount = delPart.mid(p+1).toInt();
+        } else {
+            delLine = delPart.toInt();
+            delCount = 1;
+        }
+        p = addPart.indexOf(",");
+        if (p > 0) {
+            addLine = addPart.mid(0, p).toInt();
+            addCount = addPart.mid(p+1).toInt();
+        } else {
+            addLine = addPart.toInt();
+            addCount = 1;
+        }
+        if (delLine <= 0 || addLine <= 0) continue;
+        if (addCount > 0) {
+            for (int i=0; i<addCount; i++) {
+                lineInt = addLine + i;
+                Git::DiffLine mLine;
+                mLine.line = lineInt;
+                mLine.isDeleted = false;
+                mLine.isModified = true;
+                mLine.file = fileB;
+                mLines.insert(lineInt, mLine);
+            }
+        } else if (delCount > addCount) {
+            lineInt = delLine;
+            Git::DiffLine mLine;
+            mLine.line = lineInt;
+            mLine.isDeleted = true;
+            mLine.isModified = false;
+            mLine.file = fileB;
+            mLines.insert(lineInt, mLine);
+        }
+    }
+    return mLines;
 }

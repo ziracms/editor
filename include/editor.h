@@ -86,6 +86,7 @@ public:
     void setParseResult(ParseJS::ParseResult result);
     void setParseResult(ParseCSS::ParseResult result);
     void setGitAnnotations(QHash<int, Git::Annotation> annotations);
+    void setGitDiffLines(QHash<int, Git::DiffLine> mLines);
     bool isUndoable();
     bool isRedoable();
     bool isBackable();
@@ -226,6 +227,9 @@ private:
 
     QColor lineNumberBgColor;
     QColor lineNumberColor;
+    QColor lineNumberModifiedBgColor;
+    QColor lineNumberModifiedColor;
+    QColor lineNumberDeletedBorderColor;
     QColor lineMarkBgColor;
     QColor lineMapBgColor;
     QColor lineMapScrollBgColor;
@@ -287,6 +291,7 @@ private:
     ParseCSS parserCSS;
     ParseCSS::ParseResult parseResultCSS;
     QHash<int, Git::Annotation> gitAnnotations;
+    QHash<int, Git::DiffLine> gitDiffLines;
 
     QString fileName;
     QString extension;

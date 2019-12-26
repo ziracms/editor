@@ -14,6 +14,7 @@
 extern const QString GIT_DIRECTORY;
 extern const QString GIT_STATUS_COMMAND;
 extern const QString GIT_ANNOTATION_COMMAND;
+extern const QString GIT_DIFF_COMMAND;
 extern const QString GIT_COMMIT_COMMAND;
 
 class Git : public QObject
@@ -28,6 +29,7 @@ public:
     void showLastCommitDiffTree(QString path);
     void showUncommittedDiffAll(QString path);
     void showUncommittedDiffCurrent(QString path, QString fileName);
+    void showUncommittedDiffCurrentUnified(QString path, QString fileName, bool outputResult = true);
     void showLastCommitDiffAll(QString path);
     void showLastCommitDiffCurrent(QString path, QString fileName);
     void resetAll(QString path);
@@ -45,7 +47,6 @@ public:
     void showAnnotation(QString path, QString fileName, bool outputResult = true);
     QString highlightCommand(QString & text);
     QString highlightOutput(QString & output);
-
     struct Annotation {
         int line;
         QString author;
@@ -57,6 +58,13 @@ public:
         QString file;
     };
     QHash<int,Annotation> parseAnnotationOutput(QString & output);
+    struct DiffLine {
+        int line;
+        bool isDeleted;
+        bool isModified;
+        QString file;
+    };
+    QHash<int,DiffLine> parseDiffUnifiedOutput(QString & output, QString & fileName);
 protected:
     QString cmdTpl;
     QString lineTpl;

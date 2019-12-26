@@ -194,6 +194,7 @@ private slots:
     void gitTabAddRequested(QString path);
     void gitTabResetRequested(QString path);
     void gitAnnotationRequested(QString path);
+    void gitDiffUnifiedRequested(QString path);
 private:
     Ui::MainWindow *ui;
     Settings * settings;
