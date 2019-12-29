@@ -4,6 +4,7 @@ It's written in QT and can be run in both KDE and Gnome.
 
 Main features:
 - low memory usage
+- fast parser
 - syntax highlighting
       PHP
       JavaScript
@@ -42,6 +43,7 @@ Main features:
       classes
       class methods
 - search in files
+- spell checker plugin (Hunspell library should be installed)
 - built-in colorpicker
 - built-in light and dark themes
 - custom themes support
