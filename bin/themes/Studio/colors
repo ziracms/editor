@@ -1,5 +1,5 @@
 editor_line_number_bg_color = #f9f9f9
-editor_line_number_color = #2b91b1
+editor_line_number_color = #7e979f
 editor_line_number_modified_bg_color = #bdf1ad
 editor_line_number_modified_color = #555555
 editor_line_number_deleted_border_color = #ff4614
