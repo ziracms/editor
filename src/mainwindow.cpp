@@ -21,6 +21,7 @@
 #include <QInputDialog>
 #include <QTextStream>
 #include <QDesktopServices>
+#include <QPluginLoader>
 #include "editortab.h"
 #include "searchdialog.h"
 #include "servers.h"
@@ -79,10 +80,15 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreGeometry(windowSettings.value("main_window_geometry").toByteArray());
     restoreState(windowSettings.value("main_window_state").toByteArray());
 
+    // plugins
+    spellChecker = nullptr;
+    loadSpellChecker();
+
     // load words
     highlightWords = new HighlightWords(settings);
     completeWords = new CompleteWords(highlightWords);
     helpWords = new HelpWords();
+    spellWords = new SpellWords();
 
     // statusbar progress
     progressBar = new QProgressBar;
@@ -92,7 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     statusBar()->addPermanentWidget(progressBar);
 
     // editor tabs
-    editorTabs = new EditorTabs(ui->tabWidget, settings, highlightWords, completeWords, helpWords);
+    editorTabs = new EditorTabs(spellChecker, ui->tabWidget, settings, highlightWords, completeWords, helpWords, spellWords);
     connect(editorTabs, SIGNAL(statusBarText(QString)), this, SLOT(setStatusBarText(QString)));
     connect(editorTabs, SIGNAL(progressChange(int)), this, SLOT(progressChanged(int)));
     connect(editorTabs, SIGNAL(editorFilenameChanged(QString)), this, SLOT(editorFilenameChanged(QString)));
@@ -392,6 +398,7 @@ MainWindow::~MainWindow()
     delete highlightWords;
     delete completeWords;
     delete helpWords;
+    delete spellWords;
     delete ui;
 }
 
@@ -1911,4 +1918,27 @@ void MainWindow::applyThemeColors()
     }
 
     if (style.size() > 0) setStyleSheet(style);
+}
+
+QObject * MainWindow::loadPlugin(QString name)
+{
+    QDir pluginsDir(QCoreApplication::applicationDirPath());
+    if (!pluginsDir.cd(PLUGINS_DIR + "/" + name)) return nullptr;
+    QPluginLoader pluginLoader(pluginsDir.absoluteFilePath("lib"+name+".so"));
+    QObject *plugin = pluginLoader.instance();
+    if (!plugin) return nullptr;
+    return plugin;
+}
+
+bool MainWindow::loadSpellChecker()
+{
+    QObject * plugin = loadPlugin(SPELLCHECKER_PLUGIN_NAME);
+    if (plugin == nullptr) return false;
+    spellChecker = qobject_cast<SpellCheckerInterface *>(plugin);
+    if (!spellChecker) {
+        spellChecker = nullptr;
+        delete plugin;
+        return false;
+    }
+    return true;
 }

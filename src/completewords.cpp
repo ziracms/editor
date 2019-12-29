@@ -11,7 +11,7 @@
 #include <QTextStream>
 #include <QTimer>
 
-const int LOAD_DELAY = 250;
+const int LOAD_DELAY = 250; // should not be less then PROJECT_LOAD_DELAY
 
 CompleteWords::CompleteWords(HighlightWords * hWords)
 {

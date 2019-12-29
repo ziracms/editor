@@ -54,8 +54,6 @@ public:
     QVector<int> stateStarts;
     QVector<int> stateEnds;
     QVector<int> stateIds;
-    int underlineStart;
-    int underlineEnd;
     bool hasMarkPoint;
     QString nsNamePHP;
     QList<int> nsScopeChainPHP;
@@ -124,6 +122,8 @@ public:
     QString keywordPHPprevStringPrevChar;
     QString keywordJSprevString;
     QString keywordJSprevStringPrevChar;
+    QVector<int> spellStarts;
+    QVector<int> spellLengths;
     bool wantUpdate;
 };
 

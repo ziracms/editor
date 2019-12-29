@@ -53,8 +53,6 @@ void HighlightData::reset()
     stateStarts.clear();
     stateEnds.clear();
     stateIds.clear();
-    underlineStart = -1;
-    underlineEnd = -1;
     hasMarkPoint = false;
     nsNamePHP = "";
     nsChainPHP = "";

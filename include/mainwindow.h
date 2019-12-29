@@ -14,6 +14,7 @@
 #include "settings.h"
 #include "highlightwords.h"
 #include "completewords.h"
+#include "spellwords.h"
 #include "parserworker.h"
 #include "filebrowser.h"
 #include "editortabs.h"
@@ -22,6 +23,7 @@
 #include "helpwords.h"
 #include "project.h"
 #include "git.h"
+#include "spellcheckerinterface.h"
 #include "quickaccess.h"
 #include "popup.h"
 #include "types.h"
@@ -73,6 +75,8 @@ protected:
     void runServersCommand(QString command, QString pwd, QString description);
     void compileSass(QString src, QString dst);
     void applyThemeColors();
+    QObject * loadPlugin(QString name);
+    bool loadSpellChecker();
 public slots:
     void setStatusBarText(QString text);
     void editorShowLine(int line);
@@ -201,6 +205,7 @@ private:
     HighlightWords * highlightWords;
     CompleteWords * completeWords;
     HelpWords * helpWords;
+    SpellWords * spellWords;
     QProgressBar * progressBar;
     ParserWorker * parserWorker;
     QThread parserThread;
@@ -210,6 +215,7 @@ private:
     EditorTabs * editorTabs;
     Project * project;
     Git * git;
+    SpellCheckerInterface * spellChecker;
     QString outputMsgErrorTpl;
     QString outputMsgWarningTpl;
     int outputMsgCount;

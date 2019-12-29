@@ -72,6 +72,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->editorParseIntervalSpinBox->setValue(std::stoi(settings->get("editor_parse_interval")) / 1000);
     if (settings->get("parser_enable_git") == CHECKED_YES) ui->gitCheckbox->setChecked(true);
     if (settings->get("parser_enable_servers") == CHECKED_YES) ui->serversCheckbox->setChecked(true);
+    if (settings->get("spellchecker_enabled") == CHECKED_YES) ui->spellCheckerCheckbox->setChecked(true);
     ui->phpPathLineEdit->setText(QString::fromStdString(settings->get("parser_php_path")));
     ui->phpcsPathLineEdit->setText(QString::fromStdString(settings->get("parser_phpcs_path")));
     ui->gitPathLineEdit->setText(QString::fromStdString(settings->get("parser_git_path")));
@@ -315,6 +316,9 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
 
     if (ui->serversCheckbox->isChecked()) dataMap["parser_enable_servers"] = CHECKED_YES;
     else dataMap["parser_enable_servers"] = CHECKED_NO;
+
+    if (ui->spellCheckerCheckbox->isChecked()) dataMap["spellchecker_enabled"] = CHECKED_YES;
+    else dataMap["spellchecker_enabled"] = CHECKED_NO;
 
     QString phpPathStr = ui->phpPathLineEdit->text();
     QString phpcsPathStr = ui->phpcsPathLineEdit->text();

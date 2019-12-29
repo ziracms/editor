@@ -14,12 +14,14 @@
 #include <QFileDialog>
 #include <QShortcut>
 
-EditorTabs::EditorTabs(QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords):
+EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords):
+    spellChecker(spellChecker),
     tabWidget(widget),
     settings(settings),
     highlightWords(highlightWords),
     completeWords(completeWords),
-    helpWords(helpWords)
+    helpWords(helpWords),
+    spellWords(spellWords)
 {
     editor = nullptr;
     blockSig = false;
@@ -67,7 +69,7 @@ QString EditorTabs::getTabNameFromPath(QString filepath)
 void EditorTabs::createTab(QString filepath, bool initHighlight)
 {
     EditorTab * tab = new EditorTab();
-    editor = new Editor(settings, highlightWords, completeWords, helpWords);
+    editor = new Editor(spellChecker, settings, highlightWords, completeWords, helpWords, spellWords);
     tab->setEditor(editor);
 
     QString tabName = getTabNameFromPath(filepath);

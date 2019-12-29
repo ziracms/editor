@@ -11,12 +11,14 @@
 #include <QRegularExpression>
 #include <QLabel>
 #include <QHash>
+#include "spellcheckerinterface.h"
 #include "settings.h"
 #include "highlight.h"
 #include "completepopup.h"
 #include "highlightwords.h"
 #include "completewords.h"
 #include "helpwords.h"
+#include "spellwords.h"
 #include "tooltip.h"
 #include "parsephp.h"
 #include "parsejs.h"
@@ -27,7 +29,7 @@ class Editor : public QTextEdit
 {
     Q_OBJECT
 public:
-    Editor(Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, QWidget * parent = nullptr);
+    Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent = nullptr);
     ~Editor() override;
     void init();
     void lineNumberAreaPaintEvent(QPaintEvent *event);
@@ -155,6 +157,9 @@ protected:
     QString findNextWordNonSpaceAtCursor(QTextCursor & curs, std::string mode);
     QString completeClassNamePHPAtCursor(QTextCursor & curs, QString prevWord, QString nsName);
     void scrollToMiddle(QTextCursor cursor, int line);
+    void initSpellChecker();
+    void suggestWords(QStringList words, int cursorTextPos);
+    bool isKnownWord(QString word);
 public slots:
     void save(QString name = "");
     void back();
@@ -192,10 +197,13 @@ private slots:
     void duplicateLine();
     void deleteLine();
     void reloadRequested();
+    void spellCheck(bool suggest = true, bool forceRehighlight = true);
 private:
+    SpellCheckerInterface * spellChecker;
     CompleteWords * CW;
     HighlightWords * HW;
     HelpWords * HPW;
+    SpellWords * SW;
     int tabIndex;
     std::string tabWidthStr;
     std::string tabTypeStr;
@@ -283,6 +291,7 @@ private:
     QRegularExpression functionWordExpr;
     QRegularExpression classNameExpr;
     QRegularExpression colorExpr;
+    QRegularExpression spellWordExpr;
 
     ParsePHP parserPHP;
     ParsePHP::ParseResult parseResultPHP;
@@ -311,6 +320,7 @@ private:
     bool focused;
     bool cursorPositionChangeLocked;
     bool scrollBarValueChangeLocked;
+    bool textChangeLocked;
     bool modified;
     int lastModifiedMsec;
     bool warningDisplayed;
@@ -341,6 +351,10 @@ private:
     int gitAnnotationLastLineNumber;
     bool annotationsEnabled;
     int parseResultChangedDelay;
+    bool spellCheckerEnabled;
+    bool spellLocked;
+    QVector<int> spellBlocksQueue;
+    int spellCheckInitBlockNumber;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

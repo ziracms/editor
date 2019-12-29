@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/spell">
+        <file alias="words">resources/spell/words</file>
+    </qresource>
+</RCC>

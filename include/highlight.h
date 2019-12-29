@@ -68,6 +68,7 @@ public:
     void setHighlightVarsMode(bool varsMode);
     void setFirstRunMode(bool runMode);
     bool isDirty();
+
     std::unordered_map<std::string, int> unusedVars;
     std::unordered_map<std::string, int>::iterator unusedVarsIterator;
 protected:
@@ -117,7 +118,7 @@ protected:
     void updateState(const QChar & c, int pos, int & pState);
     void openBlockDataLists();
     void closeBlockDataLists(int textSize);
-    void highlightUnderline();
+    void highlightSpell();
 private:
     QTextDocument * doc;
     QVector<QTextCharFormat> formatChanges;
@@ -155,6 +156,8 @@ private:
     QVector<int> specialCharsPos;
     QVector<QString> specialWords;
     QVector<int> specialWordsPos;
+
+    QColor spellColor;
 
     bool enabled;
     QTextBlock cBlock;
@@ -262,8 +265,6 @@ private:
     int parensJS;
     int parensPHP;
     bool cssMediaScope;
-    int underlineStart;
-    int underlineEnd;
     QString nsNamePHP;
     QList<int> nsScopeChainPHP;
     QString nsChainPHP;

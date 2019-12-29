@@ -42,6 +42,9 @@ const std::string LF = "lf";
 const int INTERVAL_SCROLL_HIGHLIGHT_MILLISECONDS = 500;
 const int INTERVAL_TEXT_CHANGED_MILLISECONDS = 200;
 const int INTERVAL_CURSOR_POS_CHANGED_MILLISECONDS = 200;
+const int INTERVAL_SPELL_CHECK_MILLISECONDS = 500;
+
+const int SPELLCHECKER_INIT_BLOCKS_COUNT = 10;
 
 const int TOOLTIP_OFFSET = 20;
 const int TOOLTIP_SCREEN_MARGIN = 10;
@@ -63,7 +66,7 @@ const QString TOOLTIP_DELIMITER = "[:OR:]";
 const QString TOOLTIP_PAGER_TPL = " | <b>[<u>%1</u>/%2]</b>";
 const QString TOOLTIP_COLOR_TPL = "<span style=\"background:%1;\">&nbsp;&nbsp;&nbsp;</span>";
 
-Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, QWidget * parent) : QTextEdit(parent)
+Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent) : QTextEdit(parent), spellChecker(spellChecker)
 {
     setMinimumSize(0, 0);
     setMaximumSize(16777215, 16777215);
@@ -222,6 +225,7 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     functionWordExpr = QRegularExpression("(?:^|[^a-zA-Z0-9_\\$]+)function(?:[^a-zA-Z0-9_]+|$)");
     classNameExpr = QRegularExpression("([a-zA-Z0-9_\\\\]+)[\\s]*[(]");
     colorExpr = QRegularExpression("^[#](?:[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9])(?:[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9])?(?:[a-fA-F0-9][a-fA-F0-9])?$");
+    spellWordExpr = QRegularExpression("([\\p{L}0-9_'\\$]+)");
 
     // some features is enabled only in experimental mode
     experimentalMode = false;
@@ -354,6 +358,7 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     CW = completeWords;
     HW = highlightWords;
     HPW = helpWords;
+    SW = spellWords;
 
     parsePHPEnabled = false;
     std::string parsePHPEnabledStr = settings->get("parser_enable_parse_php");
@@ -378,6 +383,10 @@ Editor::Editor(Settings * settings, HighlightWords * highlightWords, CompleteWor
     int parseResultChangedDelayMS = std::stoi(settings->get("editor_parse_interval"));
     if (parseResultChangedDelayMS >= 1000) parseResultChangedDelay = parseResultChangedDelayMS;
     else parseResultChangedDelay = 5000;
+
+    spellCheckerEnabled = false;
+    std::string spellCheckerEnabledStr = settings->get("spellchecker_enabled");
+    if (spellCheckerEnabledStr == "yes") spellCheckerEnabled = true;
 
     // cursor is not set to default sometimes
     horizontalScrollBar()->setCursor(Qt::ArrowCursor);
@@ -434,6 +443,7 @@ void Editor::reset()
     is_ready = false;
     cursorPositionChangeLocked = false;
     scrollBarValueChangeLocked = false;
+    textChangeLocked = false;
     modeOnKeyPress = "";
     lastKeyPressed = -1;
     tooltipSavedText = "";
@@ -459,6 +469,10 @@ void Editor::reset()
     gitAnnotationLastLineNumber = -1;
     gitAnnotations.clear();
     gitDiffLines.clear();
+    spellLocked = false;
+    spellBlocksQueue.clear();
+    errorsExtraSelections.clear();
+    spellCheckInitBlockNumber = 0;
 }
 
 void Editor::highlightProgressChanged(int percent)
@@ -540,6 +554,26 @@ void Editor::initHighlighter()
     cursorPositionChangedDelayed();
     emit ready(tabIndex);
     if (highlight->getModeType() == MODE_MIXED) highlightUnusedVars(false);
+    initSpellChecker();
+}
+
+void Editor::initSpellChecker()
+{
+    if (!spellCheckerEnabled || spellChecker == nullptr) return;
+    int totalBlocks = document()->blockCount();
+    QString progressStr = tr("Spell check")+": ";
+    while(spellCheckInitBlockNumber < totalBlocks) {
+        for (int i=0; i<SPELLCHECKER_INIT_BLOCKS_COUNT; i++) {
+            spellBlocksQueue.append(i+spellCheckInitBlockNumber);
+        }
+        spellCheckInitBlockNumber += SPELLCHECKER_INIT_BLOCKS_COUNT;
+        spellCheck(false, false);
+        int percent = (spellCheckInitBlockNumber * 100) / totalBlocks;
+        if (percent > 100) percent = 100;
+        emit statusBarText(tabIndex, progressStr+Helper::intToStr(percent)+"%");
+        QCoreApplication::processEvents();
+    }
+    emit statusBarText(tabIndex, "");
 }
 
 std::string Editor::getModeType()
@@ -1066,7 +1100,13 @@ bool Editor::event(QEvent *e)
                 }
             } else {
                 clearTextHoverFormat();
-                //hideTooltip();
+                if (prevText.size() > 0 && nextText.size() > 0) {
+                    QString nonAlphaText = prevText+nextText;
+                    QRegularExpressionMatch m = colorExpr.match(nonAlphaText);
+                    if (m.capturedStart()==0 && QColor::isValidColor(nonAlphaText)) {
+                        showTooltip(& curs, TOOLTIP_COLOR_TPL.arg(nonAlphaText)+" "+nonAlphaText);
+                    }
+                }
             }
             return true;
         }
@@ -1127,6 +1167,19 @@ void Editor::highlightErrorLine(int line)
     errorSelection.cursor = cursor;
     errorsExtraSelections.append(errorSelection);
     highlightExtras();
+}
+
+void Editor::suggestWords(QStringList words, int cursorTextPos)
+{
+    completePopup->clearItems();
+    for (QString word : words) {
+        completePopup->addItem(word, word);
+        if (completePopup->count() >= completePopup->limit()) break;
+    }
+    if (completePopup->count()>0) {
+        completePopup->setTextStartPos(cursorTextPos);
+        showCompletePopup();
+    }
 }
 
 void Editor::updateSizes()
@@ -2087,9 +2140,10 @@ void Editor::textChanged()
     if (!is_ready || isReadOnly()) return;
     Qt::KeyboardModifiers modifiers  = QApplication::queryKeyboardModifiers();
     bool ctrl = modifiers & Qt::ControlModifier;
-    if (lastKeyPressed != Qt::Key_Backspace && lastKeyPressed != Qt::Key_Delete && lastKeyPressed != Qt::Key_Return && lastKeyPressed != Qt::Key_Tab && lastKeyPressed != Qt::Key_Space && !ctrl) {
+    if (!textChangeLocked && lastKeyPressed != Qt::Key_Backspace && lastKeyPressed != Qt::Key_Delete && lastKeyPressed != Qt::Key_Return && lastKeyPressed != Qt::Key_Tab && lastKeyPressed != Qt::Key_Space && !ctrl) {
+        textChangeLocked = true;
         QTimer::singleShot(INTERVAL_TEXT_CHANGED_MILLISECONDS, this, SLOT(textChangedDelayed()));
-    } else {
+    } else if (!textChangeLocked) {
         hideCompletePopup();
     }
     bool _modified = modified;
@@ -2107,10 +2161,20 @@ void Editor::textChanged()
         parseLocked = true;
         QTimer::singleShot(parseResultChangedDelay, this, SLOT(parseResultChanged()));
     }
+
+    // spell check
+    if (spellBlocksQueue.size() == 0 || (spellBlocksQueue.last() != textCursor().block().blockNumber())) {
+        spellBlocksQueue.append(textCursor().block().blockNumber());
+    }
+    if (!spellLocked && spellCheckerEnabled && spellChecker != nullptr) {
+        spellLocked = true;
+        QTimer::singleShot(INTERVAL_SPELL_CHECK_MILLISECONDS, this, SLOT(spellCheck()));
+    }
 }
 
 void Editor::textChangedDelayed()
 {
+    textChangeLocked = false;
     // complete popup
     QTextCursor curs = textCursor();
     if (curs.selectedText().size()!=0) return;
@@ -2118,16 +2182,20 @@ void Editor::textChangedDelayed()
     QString blockText = block.text();
     int total = blockText.size();
     int pos = curs.positionInBlock();
-    if (highlight->isStateOpen(&block, pos)) {
-        hideCompletePopup();
-        return;
-    }
+//    if (highlight->isStateOpen(&block, pos)) {
+//        hideCompletePopup();
+//        return;
+//    }
+    std::string mode = highlight->findModeAtCursor(&block, pos);
+    int state = highlight->findStateAtCursor(&block, pos);
+    if (mode != MODE_HTML && state != STATE_NONE) return;
+    if (mode == MODE_HTML && state != STATE_TAG) return;
+    if (mode == MODE_UNKNOWN) return;
     QChar prevChar = '\0', nextChar = '\0';
     if (pos > 0 && curs.selectedText().size()==0) prevChar = blockText[pos - 1];
     if (pos < total && curs.selectedText().size()==0) nextChar = blockText[pos];
     // text till cursor
     QString cursorText = "", prevText = "";
-    std::string mode = highlight->findModeAtCursor(&block, pos);
     QChar cursorTextPrevChar = '\0';
     int cursorTextPos = pos;
     for (int i=pos; i>0; i--) {
@@ -2156,6 +2224,136 @@ void Editor::textChangedDelayed()
     if (cursorText.size() > 0 && (nextChar == '\0' || !isalnum(nextChar.toLatin1()))) {
         detectCompleteText(cursorText, cursorTextPrevChar, cursorTextPos, mode);
     }
+}
+
+bool Editor::isKnownWord(QString word)
+{
+    bool known = false;
+    SW->wordsIterator = SW->words.find(word.toLower().toStdString());
+    if (SW->wordsIterator != SW->words.end()) {
+        known = true;
+    }
+    if (!known) {
+        HW->phpwordsIterator = HW->phpwords.find(word.toLower().toStdString());
+        if (HW->phpwordsIterator != HW->phpwords.end()) {
+            known = true;
+        }
+    }
+    if (!known) {
+        HW->phpwordsCSIterator = HW->phpwordsCS.find(word.toStdString());
+        if (HW->phpwordsCSIterator != HW->phpwordsCS.end()) {
+            known = true;
+        }
+    }
+    if (!known) {
+        HW->jswordsCSIterator = HW->jswordsCS.find(word.toStdString());
+        if (HW->jswordsCSIterator != HW->jswordsCS.end()) {
+            known = true;
+        }
+    }
+    if (!known) {
+        HW->csswordsIterator = HW->csswords.find(word.toLower().toStdString());
+        if (HW->csswordsIterator != HW->csswords.end()) {
+            known = true;
+        }
+    }
+    if (!known) {
+        HW->htmlwordsIterator = HW->htmlwords.find(word.toLower().toStdString());
+        if (HW->htmlwordsIterator != HW->htmlwords.end()) {
+            known = true;
+        }
+    }
+    return known;
+}
+
+void Editor::spellCheck(bool suggest, bool forceRehighlight)
+{
+    spellLocked = false;
+    if (!spellCheckerEnabled || spellChecker == nullptr) return;
+    QTextCursor cursor = textCursor();
+    int pos = cursor.positionInBlock();
+    QString blockText = cursor.block().text();
+    // text till cursor
+    QString cursorText = "";
+    int cursorTextPos = pos;
+    if (suggest) {
+        for (int i=pos; i>0; i--) {
+            QChar c = blockText[i-1];
+            if (c.isLetter() || c=="_") cursorText = c + cursorText;
+            else break;
+            cursorTextPos = i-1;
+        }
+    }
+    QRegularExpressionMatch m;
+    for (int i=0; i<spellBlocksQueue.size(); i++) {
+        bool misspelled = false;
+        int blockNumber = spellBlocksQueue.at(i);
+        if (blockNumber == cursor.block().blockNumber() + 1) {
+            cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor);
+        } else {
+            cursor.movePosition(QTextCursor::Start);
+            if (blockNumber > 0) cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, blockNumber);
+        }
+        QTextBlock block = cursor.block();
+        if (block.blockNumber() != spellBlocksQueue.at(i)) continue;
+        HighlightData * blockData = dynamic_cast<HighlightData *>(block.userData());
+        if (blockData == nullptr) continue;
+        blockData->spellStarts.clear();
+        blockData->spellLengths.clear();
+        QString blockText = cursor.block().text();
+        if (blockText.trimmed().size() == 0) continue;
+        int offset = 0;
+        do {
+            m = spellWordExpr.match(blockText, offset);
+            if (m.capturedStart() >= 0) {
+                offset = m.capturedStart() + m.capturedLength();
+                int start = m.capturedStart(1);
+                int length = m.capturedLength(1);
+                QString word = blockText.mid(start, length);
+                bool hasLetter = false;
+                for (int i=0; i<word.size(); i++) {
+                    QChar c = word[i];
+                    if (c.isLetter()) hasLetter = true;
+                }
+                if (!hasLetter) continue;
+                if (word.size() > 0 && word[0] == "$") continue;
+                if (word.size()>1 && word[0]=='\'' && word[word.size()-1]=='\'') {
+                    word = word.mid(1,word.size()-2);
+                    start += 1;
+                    length -= 2;
+                }
+                if (word.size() < 2) continue;
+                std::string mode = highlight->findModeAtCursor(&block, start);
+                int state = highlight->findStateAtCursor(&block, start);
+                //if ((mode == MODE_PHP || mode == MODE_JS || mode == MODE_CSS) && state == STATE_NONE) continue;
+                if (mode == MODE_PHP && state != STATE_COMMENT_ML_PHP) continue;
+                if (mode == MODE_JS && state != STATE_COMMENT_ML_JS) continue;
+                if (mode == MODE_CSS && state != STATE_COMMENT_ML_CSS) continue;
+                if (mode == MODE_HTML && state != STATE_NONE) continue;
+                bool doSuggest = suggest;
+                if (word.size() < 4) doSuggest = false;
+                if (mode != MODE_HTML && mode != MODE_UNKNOWN) doSuggest = false;
+                if (lastKeyPressed == Qt::Key_Backspace || lastKeyPressed == Qt::Key_Delete) doSuggest = false;
+                if (!isKnownWord(word) && !spellChecker->check(word)) {
+                    misspelled = true;
+                    blockData->spellStarts.append(start);
+                    blockData->spellLengths.append(length);
+                    if (doSuggest && word == cursorText) {
+                        hideCompletePopup();
+                        QStringList suggestions = spellChecker->suggest(word);
+                        suggestWords(suggestions, cursorTextPos);
+                    }
+                }
+            }
+        } while(m.capturedStart() >= 0);
+        block.setUserData(blockData);
+        if (forceRehighlight || misspelled) {
+            blockSignals(true);
+            highlight->rehighlightBlock(block);
+            blockSignals(false);
+        }
+    }
+    spellBlocksQueue.clear();
 }
 
 QChar Editor::findPrevCharNonSpaceAtCursos(QTextCursor & curs)
@@ -3410,6 +3608,7 @@ void Editor::completePopupSelected(QString text, QString data)
     QString blockText = block.text();
     int total = blockText.size();
     std::string mode = highlight->findModeAtCursor(& block, pos);
+    int state = highlight->findStateAtCursor(& block, pos);
     QChar nextChar = '\0';
     if (pos < total) nextChar = blockText[pos];
     if (cursorTextPos >= 0 && cursorTextPos <= pos) {
@@ -3496,7 +3695,11 @@ void Editor::completePopupSelected(QString text, QString data)
         if (cursorTextPos < pos) {
             curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, pos - cursorTextPos);
         }
-        blockSignals(true);
+        bool blockS = true;
+        if (mode != MODE_HTML && state != STATE_NONE) blockS = false;
+        if (mode == MODE_HTML && state != STATE_TAG) blockS = false;
+        if (mode == MODE_UNKNOWN) blockS = false;
+        if (blockS) blockSignals(true);
         curs.beginEditBlock();
         curs.insertText(text);
         // show tooltip
@@ -3523,7 +3726,7 @@ void Editor::completePopupSelected(QString text, QString data)
             tooltipOrigText = origText + " " + data;
         }
         curs.endEditBlock();
-        blockSignals(false);
+        if (blockS) blockSignals(false);
         setTextCursor(curs);
         if (tooltipText.size() > 0) {
             showTooltip(& curs, tooltipOrigText);

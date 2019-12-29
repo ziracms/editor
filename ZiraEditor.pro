@@ -64,7 +64,10 @@ SOURCES += \
     src/helpdialog.cpp \
     src/popup.cpp \
     src/gitbrowser.cpp \
-    src/annotation.cpp
+    src/annotation.cpp \
+    src/spellcheckerinterface.cpp \
+    src/plugininterface.cpp \
+    src/spellwords.cpp
 
 HEADERS += \
     include/mainwindow.h \
@@ -106,7 +109,10 @@ HEADERS += \
     include/helpdialog.h \
     include/popup.h \
     include/gitbrowser.h \
-    include/annotation.h
+    include/annotation.h \
+    include/spellcheckerinterface.h \
+    include/plugininterface.h \
+    include/spellwords.h
 
 FORMS += \
     ui/mainwindow.ui \
@@ -123,4 +129,5 @@ RESOURCES += \
     qrc/syntax.qrc \
     qrc/image.qrc \
     qrc/help.qrc \
-    qrc/style.qrc
+    qrc/style.qrc \
+    qrc/spell.qrc

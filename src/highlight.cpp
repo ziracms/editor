@@ -78,6 +78,9 @@ Highlight::Highlight(Settings * settings, HighlightWords * hWords, QTextDocument
         modeTypes[ext.trimmed().toStdString()] = MODE_HTML;
     }
 
+    std::string spellColorStr = settings->get("editor_line_warning_color");
+    spellColor = QColor(QString::fromStdString(spellColorStr));
+
     enabled = false;
     modeType = MODE_UNKNOWN;
     block_state = 0;
@@ -242,8 +245,6 @@ void Highlight::reset()
     specialCharsPos.clear();
     specialWords.clear();
     specialWordsPos.clear();
-    underlineStart = -1;
-    underlineEnd = -1;
     nsNamePHP = "";
     nsChainPHP = "";
     nsScopeChainPHP.clear();
@@ -1590,12 +1591,18 @@ void Highlight::restoreState() {
     }
 }
 
-void Highlight::highlightUnderline()
+void Highlight::highlightSpell()
 {
-    if (underlineStart >= 0 && underlineEnd >= 0 && underlineEnd > underlineStart) {
-        QTextCharFormat uFormat = format(underlineStart);
-        uFormat.setUnderlineStyle(QTextCharFormat::SingleUnderline);
-        highlightString(underlineStart, underlineEnd - underlineStart, uFormat);
+    if (blockData != nullptr && blockData->spellStarts.size() == blockData->spellLengths.size()) {
+        for (int i=0; i<blockData->spellStarts.size(); i++) {
+            int start = blockData->spellStarts.at(i);
+            int length = blockData->spellLengths.at(i);
+            if (start < 0 || length <= 0) continue;
+            QTextCharFormat uFormat = format(start);
+            uFormat.setUnderlineStyle(QTextCharFormat::WaveUnderline);
+            uFormat.setUnderlineColor(spellColor);
+            highlightString(start, length, uFormat);
+        }
     }
 }
 
@@ -3112,7 +3119,7 @@ void Highlight::highlightBlock(QTextBlock & block, bool markDirty)
 
 bool Highlight::parseBlock(const QString & text)
 {
-    if (!enabled || modeType == MODE_UNKNOWN) return false;
+    if (!enabled) return false;
 
     reset();
     if (modeType != MODE_MIXED) {
@@ -3192,8 +3199,6 @@ bool Highlight::parseBlock(const QString & text)
         _keywordJSScoped = blockData->keywordJSScoped;
         _exprEscStringJS = blockData->exprEscStringJS;
         _stringEscVariableJS = blockData->stringEscVariableJS;
-        underlineStart = blockData->underlineStart;
-        underlineEnd = blockData->underlineEnd;
         _hasMarkPoint = blockData->hasMarkPoint;
         _nsNamePHP = blockData->nsNamePHP;
         _nsChainPHP = blockData->nsChainPHP;
@@ -3268,8 +3273,8 @@ bool Highlight::parseBlock(const QString & text)
         updateState(c, i, pState);
     }
 
-    // draw underline
-    highlightUnderline();
+    // draw spell underline
+    highlightSpell();
 
     // close data lists
     closeBlockDataLists(text.size());

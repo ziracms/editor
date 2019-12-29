@@ -14,7 +14,7 @@ class EditorTabs : public QObject
 {
     Q_OBJECT
 public:
-    EditorTabs(QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords);
+    EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords);
     void createTab(QString filepath, bool initHighlight = true);
     bool closeWindowAllowed();
     Editor * getActiveEditor();
@@ -36,11 +36,13 @@ protected:
     void fileBrowserFolderRenamed(QString oldpath, QString newpath);
 private:
     Editor * editor;
+    SpellCheckerInterface * spellChecker;
     QTabWidget * tabWidget;
     Settings * settings;
     HighlightWords * highlightWords;
     CompleteWords * completeWords;
     HelpWords * helpWords;
+    SpellWords * spellWords;
 
     bool blockSig;
 signals:

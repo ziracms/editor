@@ -84,6 +84,7 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"shortcut_duplicate_line", "Ctrl+D"},
         {"shortcut_delete_line", "Ctrl+Alt+D"},
         {"experimental_mode_enabled", "yes"},
+        {"spellchecker_enabled", "yes"},
         {"color_scheme", "light"},
         {"theme", "system"},
         {"custom_themes_path", ""}
