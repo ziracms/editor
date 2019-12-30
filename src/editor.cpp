@@ -2234,6 +2234,12 @@ bool Editor::isKnownWord(QString word)
         known = true;
     }
     if (!known) {
+        SW->wordsCSIterator = SW->wordsCS.find(word.toStdString());
+        if (SW->wordsCSIterator != SW->wordsCS.end()) {
+            known = true;
+        }
+    }
+    if (!known) {
         HW->phpwordsIterator = HW->phpwords.find(word.toLower().toStdString());
         if (HW->phpwordsIterator != HW->phpwords.end()) {
             known = true;

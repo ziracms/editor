@@ -1315,6 +1315,32 @@
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout" name="pluginsFolderLayout">
+         <property name="topMargin">
+          <number>10</number>
+         </property>
+         <property name="bottomMargin">
+          <number>10</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="pluginsFolderLabel">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Plugins location</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="pluginsFolderLineEdit"/>
+         </item>
+        </layout>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="breadcrumbsLayout">
          <property name="leftMargin">
           <number>156</number>

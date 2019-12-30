@@ -584,7 +584,7 @@ QCheckBox
 
 QCheckBox:disabled
 {
-    color: #414141;
+    color: #616161;
 }
 
 QCheckBox::indicator{

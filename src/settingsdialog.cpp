@@ -73,12 +73,14 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     if (settings->get("parser_enable_git") == CHECKED_YES) ui->gitCheckbox->setChecked(true);
     if (settings->get("parser_enable_servers") == CHECKED_YES) ui->serversCheckbox->setChecked(true);
     if (settings->get("spellchecker_enabled") == CHECKED_YES) ui->spellCheckerCheckbox->setChecked(true);
+    if (!Helper::isPluginExists(SPELLCHECKER_PLUGIN_NAME, QString::fromStdString(settings->get("plugins_path")))) ui->spellCheckerCheckbox->setEnabled(false);
     ui->phpPathLineEdit->setText(QString::fromStdString(settings->get("parser_php_path")));
     ui->phpcsPathLineEdit->setText(QString::fromStdString(settings->get("parser_phpcs_path")));
     ui->gitPathLineEdit->setText(QString::fromStdString(settings->get("parser_git_path")));
     ui->bashPathLineEdit->setText(QString::fromStdString(settings->get("parser_bash_path")));
     ui->sasscPathLineEdit->setText(QString::fromStdString(settings->get("parser_sassc_path")));
     ui->phpmanualLineEdit->setText(QString::fromStdString(settings->get("php_manual_path")));
+    ui->pluginsFolderLineEdit->setText(QString::fromStdString(settings->get("plugins_path")));
 
     QString customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
     ui->customThemesFolderLineEdit->setText(customThemesPath);
@@ -326,6 +328,7 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     QString bashPathStr = ui->bashPathLineEdit->text();
     QString sasscPathStr = ui->sasscPathLineEdit->text();
     QString phpmanualPathStr = ui->phpmanualLineEdit->text();
+    QString pluginsPathStr = ui->pluginsFolderLineEdit->text();
     QString customThemesPathStr = ui->customThemesFolderLineEdit->text();
     QString customThemesPath("");
     if (phpPathStr.size() > 1 && phpPathStr.at(phpPathStr.size()-1) == "/") phpPathStr = phpPathStr.mid(0, phpPathStr.size()-1);
@@ -334,6 +337,7 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     if (bashPathStr.size() > 1 && bashPathStr.at(bashPathStr.size()-1) == "/") bashPathStr = bashPathStr.mid(0, bashPathStr.size()-1);
     if (sasscPathStr.size() > 1 && sasscPathStr.at(sasscPathStr.size()-1) == "/") sasscPathStr = sasscPathStr.mid(0, sasscPathStr.size()-1);
     if (phpmanualPathStr.size() > 1 && phpmanualPathStr.at(phpmanualPathStr.size()-1) == "/") phpmanualPathStr = phpmanualPathStr.mid(0, phpmanualPathStr.size()-1);
+    if (pluginsPathStr.size() > 1 && pluginsPathStr.at(pluginsPathStr.size()-1) == "/") pluginsPathStr = pluginsPathStr.mid(0, pluginsPathStr.size()-1);
     if (customThemesPathStr.size() > 1 && customThemesPathStr.at(customThemesPathStr.size()-1) == "/") customThemesPathStr = customThemesPathStr.mid(0, customThemesPathStr.size()-1);
     if (Helper::fileOrFolderExists(phpPathStr) || phpPathStr.size() == 0) dataMap["parser_php_path"] = phpPathStr.toStdString();
     if (Helper::fileOrFolderExists(phpcsPathStr) || phpcsPathStr.size() == 0) dataMap["parser_phpcs_path"] = phpcsPathStr.toStdString();
@@ -341,6 +345,7 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     if (Helper::fileOrFolderExists(bashPathStr) || bashPathStr.size() == 0) dataMap["parser_bash_path"] = bashPathStr.toStdString();
     if (Helper::fileOrFolderExists(sasscPathStr) || sasscPathStr.size() == 0) dataMap["parser_sassc_path"] = sasscPathStr.toStdString();
     if (Helper::folderExists(phpmanualPathStr) || phpmanualPathStr.size() == 0) dataMap["php_manual_path"] = phpmanualPathStr.toStdString();
+    if (Helper::folderExists(pluginsPathStr) || pluginsPathStr.size() == 0) dataMap["plugins_path"] = pluginsPathStr.toStdString();
     if (Helper::folderExists(customThemesPathStr) || customThemesPathStr.size() == 0) {
         dataMap["custom_themes_path"] = customThemesPathStr.toStdString();
         customThemesPath = customThemesPathStr;

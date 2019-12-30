@@ -24,6 +24,8 @@ extern const QString CUSTOM_THEME_COLORS_FILE;
 extern const QString CUSTOM_THEMES_FALLBACK_FOLDER;
 extern const QString PHP_MANUAL_FALLBACK_FOLDER;
 
+extern const std::string PHP_MANUAL_ENCODING;
+
 class Settings : public QObject
 {
     Q_OBJECT

@@ -24,6 +24,8 @@ const QString CUSTOM_THEME_COLORS_FILE = "colors";
 const QString CUSTOM_THEMES_FALLBACK_FOLDER = "themes";
 const QString PHP_MANUAL_FALLBACK_FOLDER = "php-chunked-xhtml";
 
+const std::string PHP_MANUAL_ENCODING = "UTF-8";
+
 Settings::Settings(QObject * parent) : QObject(parent)
 {
     data = {
@@ -87,7 +89,8 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"spellchecker_enabled", "yes"},
         {"color_scheme", "light"},
         {"theme", "system"},
-        {"custom_themes_path", ""}
+        {"custom_themes_path", ""},
+        {"plugins_path", ""}
     };
 }
 

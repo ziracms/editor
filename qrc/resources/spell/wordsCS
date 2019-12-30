@@ -1,0 +1,17 @@
+DirectoryIndex
+ErrorDocument
+IfModule
+RewriteEngine
+RewriteBase
+RewriteCond
+RewriteRule
+HTTP_HOST
+REQUEST_FILENAME
+ExpiresActive
+ExpiresByType
+ExpiresDefault
+SAMEORIGIN
+mod_access_compat
+mod_rewrite
+mod_expires
+mod_headers

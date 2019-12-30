@@ -34,10 +34,6 @@ const int OUTPUT_TAB_SEARCH_INDEX = 2;
 const int OUTPUT_TAB_RESULTS_INDEX = 3;
 //const int OUTPUT_TAB_TODO_INDEX = 4;
 
-const int PROJECT_LOAD_DELAY = 500;
-
-const std::string PHP_MANUAL_ENCODING = "UTF-8";
-
 int const MainWindow::EXIT_CODE_RESTART = -123456789;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -81,8 +77,8 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreState(windowSettings.value("main_window_state").toByteArray());
 
     // plugins
-    spellChecker = nullptr;
-    loadSpellChecker();
+    QString pluginsDir = QString::fromStdString(settings->get("plugins_path"));
+    spellChecker = Helper::loadSpellChecker(pluginsDir);
 
     // load words
     highlightWords = new HighlightWords(settings);
@@ -1918,27 +1914,4 @@ void MainWindow::applyThemeColors()
     }
 
     if (style.size() > 0) setStyleSheet(style);
-}
-
-QObject * MainWindow::loadPlugin(QString name)
-{
-    QDir pluginsDir(QCoreApplication::applicationDirPath());
-    if (!pluginsDir.cd(PLUGINS_DIR + "/" + name)) return nullptr;
-    QPluginLoader pluginLoader(pluginsDir.absoluteFilePath("lib"+name+".so"));
-    QObject *plugin = pluginLoader.instance();
-    if (!plugin) return nullptr;
-    return plugin;
-}
-
-bool MainWindow::loadSpellChecker()
-{
-    QObject * plugin = loadPlugin(SPELLCHECKER_PLUGIN_NAME);
-    if (plugin == nullptr) return false;
-    spellChecker = qobject_cast<SpellCheckerInterface *>(plugin);
-    if (!spellChecker) {
-        spellChecker = nullptr;
-        delete plugin;
-        return false;
-    }
-    return true;
 }

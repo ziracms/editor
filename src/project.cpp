@@ -39,6 +39,8 @@ const QString PROJECT_PHP_FUNCTIONS_HELP_FILE = "php_functions_help";
 const QString PARSE_PROJECT_PHP_EXT = "php";
 const QString GIT_IGNORE_FILE = ".gitignore";
 
+const int PROJECT_LOAD_DELAY = 500;
+
 Project::Project(QObject *parent) : QObject(parent)
 {
     reset();

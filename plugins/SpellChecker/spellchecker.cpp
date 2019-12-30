@@ -10,7 +10,21 @@ const QString SPELLCHECKER_FALLBACK_DICTIONARY_DIC = "fallback.dic";
 
 SpellChecker::SpellChecker(QObject *parent) : SpellCheckerInterface (parent)
 {
-    QString pluginDir = PLUGINS_DIR + "/" + SPELLCHECKER_PLUGIN_NAME;
+    hunspell = nullptr;
+    hunspellFallback = nullptr;
+}
+
+SpellChecker::~SpellChecker()
+{
+    if (hunspell != nullptr) delete hunspell;
+    if (hunspellFallback != nullptr) delete hunspellFallback;
+}
+
+void SpellChecker::initialize(QString path)
+{
+    QString pluginsDir = PLUGINS_DEFAULT_FOLDER_NAME;
+    if (path.size() > 0) pluginsDir = path;
+    QString pluginDir = pluginsDir + "/" + getDirName();
     QString defaultAff = pluginDir + "/" + SPELLCHECKER_DICTIONARIES_SUBDIR + "/" + SPELLCHECKER_DEFAULT_DICTIONARY_AFF;
     QString defaultDic = pluginDir + "/" + SPELLCHECKER_DICTIONARIES_SUBDIR + "/" + SPELLCHECKER_DEFAULT_DICTIONARY_DIC;
     QString fallbackAff = pluginDir + "/" + SPELLCHECKER_DICTIONARIES_SUBDIR + "/" + SPELLCHECKER_FALLBACK_DICTIONARY_AFF;
@@ -23,8 +37,6 @@ SpellChecker::SpellChecker(QObject *parent) : SpellCheckerInterface (parent)
         QByteArray affPathFallbackBA = fallbackAff.toLocal8Bit();
         QByteArray dicPathFallbackBA = fallbackDic.toLocal8Bit();
         hunspellFallback = new Hunspell(affPathFallbackBA.constData(), dicPathFallbackBA.constData());
-    } else {
-        hunspellFallback = nullptr;
     }
 
     // detect encoding analyzing the SET option in the affix file
@@ -57,14 +69,9 @@ SpellChecker::SpellChecker(QObject *parent) : SpellCheckerInterface (parent)
     fallbackCodec = QTextCodec::codecForName(fallbackEncoding.toLatin1().constData());
 }
 
-SpellChecker::~SpellChecker()
-{
-    delete hunspell;
-    if (hunspellFallback != nullptr) delete hunspellFallback;
-}
-
 bool SpellChecker::check(QString & word)
 {
+    if (hunspell == nullptr) return true;
     if (hunspell != nullptr && !hunspell->spell(defaultCodec->fromUnicode(word).toStdString())) {
         if (hunspellFallback != nullptr) return hunspellFallback->spell(fallbackCodec->fromUnicode(word).toStdString());
         else return false;
@@ -74,6 +81,7 @@ bool SpellChecker::check(QString & word)
 
 QStringList SpellChecker::suggest(QString & word)
 {
+    if (hunspell == nullptr) return QStringList();
     std::vector<std::string> suggestedList = hunspell->suggest(defaultCodec->fromUnicode(word).toStdString());
     QStringList suggestions;
     for(std::string suggested : suggestedList) {
@@ -88,7 +96,7 @@ QStringList SpellChecker::suggest(QString & word)
     return suggestions;
 }
 
-QString SpellChecker::getDir()
+QString SpellChecker::getDirName()
 {
     return SPELLCHECKER_PLUGIN_NAME;
 }

@@ -14,6 +14,7 @@
 #include "helpwords.h"
 
 extern const QString PROJECT_SUBDIR;
+extern const int PROJECT_LOAD_DELAY;
 
 class Project : public QObject
 {

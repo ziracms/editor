@@ -7,7 +7,9 @@
 #ifndef HELPER_H
 #define HELPER_H
 
-#include <QString>
+#include <QList>
+#include "plugininterface.h"
+#include "spellcheckerinterface.h"
 
 extern const QString APPLICATION_NAME;
 extern const QString APPLICATION_VERSION;
@@ -42,6 +44,10 @@ public:
     static void log(QString str);
     static void log(const char * str);
     static void log(std::string str);
+    static QString getPluginFile(QString name, QString path);
+    static QObject * loadPlugin(QString name, QString path = "");
+    static bool isPluginExists(QString name, QString path = "");
+    static SpellCheckerInterface * loadSpellChecker(QString path = "");
 };
 
 #endif // HELPER_H

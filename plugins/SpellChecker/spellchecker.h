@@ -20,7 +20,8 @@ public:
     ~SpellChecker() override;
     bool check(QString & word) override;
     QStringList suggest(QString & word) override;
-    QString getDir() override;
+    void initialize(QString path) override;
+    QString getDirName() override;
 private:
     Hunspell * hunspell;
     Hunspell * hunspellFallback;

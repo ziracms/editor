@@ -13,6 +13,8 @@ public:
     void reset();
     std::unordered_map<std::string, std::string> words;
     std::unordered_map<std::string, std::string>::iterator wordsIterator;
+    std::unordered_map<std::string, std::string> wordsCS;
+    std::unordered_map<std::string, std::string>::iterator wordsCSIterator;
 protected:
     void loadWords();
 public slots:

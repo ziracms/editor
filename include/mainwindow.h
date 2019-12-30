@@ -75,8 +75,6 @@ protected:
     void runServersCommand(QString command, QString pwd, QString description);
     void compileSass(QString src, QString dst);
     void applyThemeColors();
-    QObject * loadPlugin(QString name);
-    bool loadSpellChecker();
 public slots:
     void setStatusBarText(QString text);
     void editorShowLine(int line);

@@ -41,4 +41,15 @@ void SpellWords::loadWords()
         words[k.toStdString()] = k.toStdString();
     }
     pf.close();
+
+    // spell words
+    QFile pcf(":/spell/wordsCS");
+    pcf.open(QIODevice::ReadOnly);
+    QTextStream pcin(&pcf);
+    while (!pcin.atEnd()) {
+        k = pcin.readLine();
+        if (k == "") continue;
+        wordsCS[k.toStdString()] = k.toStdString();
+    }
+    pcf.close();
 }

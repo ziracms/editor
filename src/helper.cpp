@@ -13,6 +13,8 @@
 #include <QMessageBox>
 #include <QRegularExpression>
 #include <QDir>
+#include <QCoreApplication>
+#include <QPluginLoader>
 
 const QString APPLICATION_NAME = "Zira Editor";
 const QString APPLICATION_VERSION = "1.4.0";
@@ -257,4 +259,39 @@ void Helper::log(std::string str)
     const char * cstr = str.c_str();
     QTextStream out(stdout);
     out << cstr;
+}
+
+QString Helper::getPluginFile(QString name, QString path)
+{
+    if (path.size() == 0) path = QCoreApplication::applicationDirPath() + "/" + PLUGINS_DEFAULT_FOLDER_NAME;
+    path += "/" + name;
+    QDir pluginsDir(path);
+    return pluginsDir.absoluteFilePath("lib"+name+".so");
+}
+
+QObject * Helper::loadPlugin(QString name, QString path)
+{
+    QString pluginFile = getPluginFile(name, path);
+    if (!fileExists(pluginFile)) return nullptr;
+    QPluginLoader pluginLoader(pluginFile);
+    return pluginLoader.instance();
+}
+
+SpellCheckerInterface * Helper::loadSpellChecker(QString path)
+{
+    QObject * plugin = loadPlugin(SPELLCHECKER_PLUGIN_NAME, path);
+    if (!plugin) return nullptr;
+    SpellCheckerInterface * spellChecker = qobject_cast<SpellCheckerInterface *>(plugin);
+    if (!spellChecker) {
+        delete plugin;
+        return nullptr;
+    }
+    spellChecker->initialize(path);
+    return spellChecker;
+}
+
+bool Helper::isPluginExists(QString name, QString path)
+{
+    QString pluginFile = getPluginFile(name, path);
+    return fileExists(pluginFile);
 }
