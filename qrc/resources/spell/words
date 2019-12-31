@@ -5,6 +5,8 @@ github
 destructor
 sendmail
 ascii
+php_value
+memory_limit
 filesystem
 gif
 png
@@ -12,9 +14,15 @@ jpg
 jpeg
 txt
 php
+x-javascript
+x-shockwave-flash
 shockwave
 htaccess
 js
 css
 cms
 ziracms
+codemirror
+seo
+smtp
+gzip

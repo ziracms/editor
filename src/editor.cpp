@@ -225,7 +225,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     functionWordExpr = QRegularExpression("(?:^|[^a-zA-Z0-9_\\$]+)function(?:[^a-zA-Z0-9_]+|$)");
     classNameExpr = QRegularExpression("([a-zA-Z0-9_\\\\]+)[\\s]*[(]");
     colorExpr = QRegularExpression("^[#](?:[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9])(?:[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9])?(?:[a-fA-F0-9][a-fA-F0-9])?$");
-    spellWordExpr = QRegularExpression("([\\p{L}0-9_'\\$]+)");
+    spellWordExpr = QRegularExpression("([\\p{L}0-9_'\\$\\-]+)");
 
     // some features is enabled only in experimental mode
     experimentalMode = false;
@@ -2327,6 +2327,10 @@ void Editor::spellCheck(bool suggest, bool forceRehighlight)
                     word = word.mid(1,word.size()-2);
                     start += 1;
                     length -= 2;
+                }
+                if (word.size() > 1 && word[word.size()-1] == "$") {
+                    word = word.mid(0, word.size()-1);
+                    length -= 1;
                 }
                 if (word.size() < 2) continue;
                 std::string mode = highlight->findModeAtCursor(&block, start);

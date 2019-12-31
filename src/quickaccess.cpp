@@ -139,9 +139,9 @@ void QuickAccess::slideIn(int x, int y, int width, int height)
     if (height < WIDGET_MIN_HEIGHT) height = WIDGET_MIN_HEIGHT;
 
     setGeometry(x, y, width, height);
+    show(); // required to calculate height
     int hOffset = findEdit->height() + 3 * vLayout->spacing();
-    resultsList->setMinimumHeight(height - hOffset);
-    resultsList->setMaximumHeight(height - hOffset);
+    resultsList->setFixedHeight(height - hOffset);
 
     animateIn();
 }
