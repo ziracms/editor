@@ -35,5 +35,6 @@
         <file alias="down.png">resources/images/icons/down.png</file>
         <file alias="annotation.png">resources/images/icons/annotation.png</file>
         <file alias="reset.png">resources/images/icons/reset.png</file>
+        <file alias="blank.png">resources/images/icons/blank.png</file>
     </qresource>
 </RCC>

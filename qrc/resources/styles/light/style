@@ -478,6 +478,7 @@ QTabBar::tab:left
     border-bottom: 1px solid #c7c7c7;
     padding: 10px 5px;
     min-height: 100px;
+    margin-right: 2px;
 }
 
 QTabBar::tab:left:first, QTabBar::tab:left:only-one
@@ -497,6 +498,7 @@ QTabBar::tab:right
     border-bottom: 1px solid #c7c7c7;
     padding: 10px 5px;
     min-height: 100px;
+    margin-left: 2px;
 }
 
 QTabBar::tab:right:first, QTabBar::tab:right:only-one
@@ -538,10 +540,61 @@ QTabWidget::pane
     top: 0px;
 }
 
+QDockWidget
+{
+    titlebar-close-icon: url(:/icons/blank.png);
+    titlebar-normal-icon: url(:/icons/blank.png);
+}
+
+QDockWidget::title
+{
+    padding: 5px;
+}
+
+QDockWidget::close-button
+{ 
+    image: url(:/styles/light/close.png);
+    border: none; 
+    background: none;
+    padding: 0px;
+}
+
+QDockWidget::close-button:hover
+{ 
+    image: url(:/styles/light/close-hover.png);
+    border: none; 
+    background: none;
+}
+
+QDockWidget::float-button
+{ 
+    image: url(:/styles/light/float.png);
+    border: none; 
+    background: none;
+    padding: 0px;
+}
+
+QDockWidget::float-button:hover
+{ 
+    image: url(:/styles/light/float-hover.png);
+    border: none; 
+    background: none;
+}
+
 QDockWidget QTabWidget::pane
 {
     border: none;
-    padding: 1px;
+    padding: 0px 2px 2px 2px;
+}
+
+QDockWidget QTabWidget::pane::right
+{
+    padding-left: 0px;
+}
+
+QDockWidget QTabWidget::pane::left
+{
+    padding-right: 0px;
 }
 
 QRadioButton
@@ -636,3 +689,20 @@ QDialogButtonBox
     dialog-reset-icon: url(:/styles/light/reset.png);
 }
 
+QuickAccess,
+QuickAccess:hover,
+QuickAccess:focus
+{
+    border: 1px solid #c5cfd6;
+    background: #f1f1f1;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+QuickAccess QListView,
+QuickAccess QListView:hover,
+QuickAccess QListView:focus
+{
+    background: transparent;
+    border: none;
+}

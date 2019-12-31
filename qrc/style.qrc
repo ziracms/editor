@@ -11,6 +11,8 @@
         <file alias="reset.png">resources/styles/dark/images/reset.png</file>
         <file alias="close-hover.png">resources/styles/dark/images/close-hover.png</file>
         <file alias="close.png">resources/styles/dark/images/close.png</file>
+        <file alias="float-hover.png">resources/styles/dark/images/float-hover.png</file>
+        <file alias="float.png">resources/styles/dark/images/float.png</file>
     </qresource>
     <qresource prefix="/styles/light">
         <file alias="style">resources/styles/light/style</file>
@@ -24,5 +26,7 @@
         <file alias="reset.png">resources/styles/light/images/reset.png</file>
         <file alias="close-hover.png">resources/styles/light/images/close-hover.png</file>
         <file alias="close.png">resources/styles/light/images/close.png</file>
+        <file alias="float-hover.png">resources/styles/light/images/float-hover.png</file>
+        <file alias="float.png">resources/styles/light/images/float.png</file>
     </qresource>
 </RCC>
