@@ -105,6 +105,13 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     editorPopupFont.setPointSize(std::stoi(popupFontSize));
     editorTooltipFont.setPointSize(std::stoi(tooltipFontSize));
     editorBreadcrumbsFont.setPointSize(std::stoi(breadcrumbsFontSize));
+
+    // bold text issue workaround
+    editorFont.setStyleName("");
+    editorPopupFont.setStyleName("");
+    editorTooltipFont.setStyleName("");
+    editorBreadcrumbsFont.setStyleName("");
+
     setFont(editorFont);
 
     // colors

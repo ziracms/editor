@@ -340,29 +340,6 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="editorFontNoteLayout">
-         <property name="leftMargin">
-          <number>156</number>
-         </property>
-         <property name="topMargin">
-          <number>10</number>
-         </property>
-         <property name="bottomMargin">
-          <number>10</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="editorFontNoteLabel">
-           <property name="text">
-            <string>Note: due to a bug in KDE or QT (not sure) bold fonts may not be displayed correctly. If you don't see bold text in editor, try to set &quot;DejaVu Sans Mono&quot; font.</string>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
         <layout class="QHBoxLayout" name="editorTabTypeLayout">
          <property name="topMargin">
           <number>10</number>

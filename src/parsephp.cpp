@@ -865,15 +865,17 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
             expected_function_name = "";
         }
 
+        bool wantFunctionReturnType = current_function_return_type.size() == 0 && current_function.size() > 0;
+
         // class method return "$this" type
-        if (current_function.size() > 0 && (current_class.size() > 0 || current_interface.size() > 0 || current_trait.size() > 0) && prevPrevK.toLower() == "return" && prevK == "$this" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        if (wantFunctionReturnType && (current_class.size() > 0 || current_interface.size() > 0 || current_trait.size() > 0) && prevPrevK.toLower() == "return" && prevK == "$this" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             current_function_return_type = current_class;
             QString clsName = "";
             if (current_class.size() > 0) clsName = current_class;
             else if (current_interface.size() > 0) clsName = current_interface;
             else if (current_trait.size() > 0) clsName = current_trait;
             updateFunctionReturnType(clsName, current_function, current_function_return_type);
-        } else if (current_function.size() > 0 && prevPrevK.toLower() == "return" && prevK.indexOf("$") == 0 && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && prevPrevK.toLower() == "return" && prevK.indexOf("$") == 0 && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "$var" type
             QString clsName = "";
             if (current_class.size() > 0) clsName = current_class;
@@ -890,7 +892,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                     }
                 }
             }
-        } else if (current_function.size() > 0 && prevPrevPrevPrevK.toLower() == "return" && prevPrevPrevK.size() > 0 && prevPrevK == "(" && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && prevPrevPrevPrevK.toLower() == "return" && prevPrevPrevK.size() > 0 && prevPrevK == "(" && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "function()" type
             QString clsName = "";
             if (current_class.size() > 0) clsName = current_class;
@@ -912,7 +914,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                     }
                 }
             }
-        } else if (current_function.size() > 0 && prevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevK == "new" && prevPrevPrevK.size() > 0 && prevPrevK == "(" && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && prevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevK == "new" && prevPrevPrevK.size() > 0 && prevPrevK == "(" && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "new Class()" type
             QString type = prevPrevPrevK;
             QString clsName = "";
@@ -927,7 +929,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                 type = toAbs(current_namespace, type);
             }
             updateFunctionReturnType(clsName, current_function, type);
-        } else if (current_function.size() > 0 && prevPrevPrevK.toLower() == "return" && prevPrevK == "new" && prevK.size() > 0 && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && prevPrevPrevK.toLower() == "return" && prevPrevK == "new" && prevK.size() > 0 && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "new Class" type
             QString type = prevK;
             QString clsName = "";
@@ -942,7 +944,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                 type = toAbs(current_namespace, type);
             }
             updateFunctionReturnType(clsName, current_function, type);
-        } else if (current_function.size() > 0 && prevPrevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevPrevK == "new" && prevPrevPrevPrevK.size() > 0 && prevPrevPrevK == "(" && prevPrevK.size() > 0 && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && prevPrevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevPrevK == "new" && prevPrevPrevPrevK.size() > 0 && prevPrevPrevK == "(" && prevPrevK.size() > 0 && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "new Class($var)" type
             QString type = prevPrevPrevPrevK;
             QString clsName = "";
@@ -957,7 +959,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                 type = toAbs(current_namespace, type);
             }
             updateFunctionReturnType(clsName, current_function, type);
-        } else if (current_function.size() > 0 && prevPrevPrevPrevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevPrevPrevPrevK == "new" && prevPrevPrevPrevPrevPrevK.size() > 0 && prevPrevPrevPrevPrevK == "(" && prevPrevPrevPrevK.size() > 0 && prevPrevPrevK == "," && prevPrevK.size() > 0 && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && prevPrevPrevPrevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevPrevPrevPrevK == "new" && prevPrevPrevPrevPrevPrevK.size() > 0 && prevPrevPrevPrevPrevK == "(" && prevPrevPrevPrevK.size() > 0 && prevPrevPrevK == "," && prevPrevK.size() > 0 && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "new Class($var1, $var2)" type
             QString type = prevPrevPrevPrevPrevPrevK;
             QString clsName = "";
@@ -972,7 +974,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                 type = toAbs(current_namespace, type);
             }
             updateFunctionReturnType(clsName, current_function, type);
-        } else if (current_function.size() > 0 && prevPrevPrevPrevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevPrevPrevPrevK == "new" && prevPrevPrevPrevPrevPrevK.size() > 0 && prevPrevPrevPrevPrevK == "(" && prevPrevPrevPrevK.size() > 0 && prevPrevPrevK == "(" && prevPrevK == ")" && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && prevPrevPrevPrevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevPrevPrevPrevK == "new" && prevPrevPrevPrevPrevPrevK.size() > 0 && prevPrevPrevPrevPrevK == "(" && prevPrevPrevPrevK.size() > 0 && prevPrevPrevK == "(" && prevPrevK == ")" && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "new Class(func())" type
             QString type = prevPrevPrevPrevPrevPrevK;
             QString clsName = "";
@@ -987,7 +989,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                 type = toAbs(current_namespace, type);
             }
             updateFunctionReturnType(clsName, current_function, type);
-        } else if (current_function.size() > 0 && (current_class.size() > 0 || current_interface.size() > 0 || current_trait.size() > 0) && prevPrevPrevPrevPrevK.toLower() == "return" && (prevPrevPrevPrevK.toLower() == "self" || prevPrevPrevPrevK.toLower() == "static") && prevPrevPrevK == ":" && prevPrevK == ":" && prevK.indexOf("$") == 0 && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && (current_class.size() > 0 || current_interface.size() > 0 || current_trait.size() > 0) && prevPrevPrevPrevPrevK.toLower() == "return" && (prevPrevPrevPrevK.toLower() == "self" || prevPrevPrevPrevK.toLower() == "static") && prevPrevPrevK == ":" && prevPrevK == ":" && prevK.indexOf("$") == 0 && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "self::$var" type
             QString clsName = "";
             if (current_class.size() > 0) clsName = current_class;
@@ -1004,7 +1006,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                     }
                 }
             }
-        } else if (current_function.size() > 0 && (current_class.size() > 0 || current_interface.size() > 0 || current_trait.size() > 0) && prevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevK == "$this" && prevPrevPrevK == "-" && prevPrevK == ">" && prevK.indexOf("$") < 0 && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && (current_class.size() > 0 || current_interface.size() > 0 || current_trait.size() > 0) && prevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevK == "$this" && prevPrevPrevK == "-" && prevPrevK == ">" && prevK.indexOf("$") < 0 && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "$this->var" type
             QString clsName = "";
             if (current_class.size() > 0) clsName = current_class;
@@ -1021,7 +1023,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                     }
                 }
             }
-        } else if (current_function.size() > 0 && (current_class.size() > 0 || current_interface.size() > 0 || current_trait.size() > 0) && prevPrevPrevPrevPrevPrevPrevK.toLower() == "return" && (prevPrevPrevPrevPrevPrevK.toLower() == "self" || prevPrevPrevPrevPrevPrevK.toLower() == "static") && prevPrevPrevPrevPrevK == ":" && prevPrevPrevPrevK == ":" && prevPrevPrevK.size() > 0 && prevPrevK == "(" && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && (current_class.size() > 0 || current_interface.size() > 0 || current_trait.size() > 0) && prevPrevPrevPrevPrevPrevPrevK.toLower() == "return" && (prevPrevPrevPrevPrevPrevK.toLower() == "self" || prevPrevPrevPrevPrevPrevK.toLower() == "static") && prevPrevPrevPrevPrevK == ":" && prevPrevPrevPrevK == ":" && prevPrevPrevK.size() > 0 && prevPrevK == "(" && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "self::function()" type
             QString clsName = "";
             if (current_class.size() > 0) clsName = current_class;
@@ -1038,7 +1040,7 @@ void ParsePHP::parseCode(QString & code, QString & origText, int textOffset)
                     }
                 }
             }
-        } else if (current_function.size() > 0 && (current_class.size() > 0 || current_interface.size() > 0 || current_trait.size() > 0) && prevPrevPrevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevPrevPrevK == "$this" && prevPrevPrevPrevPrevK == "-" && prevPrevPrevPrevK == ">" && prevPrevPrevK.size() > 0 && prevPrevK == "(" && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
+        } else if (wantFunctionReturnType && (current_class.size() > 0 || current_interface.size() > 0 || current_trait.size() > 0) && prevPrevPrevPrevPrevPrevPrevK.toLower() == "return" && prevPrevPrevPrevPrevPrevK == "$this" && prevPrevPrevPrevPrevK == "-" && prevPrevPrevPrevK == ">" && prevPrevPrevK.size() > 0 && prevPrevK == "(" && prevK == ")" && k == ";" && anonymFunctionScope < 0 && anonymClassScope < 0) {
             // function return "$this->function()" type
             QString clsName = "";
             if (current_class.size() > 0) clsName = current_class;

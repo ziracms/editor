@@ -1057,6 +1057,7 @@ void MainWindow::gitCommandFinished(QString command, QString output, bool output
         Editor * textEditor = editorTabs->getActiveEditor();
         if (textEditor != nullptr && textEditor->isReady()) {
             gitAnnotationRequested(textEditor->getFileName());
+            gitDiffUnifiedRequested(textEditor->getFileName());
         }
     }
 }
