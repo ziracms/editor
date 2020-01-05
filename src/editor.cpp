@@ -2043,6 +2043,7 @@ void Editor::insertFromMimeData(const QMimeData *source)
                 }
             }
             QTextCursor cursor = textCursor();
+            if (tabType == "spaces") textF = textF.replace("\t", space);
             cursor.insertText(textF.trimmed());
             return;
         }
