@@ -55,6 +55,7 @@ highlight_known_color = #800064
 highlight_expression_color = #6100ab
 highlight_space_color = #000000
 highlight_tab_color = #cecece
+highlight_punctuation_color = #005cab
 messages_error_color = #bd0606
 messages_warning_color = #006b37
 search_results_color = #314d5d

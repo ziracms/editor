@@ -2040,12 +2040,15 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
         addSpecialChar(c, pos);
     }
 
-    // tabs and spaces
+    // tabs, spaces, semicolons, commas
     if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0) {
         if (highlightTabs && c == "\t") {
             highlightChar(pos, HW->tabFormat);
         } else if (highlightSpaces && c == " ") {
             highlightChar(pos, HW->spaceFormat);
+        }
+        if (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]") {
+            highlightChar(pos, HW->punctuationFormat);
         }
     }
 }
@@ -2295,12 +2298,15 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         addSpecialChar(c, pos);
     }
 
-    // tabs and spaces
+    // tabs, spaces, semicolons, commas
     if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0) {
         if (highlightTabs && c == "\t") {
             highlightChar(pos, HW->tabFormat);
         } else if (highlightSpaces && c == " ") {
             highlightChar(pos, HW->spaceFormat);
+        }
+        if (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]") {
+            highlightChar(pos, HW->punctuationFormat);
         }
     }
 }
@@ -2901,12 +2907,15 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
         addSpecialChar(c, pos);
     }
 
-    // tabs and spaces
+    // tabs, spaces, semicolons, commas
     if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0) {
         if (highlightTabs && c == "\t") {
             highlightChar(pos, HW->tabFormat);
         } else if (highlightSpaces && c == " ") {
             highlightChar(pos, HW->spaceFormat);
+        }
+        if (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\") {
+            highlightChar(pos, HW->punctuationFormat);
         }
     }
 }

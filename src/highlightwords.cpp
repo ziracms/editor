@@ -59,6 +59,8 @@ HighlightWords::HighlightWords(Settings * settings)
     QColor spaceColor(spaceColorStr.c_str());
     std::string tabColorStr = settings->get("highlight_tab_color");
     QColor tabColor(tabColorStr.c_str());
+    std::string punctuationColorStr = settings->get("highlight_punctuation_color");
+    QColor punctuationColor(punctuationColorStr.c_str());
 
     // highlight formats
     keywordFormat.setForeground(keywordColor);
@@ -108,6 +110,8 @@ HighlightWords::HighlightWords(Settings * settings)
     tabFormat.setUnderlineStyle(QTextCharFormat::SingleUnderline);
     colorFormat.setUnderlineColor(tabColor);
     colorFormat.setUnderlineStyle(QTextCharFormat::DashUnderline);
+    punctuationFormat.setForeground(punctuationColor);
+    punctuationFormat.setFontWeight(QFont::Bold);
 
     QTimer::singleShot(LOAD_DELAY, this, SLOT(load()));
 }

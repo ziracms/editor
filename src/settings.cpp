@@ -153,6 +153,7 @@ void Settings::applyLightColors()
     data["highlight_expression_color"] = "#6100ab";
     data["highlight_space_color"] = "#000000";
     data["highlight_tab_color"] = "#cecece";
+    data["highlight_punctuation_color"] = "#005cab";
     data["messages_error_color"] = "#bd0606";
     data["messages_warning_color"] = "#006b37";
     data["search_results_color"] = "#314d5d";
@@ -226,6 +227,7 @@ void Settings::applyDarkColors()
     data["highlight_expression_color"] = "#00a5cc";
     data["highlight_space_color"] = "#888888";
     data["highlight_tab_color"] = "#333333";
+    data["highlight_punctuation_color"] = "#00a5cc";
     data["messages_error_color"] = "#f12d2d";
     data["messages_warning_color"] = "#0c9c5d";
     data["search_results_color"] = "#4495c3";
