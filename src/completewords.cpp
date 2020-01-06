@@ -42,6 +42,8 @@ void CompleteWords::reset()
     phpClassParents.clear();
     htmlAllTagsComplete.clear();
     cssPropertiesComplete.clear();
+    cssPseudoComplete.clear();
+    cssValuesComplete.clear();
     jsObjectsComplete.clear();
     jsSpecialsComplete.clear();
     jsFunctionsComplete.clear();
@@ -82,6 +84,17 @@ void CompleteWords::loadCSSWords()
         cssPseudoComplete[k.toStdString()] = k.toStdString();
     }
     psf.close();
+
+    // css values
+    QFile vsf(":/syntax/css_values");
+    vsf.open(QIODevice::ReadOnly);
+    QTextStream vsin(&vsf);
+    while (!vsin.atEnd()) {
+        k = vsin.readLine();
+        if (k == "") continue;
+        cssValuesComplete[k.toStdString()] = k.toStdString();
+    }
+    vsf.close();
 }
 
 void CompleteWords::loadHTMLWords()

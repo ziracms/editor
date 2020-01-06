@@ -2654,6 +2654,17 @@ void Editor::detectCompleteTextCSS(QString text, QChar cursorTextPrevChar)
             }
         }
     }
+    if (colIndex >= 0 && completePopup->count() < completePopup->limit()) {
+        // css vals
+        for (auto & it : CW->cssValuesComplete) {
+            QString k = QString::fromStdString(it.first);
+            //if (k == text) continue;
+            if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                if (completePopup->count() >= completePopup->limit()) break;
+            }
+        }
+    }
     if (completePopup->count() < completePopup->limit()) {
         // css id & class selectors
         for (int i=parseResultCSS.names.size()-1; i>=0; i--){
