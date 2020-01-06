@@ -25,6 +25,8 @@ public:
     void addPHPConstant(QString k);
     void addPHPClassConstant(QString cls, QString c);
     void addJSFunction(QString k);
+    void addJSInterface(QString k);
+    void addJSObject(QString k);
     void addCSSProperty(QString k);
     void addHTMLTag(QString k);
     void addHTMLShortTag(QString k);

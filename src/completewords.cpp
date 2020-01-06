@@ -44,6 +44,8 @@ void CompleteWords::reset()
     cssPropertiesComplete.clear();
     jsObjectsComplete.clear();
     jsSpecialsComplete.clear();
+    jsFunctionsComplete.clear();
+    jsInterfacesComplete.clear();
     phpFunctionsComplete.clear();
     phpConstsComplete.clear();
     phpClassesComplete.clear();
@@ -133,6 +135,7 @@ void CompleteWords::loadJSWords()
         k = oin.readLine();
         if (k == "") continue;
         jsObjectsComplete[k.toStdString()] = k.toStdString();
+        HW->addJSObject(k);
     }
     of.close();
 
@@ -146,6 +149,30 @@ void CompleteWords::loadJSWords()
         jsSpecialsComplete[k.toStdString()] = k.toStdString();
     }
     sf.close();
+
+    // js functions
+    QFile ff(":/syntax/js_functions");
+    ff.open(QIODevice::ReadOnly);
+    QTextStream fin(&ff);
+    while (!fin.atEnd()) {
+        k = fin.readLine();
+        if (k == "") continue;
+        jsFunctionsComplete[k.toStdString()] = k.toStdString();
+        HW->addJSFunction(k);
+    }
+    ff.close();
+
+    // js interfaces
+    QFile inf(":/syntax/js_interfaces");
+    inf.open(QIODevice::ReadOnly);
+    QTextStream inin(&inf);
+    while (!inin.atEnd()) {
+        k = inin.readLine();
+        if (k == "") continue;
+        jsInterfacesComplete[k.toStdString()] = k.toStdString();
+        HW->addJSInterface(k);
+    }
+    inf.close();
 }
 
 void CompleteWords::loadPHPWords()

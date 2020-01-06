@@ -204,28 +204,6 @@ void HighlightWords::loadJSWords()
         jswordsCS[k.toStdString()] = keywordFormat;
     }
     kf.close();
-
-    // types
-    QFile tf(":/highlight/js_types");
-    tf.open(QIODevice::ReadOnly);
-    QTextStream tin(&tf);
-    while (!tin.atEnd()) {
-        k = tin.readLine();
-        if (k == "") continue;
-        jswordsCS[k.toStdString()] = keywordFormat;
-    }
-    tf.close();
-
-    // functions
-    QFile clf(":/highlight/js_functions");
-    clf.open(QIODevice::ReadOnly);
-    QTextStream clin(&clf);
-    while (!clin.atEnd()) {
-        k = clin.readLine();
-        if (k == "") continue;
-        jswordsCS[k.toStdString()] = keywordFormat;
-    }
-    clf.close();
 }
 
 void HighlightWords::loadCSSWords()
@@ -295,7 +273,17 @@ void HighlightWords::addPHPClassConstant(QString cls, QString c)
 
 void HighlightWords::addJSFunction(QString k)
 {
-    jswordsCS[k.toStdString()] = knownFormat;
+    jswordsCS[k.toStdString()] = knownFunctionFormat;
+}
+
+void HighlightWords::addJSInterface(QString k)
+{
+    jswordsCS[k.toStdString()] = classFormat;
+}
+
+void HighlightWords::addJSObject(QString k)
+{
+    jswordsCS[k.toStdString()] = classFormat;
 }
 
 void HighlightWords::addCSSProperty(QString k)

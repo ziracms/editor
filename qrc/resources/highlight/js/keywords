@@ -64,9 +64,5 @@ with
 yield
 clientInformation
 crypto
-document
-navigator
-history
 self
 parent
-window

@@ -2684,6 +2684,28 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
                 }
             }
         }
+        // js functions
+        if (completePopup->count() < completePopup->limit()) {
+            for (auto & it : CW->jsFunctionsComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+        }
+        // js interfaces
+        if (completePopup->count() < completePopup->limit()) {
+            for (auto & it : CW->jsInterfacesComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+        }
         // parsed classes
         if (prevWord == "var" && completePopup->count() < completePopup->limit()) {
             for (int i=0; i<parseResultJS.classes.size(); i++){

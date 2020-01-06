@@ -17,5 +17,7 @@
         <file alias="php_function_types">resources/syntax/php/function_types</file>
         <file alias="php_class_method_types">resources/syntax/php/class_method_types</file>
         <file alias="css_pseudo">resources/syntax/css/pseudo</file>
+        <file alias="js_functions">resources/syntax/js/functions</file>
+        <file alias="js_interfaces">resources/syntax/js/interfaces</file>
     </qresource>
 </RCC>
