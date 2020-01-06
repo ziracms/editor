@@ -5221,6 +5221,7 @@ void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPre
             if (searchWord) findFlags |= QTextDocument::FindWholeWords;
             searchWordCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
             int searchWordBlockNumber = -1;
+            int co = 0;
             while(!searchWordCursor.isNull() && !searchWordCursor.atEnd()) {
                 if (!searchRegE) searchWordCursor = document()->find(searchString, searchWordCursor, findFlags);
                 else searchWordCursor = document()->find(QRegularExpression(searchString), searchWordCursor, findFlags);
@@ -5234,6 +5235,8 @@ void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPre
                         static_cast<LineMap *>(lineMap)->addMark(searchWordBlockNumber+1);
                     }
                 }
+                co++;
+                if (co > 10000) break; // too much results
             }
         }
         // repaint line map
