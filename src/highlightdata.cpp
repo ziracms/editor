@@ -54,6 +54,7 @@ void HighlightData::reset()
     stateEnds.clear();
     stateIds.clear();
     hasMarkPoint = false;
+    isModified = false;
     nsNamePHP = "";
     nsChainPHP = "";
     nsScopeChainPHP.clear();

@@ -335,6 +335,8 @@ private:
 
     std::unordered_map<int, std::string> markPoints;
     std::unordered_map<int, std::string>::iterator markPointsIterator;
+    std::unordered_map<int, int> modifiedLines;
+    std::unordered_map<int, int>::iterator modifiedLinesIterator;
 
     QVector<int> backPositions;
     QVector<int> forwardPositions;

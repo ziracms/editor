@@ -55,6 +55,7 @@ public:
     QVector<int> stateEnds;
     QVector<int> stateIds;
     bool hasMarkPoint;
+    bool isModified;
     QString nsNamePHP;
     QList<int> nsScopeChainPHP;
     QString nsChainPHP;

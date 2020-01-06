@@ -463,6 +463,7 @@ void Editor::reset()
     static_cast<LineMap *>(lineMap)->clear();
     static_cast<LineMark *>(lineMark)->clear();
     markPoints.clear();
+    modifiedLines.clear();
     modified = false;
     lastModifiedMsec = 0;
     warningDisplayed = false;
@@ -2056,14 +2057,18 @@ void Editor::blockCountChanged(int /*blockCount*/)
     updateViewportMargins();
     updateLineWidgetsArea();
     lineAnnotation->hide();
-    // updating mark points
+    // updating mark points, modified lines
     markPoints.clear();
+    modifiedLines.clear();
     QTextCursor curs = textCursor();
     curs.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
     do {
         HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
         if (blockData != nullptr && blockData->hasMarkPoint) {
             markPoints[curs.block().blockNumber()+1] = curs.block().text().toStdString();
+        }
+        if (blockData != nullptr && blockData->isModified) {
+            modifiedLines[curs.block().blockNumber()+1] = curs.block().blockNumber()+1;
         }
     } while(curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor));
 
@@ -2177,6 +2182,19 @@ void Editor::textChanged()
     if (!spellLocked && spellCheckerEnabled && spellChecker != nullptr) {
         spellLocked = true;
         QTimer::singleShot(INTERVAL_SPELL_CHECK_MILLISECONDS, this, SLOT(spellCheck()));
+    }
+
+    // set line modified status
+    QTextCursor curs = textCursor();
+    modifiedLinesIterator = modifiedLines.find(curs.block().blockNumber() + 1);
+    if (modifiedLinesIterator == modifiedLines.end()) {
+        modifiedLines[curs.block().blockNumber() + 1] = curs.block().blockNumber() + 1;
+        HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
+        if (blockData != nullptr) {
+            blockData->isModified = true;
+            curs.block().setUserData(blockData);
+        }
+        lineNumber->update();
     }
 }
 
@@ -4456,6 +4474,10 @@ void Editor::lineNumberAreaPaintEvent(QPaintEvent *event)
                     painter.fillRect(0, top, lineNumber->width(), 1, lineNumberDeletedBorderColor);
                 }
             } else {
+                modifiedLinesIterator = modifiedLines.find(blockNumber + 1);
+                if (modifiedLinesIterator != modifiedLines.end()) {
+                    painter.fillRect(0, top, LINE_NUMBER_WIDGET_PADDING / 2, bottom - top, lineNumberModifiedBgColor);
+                }
                 painter.setPen(lineNumberColor);
             }
             painter.drawText(0, top, lineNumber->width(), fm.height(), Qt::AlignRight, number);

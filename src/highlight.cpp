@@ -3162,6 +3162,7 @@ bool Highlight::parseBlock(const QString & text)
     QString _exprEscStringJS = exprEscStringJS;
     QString _stringEscVariableJS = stringEscVariableJS;
     bool _hasMarkPoint = false; // used by editor
+    bool _isModified = false; // used by editor
     QString _nsNamePHP = nsNamePHP;
     QString _nsChainPHP = nsChainPHP;
     QString _clsNamePHP = clsNamePHP;
@@ -3216,6 +3217,7 @@ bool Highlight::parseBlock(const QString & text)
         _exprEscStringJS = blockData->exprEscStringJS;
         _stringEscVariableJS = blockData->stringEscVariableJS;
         _hasMarkPoint = blockData->hasMarkPoint;
+        _isModified = blockData->isModified;
         _nsNamePHP = blockData->nsNamePHP;
         _nsChainPHP = blockData->nsChainPHP;
         _clsNamePHP = blockData->clsNamePHP;
@@ -3390,7 +3392,8 @@ bool Highlight::parseBlock(const QString & text)
     blockData->stateStarts = stateStarts;
     blockData->stateEnds = stateEnds;
     blockData->stateIds = stateIds;
-    blockData->hasMarkPoint = _hasMarkPoint; // for editor
+    blockData->hasMarkPoint = _hasMarkPoint; // used by editor
+    blockData->isModified = _isModified; // used by editor
     blockData->nsNamePHP = nsNamePHP;
     blockData->nsChainPHP = nsChainPHP;
     blockData->nsScopeChainPHP = nsScopeChainPHP;
