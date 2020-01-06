@@ -594,6 +594,7 @@ void Editor::initSpellChecker()
         if (percent > 100) percent = 100;
         emit statusBarText(tabIndex, progressStr+Helper::intToStr(percent)+"%");
         QCoreApplication::processEvents();
+        if (tabIndex < 0) break;
     }
     emit statusBarText(tabIndex, "");
 }

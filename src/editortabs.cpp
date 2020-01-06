@@ -148,6 +148,7 @@ void EditorTabs::closeTab(int index)
     if (textEditor != nullptr && textEditor->isModified() && QMessageBox::question(tabWidget, tr("File is not saved"), tr("File \"%1\"  is not saved. Close it anyway ?").arg(textEditor->getFileName()), QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok) {
         return;
     }
+    if (textEditor != nullptr) textEditor->setTabIndex(-1);
     blockSig = true;
     bool isSwitched = false;
     if (editor == textEditor) {
