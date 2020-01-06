@@ -103,12 +103,12 @@ QString ParsePHP::cleanUp(QString text)
         if (phpEndPos >= 0) matchesPos.append(phpEndPos);
         if (stringDQPos != -1 && stringDQPos < offset) {
             stringDQMatch = stringDQExpression.match(text, offset);
-            stringDQPos = stringDQMatch.capturedStart();
+            stringDQPos = stringDQMatch.capturedStart(1)-1;
         }
         if (stringDQPos >= 0) matchesPos.append(stringDQPos);
         if (stringSQPos != -1 && stringSQPos < offset) {
             stringSQMatch = stringSQExpression.match(text, offset);
-            stringSQPos = stringSQMatch.capturedStart();
+            stringSQPos = stringSQMatch.capturedStart(1)-1;
         }
         if (stringSQPos >= 0) matchesPos.append(stringSQPos);
         if (stringHeredocPos != -1 && stringHeredocPos < offset) {
@@ -143,7 +143,7 @@ QString ParsePHP::cleanUp(QString text)
         if (commentSLAPos >= 0) matchesPos.append(commentSLAPos);
         if (backtickPos != -1 && backtickPos < offset) {
             backtickMatch = backtickExpression.match(text, offset);
-            backtickPos = backtickMatch.capturedStart();
+            backtickPos = backtickMatch.capturedStart(1)-1;
         }
         if (backtickPos >= 0) matchesPos.append(backtickPos);
         if (matchesPos.size() == 0) break;

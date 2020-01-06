@@ -54,12 +54,12 @@ QString ParseCSS::cleanUp(QString text)
         matchesPos.clear();
         if (stringDQPos != -1 && stringDQPos < offset) {
             stringDQMatch = stringDQExpression.match(text, offset);
-            stringDQPos = stringDQMatch.capturedStart();
+            stringDQPos = stringDQMatch.capturedStart(1)-1;
         }
         if (stringDQPos >= 0) matchesPos.append(stringDQPos);
         if (stringSQPos != -1 && stringSQPos < offset) {
             stringSQMatch = stringSQExpression.match(text, offset);
-            stringSQPos = stringSQMatch.capturedStart();
+            stringSQPos = stringSQMatch.capturedStart(1)-1;
         }
         if (stringSQPos >= 0) matchesPos.append(stringSQPos);
         if (commentMLPos != -1 && commentMLPos < offset) {

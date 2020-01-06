@@ -44,12 +44,12 @@ QString ParseJS::cleanUp(QString text)
         matchesPos.clear();
         if (stringDQPos != -1 && stringDQPos < offset) {
             stringDQMatch = stringDQExpression.match(text, offset);
-            stringDQPos = stringDQMatch.capturedStart();
+            stringDQPos = stringDQMatch.capturedStart(1)-1;
         }
         if (stringDQPos >= 0) matchesPos.append(stringDQPos);
         if (stringSQPos != -1 && stringSQPos < offset) {
             stringSQMatch = stringSQExpression.match(text, offset);
-            stringSQPos = stringSQMatch.capturedStart();
+            stringSQPos = stringSQMatch.capturedStart(1)-1;
         }
         if (stringSQPos >= 0) matchesPos.append(stringSQPos);
         if (commentMLPos != -1 && commentMLPos < offset) {
@@ -64,12 +64,12 @@ QString ParseJS::cleanUp(QString text)
         if (commentSLPos >= 0) matchesPos.append(commentSLPos);
         if (regexpPos != -1 && regexpPos < offset) {
             regexpMatch = regexpExpression.match(text, offset);
-            regexpPos = regexpMatch.capturedStart(1); // group 1
+            regexpPos = regexpMatch.capturedStart(1)-1;
         }
         if (regexpPos >= 0) matchesPos.append(regexpPos);
         if (backtickPos != -1 && backtickPos < offset) {
             backtickMatch = backtickExpression.match(text, offset);
-            backtickPos = backtickMatch.capturedStart();
+            backtickPos = backtickMatch.capturedStart(1)-1;
         }
         if (backtickPos >= 0) matchesPos.append(backtickPos);
         if (matchesPos.size() == 0) break;
