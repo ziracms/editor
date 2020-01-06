@@ -483,6 +483,7 @@ void Editor::reset()
     spellBlocksQueue.clear();
     errorsExtraSelections.clear();
     spellCheckInitBlockNumber = 0;
+    isBlocksHeightEquals = true;
 }
 
 void Editor::highlightProgressChanged(int percent)
@@ -542,6 +543,17 @@ void Editor::initMode(QString ext)
     document()->setModified(modified);
     emit modifiedStateChanged(tabIndex, modified);
     updateWidgetsGeometry();
+
+    // checking if all blocks have the same height
+    QTextCursor curs = textCursor();
+    curs.movePosition(QTextCursor::Start);
+    int h = static_cast<int>(document()->documentLayout()->blockBoundingRect(curs.block()).height());
+    while(curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor)) {
+        if (static_cast<int>(document()->documentLayout()->blockBoundingRect(curs.block()).height()) != h) {
+            isBlocksHeightEquals = false;
+            break;
+        }
+    }
 }
 
 void Editor::initHighlighter()
@@ -4283,6 +4295,7 @@ int Editor::findLastVisibleBlockIndex()
 
 int Editor::getFirstVisibleBlockIndex()
 {
+    if (!isBlocksHeightEquals) return findFirstVisibleBlockIndex();
     if (document()->blockCount()<1) return -1;
     int slider_pos = verticalScrollBar()->sliderPosition();
     QTextBlock first = document()->findBlockByNumber(0);
@@ -4296,6 +4309,7 @@ int Editor::getFirstVisibleBlockIndex()
 
 int Editor::getLastVisibleBlockIndex()
 {
+    if (!isBlocksHeightEquals) return findLastVisibleBlockIndex();
     if (document()->blockCount()<1) return -1;
     int slider_pos = verticalScrollBar()->sliderPosition();
     QTextBlock first = document()->findBlockByNumber(0);

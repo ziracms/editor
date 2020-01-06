@@ -358,6 +358,7 @@ private:
     bool spellLocked;
     QVector<int> spellBlocksQueue;
     int spellCheckInitBlockNumber;
+    bool isBlocksHeightEquals;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);
