@@ -307,6 +307,7 @@ private:
     bool is_ready;
     std::string modeOnKeyPress;
     int lastKeyPressed;
+    int lastKeyPressedBlockNumber;
     Tooltip tooltipLabel;
     QString tooltipSavedText;
     int tooltipSavedPageOffset;

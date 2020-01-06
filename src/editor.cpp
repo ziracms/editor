@@ -327,6 +327,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     extension = "";
     modeOnKeyPress = "";
     lastKeyPressed = -1;
+    lastKeyPressedBlockNumber = -1;
     tooltipSavedText = "";
     tooltipSavedList.clear();
     tooltipSavedPageOffset = -1;
@@ -453,6 +454,7 @@ void Editor::reset()
     textChangeLocked = false;
     modeOnKeyPress = "";
     lastKeyPressed = -1;
+    lastKeyPressedBlockNumber = -1;
     tooltipSavedText = "";
     tooltipSavedList.clear();
     tooltipSavedPageOffset = -1;
@@ -1546,6 +1548,7 @@ void Editor::keyPressEvent(QKeyEvent *e)
     if (e->modifiers() & Qt::ControlModifier) ctrl = true;
     int code = e->key();
     lastKeyPressed = code;
+    lastKeyPressedBlockNumber = textCursor().block().blockNumber();
     // insert quotes & brackets pair
     if ((code == Qt::Key_QuoteDbl || code == Qt::Key_Apostrophe || code == Qt::Key_BraceLeft || code == Qt::Key_BracketLeft || code == Qt::Key_ParenLeft) && !ctrl) {
         QTextCursor curs = textCursor();
@@ -2186,15 +2189,35 @@ void Editor::textChanged()
 
     // set line modified status
     QTextCursor curs = textCursor();
-    modifiedLinesIterator = modifiedLines.find(curs.block().blockNumber() + 1);
-    if (modifiedLinesIterator == modifiedLines.end()) {
-        modifiedLines[curs.block().blockNumber() + 1] = curs.block().blockNumber() + 1;
-        HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
-        if (blockData != nullptr) {
-            blockData->isModified = true;
-            curs.block().setUserData(blockData);
+    if ((lastKeyPressedBlockNumber == curs.block().blockNumber() && lastKeyPressed != Qt::Key_Return) || (curs.positionInBlock() == 0 && curs.block().text().size() > 0) || (curs.positionInBlock() > 0 && curs.positionInBlock() != curs.block().text().size())) {
+        modifiedLinesIterator = modifiedLines.find(curs.block().blockNumber() + 1);
+        if (modifiedLinesIterator == modifiedLines.end()) {
+            modifiedLines[curs.block().blockNumber() + 1] = curs.block().blockNumber() + 1;
+            HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
+            if (blockData != nullptr) {
+                blockData->isModified = true;
+                curs.block().setUserData(blockData);
+            }
+            lineNumber->update();
         }
-        lineNumber->update();
+        if (lastKeyPressedBlockNumber < curs.block().blockNumber()) {
+            modifiedLinesIterator = modifiedLines.find(lastKeyPressedBlockNumber + 1);
+            if (modifiedLinesIterator == modifiedLines.end()) {
+                modifiedLines[lastKeyPressedBlockNumber + 1] = lastKeyPressedBlockNumber + 1;
+                if (lastKeyPressedBlockNumber == curs.block().blockNumber()-1) {
+                    curs.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor);
+                } else {
+                    curs.movePosition(QTextCursor::Start);
+                    if (lastKeyPressedBlockNumber > 0) curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, lastKeyPressedBlockNumber);
+                }
+                HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
+                if (blockData != nullptr) {
+                    blockData->isModified = true;
+                    curs.block().setUserData(blockData);
+                }
+                lineNumber->update();
+            }
+        }
     }
 }
 
