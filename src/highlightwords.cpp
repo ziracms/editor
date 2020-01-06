@@ -78,6 +78,7 @@ HighlightWords::HighlightWords(Settings * settings)
     unusedVariableFormat.setForeground(unusedVariableColor);
     unusedVariableFormat.setFontWeight(QFont::Normal);
     //unusedVariableFormat.setFontItalic(true);
+    constFormat.setFontWeight(QFont::Bold);
     singleLineCommentFormat.setForeground(singleLineCommentColor);
     singleLineCommentFormat.setFontWeight(QFont::Normal);
     multiLineCommentFormat.setForeground(multiLineCommentColor);
@@ -133,6 +134,7 @@ void HighlightWords::reset()
 {
     phpwords.clear();
     phpwordsCS.clear();
+    phpClassWordsCS.clear();
     jswordsCS.clear();
     csswords.clear();
     htmlwords.clear();
@@ -277,6 +279,18 @@ void HighlightWords::addPHPFunction(QString k)
 void HighlightWords::addPHPVariable(QString k)
 {
     phpwordsCS[k.toStdString()] = knownVariableFormat;
+}
+
+void HighlightWords::addPHPConstant(QString k)
+{
+    phpwordsCS[k.toStdString()] = constFormat;
+}
+
+void HighlightWords::addPHPClassConstant(QString cls, QString c)
+{
+    if (cls.indexOf("\\") >= 0) cls = cls.mid(cls.lastIndexOf("\\")+1);
+    QString k = cls.toLower() + "::" + c;
+    phpClassWordsCS[k.toStdString()] = constFormat;
 }
 
 void HighlightWords::addJSFunction(QString k)

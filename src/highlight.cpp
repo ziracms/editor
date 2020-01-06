@@ -2491,6 +2491,13 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
             } else {
                 highlightString(keywordPHPStart, keywordPHPLength, HW->knownVariableFormat);
             }
+        } else if (keywordPHPprevChar == ":" && keywordPHPprevString.size() > 0) {
+            QString k = keywordPHPprevString.toLower()+"::"+keywordStringPHP;
+            HW->phpClassWordsCSIterator = HW->phpClassWordsCS.find(k.toStdString());
+            if (HW->phpClassWordsCSIterator != HW->phpClassWordsCS.end()) {
+                QTextCharFormat format = HW->phpClassWordsCSIterator->second;
+                highlightString(keywordPHPStart, keywordPHPLength, format);
+            }
         }
         if (keywordPHPprevChar != "$" && !isObjectContext && keywordStringPHP.size()>0) {
             // namespace scope
@@ -2914,7 +2921,7 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
         } else if (highlightSpaces && c == " ") {
             highlightChar(pos, HW->spaceFormat);
         }
-        if (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\") {
+        if (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@") {
             highlightChar(pos, HW->punctuationFormat);
         }
     }

@@ -247,6 +247,8 @@ void CompleteWords::loadPHPWords()
         k = coin.readLine();
         if (k == "") continue;
         phpClassConstsComplete[k.toStdString()] = k.toStdString();
+        QStringList kParts = k.split("::");
+        if (kParts.size() == 2) HW->addPHPClassConstant(kParts.at(0), kParts.at(1));
     }
     cof.close();
 

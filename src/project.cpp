@@ -344,6 +344,7 @@ void Project::loadPHPWords(QString project_dir, CompleteWords * CW, HighlightWor
         k = cnin.readLine();
         if (k == "") continue;
         CW->phpConstsComplete[k.toStdString()] = k.toStdString();
+        HW->addPHPConstant(k);
     }
     cnf.close();
 
@@ -409,6 +410,8 @@ void Project::loadPHPWords(QString project_dir, CompleteWords * CW, HighlightWor
         k = coin.readLine();
         if (k == "") continue;
         CW->phpClassConstsComplete[k.toStdString()] = k.toStdString();
+        QStringList kParts = k.split("::");
+        if (kParts.size() == 2) HW->addPHPClassConstant(kParts.at(0), kParts.at(1));
     }
     cof.close();
 

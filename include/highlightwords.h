@@ -22,6 +22,8 @@ public:
     void addPHPClass(QString k);
     void addPHPFunction(QString k);
     void addPHPVariable(QString k);
+    void addPHPConstant(QString k);
+    void addPHPClassConstant(QString cls, QString c);
     void addJSFunction(QString k);
     void addCSSProperty(QString k);
     void addHTMLTag(QString k);
@@ -31,6 +33,7 @@ public:
     QTextCharFormat variableFormat;
     QTextCharFormat knownVariableFormat;
     QTextCharFormat unusedVariableFormat;
+    QTextCharFormat constFormat;
     QTextCharFormat singleLineCommentFormat;
     QTextCharFormat multiLineCommentFormat;
     QTextCharFormat stringFormat;
@@ -54,6 +57,8 @@ public:
     std::unordered_map<std::string, QTextCharFormat>::iterator phpwordsIterator;
     std::unordered_map<std::string, QTextCharFormat> phpwordsCS;
     std::unordered_map<std::string, QTextCharFormat>::iterator phpwordsCSIterator;
+    std::unordered_map<std::string, QTextCharFormat> phpClassWordsCS;
+    std::unordered_map<std::string, QTextCharFormat>::iterator phpClassWordsCSIterator;
     std::unordered_map<std::string, QTextCharFormat> jswordsCS;
     std::unordered_map<std::string, QTextCharFormat>::iterator jswordsCSIterator;
     std::unordered_map<std::string, QTextCharFormat> csswords;
