@@ -138,8 +138,8 @@ protected:
     void highlightCurrentLine(QList<QTextEdit::ExtraSelection> * extraSelections);
     void showCompletePopup();
     void hideCompletePopup();
-    void detectCompleteText(QString text, QChar cursorTextPrevChar, int cursorTextPos, std::string mode);
-    void detectCompleteTextHTML(QString text, QChar cursorTextPrevChar);
+    void detectCompleteText(QString text, QChar cursorTextPrevChar, int cursorTextPos, std::string mode, int state);
+    void detectCompleteTextHTML(QString text, QChar cursorTextPrevChar, int state);
     void detectCompleteTextCSS(QString text, QChar cursorTextPrevChar);
     void detectCompleteTextJS(QString text, int cursorTextPos);
     void detectCompleteTextPHP(QString text, int cursorTextPos);

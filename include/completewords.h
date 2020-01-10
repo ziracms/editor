@@ -38,6 +38,8 @@ public:
     std::map<std::string, std::string> jsSpecialsComplete;
     std::map<std::string, std::string> jsFunctionsComplete;
     std::map<std::string, std::string> jsInterfacesComplete;
+    std::map<std::string, std::string> jsMethodsComplete;
+    std::map<std::string, std::string> jsEventsComplete;
     std::map<std::string, std::string> phpFunctionsComplete;
     std::map<std::string, std::string> phpConstsComplete;
     std::map<std::string, std::string> phpClassesComplete;

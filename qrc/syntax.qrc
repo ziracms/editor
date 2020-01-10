@@ -20,5 +20,7 @@
         <file alias="js_functions">resources/syntax/js/functions</file>
         <file alias="js_interfaces">resources/syntax/js/interfaces</file>
         <file alias="css_values">resources/syntax/css/values</file>
+        <file alias="js_events">resources/syntax/js/events</file>
+        <file alias="js_methods">resources/syntax/js/methods</file>
     </qresource>
 </RCC>

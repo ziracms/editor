@@ -2284,7 +2284,7 @@ void Editor::textChangedDelayed()
     }
     hideCompletePopup();
     if (cursorText.size() > 0 && (nextChar == '\0' || !isalnum(nextChar.toLatin1()))) {
-        detectCompleteText(cursorText, cursorTextPrevChar, cursorTextPos, mode);
+        detectCompleteText(cursorText, cursorTextPrevChar, cursorTextPos, mode, state);
     }
 }
 
@@ -2622,16 +2622,28 @@ void Editor::hideCompletePopup()
     completePopup->clearItems();
 }
 
-void Editor::detectCompleteTextHTML(QString text, QChar cursorTextPrevChar)
+void Editor::detectCompleteTextHTML(QString text, QChar cursorTextPrevChar, int state)
 {
-    if (cursorTextPrevChar != "<" && cursorTextPrevChar != "/") return;
-    // html tags
-    for (auto & it : CW->htmlAllTagsComplete) {
-        QString k = QString::fromStdString(it.first);
-        //if (k == text) continue;
-        if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-            completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-            if (completePopup->count() >= completePopup->limit()) break;
+    if (cursorTextPrevChar == "<" || cursorTextPrevChar == "/") {
+        // html tags
+        for (auto & it : CW->htmlAllTagsComplete) {
+            QString k = QString::fromStdString(it.first);
+            //if (k == text) continue;
+            if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                if (completePopup->count() >= completePopup->limit()) break;
+            }
+        }
+    }
+    // events
+    if (state == STATE_TAG && completePopup->count() < completePopup->limit()) {
+        for (auto & it : CW->jsEventsComplete) {
+            QString k = QString::fromStdString(it.first);
+            //if (k == text) continue;
+            if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                if (completePopup->count() >= completePopup->limit()) break;
+            }
         }
     }
 }
@@ -2794,6 +2806,28 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
         QString k = "prototype";
         if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
             completePopup->addItem(k, k);
+        }
+        // methods
+        if (completePopup->count() < completePopup->limit()) {
+            for (auto & it : CW->jsMethodsComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+        }
+        // events
+        if (completePopup->count() < completePopup->limit()) {
+            for (auto & it : CW->jsEventsComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
         }
         // parsed functions
         if (completePopup->count() < completePopup->limit()) {
@@ -3667,13 +3701,13 @@ void Editor::detectCompleteTextPHP(QString text, int cursorTextPos)
     }
 }
 
-void Editor::detectCompleteText(QString text, QChar cursorTextPrevChar, int cursorTextPos, std::string mode)
+void Editor::detectCompleteText(QString text, QChar cursorTextPrevChar, int cursorTextPos, std::string mode, int state)
 {
     if (text.size() < 2) return;
     completePopup->clearItems();
 
     if (mode == MODE_HTML) {
-        detectCompleteTextHTML(text, cursorTextPrevChar);
+        detectCompleteTextHTML(text, cursorTextPrevChar, state);
     } else if (mode == MODE_CSS) {
         detectCompleteTextCSS(text, cursorTextPrevChar);
     } else if (mode == MODE_JS) {

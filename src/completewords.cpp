@@ -48,6 +48,8 @@ void CompleteWords::reset()
     jsSpecialsComplete.clear();
     jsFunctionsComplete.clear();
     jsInterfacesComplete.clear();
+    jsMethodsComplete.clear();
+    jsEventsComplete.clear();
     phpFunctionsComplete.clear();
     phpConstsComplete.clear();
     phpClassesComplete.clear();
@@ -186,6 +188,28 @@ void CompleteWords::loadJSWords()
         HW->addJSInterface(k);
     }
     inf.close();
+
+    // js methods
+    QFile mf(":/syntax/js_methods");
+    mf.open(QIODevice::ReadOnly);
+    QTextStream min(&mf);
+    while (!min.atEnd()) {
+        k = min.readLine();
+        if (k == "") continue;
+        jsMethodsComplete[k.toStdString()] = k.toStdString();
+    }
+    mf.close();
+
+    // js events
+    QFile ef(":/syntax/js_events");
+    ef.open(QIODevice::ReadOnly);
+    QTextStream ein(&ef);
+    while (!ein.atEnd()) {
+        k = ein.readLine();
+        if (k == "") continue;
+        jsEventsComplete[k.toStdString()] = k.toStdString();
+    }
+    ef.close();
 }
 
 void CompleteWords::loadPHPWords()
