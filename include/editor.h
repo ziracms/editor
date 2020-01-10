@@ -25,6 +25,8 @@
 #include "parsecss.h"
 #include "git.h"
 
+extern const int BIG_FILE_SIZE;
+
 class Editor : public QTextEdit
 {
     Q_OBJECT
@@ -99,6 +101,7 @@ public:
     bool getParseError();
     void highlightError(int pos, int length);
     void highlightErrorLine(int line);
+    void setIsBigFile(bool isBig);
 protected:
     void focusInEvent(QFocusEvent *e) override;
     void focusOutEvent(QFocusEvent *e) override;
@@ -359,6 +362,7 @@ private:
     QVector<int> spellBlocksQueue;
     int spellCheckInitBlockNumber;
     bool isBlocksHeightEquals;
+    bool isBigFile;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

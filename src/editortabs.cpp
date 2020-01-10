@@ -114,6 +114,10 @@ void EditorTabs::createTab(QString filepath, bool initHighlight)
         }
         editor->reset();
         editor->setFileName(filepath);
+
+        if (txt.size() >= BIG_FILE_SIZE) editor->setIsBigFile(true);
+        else editor->setIsBigFile(false);
+
         editor->convertNewLines(txt);
         editor->setPlainText(txt);
         //editor->resetExtraSelections();

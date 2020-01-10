@@ -68,6 +68,7 @@ public:
     void setHighlightVarsMode(bool varsMode);
     void setFirstRunMode(bool runMode);
     bool isDirty();
+    void setIsBigFile(bool isBig);
 
     std::unordered_map<std::string, int> unusedVars;
     std::unordered_map<std::string, int>::iterator unusedVarsIterator;
@@ -333,6 +334,7 @@ private:
     bool firstRunMode;
     bool rehighlightBlockMode;
     int lastVisibleBlockNumber;
+    bool isBigFile;
 signals:
     void progressChanged(int percent);
 };

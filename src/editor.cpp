@@ -67,6 +67,7 @@ const QString TOOLTIP_PAGER_TPL = " | <b>[<u>%1</u>/%2]</b>";
 const QString TOOLTIP_COLOR_TPL = "<span style=\"background:%1;\">&nbsp;&nbsp;&nbsp;</span>";
 
 const int SEARCH_LIMIT = 10000;
+const int BIG_FILE_SIZE = 512000;
 
 Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent) : QTextEdit(parent), spellChecker(spellChecker)
 {
@@ -345,6 +346,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     isUndoAvailable = false;
     isRedoAvailable = false;
     lastCursorPositionBlockNumber = -1;
+    isBigFile = false;
 
     connect(this, SIGNAL(undoAvailable(bool)), this, SLOT(onUndoAvailable(bool)));
     connect(this, SIGNAL(redoAvailable(bool)), this, SLOT(onRedoAvailable(bool)));
@@ -538,6 +540,11 @@ QString Editor::getFileExtension()
     return extension;
 }
 
+void Editor::setIsBigFile(bool isBig)
+{
+    isBigFile = isBig;
+}
+
 void Editor::initMode(QString ext)
 {
     extension = ext;
@@ -562,6 +569,8 @@ void Editor::initHighlighter()
 {
     if (highlighterInitialized) return;
     highlighterInitialized = true;
+
+    highlight->setIsBigFile(isBigFile);
     highlight->initMode(extension, getLastVisibleBlockIndex());
 
     bool isFocused = hasFocus();
@@ -584,6 +593,7 @@ void Editor::initHighlighter()
 void Editor::initSpellChecker()
 {
     if (!spellCheckerEnabled || spellChecker == nullptr) return;
+    if (isBigFile) return;
     int totalBlocks = document()->blockCount();
     QString progressStr = tr("Spell check")+": ";
     while(spellCheckInitBlockNumber < totalBlocks) {
@@ -5823,6 +5833,7 @@ QString Editor::getContent()
 void Editor::highlightUnusedVars(bool update)
 {
     if (!experimentalMode) return;
+    if (isBigFile) return;
     setReadOnly(true);
     QVector<QTextBlock> unusedVarsBlocks;
     highlight->unusedVars.clear();

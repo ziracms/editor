@@ -89,6 +89,7 @@ Highlight::Highlight(Settings * settings, HighlightWords * hWords, QTextDocument
     rehighlightBlockMode = false;
     lastVisibleBlockNumber = -1;
     dirty = false;
+    isBigFile = false;
 
     HW = hWords;
 }
@@ -338,6 +339,10 @@ void Highlight::resetMode()
     rehighlightBlockMode = false;
     lastVisibleBlockNumber = -1;
     dirty = false;
+}
+
+void Highlight::setIsBigFile(bool isBig) {
+    isBigFile = isBig;
 }
 
 void Highlight::initMode(QString ext, int lastBlockNumber)
@@ -1907,12 +1912,14 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
             bool kFound = false;
             if (keywordCSSprevChar != "$" && keywordCSSprevChar != "%") {
                 // css keywords
-                HW->csswordsIterator = HW->csswords.find(keywordStringCSS.toLower().toStdString());
-                if (HW->csswordsIterator != HW->csswords.end()) {
-                    QTextCharFormat format = HW->csswordsIterator->second;
-                    highlightString(keywordCSSStart, keywordCSSLength, format);
-                    keywordCSSStart = -1;
-                    kFound = true;
+                if (!isBigFile) {
+                    HW->csswordsIterator = HW->csswords.find(keywordStringCSS.toLower().toStdString());
+                    if (HW->csswordsIterator != HW->csswords.end()) {
+                        QTextCharFormat format = HW->csswordsIterator->second;
+                        highlightString(keywordCSSStart, keywordCSSLength, format);
+                        keywordCSSStart = -1;
+                        kFound = true;
+                    }
                 }
                 if (!kFound && cssValuePart) {
                     // css selectors
@@ -1923,7 +1930,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
                     }
                 }
             }
-            if (!kFound) {
+            if (!kFound && !isBigFile) {
                 if (keywordCSSprevChar == "$" && keywordCSSStart > 0) {
                     highlightString(keywordCSSStart-1, keywordCSSLength+1, HW->variableFormat);
                 } else if (keywordCSSprevChar == "%" && keywordCSSStart > 0) {
@@ -1949,7 +1956,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
                 highlightString(keywordCSSStart, keywordCSSLength, HW->selectorTagFormat);
             }
         }
-        if (keywordCSSprevChar == "#" && !cssValuePart && isColorKeyword && (keywordStringCSS.length() == 3 || keywordStringCSS.length() == 6 || keywordStringCSS.length() == 8) && QColor::isValidColor(keywordCSSprevChar+keywordStringCSS)) {
+        if (keywordCSSprevChar == "#" && !cssValuePart && isColorKeyword && !isBigFile && (keywordStringCSS.length() == 3 || keywordStringCSS.length() == 6 || keywordStringCSS.length() == 8) && QColor::isValidColor(keywordCSSprevChar+keywordStringCSS)) {
             // colors
             if (keywordCSSStart > 0 && parensCSS == 0) {
                 keywordCSSStart += 1;
@@ -2143,7 +2150,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 keywordJSStart = -1;
                 known = true;
             }
-            if (!known) {
+            if (!known && !isBigFile) {
                 jsNamesIterator = jsNames.find(keywordStringJS.toStdString());
                 if (jsNamesIterator != jsNames.end()) {
                     highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
@@ -2151,7 +2158,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 }
             }
         }
-        if (!known) {
+        if (!known && !isBigFile) {
             if ((keywordJSprevString == "var" || keywordJSprevString == "let" || keywordJSprevString == "const") && keywordJSprevStringPrevChar != ".") {
                 if (varsChainJS.size() > 0) varsChainJS += ",";
                 varsChainJS += keywordStringJS;
@@ -2165,7 +2172,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
             }
         }
-        if (keywordStringJS.size()>0) {
+        if (keywordStringJS.size()>0 && !isBigFile) {
             // function scope
             if (expectedFuncNameJS.size() == 0 && keywordStringJS.size() > 0 && keywordStringJS != "function") {
                 expectedFuncNameJS = "";
@@ -2409,7 +2416,7 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
                     keywordPHPStart = -1;
                 }
             }
-        } else if (keywordPHPprevChar == "$" || isObjectContext) {
+        } else if ((keywordPHPprevChar == "$" || isObjectContext) && !isBigFile) {
             // php variables
             bool known = false;
             if (keywordPHPprevChar == "$" && keywordPHPStart > 0) {
@@ -2494,7 +2501,7 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
             } else {
                 highlightString(keywordPHPStart, keywordPHPLength, HW->knownVariableFormat);
             }
-        } else if (keywordPHPprevChar == ":" && keywordPHPprevString.size() > 0) {
+        } else if (keywordPHPprevChar == ":" && keywordPHPprevString.size() > 0 && !isBigFile) {
             QString k = keywordPHPprevString.toLower()+"::"+keywordStringPHP;
             HW->phpClassWordsCSIterator = HW->phpClassWordsCS.find(k.toStdString());
             if (HW->phpClassWordsCSIterator != HW->phpClassWordsCS.end()) {
@@ -2502,7 +2509,7 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
                 highlightString(keywordPHPStart, keywordPHPLength, format);
             }
         }
-        if (keywordPHPprevChar != "$" && !isObjectContext && keywordStringPHP.size()>0) {
+        if (keywordPHPprevChar != "$" && !isObjectContext && keywordStringPHP.size()>0 && !isBigFile) {
             // namespace scope
             if (keywordStringPHP.size() > 0 && (keywordStringPHP.toLower() == "namespace" && expectedNsNamePHP.size() == 0)) {
                 expectedNsNamePHP = "\\";
