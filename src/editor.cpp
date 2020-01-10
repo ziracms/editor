@@ -2060,8 +2060,23 @@ void Editor::insertFromMimeData(const QMimeData *source)
                 }
             }
             QTextCursor cursor = textCursor();
+            int startBlockNumber = cursor.block().blockNumber();
             if (tabType == "spaces") textF = textF.replace("\t", space);
             cursor.insertText(textF.trimmed());
+            do {
+                // modified state
+                modifiedLinesIterator = modifiedLines.find(cursor.block().blockNumber() + 1);
+                if (modifiedLinesIterator == modifiedLines.end()) {
+                    modifiedLines[cursor.block().blockNumber() + 1] = cursor.block().blockNumber() + 1;
+                    HighlightData * blockData = dynamic_cast<HighlightData *>(cursor.block().userData());
+                    if (blockData != nullptr) {
+                        blockData->isModified = true;
+                        cursor.block().setUserData(blockData);
+                    }
+                }
+                if (cursor.block().blockNumber() == startBlockNumber) break;
+            } while(cursor.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor));
+            lineNumber->update();
             return;
         }
     }
