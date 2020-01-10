@@ -2160,7 +2160,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
             } else if (keywordJSprevChar == ".") {
                 highlightString(keywordJSStart, keywordJSLength, HW->propertyFormat);
-            } else if (expectedFuncNameJS.size() > 0) { // add arg if var is unknown
+            } else if (expectedFuncNameJS.size() > 0 || expectedFuncParsJS >= 0) { // add arg if var is unknown
                 expectedFuncArgsJS.append(keywordStringJS);
                 highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
             }
@@ -2271,10 +2271,12 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         }
     }
 
+    if (expectedFuncNameJS.size() > 0 && expectedFuncNameJS == "function" && c == "(" && expectedFuncParsJS == parensJS) {
+        expectedFuncNameJS = "anonymous function";
+    }
+
     // unexpected function scope
-    if ((expectedFuncNameJS.size() > 0 && expectedFuncNameJS == "function" && (c == "(" || c == ";") && expectedFuncParsJS == parensJS) ||
-        (expectedFuncNameJS.size() > 0 && expectedFuncNameJS != "function" && c == ";" && expectedFuncParsJS == parensJS)
-    ) {
+    if (expectedFuncNameJS.size() > 0 && expectedFuncNameJS != "function" && c == ";" && expectedFuncParsJS == parensJS) {
         expectedFuncNameJS = "";
         expectedFuncParsJS = -1;
         expectedFuncArgsJS.clear();
