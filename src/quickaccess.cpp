@@ -24,6 +24,8 @@ const int SEARCH_DELAY_MILLISECONDS = 500;
 const int ANIMATION_DURATION = 100;
 const int ANIMATION_OFFSET = 150;
 
+const int LIMIT = 1000;
+
 QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
 {
     setFrameStyle(QFrame::Raised);
@@ -154,6 +156,7 @@ void QuickAccess::setParseResult(ParsePHP::ParseResult result, QString file)
     findEdit->setText("");
     lastSearch = "";
     resultsList->clear();
+    int total = 0;
     // constants
     for (int c=0; c<result.constants.size(); c++) {
         ParsePHP::ParseResultConstant constant = result.constants.at(c);
@@ -167,6 +170,8 @@ void QuickAccess::setParseResult(ParsePHP::ParseResult result, QString file)
         item->setData(Qt::UserRole, QVariant(file));
         item->setData(Qt::UserRole+1, QVariant(constant.line));
         resultsList->addItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // variables
     for (int v=0; v<result.variables.size(); v++) {
@@ -180,6 +185,8 @@ void QuickAccess::setParseResult(ParsePHP::ParseResult result, QString file)
         item->setData(Qt::UserRole, QVariant(file));
         item->setData(Qt::UserRole+1, QVariant(variable.line));
         resultsList->addItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // functions
     for (int f=0; f<result.functions.size(); f++) {
@@ -202,6 +209,8 @@ void QuickAccess::setParseResult(ParsePHP::ParseResult result, QString file)
         item->setData(Qt::UserRole, QVariant(file));
         item->setData(Qt::UserRole+1, QVariant(func.line));
         resultsList->addItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // classes
     for (int i=0; i<result.classes.size(); i++) {
@@ -229,6 +238,8 @@ void QuickAccess::setParseResult(ParsePHP::ParseResult result, QString file)
         item->setData(Qt::UserRole, QVariant(file));
         item->setData(Qt::UserRole+1, QVariant(cls.line));
         resultsList->addItem(item);
+        total++;
+        if (total >= LIMIT) break;
         // class constants
         for (int c=0; c<cls.constantIndexes.size(); c++) {
             if (result.constants.size() <= cls.constantIndexes.at(c)) break;
@@ -239,6 +250,8 @@ void QuickAccess::setParseResult(ParsePHP::ParseResult result, QString file)
             item->setData(Qt::UserRole, QVariant(file));
             item->setData(Qt::UserRole+1, QVariant(constant.line));
             resultsList->addItem(item);
+            total++;
+            if (total >= LIMIT) break;
         }
         // class variables
         for (int v=0; v<cls.variableIndexes.size(); v++) {
@@ -255,6 +268,8 @@ void QuickAccess::setParseResult(ParsePHP::ParseResult result, QString file)
             item->setData(Qt::UserRole, QVariant(file));
             item->setData(Qt::UserRole+1, QVariant(variable.line));
             resultsList->addItem(item);
+            total++;
+            if (total >= LIMIT) break;
         }
         // class methods
         for (int f=0; f<cls.functionIndexes.size(); f++) {
@@ -278,6 +293,8 @@ void QuickAccess::setParseResult(ParsePHP::ParseResult result, QString file)
             item->setData(Qt::UserRole, QVariant(file));
             item->setData(Qt::UserRole+1, QVariant(func.line));
             resultsList->addItem(item);
+            total++;
+            if (total >= LIMIT) break;
         }
     }
     resultsList->sortItems();
@@ -291,6 +308,7 @@ void QuickAccess::setParseResult(ParseJS::ParseResult result, QString file)
     findEdit->setText("");
     lastSearch = "";
     resultsList->clear();
+    int total = 0;
     // constants
     for (int c=0; c<result.constants.size(); c++) {
         ParseJS::ParseResultConstant constant = result.constants.at(c);
@@ -301,6 +319,8 @@ void QuickAccess::setParseResult(ParseJS::ParseResult result, QString file)
         item->setData(Qt::UserRole, QVariant(file));
         item->setData(Qt::UserRole+1, QVariant(constant.line));
         resultsList->addItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // variables
     for (int v=0; v<result.variables.size(); v++) {
@@ -312,6 +332,8 @@ void QuickAccess::setParseResult(ParseJS::ParseResult result, QString file)
         item->setData(Qt::UserRole, QVariant(file));
         item->setData(Qt::UserRole+1, QVariant(variable.line));
         resultsList->addItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // functions
     for (int f=0; f<result.functions.size(); f++) {
@@ -331,6 +353,8 @@ void QuickAccess::setParseResult(ParseJS::ParseResult result, QString file)
         item->setData(Qt::UserRole, QVariant(file));
         item->setData(Qt::UserRole+1, QVariant(func.line));
         resultsList->addItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // classes
     for (int i=0; i<result.classes.size(); i++) {
@@ -346,6 +370,8 @@ void QuickAccess::setParseResult(ParseJS::ParseResult result, QString file)
             item->setData(Qt::UserRole, QVariant(file));
             item->setData(Qt::UserRole+1, QVariant(variable.line));
             resultsList->addItem(item);
+            total++;
+            if (total >= LIMIT) break;
         }
         // class methods
         for (int f=0; f<cls.functionIndexes.size(); f++) {
@@ -365,6 +391,8 @@ void QuickAccess::setParseResult(ParseJS::ParseResult result, QString file)
             item->setData(Qt::UserRole, QVariant(file));
             item->setData(Qt::UserRole+1, QVariant(func.line));
             resultsList->addItem(item);
+            total++;
+            if (total >= LIMIT) break;
         }
     }
     resultsList->sortItems();
@@ -378,6 +406,7 @@ void QuickAccess::setParseResult(ParseCSS::ParseResult result, QString file)
     findEdit->setText("");
     lastSearch = "";
     resultsList->clear();
+    int total = 0;
     // font-face
     if (result.fonts.size() > 0) {
         for (int i=0; i<result.fonts.size(); i++) {
@@ -388,6 +417,8 @@ void QuickAccess::setParseResult(ParseCSS::ParseResult result, QString file)
             item->setData(Qt::UserRole, QVariant(file));
             item->setData(Qt::UserRole+1, QVariant(font.line));
             resultsList->addItem(item);
+            total++;
+            if (total >= LIMIT) break;
         }
     }
     // media
@@ -400,6 +431,8 @@ void QuickAccess::setParseResult(ParseCSS::ParseResult result, QString file)
             item->setData(Qt::UserRole, QVariant(file));
             item->setData(Qt::UserRole+1, QVariant(media.line));
             resultsList->addItem(item);
+            total++;
+            if (total >= LIMIT) break;
         }
     }
     // keyframes
@@ -412,6 +445,8 @@ void QuickAccess::setParseResult(ParseCSS::ParseResult result, QString file)
             item->setData(Qt::UserRole, QVariant(file));
             item->setData(Qt::UserRole+1, QVariant(keyframe.line));
             resultsList->addItem(item);
+            total++;
+            if (total >= LIMIT) break;
         }
     }
     // ids & classes
@@ -423,6 +458,8 @@ void QuickAccess::setParseResult(ParseCSS::ParseResult result, QString file)
         item->setData(Qt::UserRole, QVariant(file));
         item->setData(Qt::UserRole+1, QVariant(nm.line));
         resultsList->addItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     resultsList->sortItems();
 }

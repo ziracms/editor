@@ -66,6 +66,8 @@ const QString TOOLTIP_DELIMITER = "[:OR:]";
 const QString TOOLTIP_PAGER_TPL = " | <b>[<u>%1</u>/%2]</b>";
 const QString TOOLTIP_COLOR_TPL = "<span style=\"background:%1;\">&nbsp;&nbsp;&nbsp;</span>";
 
+const int SEARCH_LIMIT = 10000;
+
 Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent) : QTextEdit(parent), spellChecker(spellChecker)
 {
     setMinimumSize(0, 0);
@@ -4618,9 +4620,12 @@ void Editor::highlightCloseCharPair(QChar openChar, QChar closeChar, QList<QText
         bool sFound = false;
         int count = 0;
         int positionInBlock = -1;
+        int iterations = 0;
         do {
             if (blockData->specialChars.size()>0 && blockData->specialCharsPos.size()>0) {
                 for (int i=blockData->specialChars.size()-1; i>=0; i--) {
+                    iterations++;
+                    if (iterations > SEARCH_LIMIT) break;
                     QChar c = blockData->specialChars.at(i);
                     if (!sFound && c == closeChar && blockData->specialCharsPos.at(i) == pos) {
                         sFound = true;
@@ -4708,9 +4713,12 @@ void Editor::highlightOpenCharPair(QChar openChar, QChar closeChar, QList<QTextE
         bool sFound = false;
         int count = 0;
         int positionInBlock = -1;
+        int iterations = 0;
         do {
             if (blockData->specialChars.size()>0 && blockData->specialCharsPos.size()>0) {
                 for (int i=0; i<blockData->specialChars.size(); i++) {
+                    iterations++;
+                    if (iterations > SEARCH_LIMIT) break;
                     QChar c = blockData->specialChars.at(i);
                     if (!sFound && c == openChar && blockData->specialCharsPos.at(i) == pos) {
                         sFound = true;
@@ -4766,9 +4774,12 @@ void Editor::highlightCloseTagPair(QString tagName, int pos, QList<QTextEdit::Ex
         bool sFound = false;
         int count = 0;
         int positionInBlock = -1;
+        int iterations = 0;
         do {
             if (blockData->specialWords.size()>0 && blockData->specialWordsPos.size()>0) {
                 for (int i=blockData->specialWords.size()-1; i>=0; i--) {
+                    iterations++;
+                    if (iterations > SEARCH_LIMIT) break;
                     QString w = blockData->specialWords.at(i);
                     if (!sFound && w == "/"+tagName && blockData->specialWordsPos.at(i) == pos) {
                         sFound = true;
@@ -4859,9 +4870,12 @@ void Editor::highlightOpenTagPair(QString tagName, int pos, QList<QTextEdit::Ext
         bool sFound = false;
         int count = 0;
         int positionInBlock = -1;
+        int iterations = 0;
         do {
             if (blockData->specialWords.size()>0 && blockData->specialWordsPos.size()>0) {
                 for (int i=0; i<blockData->specialWords.size(); i++) {
+                    iterations++;
+                    if (iterations > SEARCH_LIMIT) break;
                     QString w = blockData->specialWords.at(i);
                     if (!sFound && w == tagName && blockData->specialWordsPos.at(i) == pos) {
                         sFound = true;
@@ -4981,10 +4995,13 @@ void Editor::highlightPHPCloseSpecialTagPair(QString tagName, int pos, QList<QTe
     int lengthInBlock = 0;
     int closePositionInBlock = -1;
     int closeLengthInBlock = 0;
+    int iterations = 0;
     do {
         QVector<int> openPos, openLength, closePos, closeLength, sortedPos, sortedLength, sortedTag;
         int offset = 0, start = -1;
         do {
+            iterations++;
+            if (iterations > SEARCH_LIMIT) break;
             QRegularExpressionMatch match;
             if (!sFound) {
                 match = foundTagExpr.match(blockText, offset);
@@ -5009,6 +5026,8 @@ void Editor::highlightPHPCloseSpecialTagPair(QString tagName, int pos, QList<QTe
         if (!sFound) break;
         offset = 0; start = -1;
         do {
+            iterations++;
+            if (iterations > SEARCH_LIMIT) break;
             QRegularExpressionMatch match = openTagExpr.match(blockText, offset);
             start = match.capturedStart();
             if (start>=0) {
@@ -5113,10 +5132,13 @@ void Editor::highlightPHPOpenSpecialTagPair(QString tagName, int pos, QList<QTex
     int lengthInBlock = 0;
     int openPositionInBlock = -1;
     int openLengthInBlock = 0;
+    int iterations = 0;
     do {
         QVector<int> openPos, openLength, closePos, closeLength, sortedPos, sortedLength, sortedTag;
         int offset = 0, start = -1;
         do {
+            iterations++;
+            if (iterations > SEARCH_LIMIT) break;
             QRegularExpressionMatch match = openTagExpr.match(blockText, offset);
             start = match.capturedStart();
             if (start>=0) {
@@ -5136,6 +5158,8 @@ void Editor::highlightPHPOpenSpecialTagPair(QString tagName, int pos, QList<QTex
         if (!sFound) break;
         offset = 0; start = -1;
         do {
+            iterations++;
+            if (iterations > SEARCH_LIMIT) break;
             QRegularExpressionMatch match = closeTagExpr.match(blockText, offset);
             start = match.capturedStart();
             if (start>=0) {
@@ -5250,7 +5274,10 @@ void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPre
                 QTextDocument::FindFlags findFlags = QTextDocument::FindCaseSensitively;
                 if (!textCursor().hasSelection()) findFlags |= QTextDocument::FindWholeWords;
                 selectedWordCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+                int iterator = 0;
                 while(!selectedWordCursor.isNull() && !selectedWordCursor.atEnd()) {
+                    iterator++;
+                    if (iterator > SEARCH_LIMIT) break;
                     selectedWordCursor = document()->find(cursorText, selectedWordCursor, findFlags);
                     if (!selectedWordCursor.isNull()) {
                         QTextEdit::ExtraSelection selectedWordSelection;
@@ -5285,7 +5312,7 @@ void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPre
                     }
                 }
                 co++;
-                if (co > 10000) break; // too much results
+                if (co >= SEARCH_LIMIT) break; // too much results
             }
         }
         // repaint line map

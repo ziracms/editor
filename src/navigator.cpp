@@ -7,6 +7,8 @@
 #include "navigator.h"
 #include "helper.h"
 
+const int LIMIT = 1000;
+
 Navigator::Navigator(QTreeWidget * widget, Settings * /*settings*/) : treeWidget(widget)
 {
     connect(treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), SLOT(navigatorDoubleClicked(QTreeWidgetItem*,int)));
@@ -22,6 +24,7 @@ void Navigator::clear()
 void Navigator::build(ParsePHP::ParseResult result)
 {
     clear();
+    int total = 0;
     // constants
     for (int c=0; c<result.constants.size(); c++) {
         ParsePHP::ParseResultConstant constant = result.constants.at(c);
@@ -34,6 +37,8 @@ void Navigator::build(ParsePHP::ParseResult result)
         item->setToolTip(0, constant.name+" = "+constant.value);
         item->setData(0, Qt::UserRole, QVariant(constant.line));
         treeWidget->addTopLevelItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // variables
     for (int v=0; v<result.variables.size(); v++) {
@@ -46,6 +51,8 @@ void Navigator::build(ParsePHP::ParseResult result)
         item->setToolTip(0, varDesc);
         item->setData(0, Qt::UserRole, QVariant(variable.line));
         treeWidget->addTopLevelItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // functions
     for (int f=0; f<result.functions.size(); f++) {
@@ -67,6 +74,8 @@ void Navigator::build(ParsePHP::ParseResult result)
         item->setToolTip(0, funcDesc);
         item->setData(0, Qt::UserRole, QVariant(func.line));
         treeWidget->addTopLevelItem(item);
+        total++;
+        if (total >= LIMIT) break;
         // function variables
         for (int v=0; v<func.variableIndexes.size(); v++) {
             if (result.variables.size() <= func.variableIndexes.at(v)) break;
@@ -78,6 +87,8 @@ void Navigator::build(ParsePHP::ParseResult result)
             child->setToolTip(0, varDesc);
             child->setData(0, Qt::UserRole, QVariant(variable.line));
             item->addChild(child);
+            total++;
+            if (total >= LIMIT) break;
         }
     }
     // classes
@@ -105,6 +116,8 @@ void Navigator::build(ParsePHP::ParseResult result)
         item->setToolTip(0, clsDesc);
         item->setData(0, Qt::UserRole, QVariant(cls.line));
         treeWidget->addTopLevelItem(item);
+        total++;
+        if (total >= LIMIT) break;
         // class constants
         for (int c=0; c<cls.constantIndexes.size(); c++) {
             if (result.constants.size() <= cls.constantIndexes.at(c)) break;
@@ -114,6 +127,8 @@ void Navigator::build(ParsePHP::ParseResult result)
             child->setToolTip(0, clsPrettyName+"::"+constant.name+" = "+constant.value);
             child->setData(0, Qt::UserRole, QVariant(constant.line));
             item->addChild(child);
+            total++;
+            if (total >= LIMIT) break;
         }
         // class variables
         for (int v=0; v<cls.variableIndexes.size(); v++) {
@@ -129,6 +144,8 @@ void Navigator::build(ParsePHP::ParseResult result)
             child->setToolTip(0, varDesc);
             child->setData(0, Qt::UserRole, QVariant(variable.line));
             item->addChild(child);
+            total++;
+            if (total >= LIMIT) break;
         }
         // class methods
         for (int f=0; f<cls.functionIndexes.size(); f++) {
@@ -151,6 +168,8 @@ void Navigator::build(ParsePHP::ParseResult result)
             child->setToolTip(0, funcDesc);
             child->setData(0, Qt::UserRole, QVariant(func.line));
             item->addChild(child);
+            total++;
+            if (total >= LIMIT) break;
             // class method variables
             for (int v=0; v<func.variableIndexes.size(); v++) {
                 if (result.variables.size() <= func.variableIndexes.at(v)) break;
@@ -162,6 +181,8 @@ void Navigator::build(ParsePHP::ParseResult result)
                 subchild->setToolTip(0, varDesc);
                 subchild->setData(0, Qt::UserRole, QVariant(variable.line));
                 child->addChild(subchild);
+                total++;
+                if (total >= LIMIT) break;
             }
         }
         treeWidget->expandItem(item);
@@ -180,6 +201,8 @@ void Navigator::build(ParsePHP::ParseResult result)
             item->setToolTip(0, comment.text);
             item->setData(0, Qt::UserRole, QVariant(comment.line));
             parent->addChild(item);
+            total++;
+            if (total >= LIMIT) break;
         }
         //treeWidget->expandItem(parent);
     }
@@ -189,6 +212,7 @@ void Navigator::build(ParsePHP::ParseResult result)
 void Navigator::build(ParseJS::ParseResult result)
 {
     clear();
+    int total = 0;
     // constants
     for (int c=0; c<result.constants.size(); c++) {
         ParseJS::ParseResultConstant constant = result.constants.at(c);
@@ -198,6 +222,8 @@ void Navigator::build(ParseJS::ParseResult result)
         item->setToolTip(0, constant.name+" = "+constant.value);
         item->setData(0, Qt::UserRole, QVariant(constant.line));
         treeWidget->addTopLevelItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // variables
     for (int v=0; v<result.variables.size(); v++) {
@@ -208,6 +234,8 @@ void Navigator::build(ParseJS::ParseResult result)
         item->setToolTip(0, variable.name);
         item->setData(0, Qt::UserRole, QVariant(variable.line));
         treeWidget->addTopLevelItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // functions
     for (int f=0; f<result.functions.size(); f++) {
@@ -226,6 +254,8 @@ void Navigator::build(ParseJS::ParseResult result)
         item->setToolTip(0, funcDesc);
         item->setData(0, Qt::UserRole, QVariant(func.line));
         treeWidget->addTopLevelItem(item);
+        total++;
+        if (total >= LIMIT) break;
         // function constants
         for (int c=0; c<func.constantIndexes.size(); c++) {
             if (result.constants.size() <= func.constantIndexes.at(c)) break;
@@ -235,6 +265,8 @@ void Navigator::build(ParseJS::ParseResult result)
             child->setToolTip(0, constant.name+" = "+constant.value);
             child->setData(0, Qt::UserRole, QVariant(constant.line));
             item->addChild(child);
+            total++;
+            if (total >= LIMIT) break;
         }
         // function variables
         for (int v=0; v<func.variableIndexes.size(); v++) {
@@ -245,6 +277,8 @@ void Navigator::build(ParseJS::ParseResult result)
             child->setToolTip(0, variable.name);
             child->setData(0, Qt::UserRole, QVariant(variable.line));
             item->addChild(child);
+            total++;
+            if (total >= LIMIT) break;
         }
     }
     // classes
@@ -260,6 +294,8 @@ void Navigator::build(ParseJS::ParseResult result)
         item->setToolTip(0, clsDesc);
         item->setData(0, Qt::UserRole, QVariant(cls.line));
         treeWidget->addTopLevelItem(item);
+        total++;
+        if (total >= LIMIT) break;
         // class variables
         for (int v=0; v<cls.variableIndexes.size(); v++) {
             if (result.variables.size() <= cls.variableIndexes.at(v)) break;
@@ -270,6 +306,8 @@ void Navigator::build(ParseJS::ParseResult result)
             child->setToolTip(0, varDesc);
             child->setData(0, Qt::UserRole, QVariant(variable.line));
             item->addChild(child);
+            total++;
+            if (total >= LIMIT) break;
         }
         // class methods
         for (int f=0; f<cls.functionIndexes.size(); f++) {
@@ -288,6 +326,8 @@ void Navigator::build(ParseJS::ParseResult result)
             child->setToolTip(0, funcDesc);
             child->setData(0, Qt::UserRole, QVariant(func.line));
             item->addChild(child);
+            total++;
+            if (total >= LIMIT) break;
             // class method constants
             for (int c=0; c<func.constantIndexes.size(); c++) {
                 if (result.constants.size() <= func.constantIndexes.at(c)) break;
@@ -297,6 +337,8 @@ void Navigator::build(ParseJS::ParseResult result)
                 subchild->setToolTip(0, constant.name+" = "+constant.value);
                 subchild->setData(0, Qt::UserRole, QVariant(constant.line));
                 child->addChild(subchild);
+                total++;
+                if (total >= LIMIT) break;
             }
             // class method variables
             for (int v=0; v<func.variableIndexes.size(); v++) {
@@ -307,6 +349,8 @@ void Navigator::build(ParseJS::ParseResult result)
                 subchild->setToolTip(0, variable.name);
                 subchild->setData(0, Qt::UserRole, QVariant(variable.line));
                 child->addChild(subchild);
+                total++;
+                if (total >= LIMIT) break;
             }
         }
         treeWidget->expandItem(item);
@@ -325,6 +369,8 @@ void Navigator::build(ParseJS::ParseResult result)
             item->setToolTip(0, comment.text);
             item->setData(0, Qt::UserRole, QVariant(comment.line));
             parent->addChild(item);
+            total++;
+            if (total >= LIMIT) break;
         }
         //treeWidget->expandItem(parent);
     }
@@ -334,6 +380,7 @@ void Navigator::build(ParseJS::ParseResult result)
 void Navigator::build(ParseCSS::ParseResult result)
 {
     clear();
+    int total = 0;
     // selectors
     for (int i=0; i<result.selectors.size(); i++) {
         ParseCSS::ParseResultSelector selector = result.selectors.at(i);
@@ -342,6 +389,8 @@ void Navigator::build(ParseCSS::ParseResult result)
         item->setToolTip(0, selector.name);
         item->setData(0, Qt::UserRole, QVariant(selector.line));
         treeWidget->addTopLevelItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // ids & classes
     for (int i=0; i<result.names.size(); i++) {
@@ -351,6 +400,8 @@ void Navigator::build(ParseCSS::ParseResult result)
         item->setToolTip(0, nm.name);
         item->setData(0, Qt::UserRole, QVariant(nm.line));
         treeWidget->addTopLevelItem(item);
+        total++;
+        if (total >= LIMIT) break;
     }
     // font-face
     if (result.fonts.size() > 0) {
@@ -366,6 +417,8 @@ void Navigator::build(ParseCSS::ParseResult result)
             item->setToolTip(0, "font-family: "+font.name);
             item->setData(0, Qt::UserRole, QVariant(font.line));
             parent->addChild(item);
+            total++;
+            if (total >= LIMIT) break;
         }
         treeWidget->expandItem(parent);
     }
@@ -383,6 +436,8 @@ void Navigator::build(ParseCSS::ParseResult result)
             item->setToolTip(0, "@media( "+media.name+" )");
             item->setData(0, Qt::UserRole, QVariant(media.line));
             parent->addChild(item);
+            total++;
+            if (total >= LIMIT) break;
         }
         treeWidget->expandItem(parent);
     }
@@ -400,6 +455,8 @@ void Navigator::build(ParseCSS::ParseResult result)
             item->setToolTip(0, "@keyframes "+keyframe.name);
             item->setData(0, Qt::UserRole, QVariant(keyframe.line));
             parent->addChild(item);
+            total++;
+            if (total >= LIMIT) break;
         }
         treeWidget->expandItem(parent);
     }
@@ -417,6 +474,8 @@ void Navigator::build(ParseCSS::ParseResult result)
             item->setToolTip(0, comment.text);
             item->setData(0, Qt::UserRole, QVariant(comment.line));
             parent->addChild(item);
+            total++;
+            if (total >= LIMIT) break;
         }
         //treeWidget->expandItem(parent);
     }
