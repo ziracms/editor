@@ -33,6 +33,7 @@ public:
     QString stringEscStringCSS;
     QString stringEscStringJS;
     QString regexpEscStringJS;
+    QString regexpPrevCharJS;
     int bracesCSS;
     int bracesJS;
     int bracesPHP;

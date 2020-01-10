@@ -32,6 +32,7 @@ void HighlightData::reset()
     stringEscStringCSS = "";
     stringEscStringJS = "";
     regexpEscStringJS = "";
+    regexpPrevCharJS = "";
     bracesCSS = 0;
     bracesJS = 0;
     bracesPHP = 0;

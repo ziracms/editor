@@ -1459,6 +1459,7 @@ void Highlight::restoreState() {
             stringEscStringJS = prevBlockData->stringEscStringJS;
             stringBlock = prevBlockData->stringBlock;
             regexpEscStringJS = prevBlockData->regexpEscStringJS;
+            regexpPrevCharJS = prevBlockData->regexpPrevCharJS;
             bracesCSS = prevBlockData->bracesCSS;
             bracesJS = prevBlockData->bracesJS;
             bracesPHP = prevBlockData->bracesPHP;
@@ -3151,6 +3152,7 @@ bool Highlight::parseBlock(const QString & text)
     QString _stringEscStringCSS = stringEscStringCSS;
     QString _stringEscStringJS = stringEscStringJS;
     QString _regexpEscStringJS = regexpEscStringJS;
+    QString _regexpPrevCharJs = regexpPrevCharJS;
     int _bracesCSS = bracesCSS;
     int _bracesJS = bracesJS;
     int _bracesPHP = bracesPHP;
@@ -3206,6 +3208,7 @@ bool Highlight::parseBlock(const QString & text)
         _stringEscStringCSS = blockData->stringEscStringCSS;
         _stringEscStringJS = blockData->stringEscStringJS;
         _regexpEscStringJS = blockData->regexpEscStringJS;
+        _regexpPrevCharJs = blockData->regexpPrevCharJS;
         _bracesCSS = blockData->bracesCSS;
         _bracesJS = blockData->bracesJS;
         _bracesPHP = blockData->bracesPHP;
@@ -3307,6 +3310,7 @@ bool Highlight::parseBlock(const QString & text)
         stringEscStringCSS != _stringEscStringCSS ||
         stringEscStringJS != _stringEscStringJS ||
         regexpEscStringJS != _regexpEscStringJS ||
+        regexpPrevCharJS != _regexpPrevCharJs ||
         stringBlock != _stringBlock ||
         _bracesCSS != bracesCSS ||
         _bracesJS != bracesJS ||
@@ -3371,6 +3375,7 @@ bool Highlight::parseBlock(const QString & text)
     blockData->stringEscStringCSS = stringEscStringCSS;
     blockData->stringEscStringJS = stringEscStringJS;
     blockData->regexpEscStringJS = regexpEscStringJS;
+    blockData->regexpPrevCharJS = regexpPrevCharJS;
     blockData->bracesCSS = bracesCSS;
     blockData->bracesJS = bracesJS;
     blockData->bracesPHP = bracesPHP;

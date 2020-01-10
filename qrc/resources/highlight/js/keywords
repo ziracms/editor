@@ -1,5 +1,6 @@
 abstract
 arguments
+async
 await
 boolean
 break
@@ -66,3 +67,4 @@ clientInformation
 crypto
 self
 parent
+__proto__
