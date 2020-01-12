@@ -12,6 +12,7 @@
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QPropertyAnimation>
+#include <QAction>
 #include "settings.h"
 #include "parsephp.h"
 #include "parsejs.h"
@@ -37,6 +38,7 @@ protected:
     QListWidget * resultsList;
     QVBoxLayout * vLayout;
 private:
+    QAction * clearAction;
     QString lastSearch;
     ParsePHP::ParseResult parseResultPHP;
     ParseJS::ParseResult parseResultJS;
@@ -58,6 +60,7 @@ public slots:
     void findTextDelayed();
     void animationInFinished();
     void animationOutFinished();
+    void clearActionTriggered(bool checked);
 };
 
 #endif // QUICKACCESS_H

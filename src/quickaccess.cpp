@@ -39,13 +39,17 @@ QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
 
     findEdit = new QLineEdit();
     findEdit->setPlaceholderText(tr("Search for file, class or function"));
-    findEdit->setClearButtonEnabled(true);
+    //findEdit->setClearButtonEnabled(true);
     vLayout->addWidget(findEdit);
 
     resultsList = new QListWidget();
     vLayout->addWidget(resultsList);
 
     vLayout->addStretch();
+
+    clearAction = findEdit->addAction(QIcon(":icons/clear.png"), QLineEdit::TrailingPosition);
+    clearAction->setVisible(false);
+    connect(clearAction, SIGNAL(triggered(bool)), this, SLOT(clearActionTriggered(bool)));
 
     connect(findEdit, SIGNAL(textChanged(QString)), this, SLOT(findTextChanged(QString)));
     connect(findEdit, SIGNAL(returnPressed()), this, SLOT(findTextReturned()));
@@ -498,6 +502,7 @@ void QuickAccess::findTextChanged(QString text)
     text = text.trimmed();
     if (text.size() == 0) {
         restoreResults();
+        clearAction->setVisible(false);
         return;
     }
     lastSearch = text;
@@ -506,6 +511,12 @@ void QuickAccess::findTextChanged(QString text)
         findLocked = true;
         QTimer::singleShot(SEARCH_DELAY_MILLISECONDS, this, SLOT(findTextDelayed()));
     }
+    clearAction->setVisible(true);
+}
+
+void QuickAccess::clearActionTriggered(bool)
+{
+    findEdit->setText("");
 }
 
 void QuickAccess::findTextDelayed()
