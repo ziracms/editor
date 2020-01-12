@@ -458,12 +458,12 @@ QTabBar::tab:top
 QTabBar::tab:top:first, QTabBar::tab:top:only-one
 {
     border-left: 1px solid #d0d0d0;
-    border-top-left-radius: 3px;
+    border-top-left-radius: 0px;
 }
 
 QTabBar::tab:top:last, QTabBar::tab:top:only-one
 {
-    border-top-right-radius: 3px;
+    border-top-right-radius: 0px;
 }
 
 QTabBar::tab:bottom
@@ -477,12 +477,12 @@ QTabBar::tab:bottom
 QTabBar::tab:bottom:first, QTabBar::tab:bottom:only-one
 {
     border-left: 1px solid #d0d0d0;
-    border-bottom-left-radius: 3px;
+    border-bottom-left-radius: 0px;
 }
 
 QTabBar::tab:bottom:last, QTabBar::tab:bottom:only-one
 {
-    border-bottom-right-radius: 3px;
+    border-bottom-right-radius: 0px;
 }
 
 QTabBar::tab:left
@@ -497,12 +497,12 @@ QTabBar::tab:left
 QTabBar::tab:left:first, QTabBar::tab:left:only-one
 {
     border-top: 1px solid #d0d0d0;
-    border-top-right-radius: 3px;
+    border-top-right-radius: 0px;
 }
 
 QTabBar::tab:left:last, QTabBar::tab:left:only-one
 {
-    border-bottom-right-radius: 3px;
+    border-bottom-right-radius: 0px;
 }
 
 QTabBar::tab:right
@@ -517,12 +517,12 @@ QTabBar::tab:right
 QTabBar::tab:right:first, QTabBar::tab:right:only-one
 {
     border-top: 1px solid #d0d0d0;
-    border-top-left-radius: 3px;
+    border-top-left-radius: 0px;
 }
 
 QTabBar::tab:right:last, QTabBar::tab:right:only-one
 {
-    border-bottom-left-radius: 3px;
+    border-bottom-left-radius: 0px;
 }
 
 QTabBar QToolButton
