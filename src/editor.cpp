@@ -2132,7 +2132,7 @@ void Editor::verticalScrollbarValueChanged(int /* sliderPos */)
 
     if (is_ready && !scrollBarValueChangeLocked) {
         scrollBarValueChangeLocked = true;
-        QTimer::singleShot(INTERVAL_SCROLL_HIGHLIGHT_MILLISECONDS, this, SLOT(scrollbarValueChangedDelayed()));
+        QTimer::singleShot(INTERVAL_SCROLL_HIGHLIGHT_MILLISECONDS, this, SLOT(verticalScrollbarValueChangedDelayed()));
     }
 }
 
