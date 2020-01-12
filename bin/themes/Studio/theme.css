@@ -3,7 +3,7 @@
 QToolTip
 {
      border: 1px solid #eeeef2;
-     background-color: #fffef6;
+     background-color: #fff9cb;
      border-radius: 3px;
      color: #4c4c4c;
      padding: 2px 3px;
@@ -358,11 +358,18 @@ QTreeView
 
 QMainWindow::separator
 {
-    background-color: #d2d2d2;
-    color: black;
+    background-color: #eeeef2;
+    color: #333333;
     padding-left: 4px;
-    border: 1px solid #c5c5c5;
+    border: 1px solid #eeeef2;
     spacing: 3px; /* spacing between items in the tool bar */
+}
+
+QToolBar
+{
+    color: #333333;
+    background-color: #eeeef2;
+    border: 1px solid #eeeef2; /* workaround for lxde */
 }
 
 QToolBar::handle
@@ -392,9 +399,9 @@ QToolButton:pressed
 QProgressBar
 {
     border: 1px solid #25b9ff;
-    border-radius: 3px;
+    border-radius: 0px;
     text-align: center;
-    height: 10px;
+    height: 20px;
     margin: 2px 4px;
 }
 
@@ -402,6 +409,11 @@ QProgressBar::chunk
 {
     background-color: #25b9ff;
     width: 2px;
+    margin: 0px;
+}
+
+QStatusBar QProgressBar
+{
     margin: 0px;
 }
 

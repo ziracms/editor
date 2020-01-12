@@ -120,7 +120,7 @@ void Settings::applyLightColors()
     data["editor_search_word_bg_color"] = "#ecffbd";
     data["editor_text_color"] = "#333333";
     data["editor_bg_color"] = "#ffffff";
-    data["editor_tooltip_bg_color"] = "#fffef6";
+    data["editor_tooltip_bg_color"] = "#fff9cb";
     data["editor_tooltip_color"] = "#4c4c4c";
     data["editor_tooltip_bold_color"] = "#000000";
     data["editor_search_input_bg_color"] = "#ffffff";
