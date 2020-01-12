@@ -38,5 +38,6 @@
         <file alias="blank.png">resources/images/icons/blank.png</file>
         <file alias="clear.png">resources/images/icons/clear.png</file>
         <file alias="close.png">resources/images/icons/close.png</file>
+        <file alias="item.png">resources/images/icons/item.png</file>
     </qresource>
 </RCC>

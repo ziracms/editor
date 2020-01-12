@@ -10,6 +10,8 @@
 const int COMPLETE_POPUP_MIN_WIDTH = 150;
 const int COMPLETE_POPUP_MAX_WIDTH = 400;
 const int COMPLETE_POPUP_MAX_HEIGHT = 160;
+const int COMPLETE_POPUP_ICON_SIZE = 10;
+const int COMPLETE_POPUP_ITEM_EXTRA_SPACE = 40;
 
 const int ITEMS_LIMIT = 100;
 
@@ -22,6 +24,9 @@ CompletePopup::CompletePopup(QWidget * parent) : QListWidget(parent)
     setFocusProxy(parent);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setIconSize(QSize(COMPLETE_POPUP_ICON_SIZE, COMPLETE_POPUP_ICON_SIZE));
+    setContentsMargins(0,0,0,0);
+    setSpacing(0);
     connect(this, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
 
     textStartPos = -1;
@@ -50,7 +55,7 @@ void CompletePopup::addItem(QString str, QString data, QString delimiter)
     QVariant itemData(data);
     newItem->setData(Qt::UserRole, itemData);
     newItem->setText(str);
-    newItem->setIcon(style()->standardIcon(QStyle::SP_ToolBarHorizontalExtensionButton));
+    newItem->setIcon(QIcon(":/icons/item.png"));
     if (data.size()>0 && data[0]=="(") {
         if (delimiter.size() > 0 && data.indexOf(delimiter) >= 0) {
             data.replace(delimiter, "\n"+str);
@@ -66,19 +71,18 @@ void CompletePopup::showPopup(int cursLeft, int cursTop, int viewLeft, int viewT
 {
     setVisible(true);
     int width = geometry().width(), height = geometry().height();
-    if (count()>0) {
-        int w = sizeHintForColumn(0);
-        int h = sizeHintForRow(0);
-        if (w > 0 && h > 0) {
-            int vSw = verticalScrollBar()->width();
-            if (verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) vSw = 0;
-            int hSh = horizontalScrollBar()->height();
-            if (horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) hSh = 0;
-            width = w+vSw;
-            if (width > COMPLETE_POPUP_MAX_WIDTH) width = COMPLETE_POPUP_MAX_WIDTH;
-            height = ((count()+1) * h)+hSh;
-            if (height > COMPLETE_POPUP_MAX_HEIGHT) height = COMPLETE_POPUP_MAX_HEIGHT;
+    int rowCo = model()->rowCount();
+    if (rowCo>0) {
+        QFontMetrics fm(font());
+        for (int i=0; i<rowCo; i++) {
+            QListWidgetItem * itm = item(i);
+            QString txt = itm->text();
+            int iw = fm.width(txt) + iconSize().width() + COMPLETE_POPUP_ITEM_EXTRA_SPACE;
+            if (iw > width) width = iw;
         }
+        if (width > COMPLETE_POPUP_MAX_WIDTH) width = COMPLETE_POPUP_MAX_WIDTH;
+        height = rowCo * fm.height() + COMPLETE_POPUP_ITEM_EXTRA_SPACE;
+        if (height > COMPLETE_POPUP_MAX_HEIGHT) height = COMPLETE_POPUP_MAX_HEIGHT;
         setCurrentRow(0);
     }
     int x = viewLeft + cursLeft;
