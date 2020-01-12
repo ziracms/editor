@@ -91,7 +91,14 @@ MainWindow::MainWindow(QWidget *parent) :
     progressBar->setMaximumWidth(150);
     progressBar->setRange(0, 100);
     progressBar->hide();
-    statusBar()->addPermanentWidget(progressBar);
+
+    QWidget * progressWidget = new QWidget();
+    progressWidget->setMaximumWidth(150);
+    QHBoxLayout * progressLayout = new QHBoxLayout(progressWidget);
+    progressLayout->setContentsMargins(0,0,0,0);
+    progressLayout->setMargin(0);
+    progressLayout->addWidget(progressBar);
+    statusBar()->addPermanentWidget(progressWidget);
 
     // editor tabs
     editorTabs = new EditorTabs(spellChecker, ui->tabWidget, settings, highlightWords, completeWords, helpWords, spellWords);
