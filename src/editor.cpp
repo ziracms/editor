@@ -3960,7 +3960,7 @@ void Editor::tooltip(int offset)
     QString blockText = cursor.block().text();
     if (highlight->isStateOpen(&block, cursPos)) return;
     std::string mode = highlight->findModeAtCursor(&block, cursPos);
-    if (mode != MODE_PHP) return;
+    if (mode != MODE_PHP && mode != MODE_JS) return;
     // show complete popup
     QTextCursor curs = textCursor();
     QString prevText = "";
@@ -4303,6 +4303,7 @@ void Editor::cursorPositionChangedDelayed()
             if (clsName.size() > 0) scopeName += clsName + BREADCRUMBS_DELIMITER;
             if (funcName.size() > 0) scopeName += funcName;
         } else if (mode == MODE_JS) {
+            followTooltip();
             scopeName += highlight->findFuncJSAtCursor(& block, pos);
         } else if (mode == MODE_CSS) {
             QString mediaName = highlight->findMediaCSSAtCursor(& block, pos);

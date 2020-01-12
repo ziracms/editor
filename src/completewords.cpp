@@ -172,8 +172,17 @@ void CompleteWords::loadJSWords()
     while (!fin.atEnd()) {
         k = fin.readLine();
         if (k == "") continue;
-        jsFunctionsComplete[k.toStdString()] = k.toStdString();
-        HW->addJSFunction(k);
+        QString kName = "", kParams = "";
+        int kSep = k.indexOf("(");
+        if (kSep > 0) {
+            kName = k.mid(0, kSep).trimmed();
+            kParams = k.mid(kSep).trimmed();
+            jsFunctionsComplete[kName.toStdString()] = kParams.toStdString();
+            HW->addJSFunction(kName);
+        } else {
+            jsFunctionsComplete[k.toStdString()] = k.toStdString();
+            HW->addJSFunction(k);
+        }
     }
     ff.close();
 
@@ -196,7 +205,15 @@ void CompleteWords::loadJSWords()
     while (!min.atEnd()) {
         k = min.readLine();
         if (k == "") continue;
-        jsMethodsComplete[k.toStdString()] = k.toStdString();
+        QString kName = "", kParams = "";
+        int kSep = k.indexOf("(");
+        if (kSep > 0) {
+            kName = k.mid(0, kSep).trimmed();
+            kParams = k.mid(kSep).trimmed();
+            jsMethodsComplete[kName.toStdString()] = kParams.toStdString();
+        } else {
+            jsMethodsComplete[k.toStdString()] = k.toStdString();
+        }
     }
     mf.close();
 

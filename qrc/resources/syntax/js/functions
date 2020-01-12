@@ -1,37 +1,20 @@
-alert
-assign
-blur
-clearInterval
-clearTimeout
-close
-confirm
-constructor
-decodeURI
-decodeURIComponent
-encodeURI
-encodeURIComponent
-escape
-fileUpload
-focus
-navigate
-open
-parseFloat
-parseInt
-prompt
-propertyIsEnum
-reset
-scroll
-secure
-setInterval
-setTimeout
-submit
-unescape
-untaint
-eval
-hasOwnProperty
-isFinite
-isNaN
-isPrototypeOf
-valueOf
-taint
-toString
+alert( message )
+assign( target, ...sources )
+clearInterval( intervalID )
+clearTimeout( timeoutID )
+confirm( message )
+constructor( [arguments] )
+decodeURI( encodedURI )
+decodeURIComponent( encodedURI )
+encodeURI( URI )
+encodeURIComponent( str )
+escape( str )
+parseFloat( string )
+parseInt( string [, radix] )
+prompt( message, default )
+setInterval( func, delay, [arg1, arg2, ...] ) [:OR:] ( code, delay )
+setTimeout( function[, delay, arg1, arg2, ...] ) [:OR:] ( function [, delay] ) [:OR:] ( code [, delay] )
+unescape( str )
+eval( string )
+isFinite( testValue )
+isNaN( value )
