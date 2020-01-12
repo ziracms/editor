@@ -1,6 +1,6 @@
 Zira Editor is a lightweight PHP Editor for Linux with syntax highlighting and autocomplete.
 If you're looking for Geany alternative for KDE, you should try Zira Editor.
-It's written in QT and can be run in both KDE and Gnome.
+It's written in QT and can be run in both KDE and Gnome (also tested in Raspbian Buster with Raspberry PI 3 B+).
 
 Main features:
 - low memory usage
@@ -48,7 +48,18 @@ Main features:
 - built-in light and dark themes
 - custom themes support
 
-Tested on OpenSuSe Leap 15.0 with QT 5.9.4
-      and OpenSuSe Leap 15.1 with QT 5.9.7
+Tested in:
+      OpenSuSe Leap 15.0 with QT 5.9.4
+      OpenSuSe Leap 15.1 with QT 5.9.7
+      Raspbian Buster with QT 5.11.3
 
-Compiled binary (x86-64) can be found in bin folder.
+Compiled binary (x86-64) can be found in bin (or bin/arm for ARM) folder.
+      
+Install in Raspbian:
+      - install qt5-default
+      - install hunspell
+      - download and unpack archive
+      - copy bin/arm to any folder
+      - copy bin/themes and bin/zira.png to the same folder
+      - edit bin/local.share.applications.zira.desktop.txt (change paths)
+      - move bin/local.share.applications.zira.desktop.txt to .local/share/applications/zira.desktop
