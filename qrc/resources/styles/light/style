@@ -47,7 +47,7 @@ QMenuBar::item:pressed
 
 QMenu
 {
-    border: 1px solid #e7e7e7;
+    border: 1px solid #c5cfd6;
 }
 
 QMenu::item
@@ -119,17 +119,26 @@ QTreeWidget QLineEdit
     padding: 0;
 }
 
-QTreeView::branch:closed:has-children:has-siblings
+QTreeView::branch:closed:has-children:has-siblings,
+QTreeView::branch:closed:has-children:!has-siblings
 {
     border-image: none;
-    image: url(":/icons/plus.png");
+    image: url(:/icons/plus.png);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings
 {
     border-image: none;
-    image: url(":/icons/minus.png");
+    image: url(:/icons/minus.png);
+}
+
+QHeaderView::section
+{
+    background-color: #e7e7e7;
+    border: 0px solid #c5cfd6; /* workaround for dialog header background */
+    border-bottom: 1px solid #c5cfd6;
+    padding-top: 5px;
 }
 
 QDialog QLineEdit
