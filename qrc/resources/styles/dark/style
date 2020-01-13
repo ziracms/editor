@@ -1,4 +1,4 @@
-/** Dark theme (based on QT Dark Orange theme) **/
+/** Zira Editor Dark theme **/
 
 QToolTip
 {
@@ -91,6 +91,14 @@ QMenu::separator
     color: white;
 }
 
+QMenu::right-arrow
+{
+    border-image: none;
+    width: 16px;
+    height: 16px;
+    image: url(":/icons/item.png");
+}
+
 QWidget:disabled
 {
     color: #616161;
@@ -109,6 +117,19 @@ QLineEdit
 QTreeWidget QLineEdit
 {
     padding: 0;
+}
+
+QTreeView::branch:closed:has-children:has-siblings
+{
+    border-image: none;
+    image: url(":/icons/plus.png");
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings
+{
+    border-image: none;
+    image: url(":/icons/minus.png");
 }
 
 QDialog QLineEdit
