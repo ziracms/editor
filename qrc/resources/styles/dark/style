@@ -133,6 +133,11 @@ QTreeView::branch:open:has-children:has-siblings
     image: url(:/icons/minus.png);
 }
 
+QSizeGrip
+{
+    background-color: none;
+}
+
 QHeaderView::section
 {
     background-color: #232627;
