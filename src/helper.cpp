@@ -17,7 +17,7 @@
 #include <QPluginLoader>
 
 const QString APPLICATION_NAME = "Zira Editor";
-const QString APPLICATION_VERSION = "1.4.8";
+const QString APPLICATION_VERSION = "1.4.9";
 const QString ORGANIZATION_NAME = "Zira";
 const QString AUTHOR_EMAIL_USERNAME = "ziracms";
 const QString AUTHOR_EMAIL_DOMAIN = "gmail.com";
