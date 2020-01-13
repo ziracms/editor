@@ -581,7 +581,7 @@ QDockWidget
 QDockWidget::title
 {
     padding: 5px;
-    border: 1px solid #3c3f41;
+    border-top: 1px solid #3c3f41;
 }
 
 QDockWidget::close-button
