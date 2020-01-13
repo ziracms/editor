@@ -583,6 +583,7 @@ QDockWidget
 QDockWidget::title
 {
     padding: 5px;
+    background-color: #eeeef2;
 }
 
 QDockWidget::close-button
