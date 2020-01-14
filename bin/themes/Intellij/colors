@@ -1,5 +1,8 @@
 editor_line_number_bg_color = #323235
 editor_line_number_color = #606366
+editor_line_number_modified_bg_color = #0b463a
+editor_line_number_modified_color = #999999
+editor_line_number_deleted_border_color = #ba1205
 editor_line_mark_bg_color = #323235
 editor_line_map_bg_color = #323235
 editor_line_map_scroll_bg_color = #1b443d
@@ -65,6 +68,4 @@ popup_bg_color = #992d4e
 popup_color = #f1f1f1
 popup_border_color = #5b5b5b
 annotation_color = #5e839b
-editor_line_number_modified_bg_color = #0b463a
-editor_line_number_modified_color = #999999
-editor_line_number_deleted_border_color = #ba1205
+progress_color = #0076af

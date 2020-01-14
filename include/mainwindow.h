@@ -138,7 +138,6 @@ private slots:
     void editorActionsChanged();
     void editorUndoRedoChanged();
     void editorBackForwardChanged();
-    void progressChanged(int v);
     void sidebarProgressChanged(int v);
     void editorFilenameChanged(QString name);
     void editorTabOpened(int index);
@@ -204,7 +203,6 @@ private:
     CompleteWords * completeWords;
     HelpWords * helpWords;
     SpellWords * spellWords;
-    QProgressBar * progressBar;
     ParserWorker * parserWorker;
     QThread parserThread;
     FileBrowser * filebrowser;

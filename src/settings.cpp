@@ -166,6 +166,7 @@ void Settings::applyLightColors()
     data["popup_color"] = "#092c21";
     data["popup_border_color"] = "#0aac79";
     data["annotation_color"] = "#8f8576";
+    data["progress_color"] = "#25b9ff";
 }
 
 void Settings::applyDarkColors()
@@ -240,6 +241,7 @@ void Settings::applyDarkColors()
     data["popup_color"] = "#f1f1f1";
     data["popup_border_color"] = "#2a4d74";
     data["annotation_color"] = "#5e839b";
+    data["progress_color"] = "#0076af";
 }
 
 void Settings::applyCustomColors(QString path)

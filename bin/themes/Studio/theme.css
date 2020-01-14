@@ -456,7 +456,7 @@ QTabBar::tab:top, QTabBar::tab:bottom,
 QTabBar::tab:left, QTabBar::tab:right
 {
     border: none;
-    background-color: #e0e0e0;
+    background-color: #fff;
 }
 
 QTabBar::tab:!selected
@@ -479,8 +479,10 @@ QTabBar::tab:!selected:hover
 
 QTabBar::tab:top
 {
-    border-top: 1px solid #d0d0d0;
-    border-right: 1px solid #d0d0d0;
+    /*border-top: 1px solid #d0d0d0;*/
+    /*border-right: 1px solid #d0d0d0;*/
+    border-bottom: 1px solid #d0d0d0;
+    margin-right: 1px;
     padding: 5px 10px;
     min-width: 100px;
 }
@@ -492,7 +494,7 @@ QTabBar::tab:top
 
 QTabBar::tab:top:first, QTabBar::tab:top:only-one
 {
-    border-left: 1px solid #d0d0d0;
+    /*border-left: 1px solid #d0d0d0;*/
     border-top-left-radius: 0px;
 }
 
@@ -503,15 +505,17 @@ QTabBar::tab:top:last, QTabBar::tab:top:only-one
 
 QTabBar::tab:bottom
 {
-    border-bottom: 1px solid #d0d0d0;
-    border-right: 1px solid #d0d0d0;
+    /*border-bottom: 1px solid #d0d0d0;*/
+    /*border-right: 1px solid #d0d0d0;*/
+    border-top: 1px solid #d0d0d0;
+    margin-right: 1px;
     padding: 5px 10px;
     min-width: 100px;
 }
 
 QTabBar::tab:bottom:first, QTabBar::tab:bottom:only-one
 {
-    border-left: 1px solid #d0d0d0;
+    /*border-left: 1px solid #d0d0d0;*/
     border-bottom-left-radius: 0px;
 }
 
@@ -522,8 +526,10 @@ QTabBar::tab:bottom:last, QTabBar::tab:bottom:only-one
 
 QTabBar::tab:left
 {
-    border-right: 1px solid #d0d0d0;
-    border-bottom: 1px solid #d0d0d0;
+    /*border-right: 1px solid #d0d0d0;*/
+    /*border-bottom: 1px solid #d0d0d0;*/
+    border-left: 1px solid #d0d0d0;
+    margin-bottom: 1px;
     padding: 10px 5px;
     min-height: 100px;
     margin-right: 2px;
@@ -531,7 +537,7 @@ QTabBar::tab:left
 
 QTabBar::tab:left:first, QTabBar::tab:left:only-one
 {
-    border-top: 1px solid #d0d0d0;
+    /*border-top: 1px solid #d0d0d0;*/
     border-top-right-radius: 0px;
 }
 
@@ -542,8 +548,10 @@ QTabBar::tab:left:last, QTabBar::tab:left:only-one
 
 QTabBar::tab:right
 {
-    border-left: 1px solid #d0d0d0;
-    border-bottom: 1px solid #d0d0d0;
+    /*border-left: 1px solid #d0d0d0;*/
+    /*border-bottom: 1px solid #d0d0d0;*/
+    border-right: 1px solid #d0d0d0;
+    margin-bottom: 1px;
     padding: 10px 5px;
     min-height: 100px;
     margin-left: 2px;
@@ -551,7 +559,7 @@ QTabBar::tab:right
 
 QTabBar::tab:right:first, QTabBar::tab:right:only-one
 {
-    border-top: 1px solid #d0d0d0;
+    /*border-top: 1px solid #d0d0d0;*/
     border-top-left-radius: 0px;
 }
 

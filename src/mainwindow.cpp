@@ -86,24 +86,9 @@ MainWindow::MainWindow(QWidget *parent) :
     helpWords = new HelpWords();
     spellWords = new SpellWords();
 
-    // statusbar progress
-    progressBar = new QProgressBar;
-    progressBar->setMaximumWidth(150);
-    progressBar->setRange(0, 100);
-    progressBar->hide();
-
-    QWidget * progressWidget = new QWidget();
-    progressWidget->setMaximumWidth(150);
-    QHBoxLayout * progressLayout = new QHBoxLayout(progressWidget);
-    progressLayout->setContentsMargins(0,0,0,0);
-    progressLayout->setMargin(0);
-    progressLayout->addWidget(progressBar);
-    statusBar()->addPermanentWidget(progressWidget);
-
     // editor tabs
     editorTabs = new EditorTabs(spellChecker, ui->tabWidget, settings, highlightWords, completeWords, helpWords, spellWords);
     connect(editorTabs, SIGNAL(statusBarText(QString)), this, SLOT(setStatusBarText(QString)));
-    connect(editorTabs, SIGNAL(progressChange(int)), this, SLOT(progressChanged(int)));
     connect(editorTabs, SIGNAL(editorFilenameChanged(QString)), this, SLOT(editorFilenameChanged(QString)));
     connect(editorTabs, SIGNAL(tabOpened(int)), this, SLOT(editorTabOpened(int)));
     connect(editorTabs, SIGNAL(tabSwitched(int)), this, SLOT(editorTabSwitched(int)));
@@ -1231,13 +1216,6 @@ void MainWindow::searchListItemDoubleClicked(QListWidgetItem *item)
     editorShowLineSymbol(line, symbol);
 }
 
-void MainWindow::progressChanged(int v)
-{
-    if (v < 100 && !progressBar->isVisible()) progressBar->show();
-    if (v == 100 && progressBar->isVisible()) progressBar->hide();
-    if (v >= 0 && v <= 100) progressBar->setValue(v);
-}
-
 void MainWindow::sidebarProgressChanged(int v)
 {
     if (v < 100 && !ui->sidebarProgressBarWrapperWidget->isVisible()) ui->sidebarProgressBarWrapperWidget->show();
@@ -1363,7 +1341,6 @@ void MainWindow::editorTabOpened(int)
 
 void MainWindow::editorTabSwitched(int)
 {
-    progressBar->hide();
     navigator->clear();
     clearMessagesTabText();
     setStatusBarText(""); // update status bar

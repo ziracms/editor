@@ -47,7 +47,6 @@ private:
     bool blockSig;
 signals:
     void statusBarText(QString);
-    void progressChange(int);
     void editorFilenameChanged(QString);
     void tabOpened(int index);
     void tabSwitched(int index);
@@ -85,7 +84,6 @@ private slots:
     void switchTab(int index);
     void editorModifiedStateChanged(int index, bool m);
     void statusBarTextChangeRequested(int index, QString text);
-    void progressChangeRequested(int index, int val);
     void filenameChanged(int index, QString name);
     void saved(int index);
     void reloaded(int index);

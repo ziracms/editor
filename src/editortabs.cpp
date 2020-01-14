@@ -85,7 +85,6 @@ void EditorTabs::createTab(QString filepath, bool initHighlight)
 
     connect(editor, SIGNAL(statusBarText(int, QString)), this, SLOT(statusBarTextChangeRequested(int, QString)));
     connect(editor, SIGNAL(modifiedStateChanged(int, bool)), this, SLOT(editorModifiedStateChanged(int, bool)));
-    connect(editor, SIGNAL(progressChanged(int, int)), this, SLOT(progressChangeRequested(int, int)));
     connect(editor, SIGNAL(filenameChanged(int, QString)), this, SLOT(filenameChanged(int, QString)));
     connect(editor, SIGNAL(saved(int)), this, SLOT(saved(int)));
     connect(editor, SIGNAL(reloaded(int)), this, SLOT(reloaded(int)));
@@ -399,12 +398,6 @@ void EditorTabs::statusBarTextChangeRequested(int index, QString text)
 {
     if (editor == nullptr || editor->getTabIndex() != index) return;
     emit statusBarText(text);
-}
-
-void EditorTabs::progressChangeRequested(int index, int val)
-{
-    if (editor == nullptr || editor->getTabIndex() != index) return;
-    emit progressChange(val);
 }
 
 void EditorTabs::filenameChanged(int index, QString name)

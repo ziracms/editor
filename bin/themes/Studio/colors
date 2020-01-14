@@ -68,3 +68,4 @@ popup_bg_color = #afe4ff
 popup_color = #000000
 popup_border_color = #46c0ff
 annotation_color = #8f8576
+progress_color = #25b9ff

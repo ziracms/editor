@@ -59,6 +59,8 @@ const int SEARCH_WIDGET_HEIGHT = 100;
 const int BREADCRUMBS_WIDGET_HEIGHT = 21;
 
 const int LINE_MAP_LINE_NUMBER_OFFSET = 10;
+const int LINE_MAP_PROGRESS_WIDTH = 3;
+const int LINE_MAP_PROGRESS_HEIGHT = 50;
 
 const QString BREADCRUMBS_DELIMITER = " \u21e2 ";
 
@@ -152,6 +154,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     std::string bgColorStr = settings->get("editor_bg_color");
     std::string tooltipBgColorStr = settings->get("editor_tooltip_bg_color");
     std::string tooltipColorStr = settings->get("editor_tooltip_color");
+    std::string progressColorStr = settings->get("progress_color");
 
     lineNumberBgColor = QColor(lineNumberBgColorStr.c_str());
     lineNumberColor = QColor(lineNumberColorStr.c_str());
@@ -187,6 +190,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     bgColor = QColor(bgColorStr.c_str());
     tooltipBgColor = QColor(tooltipBgColorStr.c_str());
     tooltipColor = QColor(tooltipColorStr.c_str());
+    progressColor = QColor(progressColorStr.c_str());
 
     QPalette p;
     p.setColor(QPalette::Base, bgColor);
@@ -488,11 +492,24 @@ void Editor::reset()
     errorsExtraSelections.clear();
     spellCheckInitBlockNumber = 0;
     isBlocksHeightEquals = true;
+    highlightProgressPercent = 0;
+    spellProgressPercent = 0;
 }
 
 void Editor::highlightProgressChanged(int percent)
 {
-    emit progressChanged(tabIndex, percent);
+    highlightProgressPercent = percent;
+    if (highlightProgressPercent > 100) highlightProgressPercent = 100;
+    if (highlightProgressPercent < 0) highlightProgressPercent = 0;
+    lineMap->repaint();
+}
+
+void Editor::spellProgressChanged(int percent)
+{
+    spellProgressPercent = percent;
+    if (spellProgressPercent > 100) spellProgressPercent = 100;
+    if (spellProgressPercent < 0) spellProgressPercent = 0;
+    lineMap->update();
 }
 
 void Editor::hidePopups()
@@ -595,7 +612,6 @@ void Editor::initSpellChecker()
     if (!spellCheckerEnabled || spellChecker == nullptr) return;
     if (isBigFile) return;
     int totalBlocks = document()->blockCount();
-    QString progressStr = tr("Spell check")+": ";
     while(spellCheckInitBlockNumber < totalBlocks) {
         for (int i=0; i<SPELLCHECKER_INIT_BLOCKS_COUNT; i++) {
             spellBlocksQueue.append(i+spellCheckInitBlockNumber);
@@ -603,12 +619,11 @@ void Editor::initSpellChecker()
         spellCheckInitBlockNumber += SPELLCHECKER_INIT_BLOCKS_COUNT;
         spellCheck(false, false);
         int percent = (spellCheckInitBlockNumber * 100) / totalBlocks;
-        if (percent > 100) percent = 100;
-        emit statusBarText(tabIndex, progressStr+Helper::intToStr(percent)+"%");
+        if (percent - spellProgressPercent > 10) spellProgressChanged(percent);
         QCoreApplication::processEvents();
         if (tabIndex < 0) break;
     }
-    emit statusBarText(tabIndex, "");
+    spellProgressChanged(100);
 }
 
 std::string Editor::getModeType()
@@ -4564,6 +4579,20 @@ void Editor::lineMapAreaPaintEvent(QPaintEvent *event)
         if (top < 1) top = 1;
         if (top > height-1) top = height-1;
         painter.drawLine(QPoint(0, top), QPoint(mapW, top));
+    }
+    // draw highlight progress
+    if (highlightProgressPercent > 0 && highlightProgressPercent < 100){
+        int pHeight = highlightProgressPercent * height / 100;
+        painter.fillRect(0, 0, LINE_MAP_PROGRESS_WIDTH, pHeight, progressColor);
+    }
+    // draw spell progress
+    if (spellProgressPercent > 0 && spellProgressPercent < 100){
+        int p = spellProgressPercent * height / 100;
+        int pHeight = LINE_MAP_PROGRESS_HEIGHT;
+        int y = p - (pHeight / 2);
+        if (y < 0) y = 0;
+        if (y + pHeight > height) pHeight = height - y;
+        painter.fillRect(0, y, LINE_MAP_PROGRESS_WIDTH, pHeight, progressColor);
     }
 }
 

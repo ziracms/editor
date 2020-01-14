@@ -196,6 +196,7 @@ private slots:
     void onRedoAvailable(bool available);
     void searchInFilesRequested();
     void highlightProgressChanged(int percent);
+    void spellProgressChanged(int percent);
     void contentsChange(int position, int charsRemoved, int charsAdded);
     void duplicateLine();
     void deleteLine();
@@ -270,6 +271,7 @@ private:
     QColor lineMarkRectColor;
     QColor lineErrorRectColor;
     QColor lineWarningRectColor;
+    QColor progressColor;
 
     QRegularExpression tagExpr;
     QRegularExpression tagOpenExpr;
@@ -363,11 +365,12 @@ private:
     int spellCheckInitBlockNumber;
     bool isBlocksHeightEquals;
     bool isBigFile;
+    int highlightProgressPercent;
+    int spellProgressPercent;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);
     void modifiedStateChanged(int index, bool m);
-    void progressChanged(int index, int v);
     void filenameChanged(int index, QString name);
     void saved(int index);
     void reloaded(int index);
