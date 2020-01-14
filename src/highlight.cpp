@@ -2055,7 +2055,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
         } else if (highlightSpaces && c == " ") {
             highlightChar(pos, HW->spaceFormat);
         }
-        if (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]") {
+        if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]")) {
             highlightChar(pos, HW->punctuationFormat);
         }
     }
@@ -2315,7 +2315,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         } else if (highlightSpaces && c == " ") {
             highlightChar(pos, HW->spaceFormat);
         }
-        if (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]") {
+        if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]")) {
             highlightChar(pos, HW->punctuationFormat);
         }
     }
@@ -2931,7 +2931,7 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
         } else if (highlightSpaces && c == " ") {
             highlightChar(pos, HW->spaceFormat);
         }
-        if (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@") {
+        if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@")) {
             highlightChar(pos, HW->punctuationFormat);
         }
     }
