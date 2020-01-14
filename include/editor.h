@@ -202,6 +202,7 @@ private slots:
     void deleteLine();
     void reloadRequested();
     void spellCheck(bool suggest = true, bool forceRehighlight = true);
+    void spellCheckPasted();
 private:
     SpellCheckerInterface * spellChecker;
     CompleteWords * CW;
@@ -362,6 +363,7 @@ private:
     bool spellCheckerEnabled;
     bool spellLocked;
     QVector<int> spellBlocksQueue;
+    QVector<int> spellPastedBlocksQueue;
     int spellCheckInitBlockNumber;
     bool isBlocksHeightEquals;
     bool isBigFile;

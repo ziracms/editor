@@ -489,6 +489,7 @@ void Editor::reset()
     gitDiffLines.clear();
     spellLocked = false;
     spellBlocksQueue.clear();
+    spellPastedBlocksQueue.clear();
     errorsExtraSelections.clear();
     spellCheckInitBlockNumber = 0;
     isBlocksHeightEquals = true;
@@ -609,8 +610,7 @@ void Editor::initHighlighter()
 
 void Editor::initSpellChecker()
 {
-    if (!spellCheckerEnabled || spellChecker == nullptr) return;
-    if (isBigFile) return;
+    if (!spellCheckerEnabled || spellChecker == nullptr || isBigFile) return;
     int totalBlocks = document()->blockCount();
     while(spellCheckInitBlockNumber < totalBlocks) {
         for (int i=0; i<SPELLCHECKER_INIT_BLOCKS_COUNT; i++) {
@@ -624,6 +624,19 @@ void Editor::initSpellChecker()
         if (tabIndex < 0) break;
     }
     spellProgressChanged(100);
+}
+
+void Editor::spellCheckPasted()
+{
+    if (!spellCheckerEnabled || spellChecker == nullptr || isBigFile) return;
+    if (tabIndex < 0) return;
+    if (spellPastedBlocksQueue.size() == 0) return;
+    spellBlocksQueue.append(spellPastedBlocksQueue.last());
+    spellCheck(false, false);
+    spellPastedBlocksQueue.removeLast();
+    if (spellPastedBlocksQueue.size() > 0) {
+        QTimer::singleShot(INTERVAL_SPELL_CHECK_MILLISECONDS, this, SLOT(spellCheckPasted()));
+    }
 }
 
 std::string Editor::getModeType()
@@ -1355,6 +1368,12 @@ void Editor::duplicateLine()
     QString text = curs.block().text();
     curs.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
     curs.insertText("\n"+text);
+
+    // spell check
+    if (textCursor().blockNumber() != curs.blockNumber() && spellCheckerEnabled && spellChecker != nullptr && !isBigFile) {
+        spellPastedBlocksQueue.append(curs.block().blockNumber());
+        QTimer::singleShot(INTERVAL_SPELL_CHECK_MILLISECONDS, this, SLOT(spellCheckPasted()));
+    }
 }
 
 void Editor::deleteLine()
@@ -2101,9 +2120,16 @@ void Editor::insertFromMimeData(const QMimeData *source)
                         cursor.block().setUserData(blockData);
                     }
                 }
+                // spell check
+                if (spellCheckerEnabled && spellChecker != nullptr && !isBigFile) {
+                    spellPastedBlocksQueue.append(cursor.block().blockNumber());
+                }
                 if (cursor.block().blockNumber() == startBlockNumber) break;
             } while(cursor.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor));
             lineNumber->update();
+            if (spellCheckerEnabled && spellChecker != nullptr && !isBigFile) {
+                QTimer::singleShot(INTERVAL_SPELL_CHECK_MILLISECONDS, this, SLOT(spellCheckPasted()));
+            }
             return;
         }
     }
@@ -2234,12 +2260,14 @@ void Editor::textChanged()
     }
 
     // spell check
-    if (spellBlocksQueue.size() == 0 || (spellBlocksQueue.last() != textCursor().block().blockNumber())) {
-        spellBlocksQueue.append(textCursor().block().blockNumber());
-    }
-    if (!spellLocked && spellCheckerEnabled && spellChecker != nullptr) {
-        spellLocked = true;
-        QTimer::singleShot(INTERVAL_SPELL_CHECK_MILLISECONDS, this, SLOT(spellCheck()));
+    if (spellCheckerEnabled && spellChecker != nullptr) {
+        if (spellBlocksQueue.size() == 0 || (spellBlocksQueue.last() != textCursor().block().blockNumber())) {
+            spellBlocksQueue.append(textCursor().block().blockNumber());
+        }
+        if (!spellLocked) {
+            spellLocked = true;
+            QTimer::singleShot(INTERVAL_SPELL_CHECK_MILLISECONDS, this, SLOT(spellCheck()));
+        }
     }
 
     // set line modified status
@@ -2452,7 +2480,7 @@ void Editor::spellCheck(bool suggest, bool forceRehighlight)
                     misspelled = true;
                     blockData->spellStarts.append(start);
                     blockData->spellLengths.append(length);
-                    if (doSuggest && word == cursorText) {
+                    if (doSuggest && word == cursorText && start == cursorTextPos) {
                         hideCompletePopup();
                         QStringList suggestions = spellChecker->suggest(word);
                         suggestWords(suggestions, cursorTextPos);
