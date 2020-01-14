@@ -22,6 +22,7 @@ editor_selected_expression_bg_color = #7e3c40
 editor_search_word_bg_color = #284436
 editor_text_color = #a9b7c6
 editor_bg_color = #2b2b2b
+editor_tooltip_border_color = #82515f
 editor_tooltip_bg_color = #781732
 editor_tooltip_color = #c4c8cc
 editor_tooltip_bold_color = #ffffff

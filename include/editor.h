@@ -262,8 +262,6 @@ private:
     QColor searchWordBgColor;
     QColor textColor;
     QColor bgColor;
-    QColor tooltipBgColor;
-    QColor tooltipColor;
     QColor searchInputBgColor;
     QColor searchInputErrorBgColor;
     QColor lineMarkColor;

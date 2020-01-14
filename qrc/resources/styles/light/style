@@ -2,8 +2,8 @@
 
 QToolTip
 {
-     border: 1px solid #e7e7e7;
-     background-color: #fff9cb;
+     border: 1px solid #d0cec1;
+     background-color: #fffded;
      border-radius: 3px;
      color: #4c4c4c;
      padding: 2px 3px;

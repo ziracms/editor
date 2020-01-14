@@ -48,7 +48,6 @@ const int SPELLCHECKER_INIT_BLOCKS_COUNT = 10;
 
 const int TOOLTIP_OFFSET = 20;
 const int TOOLTIP_SCREEN_MARGIN = 10;
-const int TOOLTIP_PADDING = 7;
 
 const int LINE_NUMBER_WIDGET_PADDING = 20;
 const int LINE_MARK_WIDGET_WIDTH = 20;
@@ -71,7 +70,7 @@ const QString TOOLTIP_COLOR_TPL = "<span style=\"background:%1;\">&nbsp;&nbsp;&n
 const int SEARCH_LIMIT = 10000;
 const int BIG_FILE_SIZE = 512000;
 
-Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent) : QTextEdit(parent), spellChecker(spellChecker)
+Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent) : QTextEdit(parent), spellChecker(spellChecker), tooltipLabel(settings)
 {
     setMinimumSize(0, 0);
     setMaximumSize(16777215, 16777215);
@@ -152,8 +151,6 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     std::string lineWarningRectColorStr = settings->get("editor_line_warning_rect_color");
     std::string textColorStr = settings->get("editor_text_color");
     std::string bgColorStr = settings->get("editor_bg_color");
-    std::string tooltipBgColorStr = settings->get("editor_tooltip_bg_color");
-    std::string tooltipColorStr = settings->get("editor_tooltip_color");
     std::string progressColorStr = settings->get("progress_color");
 
     lineNumberBgColor = QColor(lineNumberBgColorStr.c_str());
@@ -188,8 +185,6 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     lineWarningRectColor = QColor(lineWarningRectColorStr.c_str());
     textColor = QColor(textColorStr.c_str());
     bgColor = QColor(bgColorStr.c_str());
-    tooltipBgColor = QColor(tooltipBgColorStr.c_str());
-    tooltipColor = QColor(tooltipColorStr.c_str());
     progressColor = QColor(progressColorStr.c_str());
 
     QPalette p;
@@ -356,16 +351,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     connect(this, SIGNAL(redoAvailable(bool)), this, SLOT(onRedoAvailable(bool)));
 
     // tooltip label
-    tooltipLabel.setWindowFlag(Qt::ToolTip);
-    tooltipLabel.setContentsMargins(TOOLTIP_PADDING, TOOLTIP_PADDING, TOOLTIP_PADDING, TOOLTIP_PADDING);
-    tooltipLabel.setAutoFillBackground(true);
-    QPalette tooltipPalette = tooltipLabel.palette();
-    tooltipPalette.setColor(QPalette::Window, tooltipBgColor);
-    tooltipPalette.setColor(QPalette::WindowText, tooltipColor);
-    tooltipLabel.setPalette(tooltipPalette);
     tooltipLabel.setFont(editorTooltipFont);
-    tooltipLabel.setWordWrap(true);
-    tooltipLabel.hide();
 
     tooltipBoldColorStr = QString::fromStdString(settings->get("editor_tooltip_bold_color"));
     tooltipBoldTagStart = "<b style=\"color:"+tooltipBoldColorStr+"\">";
