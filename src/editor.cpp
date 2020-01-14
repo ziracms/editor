@@ -2860,14 +2860,20 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
             }
         }
         // parsed vars
+        std::unordered_map<std::string, std::string> vars;
+        std::unordered_map<std::string, std::string>::iterator varsIterator;
         if (completePopup->count() < completePopup->limit()) {
             for (int i=parseResultJS.variables.size()-1; i>=0; i--){
                 ParseJS::ParseResultVariable _variable = parseResultJS.variables.at(i);
                 //if (_variable.clsName.size() > 0) continue;
                 QString k = _variable.name;
                 if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                    completePopup->addItem(k, k);
-                    if (completePopup->count() >= completePopup->limit()) break;
+                    varsIterator = vars.find(k.toStdString());
+                    if (varsIterator == vars.end()) {
+                        vars[k.toStdString()] = k.toStdString();
+                        completePopup->addItem(k, k);
+                        if (completePopup->count() >= completePopup->limit()) break;
+                    }
                 }
             }
         }
@@ -2913,14 +2919,20 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
             }
         }
         // parsed props
+        std::unordered_map<std::string, std::string> vars;
+        std::unordered_map<std::string, std::string>::iterator varsIterator;
         if (completePopup->count() < completePopup->limit()) {
             for (int i=0; i<parseResultJS.variables.size(); i++){
                 ParseJS::ParseResultVariable _variable = parseResultJS.variables.at(i);
                 if (_variable.clsName.size() == 0) continue;
                 QString k = _variable.name;
                 if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                    completePopup->addItem(k, k);
-                    if (completePopup->count() >= completePopup->limit()) break;
+                    varsIterator = vars.find(k.toStdString());
+                    if (varsIterator == vars.end()) {
+                        vars[k.toStdString()] = k.toStdString();
+                        completePopup->addItem(k, k);
+                        if (completePopup->count() >= completePopup->limit()) break;
+                    }
                 }
             }
         }
@@ -3931,8 +3943,10 @@ void Editor::completePopupSelected(QString text, QString data)
             } else {
                 curs.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor);
             }
-            tooltipText = text + " " + data;
-            tooltipOrigText = origText + " " + data;
+            if (data != "()") {
+                tooltipText = text + " " + data;
+                tooltipOrigText = origText + " " + data;
+            }
         }
         curs.endEditBlock();
         if (blockS) blockSignals(false);
