@@ -24,6 +24,7 @@ const QString AUTHOR_EMAIL_DOMAIN = "gmail.com";
 const QString AUTHOR_CARD_URL = "https://money.yandex.ru/to";
 const QString AUTHOR_CARD_ID = "410014796567498";
 const QString AUTHOR_CMS_URL = "https://github.com/ziracms/zira";
+const QString GITHUB_EDITOR_URL = "https://github.com/ziracms/editor";
 
 QString Helper::loadFile(QString path, std::string encoding, std::string fallbackEncoding, bool silent)
 {

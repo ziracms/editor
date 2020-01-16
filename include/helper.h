@@ -19,6 +19,7 @@ extern const QString AUTHOR_EMAIL_DOMAIN;
 extern const QString AUTHOR_CARD_URL;
 extern const QString AUTHOR_CARD_ID;
 extern const QString AUTHOR_CMS_URL;
+extern const QString GITHUB_EDITOR_URL;
 
 class Helper
 {
