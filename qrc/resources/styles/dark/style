@@ -54,7 +54,7 @@ QMenu
 QMenu::item
 {
     background: #2a363b;
-    padding: 5px 70px 5px 25px;
+    padding: 5px 80px 5px 30px;
 }
 
 QMenu::item:selected
@@ -102,7 +102,7 @@ QMenu::indicator:unchecked
 QMenu::separator
 {
     height: 1px;
-    background-color: #3e3e3e;
+    background-color: #1e1e1e;
     color: white;
 }
 
