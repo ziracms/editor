@@ -22,6 +22,7 @@
 #include <QTextStream>
 #include <QDesktopServices>
 #include <QPluginLoader>
+#include <QStyleFactory>
 #include "editortab.h"
 #include "searchdialog.h"
 #include "servers.h"
@@ -60,6 +61,10 @@ MainWindow::MainWindow(QWidget *parent) :
         QDir customThemesPathDir = QDir("./"+CUSTOM_THEMES_FALLBACK_FOLDER);
         customThemesPath = customThemesPathDir.absolutePath();
         if (!Helper::folderExists(customThemesPath)) customThemesPath = "";
+    }
+    if (theme != THEME_SYSTEM) {
+        QStyle * wStyle = QStyleFactory::create("Windows");
+        if (wStyle != nullptr) QApplication::setStyle(wStyle);
     }
     if (colorSheme == COLOR_SCHEME_DARK) settings->applyDarkColors();
     else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyLightColors();
