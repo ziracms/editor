@@ -10,6 +10,7 @@
 #include <QTextCodec>
 #include <QFileDialog>
 #include <QDirIterator>
+#include <QStyledItemDelegate>
 #include "helper.h"
 
 const std::string CHECKED_YES = "yes";
@@ -135,6 +136,9 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     connect(ui->filesNewLineCRRadio, SIGNAL(toggled(bool)), this, SLOT(editorNewLineCRToggled(bool)));
     connect(ui->filesNewLineCRLFRadio, SIGNAL(toggled(bool)), this, SLOT(editorNewLineCRLFToggled(bool)));
     connect(ui->buttonBox->button(QDialogButtonBox::Reset), SIGNAL(pressed()), this, SLOT(resetButtonPressed()));
+
+    ui->generalThemeCombobox->setItemDelegate(new QStyledItemDelegate());
+    ui->generalColorSchemeCombobox->setItemDelegate(new QStyledItemDelegate());
 }
 
 SettingsDialog::~SettingsDialog()

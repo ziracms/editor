@@ -30,6 +30,7 @@ QWidget:item:selected
 QMenuBar::item
 {
     background: transparent;
+    padding: 5px 10px;
 }
 
 QMenuBar::item:selected
@@ -52,14 +53,28 @@ QMenu
 
 QMenu::item
 {
-    padding: 5px 20px;
     background: #2a363b;
+    padding: 5px 70px 5px 25px;
 }
 
 QMenu::item:selected
 {
     color: #fff;
     background-color: #006a7b;
+}
+
+QMenu::icon
+{
+    width: 20px;
+    height: 20px;
+    margin-left: 15px;
+}
+
+QMenu::indicator
+{
+    width: 15px;
+    height: 15px;
+    margin-left: 10px;
 }
 
 QMenu::indicator:checked
@@ -114,6 +129,11 @@ QLineEdit
     padding: 5px;
 }
 
+QTreeWidget
+{
+    outline: none;
+}
+
 QTreeWidget QLineEdit
 {
     padding: 0;
@@ -164,6 +184,7 @@ QPushButton
     border: 1px solid #1e1e1e;
     border-radius: 3;
     padding: 5px 10px 5px 10px;
+    outline: none;
 }
 
 QPushButton#gitTabPullButton,
@@ -224,6 +245,13 @@ QComboBox QAbstractItemView
 {
     border: 2px solid darkgray;
     /*selection-background-color: #008dc1;*/
+    outline: none;
+}
+
+QComboBox QAbstractItemView::item
+{
+    border: none;
+    padding: 5px 10px;
 }
 
 QComboBox::drop-down
@@ -364,6 +392,18 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
     background: none;
 }
 
+QListWidget
+{
+    outline: none;
+}
+
+QListWidget::item,
+QListWidget::item:selected
+{
+    padding: 5px;
+    border: none;
+}
+
 QPlainTextEdit,
 QTextBrowser,
 QTreeView,
@@ -409,13 +449,43 @@ QToolBar
 
 QToolBar::handle
 {
-     spacing: 3px; /* spacing between items in the tool bar */
-     background: url(:/styles/dark/handle.png);
+    background: url(:/styles/dark/handle.png);
+}
+
+QToolBar::handle:horizontal
+{
+    width: 10px;
+    margin-right: 3px;
+}
+
+QToolBar::handle:vertical
+{
+    height: 10px;
+    margin-bottom: 3px;
+}
+
+QToolBar::separator
+{
+    background-color: #555;
+    border: none;
+}
+
+QToolBar::separator:horizontal
+{
+    width: 1px;
+    margin: 0px 3px;
+}
+
+QToolBar::separator:vertical
+{
+    height: 1px;
+    margin: 3px 0px;
 }
 
 QToolButton
 {
     background: transparent;
+    border: 1px solid #232627;
 }
 
 QToolButton:hover
@@ -491,12 +561,12 @@ QTabBar::tab:top
 QTabBar::tab:top:first, QTabBar::tab:top:only-one
 {
     border-left: 1px solid #1e1e1e;
-    border-top-left-radius: 3px;
+    /*border-top-left-radius: 3px;*/
 }
 
 QTabBar::tab:top:last, QTabBar::tab:top:only-one
 {
-    border-top-right-radius: 3px;
+    /*border-top-right-radius: 3px;*/
 }
 
 QTabBar::tab:bottom
@@ -510,52 +580,58 @@ QTabBar::tab:bottom
 QTabBar::tab:bottom:first, QTabBar::tab:bottom:only-one
 {
     border-left: 1px solid #1e1e1e;
-    border-bottom-left-radius: 3px;
+    /*border-bottom-left-radius: 3px;*/
 }
 
 QTabBar::tab:bottom:last, QTabBar::tab:bottom:only-one
 {
-    border-bottom-right-radius: 3px;
+    /*border-bottom-right-radius: 3px;*/
 }
 
 QTabBar::tab:left
 {
+    /*
     border-right: 1px solid #1e1e1e;
     border-bottom: 1px solid #1e1e1e;
+    */
+    border: 1px solid #1e1e1e;
     padding: 10px 5px;
     min-height: 100px;
-    margin-right: 2px;
+    margin-bottom: 1px;
 }
 
 QTabBar::tab:left:first, QTabBar::tab:left:only-one
 {
-    border-top: 1px solid #1e1e1e;
-    border-top-right-radius: 3px;
+    /*border-top: 1px solid #1e1e1e;*/
+    /*border-top-right-radius: 3px;*/
 }
 
 QTabBar::tab:left:last, QTabBar::tab:left:only-one
 {
-    border-bottom-right-radius: 3px;
+    /*border-bottom-right-radius: 3px;*/
 }
 
 QTabBar::tab:right
 {
+    /*
     border-left: 1px solid #1e1e1e;
     border-bottom: 1px solid #1e1e1e;
+    */
+    border: 1px solid #1e1e1e;
     padding: 10px 5px;
     min-height: 100px;
-    margin-left: 2px;
+    margin-bottom: 1px;
 }
 
 QTabBar::tab:right:first, QTabBar::tab:right:only-one
 {
-    border-top: 1px solid #1e1e1e;
-    border-top-left-radius: 3px;
+    /*border-top: 1px solid #1e1e1e;*/
+    /*border-top-left-radius: 3px;*/
 }
 
 QTabBar::tab:right:last, QTabBar::tab:right:only-one
 {
-    border-bottom-left-radius: 3px;
+    /*border-bottom-left-radius: 3px;*/
 }
 
 QTabBar QToolButton
@@ -588,19 +664,35 @@ QTabWidget::pane
 
 QDockWidget
 {
+    border: 1px solid #1e1e1e;
     titlebar-close-icon: url(:/icons/blank.png);
     titlebar-normal-icon: url(:/icons/blank.png);
+    padding: 5px;
 }
 
 QDockWidget::title
 {
     padding: 5px;
-    border-top: 1px solid #232627;
+    border: 1px solid #1e1e1e;
+    text-align: center;
+    background: transparent;
+}
+
+QDockWidget::title:horizontal
+{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+QDockWidget::title:vertical
+{
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
 QDockWidget::close-button
 { 
-    image: url(:/styles/dark/close.png);
+    image: url(:/styles/dark/hide.png);
     border: none; 
     background: none;
     padding: 0px;
@@ -608,7 +700,7 @@ QDockWidget::close-button
 
 QDockWidget::close-button:hover
 { 
-    image: url(:/styles/dark/close-hover.png);
+    image: url(:/styles/dark/hide-hover.png);
     border: none; 
     background: none;
 }
