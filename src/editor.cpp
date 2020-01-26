@@ -32,6 +32,7 @@
 #include <QMenu>
 #include <QInputDialog>
 #include <QAction>
+#include <QScreen>
 #include "math.h"
 #include "helper.h"
 
@@ -429,7 +430,11 @@ void Editor::setTabsSettings()
 {
     tabWidth = std::stoi(tabWidthStr);
     QFontMetrics fm(editorFont);
+    /* QTextEdit::setTabStopWidth() is deprecated */
+    /*
     setTabStopWidth(tabWidth * fm.width(' '));
+    */
+    setTabStopDistance(tabWidth * fm.width(' '));
     tabType = tabTypeStr;
     if (detectTabTypeStr == "yes") detectTabType = true;
     else detectTabType = false;
@@ -742,7 +747,7 @@ void Editor::updateLineAnnotationView()
     int top = contentsMargins().top();
 
     if (blockNumber == 0) {
-        top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
+        top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
     } else {
         QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
         int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
@@ -929,8 +934,13 @@ QString Editor::cleanUpText(QString blockText)
 void Editor::showTooltip(int x, int y, QString text, bool richText, int fixedWidth)
 {
     if (!focused) return;
+    /* QDesktopWidget::screenGeometry() is deprecated */
+    /*
     QRect rec = QApplication::desktop()->screenGeometry();
     int  screenWidth = rec.width();
+    */
+    QScreen * screen = QGuiApplication::primaryScreen();
+    int  screenWidth = screen->geometry().width();
     QFontMetrics fm = tooltipLabel.fontMetrics();
     QMargins mm = tooltipLabel.contentsMargins();
     QString strippedText(text.replace("\t", QString(" ").repeated(tabWidth)));
@@ -962,7 +972,7 @@ void Editor::showTooltip(int x, int y, QString text, bool richText, int fixedWid
     int extraLinesCo = 0;
     for (int i=0; i<strippedList.size(); i++) {
         int textLineW = fm.width(strippedList.at(i)) + mm.left() + mm.right() + 1;
-        if (textLineW > tooltipWidth) extraLinesCo += std::ceil(static_cast<double>(textLineW) / tooltipWidth)-1;
+        if (textLineW > tooltipWidth) extraLinesCo += static_cast<int>(std::ceil(static_cast<double>(textLineW) / tooltipWidth))-1;
     }
     tooltipLabel.setFixedHeight(fm.height()*(strippedList.size()+extraLinesCo) + mm.top() + mm.bottom());
     if (richText) tooltipLabel.setTextFormat(Qt::RichText);
@@ -4406,7 +4416,7 @@ int Editor::getFirstVisibleBlockIndex()
     int slider_pos = verticalScrollBar()->sliderPosition();
     QTextBlock first = document()->findBlockByNumber(0);
     QRectF fRect = document()->documentLayout()->blockBoundingRect(first);
-    slider_pos -= fRect.y();
+    slider_pos -= static_cast<int>(fRect.y());
     if (slider_pos<=0) return 0;
     if (document()->blockCount()<2) return 0;
     int block_d = static_cast<int>(slider_pos / fRect.height()) + 1;
@@ -4504,7 +4514,7 @@ void Editor::lineMarkAreaPaintEvent(QPaintEvent *event)
     int top = contentsMargins().top();
 
     if (blockNumber == 0) {
-        top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
+        top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
     } else {
         QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
         int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
@@ -4639,7 +4649,7 @@ void Editor::lineNumberAreaPaintEvent(QPaintEvent *event)
     int top = contentsMargins().top();
 
     if (blockNumber == 0) {
-        top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
+        top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
     } else {
         QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
         int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
@@ -5666,7 +5676,7 @@ void Editor::showLineNumber(int y)
     int top = contentsMargins().top();
 
     if (blockNumber == 0) {
-        top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
+        top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
     } else {
         QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
         int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
@@ -5770,7 +5780,7 @@ void Editor::showLineMark(int y)
     int top = contentsMargins().top();
 
     if (blockNumber == 0) {
-        top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
+        top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
     } else {
         QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
         int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
@@ -5833,7 +5843,7 @@ void Editor::addLineMark(int y)
     int top = contentsMargins().top();
 
     if (blockNumber == 0) {
-        top += document()->documentMargin() - verticalScrollBar()->sliderPosition();
+        top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
     } else {
         QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
         int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
