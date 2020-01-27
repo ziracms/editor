@@ -1944,12 +1944,12 @@ void MainWindow::applyThemeColors()
     // setting widgets font
     QString qV = QString(qVersion());
     QStringList qVL = qV.split(".");
-    if (qVL.size() == 3) {
+    if (qVL.size() == 3 && theme != THEME_SYSTEM) {
         QVersionNumber v1(qVL.at(0).toInt(), qVL.at(1).toInt(), qVL.at(2).toInt());
         QVersionNumber v2(5, 12, 0);
         if (QVersionNumber::compare(v1, v2) < 0) {
             QFont font = QApplication::font();
-            style += "QTreeWidget, QTabBar::tab, QLineEdit, QPushButton, QLabel, QCheckBox, QRadioButton, QComboBox, QDockWidget::title {font: "+Helper::intToStr(font.pointSize())+"pt \""+font.family()+"\";}";
+            style += "QMenu, QTreeWidget, QTabBar::tab, QLineEdit, QPushButton, QLabel, QCheckBox, QRadioButton, QComboBox, QDockWidget::title {font: "+Helper::intToStr(font.pointSize())+"pt \""+font.family()+"\";}";
         }
     }
 
