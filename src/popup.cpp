@@ -24,7 +24,16 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     std::string colorStr = settings->get("popup_color");
     std::string borderColorStr = settings->get("popup_border_color");
 
-    QFont sysFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    QFont popupFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+
+    std::string fontFamily = settings->get("editor_font_family");
+    std::string fontSize = settings->get("editor_font_size");
+    if (fontFamily.size() > 0) {
+        popupFont.setStyleHint(QFont::Monospace);
+        popupFont.setFamily(QString::fromStdString(fontFamily));
+    }
+    popupFont.setPointSize(std::stoi(fontSize));
+    popupFont.setStyleName("");
 
     hLayout = new QHBoxLayout(this);
     hLayout->setContentsMargins(0, 0, 0, 0);
@@ -44,7 +53,7 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     textLabel->setWordWrap(true);
     textLabel->setAlignment(Qt::AlignTop);
     textLabel->setMinimumWidth(WIDGET_MIN_WIDTH - IMAGE_WIDTH);
-    textLabel->setFont(sysFont);
+    textLabel->setFont(popupFont);
     textLabel->setContentsMargins(0, 0, 0, 0);
     textLabel->setMargin(PADDING);
     textLabel->setStyleSheet("background:"+QString::fromStdString(bgColorStr)+";color:"+QString::fromStdString(colorStr)+";");
