@@ -10,7 +10,7 @@
 #include <QTextStream>
 #include "helper.h"
 
-const QString TPL_QT_VERSION = "<div><center>QT %1</center></div>";
+const QString TPL_QT_VERSION = "<div><center>Qt %1</center></div>";
 const QString TPL_APPLICATION_NAME = "<div><center><big><b>%1</b></big></center></div>";
 const QString TPL_APPLICATION_VERSION = "<div><center>%1</center></div>";
 const QString TPL_ORGANIZATION = "<div>(C) 2019 %1 (%2)</div>";
@@ -55,7 +55,7 @@ void HelpDialog::aboutContent()
     text += TPL_BLANK;
     text += TPL_ORGANIZATION.arg(ORGANIZATION_NAME).arg(GITHUB_EDITOR_URL);
     text += TPL_BLANK;
-    text += TPL_QT_VERSION.arg(QT_VERSION_STR);
+    text += TPL_QT_VERSION.arg(qVersion());
 
     setWindowTitle(tr("About"));
     ui->helpLabel->setText(text);
