@@ -134,6 +134,18 @@ QTreeWidget
     outline: none;
 }
 
+QTreeWidget::item
+{
+    padding: 3px;
+    border: none;
+}
+
+QTreeWidget::item:hover,
+QTreeWidget::item:selected
+{
+    border: none;
+}
+
 QTreeWidget QLineEdit
 {
     padding: 0;
@@ -164,6 +176,14 @@ QHeaderView::section
     border: 0px solid #555; /* workaround for dialog header background */
     border-bottom: 1px solid #555;
     padding-top: 5px;
+}
+
+QHeaderView::down-arrow {
+    image: url(:/icons/desc.png);
+}
+
+QHeaderView::up-arrow {
+    image: url(:/icons/asc.png);
 }
 
 QDialog QLineEdit
@@ -445,6 +465,7 @@ QToolBar
     color: #bbbbbb;
     background-color: #3c3f41;
     border: 1px solid #3c3f41; /* workaround for lxde */
+    spacing: 5px;
 }
 
 QToolBar::handle
@@ -519,6 +540,11 @@ QProgressBar::chunk
 QStatusBar QProgressBar
 {
     margin: 0px;
+}
+
+QTabBar
+{
+    qproperty-drawBase: 0; /* workaround for dock tabs bottom line */
 }
 
 QTabBar::tab:top, QTabBar::tab:bottom,
@@ -678,16 +704,15 @@ QDockWidget::title
     background: transparent;
 }
 
-QDockWidget::title:horizontal
-{
-    margin-top: 2px;
-    margin-bottom: 2px;
-}
-
+/* order matters - vertical first, then horizontal */
 QDockWidget::title:vertical
 {
-    margin-left: 2px;
-    margin-right: 2px;
+    margin: 0px 2px;
+}
+
+QDockWidget::title:horizontal
+{
+    margin: 0px 0px 2px 0px;
 }
 
 QDockWidget::close-button

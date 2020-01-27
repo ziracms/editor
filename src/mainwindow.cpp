@@ -250,12 +250,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->menuView, SIGNAL(aboutToShow()), this, SLOT(menuViewOnShow()));
     connect(ui->menuTools, SIGNAL(aboutToShow()), this, SLOT(menuToolsOnShow()));
 
+    /*
     if (ui->mainToolBar->orientation() == Qt::Vertical) {
         ui->mainToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     } else {
         ui->mainToolBar->setToolButtonStyle(Qt::ToolButtonFollowStyle);
     }
-    connect(ui->mainToolBar, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(toolbarOrientationChanged(Qt::Orientation)));
+    */
+    //connect(ui->mainToolBar, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(toolbarOrientationChanged(Qt::Orientation)));
+
+    QWidget* spacer = new QWidget();
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->mainToolBar->addWidget(spacer);
+    QAction * sidebarAction = ui->mainToolBar->addAction(QIcon(":icons/sidebar.png"), tr("Sidebar"));
+    QAction * outputAction = ui->mainToolBar->addAction(QIcon(":icons/output.png"), tr("Output"));
+    connect(sidebarAction, SIGNAL(triggered(bool)), this, SLOT(sidebarActionTriggered(bool)));
+    connect(outputAction, SIGNAL(triggered(bool)), this, SLOT(outputActionTriggered(bool)));
 
     ui->outputTabWidget->setFocusPolicy(Qt::NoFocus);
     if (dockWidgetArea(ui->outputDockWidget) == Qt::RightDockWidgetArea) {
@@ -265,6 +275,12 @@ MainWindow::MainWindow(QWidget *parent) :
     } else {
         ui->outputTabWidget->setTabPosition(QTabWidget::North);
     }
+    QDockWidget::DockWidgetFeatures ofeatures = ui->outputDockWidget->features();
+    if (dockWidgetArea(ui->outputDockWidget) == Qt::RightDockWidgetArea && (ofeatures & QDockWidget::DockWidgetVerticalTitleBar)) {
+        ui->outputDockWidget->setFeatures(ofeatures ^ QDockWidget::DockWidgetVerticalTitleBar);
+    } else if (dockWidgetArea(ui->outputDockWidget) != Qt::RightDockWidgetArea && !(ofeatures & QDockWidget::DockWidgetVerticalTitleBar)) {
+        ui->outputDockWidget->setFeatures(ofeatures | QDockWidget::DockWidgetVerticalTitleBar);
+    }
     connect(ui->outputDockWidget, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(outputDockLocationChanged(Qt::DockWidgetArea)));
 
     ui->sidebarTabWidget->setFocusPolicy(Qt::NoFocus);
@@ -272,6 +288,12 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->sidebarTabWidget->setTabPosition(QTabWidget::East);
     } else {
         ui->sidebarTabWidget->setTabPosition(QTabWidget::West);
+    }
+    QDockWidget::DockWidgetFeatures sfeatures = ui->sidebarDockWidget->features();
+    if (dockWidgetArea(ui->sidebarDockWidget) == Qt::RightDockWidgetArea && (sfeatures & QDockWidget::DockWidgetVerticalTitleBar)) {
+        ui->sidebarDockWidget->setFeatures(sfeatures ^ QDockWidget::DockWidgetVerticalTitleBar);
+    } else if (dockWidgetArea(ui->sidebarDockWidget) != Qt::RightDockWidgetArea && !(sfeatures & QDockWidget::DockWidgetVerticalTitleBar)) {
+        ui->sidebarDockWidget->setFeatures(sfeatures | QDockWidget::DockWidgetVerticalTitleBar);
     }
     connect(ui->sidebarDockWidget, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(sidebarDockLocationChanged(Qt::DockWidgetArea)));
 
@@ -1815,12 +1837,32 @@ void MainWindow::setStatusBarText(QString text)
             );
 }
 
-void MainWindow::toolbarOrientationChanged(Qt::Orientation orientation)
+void MainWindow::toolbarOrientationChanged(Qt::Orientation /*orientation*/)
 {
+    /*
     if (orientation == Qt::Vertical) {
         ui->mainToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     } else {
         ui->mainToolBar->setToolButtonStyle(Qt::ToolButtonFollowStyle);
+    }
+    */
+}
+
+void MainWindow::sidebarActionTriggered(bool /*checked*/)
+{
+    if (ui->sidebarDockWidget->isVisible()) {
+        ui->sidebarDockWidget->hide();
+    } else {
+        ui->sidebarDockWidget->show();
+    }
+}
+
+void MainWindow::outputActionTriggered(bool /*checked*/)
+{
+    if (ui->outputDockWidget->isVisible()) {
+        ui->outputDockWidget->hide();
+    } else {
+        ui->outputDockWidget->show();
     }
 }
 
@@ -1833,6 +1875,13 @@ void MainWindow::outputDockLocationChanged(Qt::DockWidgetArea area)
     } else {
         ui->outputTabWidget->setTabPosition(QTabWidget::North);
     }
+
+    QDockWidget::DockWidgetFeatures features = ui->outputDockWidget->features();
+    if (area == Qt::RightDockWidgetArea && (features & QDockWidget::DockWidgetVerticalTitleBar)) {
+        ui->outputDockWidget->setFeatures(features ^ QDockWidget::DockWidgetVerticalTitleBar);
+    } else if (area != Qt::RightDockWidgetArea && !(features & QDockWidget::DockWidgetVerticalTitleBar)) {
+        ui->outputDockWidget->setFeatures(features | QDockWidget::DockWidgetVerticalTitleBar);
+    }
 }
 
 void MainWindow::sidebarDockLocationChanged(Qt::DockWidgetArea area)
@@ -1841,6 +1890,13 @@ void MainWindow::sidebarDockLocationChanged(Qt::DockWidgetArea area)
         ui->sidebarTabWidget->setTabPosition(QTabWidget::East);
     } else {
         ui->sidebarTabWidget->setTabPosition(QTabWidget::West);
+    }
+
+    QDockWidget::DockWidgetFeatures features = ui->sidebarDockWidget->features();
+    if (area == Qt::RightDockWidgetArea && (features & QDockWidget::DockWidgetVerticalTitleBar)) {
+        ui->sidebarDockWidget->setFeatures(features ^ QDockWidget::DockWidgetVerticalTitleBar);
+    } else if (area != Qt::RightDockWidgetArea && !(features & QDockWidget::DockWidgetVerticalTitleBar)) {
+        ui->sidebarDockWidget->setFeatures(features | QDockWidget::DockWidgetVerticalTitleBar);
     }
 }
 

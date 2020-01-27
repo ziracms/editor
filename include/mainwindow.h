@@ -196,6 +196,8 @@ private slots:
     void gitTabResetRequested(QString path);
     void gitAnnotationRequested(QString path);
     void gitDiffUnifiedRequested(QString path);
+    void sidebarActionTriggered(bool checked);
+    void outputActionTriggered(bool checked);
 private:
     Ui::MainWindow *ui;
     Settings * settings;

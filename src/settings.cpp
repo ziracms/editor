@@ -87,8 +87,8 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"shortcut_delete_line", "Ctrl+Alt+D"},
         {"experimental_mode_enabled", "yes"},
         {"spellchecker_enabled", "yes"},
-        {"color_scheme", "light"},
-        {"theme", "system"},
+        {"color_scheme", COLOR_SCHEME_DARK.toStdString()},
+        {"theme", THEME_DARK.toStdString()},
         {"custom_themes_path", ""},
         {"plugins_path", ""}
     };

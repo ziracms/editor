@@ -39,5 +39,10 @@
         <file alias="clear.png">resources/images/icons/clear.png</file>
         <file alias="close.png">resources/images/icons/close.png</file>
         <file alias="item.png">resources/images/icons/item.png</file>
+        <file alias="asc.png">resources/images/icons/asc.png</file>
+        <file alias="desc.png">resources/images/icons/desc.png</file>
+        <file alias="levelup.png">resources/images/icons/levelup.png</file>
+        <file alias="sidebar.png">resources/images/icons/sidebar.png</file>
+        <file alias="output.png">resources/images/icons/output.png</file>
     </qresource>
 </RCC>
