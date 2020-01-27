@@ -197,6 +197,7 @@ void FileBrowser::fileBrowserContextMenuRequested(QPoint p)
     bool isFolder = fInfo.isDir();
 
     QMenu menu(treeWidget);
+    menu.setFont(QApplication::font());
 
     //QAction * openAction = menu.addAction(treeWidget->style()->standardIcon(QStyle::SP_DialogOpenButton), tr("Open"));
     QAction * openAction = menu.addAction(QIcon(":icons/document-open.png"), tr("Open"));

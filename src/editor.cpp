@@ -81,7 +81,8 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     setAcceptRichText(false);
     setAcceptDrops(false);
 
-    QFont generalFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
+    //QFont generalFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
+    QFont generalFont = QApplication::font();
 
     // editor font
     std::string fontFamily = settings->get("editor_font_family");
@@ -6057,6 +6058,7 @@ void Editor::switchOverwrite()
 void Editor::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu * menu = createStandardContextMenu();
+    menu->setFont(QApplication::font());
     menu->addAction(tr("Reload"), this, SLOT(reloadRequested()));
     menu->addSeparator();
     menu->addAction(tr("Find \\ Replace"), this, SLOT(showSearchRequested()));

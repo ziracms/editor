@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>500</height>
+    <width>700</width>
+    <height>520</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>600</width>
-    <height>500</height>
+    <width>700</width>
+    <height>520</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -49,7 +49,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="generalSettingsTab">
       <attribute name="title">
@@ -289,6 +289,52 @@
        <string>Editor</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <layout class="QHBoxLayout" name="appFontLayout">
+         <property name="topMargin">
+          <number>10</number>
+         </property>
+         <property name="bottomMargin">
+          <number>10</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="appFontLabel">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Application font</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFontComboBox" name="appFontComboBox"/>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="appFontSpinBox">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="appFontSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
        <item>
         <layout class="QHBoxLayout" name="editorFontLayout">
          <property name="topMargin">
@@ -799,7 +845,7 @@
        <item>
         <layout class="QHBoxLayout" name="phplintLayout">
          <property name="leftMargin">
-          <number>156</number>
+          <number>176</number>
          </property>
          <property name="topMargin">
           <number>10</number>
@@ -819,7 +865,7 @@
        <item>
         <layout class="QHBoxLayout" name="phpcsLayout">
          <property name="leftMargin">
-          <number>156</number>
+          <number>176</number>
          </property>
          <property name="topMargin">
           <number>10</number>
@@ -848,7 +894,7 @@
           <widget class="QLabel" name="phpcsStandardLabel">
            <property name="minimumSize">
             <size>
-             <width>150</width>
+             <width>170</width>
              <height>0</height>
             </size>
            </property>
@@ -878,7 +924,7 @@
           <widget class="QLabel" name="phpcsErrorLabel">
            <property name="minimumSize">
             <size>
-             <width>150</width>
+             <width>170</width>
              <height>0</height>
             </size>
            </property>
@@ -921,7 +967,7 @@
           <widget class="QLabel" name="phpcsWarningLabel">
            <property name="minimumSize">
             <size>
-             <width>150</width>
+             <width>170</width>
              <height>0</height>
             </size>
            </property>
@@ -964,7 +1010,7 @@
           <widget class="QLabel" name="editorParseIntervalLabel">
            <property name="minimumSize">
             <size>
-             <width>150</width>
+             <width>170</width>
              <height>0</height>
             </size>
            </property>
@@ -1192,13 +1238,13 @@
        <item>
         <layout class="QHBoxLayout" name="gitLayout">
          <property name="leftMargin">
-          <number>156</number>
+          <number>186</number>
          </property>
          <property name="topMargin">
           <number>10</number>
          </property>
          <property name="rightMargin">
-          <number>156</number>
+          <number>0</number>
          </property>
          <property name="bottomMargin">
           <number>10</number>
@@ -1215,7 +1261,7 @@
        <item>
         <layout class="QHBoxLayout" name="serversLayout">
          <property name="leftMargin">
-          <number>156</number>
+          <number>186</number>
          </property>
          <property name="topMargin">
           <number>10</number>
@@ -1244,7 +1290,7 @@
           <widget class="QLabel" name="phpmanualLabel">
            <property name="minimumSize">
             <size>
-             <width>150</width>
+             <width>180</width>
              <height>0</height>
             </size>
            </property>
@@ -1277,7 +1323,7 @@
           <widget class="QLabel" name="customThemesFolderLabel">
            <property name="minimumSize">
             <size>
-             <width>150</width>
+             <width>180</width>
              <height>0</height>
             </size>
            </property>
@@ -1303,7 +1349,7 @@
           <widget class="QLabel" name="pluginsFolderLabel">
            <property name="minimumSize">
             <size>
-             <width>150</width>
+             <width>180</width>
              <height>0</height>
             </size>
            </property>
@@ -1320,7 +1366,7 @@
        <item>
         <layout class="QHBoxLayout" name="breadcrumbsLayout">
          <property name="leftMargin">
-          <number>156</number>
+          <number>186</number>
          </property>
          <property name="topMargin">
           <number>10</number>
@@ -1340,7 +1386,7 @@
        <item>
         <layout class="QHBoxLayout" name="highlightSpacesLayout">
          <property name="leftMargin">
-          <number>156</number>
+          <number>186</number>
          </property>
          <property name="topMargin">
           <number>10</number>

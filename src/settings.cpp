@@ -33,6 +33,8 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"file_dialog_path", ""},
         {"file_browser_home", ""},
         {"php_manual_path", ""},
+        {"app_font_family", ""},
+        {"app_font_size", "12"},
         {"editor_font_family", ""},
         {"editor_font_size", "12"},
         {"editor_popup_font_size", "11"},

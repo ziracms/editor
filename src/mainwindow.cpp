@@ -54,6 +54,18 @@ MainWindow::MainWindow(QWidget *parent) :
     settings->load();
     connect(settings, SIGNAL(restartApp()), this, SLOT(restartApp()));
 
+    // app font
+    QFont appFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
+    std::string appFontFamily = settings->get("app_font_family");
+    std::string appFontSize = settings->get("app_font_size");
+    if (appFontFamily.size() > 0) {
+        appFont.setFamily(QString::fromStdString(appFontFamily));
+        appFont.setStyleHint(QFont::SansSerif);
+    }
+    appFont.setPointSize(std::stoi(appFontSize));
+    appFont.setStyleName("");
+    QApplication::setFont(appFont);
+
     theme = QString::fromStdString(settings->get("theme"));
     colorSheme = QString::fromStdString(settings->get("color_scheme"));
     customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
@@ -72,6 +84,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
     setAcceptDrops(true);
+
+    // setting main menu font
+    ui->menuBar->setFont(appFont);
+    QList<QMenu *> submenus = ui->menuBar->findChildren<QMenu *>();
+    for (auto submenu : submenus) {
+        submenu->setFont(appFont);
+    }
 
     disableActionsForEmptyTabs();
     disableActionsForEmptyProject();
@@ -303,16 +322,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // output tabs font
     QFont outputFont;
-    std::string fontFamily = settings->get("editor_font_family");
-    std::string fontSize = settings->get("editor_font_size");
-    if (fontFamily=="") {
+    std::string editorFontFamily = settings->get("editor_font_family");
+    std::string editorFontSize = settings->get("editor_font_size");
+    if (editorFontFamily=="") {
         QFont sysFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
         outputFont.setFamily(sysFont.family());
     } else {
         outputFont.setStyleHint(QFont::Monospace);
-        outputFont.setFamily(QString::fromStdString(fontFamily));
+        outputFont.setFamily(QString::fromStdString(editorFontFamily));
     }
-    outputFont.setPointSize(std::stoi(fontSize));
+    outputFont.setPointSize(std::stoi(editorFontSize));
+    outputFont.setStyleName("");
     ui->messagesBrowser->setFont(outputFont);
     ui->helpBrowser->setFont(outputFont);
     ui->searchListWidget->setFont(outputFont);

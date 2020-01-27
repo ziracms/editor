@@ -22,6 +22,7 @@ private:
     Ui::SettingsDialog * ui;
     Settings * settings;
     std::unordered_map<std::string, std::string> dataMap;
+    QFont appFont;
     QFont editorFont;
     std::string tabsType;
     std::string newLineMode;

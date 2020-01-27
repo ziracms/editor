@@ -29,16 +29,27 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->setupUi(this);
     setModal(true);
 
-    std::string fontFamily = settings->get("editor_font_family");
-    std::string fontSize = settings->get("editor_font_size");
-    if (fontFamily=="") {
+    // app font
+    appFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
+    std::string appFontFamily = settings->get("app_font_family");
+    std::string appFontSize = settings->get("app_font_size");
+    if (appFontFamily.size() > 0) {
+        appFont.setFamily(QString::fromStdString(appFontFamily));
+        appFont.setStyleHint(QFont::SansSerif);
+    }
+    appFont.setPointSize(std::stoi(appFontSize));
+
+    // editor font
+    std::string editorFontFamily = settings->get("editor_font_family");
+    std::string editorFontSize = settings->get("editor_font_size");
+    if (editorFontFamily=="") {
         QFont sysFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
         editorFont.setFamily(sysFont.family());
     } else {
         editorFont.setStyleHint(QFont::Monospace);
-        editorFont.setFamily(QString::fromStdString(fontFamily));
+        editorFont.setFamily(QString::fromStdString(editorFontFamily));
     }
-    editorFont.setPointSize(std::stoi(fontSize));
+    editorFont.setPointSize(std::stoi(editorFontSize));
 
     tabsType = settings->get("editor_tab_type");
     newLineMode = settings->get("editor_new_line_mode");
@@ -46,6 +57,8 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->settingsTabWidget->setFocusPolicy(Qt::NoFocus);
     ui->projectsHomeLineEdit->setText(QString::fromStdString(settings->get("file_browser_home")));
     if (settings->get("experimental_mode_enabled") == CHECKED_YES) ui->experimentalModeCheckbox->setChecked(true);
+    ui->appFontComboBox->setCurrentFont(appFont);
+    ui->appFontSpinBox->setValue(appFont.pointSize());
     ui->editorFontComboBox->setCurrentFont(editorFont);
     ui->editorFontSpinBox->setValue(editorFont.pointSize());
     if (tabsType == TABS_TYPE_TABS) ui->editorTabTypeTabsRadio->setChecked(true);
@@ -158,6 +171,11 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
 
     if (ui->experimentalModeCheckbox->isChecked()) dataMap["experimental_mode_enabled"] = CHECKED_YES;
     else dataMap["experimental_mode_enabled"] = CHECKED_NO;
+
+    if (ui->appFontComboBox->currentFont().family().size() > 0 && ui->appFontSpinBox->value() > 0) {
+        dataMap["app_font_family"] = ui->appFontComboBox->currentFont().family().toStdString();
+        dataMap["app_font_size"] = Helper::intToStr(ui->appFontSpinBox->value()).toStdString();
+    }
 
     if (ui->editorFontComboBox->currentFont().family().size() > 0 && ui->editorFontSpinBox->value() > 0) {
         dataMap["editor_font_family"] = ui->editorFontComboBox->currentFont().family().toStdString();
