@@ -1059,7 +1059,9 @@ void MainWindow::runGitCommand(QString path, QString command, QStringList attrs,
 {
     if (!gitCommandsEnabled) return;
     if (!git->isCommandSafe(command) &&
-        QMessageBox::question(this, tr("Are you sure ?"), tr("Do you really want to \"%1\" ?").arg(QString("git "+command+" "+attrs.join(" ")).trimmed()), QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok) {
+        !Helper::showQuestion(tr("Are you sure ?"), tr("Do you really want to \"%1\" ?").arg(QString("git "+command+" "+attrs.join(" ")).trimmed()))
+        //QMessageBox::question(this, tr("Are you sure ?"), tr("Do you really want to \"%1\" ?").arg(QString("git "+command+" "+attrs.join(" ")).trimmed()), QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok
+    ) {
         return;
     }
     hideQAPanel();
@@ -1935,7 +1937,8 @@ void MainWindow::workerMessage(QString text)
 
 void MainWindow::restartApp()
 {
-    if (QMessageBox::question(this, tr("Restart required"), tr("Some changes will take effect after restart. Restart now ?"), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok
+    if (Helper::showQuestion(tr("Restart required"), tr("Some changes will take effect after restart. Restart now ?"))
+        //QMessageBox::question(this, tr("Restart required"), tr("Some changes will take effect after restart. Restart now ?"), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok
         && close()
     ) {
         #if defined(Q_OS_ANDROID)

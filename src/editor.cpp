@@ -6006,18 +6006,12 @@ void Editor::save(QString name)
     if (name.size() > 0) nameChanged = true;
     QFileInfo fInfo(fileName);
     if (name.size() == 0 && !fInfo.exists()) {
-        int reply = QMessageBox::question(this, tr("Save"), tr("File not found. Create new one ?"), QMessageBox::Ok | QMessageBox::Cancel);
-        if (reply != QMessageBox::Ok) {
-            return;
-        }
+        if (!Helper::showQuestion(tr("Save"), tr("File not found. Create new one ?"))) return;
         nameChanged = true;
     }
     QDateTime dtModified = fInfo.lastModified();
     if (name.size() == 0 && fInfo.exists() && dtModified.time().msec() != lastModifiedMsec) {
-        int reply = QMessageBox::question(this, tr("Save"), tr("File was modified externally. Save it anyway ?"), QMessageBox::Ok | QMessageBox::Cancel);
-        if (reply != QMessageBox::Ok) {
-            return;
-        }
+        if (!Helper::showQuestion(tr("Save"), tr("File was modified externally. Save it anyway ?"))) return;
     }
     cleanForSave();
     QString text = getContent();
@@ -6425,10 +6419,7 @@ void Editor::forward()
 void Editor::reloadRequested()
 {
     if (fileName.size() == 0 || !Helper::fileExists(fileName)) return;
-    int reply = QMessageBox::question(this, tr("Reload"), tr("Reload %1 ?").arg(fileName), QMessageBox::Ok | QMessageBox::Cancel);
-    if (reply != QMessageBox::Ok) {
-        return;
-    }
+    if (!Helper::showQuestion(tr("Reload"), tr("Reload %1 ?").arg(fileName))) return;
     QString txt = Helper::loadFile(fileName, getEncoding(), getFallbackEncoding());
     QString _fileName = fileName;
     QString _extension = extension;

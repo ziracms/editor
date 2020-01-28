@@ -317,7 +317,7 @@ QString Helper::getExistingDirectory(QWidget * parent, QString title, QString di
     return dir;
 }
 
-void Helper::showMessage(QString text)
+QWidget * Helper::getWindowWidget()
 {
     QWidget * widget = QApplication::activeWindow();
     QWidgetList widgets = QApplication::topLevelWidgets();
@@ -329,9 +329,19 @@ void Helper::showMessage(QString text)
             break;
         }
     }
-    QMessageBox msgBox(widget);
+    return widget;
+}
+
+void Helper::showMessage(QString text)
+{
+    QMessageBox msgBox(getWindowWidget());
     msgBox.setWindowTitle(QObject::tr("Message"));
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setText(text);
     msgBox.exec();
+}
+
+bool Helper::showQuestion(QString title, QString msg)
+{
+    return QMessageBox::question(getWindowWidget(), title, msg, QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok;
 }

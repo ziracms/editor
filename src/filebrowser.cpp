@@ -319,7 +319,10 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
     if (path.size() == 0) return;
     QFileInfo fInfo(path);
     if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isWritable()) return;
-    if (fInfo.isDir() && QMessageBox::question(treeWidget, tr("Delete"), tr("Do you really want to delete folder \"%1\" ?").arg(fInfo.fileName()), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok) {
+    if (fInfo.isDir() &&
+        Helper::showQuestion(tr("Delete"), tr("Do you really want to delete folder \"%1\" ?").arg(fInfo.fileName()))
+        //QMessageBox::question(treeWidget, tr("Delete"), tr("Do you really want to delete folder \"%1\" ?").arg(fInfo.fileName()), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok
+    ) {
         if (!Helper::deleteFolder(path)) {
             Helper::showMessage(QObject::tr("Could not delete folder. Is it empty ?"));
         } else {
@@ -327,7 +330,10 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
             if (parent != nullptr) fbReloadItem(parent);
             else rebuildFileBrowserTree(fbpath);
         }
-    } else if (fInfo.isFile() &&  QMessageBox::question(treeWidget, tr("Delete"), tr("Do you really want to delete file \"%1\" ?").arg(fInfo.fileName()), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok) {
+    } else if (fInfo.isFile() &&
+               Helper::showQuestion(tr("Delete"), tr("Do you really want to delete file \"%1\" ?").arg(fInfo.fileName()))
+               //QMessageBox::question(treeWidget, tr("Delete"), tr("Do you really want to delete file \"%1\" ?").arg(fInfo.fileName()), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok
+    ) {
         if (!Helper::deleteFile(path)) {
             Helper::showMessage(QObject::tr("Could not delete file."));
         } else {

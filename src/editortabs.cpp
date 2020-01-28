@@ -148,7 +148,10 @@ void EditorTabs::closeTab(int index)
 {
     // check modified
     Editor * textEditor = getTabEditor(index);
-    if (textEditor != nullptr && textEditor->isModified() && QMessageBox::question(tabWidget, tr("File is not saved"), tr("File \"%1\"  is not saved. Close it anyway ?").arg(textEditor->getFileName()), QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok) {
+    if (textEditor != nullptr && textEditor->isModified() &&
+        !Helper::showQuestion(tr("File is not saved"), tr("File \"%1\"  is not saved. Close it anyway ?").arg(textEditor->getFileName()))
+        //QMessageBox::question(tabWidget, tr("File is not saved"), tr("File \"%1\"  is not saved. Close it anyway ?").arg(textEditor->getFileName()), QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok
+    ) {
         return;
     }
     if (textEditor != nullptr) textEditor->setTabIndex(-1);
@@ -300,7 +303,10 @@ bool EditorTabs::closeWindowAllowed()
 {
     for (int i=0; i<tabWidget->count(); i++) {
         Editor * textEditor = getTabEditor(i);
-        if (textEditor != nullptr && textEditor->isModified() && QMessageBox::question(tabWidget, tr("File is not saved"), tr("File \"%1\"  is not saved. Close it anyway ?").arg(textEditor->getFileName()), QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok) {
+        if (textEditor != nullptr && textEditor->isModified() &&
+            !Helper::showQuestion(tr("File is not saved"), tr("File \"%1\"  is not saved. Close it anyway ?").arg(textEditor->getFileName()))
+            //QMessageBox::question(tabWidget, tr("File is not saved"), tr("File \"%1\"  is not saved. Close it anyway ?").arg(textEditor->getFileName()), QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok
+        ) {
             return false;
         }
     }
@@ -496,7 +502,8 @@ void EditorTabs::fileBrowserDeleted(QString path)
     for (int i=0; i<tabWidget->count(); i++){
         Editor * textEditor = getTabEditor(i);
         if (textEditor != nullptr && textEditor->getFileName() == path) {
-            if (QMessageBox::question(tabWidget, tr("Delete"), tr("Close tab with deleted file \"%1\" ?").arg(path), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok) {
+            if (Helper::showQuestion(tr("Delete"), tr("Close tab with deleted file \"%1\" ?").arg(path))) {
+            //if (QMessageBox::question(tabWidget, tr("Delete"), tr("Close tab with deleted file \"%1\" ?").arg(path), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok) {
                 closeTab(textEditor->getTabIndex());
             } else {
                 textEditor->setModified(true);
