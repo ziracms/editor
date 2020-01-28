@@ -576,12 +576,13 @@ QTabBar::tab:top
     border-top: 1px solid #1e1e1e;
     border-right: 1px solid #1e1e1e;
     padding: 5px 10px;
-    min-width: 100px;
+    min-width: 150px;
 }
 
 #SettingsDialog QTabBar::tab:top
 {
-    min-width: 50px;
+    min-width: 80px;
+    padding: 5px;
 }
 
 QTabBar::tab:top:first, QTabBar::tab:top:only-one
@@ -663,12 +664,20 @@ QTabBar::tab:right:last, QTabBar::tab:right:only-one
 QTabBar QToolButton
 {
     background-color: #354042;
-    border: none;
+    border: 1px solid #1e1e1e;
 }
 
 QTabBar QToolButton:hover
 {
     background-color: #008dc1;
+}
+
+QTabBar QToolButton::right-arrow {
+    image: url(:/icons/go-next.png);
+}
+
+QTabBar QToolButton::left-arrow {
+    image: url(:/icons/go-previous.png);
 }
 
 QTabBar::close-button
@@ -707,12 +716,12 @@ QDockWidget::title
 /* order matters - vertical first, then horizontal */
 QDockWidget::title:vertical
 {
-    margin: 0px 2px;
+    margin: 0px 1px;
 }
 
 QDockWidget::title:horizontal
 {
-    margin: 0px 0px 2px 0px;
+    margin: 0px 0px 1px 0px;
 }
 
 QDockWidget::close-button
@@ -748,7 +757,7 @@ QDockWidget::float-button:hover
 QDockWidget QTabWidget::pane
 {
     border: none;
-    padding: 0px 2px 2px 2px;
+    padding: 0px 0px;
 }
 
 QDockWidget QTabWidget::pane::right
@@ -759,6 +768,13 @@ QDockWidget QTabWidget::pane::right
 QDockWidget QTabWidget::pane::left
 {
     padding-right: 0px;
+}
+
+QDockWidget QTextEdit,
+QDockWidget QTextEdit:hover,
+QDockWidget QTextEdit:focus
+{
+    border: 1px solid #1e1e1e;
 }
 
 QRadioButton
