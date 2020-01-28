@@ -59,11 +59,16 @@ Requirements:
 
 Compiled binary (x86-64) can be found in bin (or bin/arm for ARM) folder.
       
+Installation:
+      - download and unpack bin folder from archive
+      - run install.sh
+      
 Install in Raspbian:
       - install qt5-default
       - install hunspell
       - download and unpack archive
       - copy bin/arm to any folder
-      - copy bin/themes and bin/zira.png to the same folder
-      - edit bin/local.share.applications.zira.desktop.txt (change paths)
-      - move bin/local.share.applications.zira.desktop.txt to .local/share/applications/zira.desktop
+      - copy bin/themes, bin/zira.png, bin/desktop.txt, bin/install.sh to the same folder
+      - run install.sh
+
+If Qt version in your Linux distribution is < 5.10, download archive with linked Qt from releases section.
