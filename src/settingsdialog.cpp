@@ -152,6 +152,11 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
 
     ui->generalThemeCombobox->setItemDelegate(new QStyledItemDelegate());
     ui->generalColorSchemeCombobox->setItemDelegate(new QStyledItemDelegate());
+
+    // maximize dialog in Android
+    #if defined(Q_OS_ANDROID)
+    setWindowState( windowState() | Qt::WindowMaximized);
+    #endif
 }
 
 SettingsDialog::~SettingsDialog()
@@ -432,7 +437,8 @@ void SettingsDialog::editorNewLineCRLFToggled(bool checked)
 void SettingsDialog::projectHomeButtonPressed()
 {
     QString home = ui->projectsHomeLineEdit->text();
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Choose projects home directory"), home, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    //QString dir = QFileDialog::getExistingDirectory(this, tr("Choose projects home directory"), home, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString dir = Helper::getExistingDirectory(this, tr("Choose projects home directory"), home);
     if (dir.size() > 0) {
         ui->projectsHomeLineEdit->setText(dir);
     }

@@ -25,6 +25,11 @@ CreateProjectDialog::CreateProjectDialog(QWidget * parent) :
 
     ui->buttonBox->setContentsMargins(0, 0, 20, 0);
     ui->createProjectDialogHeaderLabel->setProperty("abstract_label", true);
+
+    // maximize dialog in Android
+    #if defined(Q_OS_ANDROID)
+    setWindowState( windowState() | Qt::WindowMaximized);
+    #endif
 }
 
 CreateProjectDialog::~CreateProjectDialog()
@@ -53,7 +58,8 @@ void CreateProjectDialog::nameChanged(QString name)
 
 void CreateProjectDialog::chooseButtonPressed()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Choose project source directory"), getDirectory(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    //QString dir = QFileDialog::getExistingDirectory(this, tr("Choose project source directory"), getDirectory(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString dir = Helper::getExistingDirectory(this, tr("Choose project source directory"), getDirectory());
     if (dir.size() > 0) {
         setDirectory(dir);
     }

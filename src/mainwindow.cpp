@@ -418,6 +418,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // styles
     applyThemeColors();
+
+    // make sure that window is maximized in Android
+    #if defined(Q_OS_ANDROID)
+    setWindowState( windowState() | Qt::WindowMaximized);
+    #endif
 }
 
 MainWindow::~MainWindow()
@@ -787,7 +792,17 @@ void MainWindow::on_actionColorPicker_triggered()
             if (textColor.isValid()) initColor = textColor;
         }
     }
-    QColor color = QColorDialog::getColor(initColor, this, tr("Pick a color"));
+    //QColor color = QColorDialog::getColor(initColor, this, tr("Pick a color"));
+    QColorDialog dialog(this);
+    dialog.setCurrentColor(initColor);
+    dialog.setWindowTitle(tr("Pick a color"));
+    //dialog.setOption(QColorDialog::ShowAlphaChannel); // no effect
+    // maximize dialog in Android
+    #if defined(Q_OS_ANDROID)
+    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
+    #endif
+    if (!dialog.exec()) return;
+    QColor color = dialog.selectedColor();
     if (!color.isValid()) return;
     if (textEditor != nullptr) {
         QTextCursor curs = textEditor->textCursor();
@@ -1949,7 +1964,7 @@ void MainWindow::applyThemeColors()
         QVersionNumber v2(5, 12, 0);
         if (QVersionNumber::compare(v1, v2) < 0) {
             QFont font = QApplication::font();
-            style += "QMenu, QTreeWidget, QTabBar::tab, QLineEdit, QPushButton, QLabel, QCheckBox, QRadioButton, QComboBox, QDockWidget::title {font: "+Helper::intToStr(font.pointSize())+"pt \""+font.family()+"\";}";
+            style += "QMenu, QTreeWidget, QTabBar::tab, QLineEdit, QPushButton, QLabel, QCheckBox, QRadioButton, QComboBox, QDockWidget::title {font: "+Helper::intToStr(font.pointSize())+"pt \""+font.family()+"\";}" + "\n";
         }
     }
 

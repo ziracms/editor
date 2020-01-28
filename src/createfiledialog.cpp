@@ -25,6 +25,11 @@ CreateFileDialog::CreateFileDialog(QWidget * parent) :
 
     ui->buttonBox->setContentsMargins(0, 0, 20, 0);
     ui->createFileDialogHeaderLabel->setProperty("abstract_label", true);
+
+    // maximize dialog in Android
+    #if defined(Q_OS_ANDROID)
+    setWindowState( windowState() | Qt::WindowMaximized);
+    #endif
 }
 
 CreateFileDialog::~CreateFileDialog()
@@ -58,7 +63,8 @@ void CreateFileDialog::nameChanged(QString path)
 
 void CreateFileDialog::chooseButtonPressed()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Choose directory"), getDirectory(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    //QString dir = QFileDialog::getExistingDirectory(this, tr("Choose directory"), getDirectory(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString dir = Helper::getExistingDirectory(this, tr("Choose directory"), getDirectory());
     if (dir.size() > 0) {
         setDirectory(dir);
     }

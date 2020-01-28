@@ -221,6 +221,10 @@ void EditorTabs::open(QString dir)
         if (stddirs.size()>0) dir = stddirs.at(0);
     }
     if (dir.size() > 0) dialog.setDirectory(dir);
+    // maximize dialog in Android
+    #if defined(Q_OS_ANDROID)
+    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
+    #endif
     QStringList fileNames;
     if (dialog.exec()) {
         fileNames = dialog.selectedFiles();

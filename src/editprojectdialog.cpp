@@ -21,6 +21,11 @@ EditProjectDialog::EditProjectDialog(QWidget * parent) :
 
     ui->buttonBox->setContentsMargins(0, 0, 20, 0);
     ui->editProjectDialogHeaderLabel->setProperty("abstract_label", true);
+
+    // maximize dialog in Android
+    #if defined(Q_OS_ANDROID)
+    setWindowState( windowState() | Qt::WindowMaximized);
+    #endif
 }
 
 EditProjectDialog::~EditProjectDialog()

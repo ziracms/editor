@@ -49,6 +49,7 @@ public:
     static QObject * loadPlugin(QString name, QString path = "");
     static bool isPluginExists(QString name, QString path = "");
     static SpellCheckerInterface * loadSpellChecker(QString path = "");
+    static QString getExistingDirectory(QWidget * parent, QString title, QString directory);
 };
 
 #endif // HELPER_H

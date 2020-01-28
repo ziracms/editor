@@ -15,6 +15,7 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QPluginLoader>
+#include <QFileDialog>
 
 const QString APPLICATION_NAME = "Zira Editor";
 const QString APPLICATION_VERSION = "1.6.0";
@@ -295,4 +296,25 @@ bool Helper::isPluginExists(QString name, QString path)
 {
     QString pluginFile = getPluginFile(name, path);
     return fileExists(pluginFile);
+}
+
+QString Helper::getExistingDirectory(QWidget * parent, QString title, QString directory)
+{
+    //QString dir = QFileDialog::getExistingDirectory(parent, title, directory, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString dir = "";
+    QFileDialog dialog(parent);
+    dialog.setWindowTitle(title);
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setViewMode(QFileDialog::Detail);
+    dialog.setOptions(QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    dialog.setDirectory(directory);
+    // maximize dialog in Android
+    #if defined(Q_OS_ANDROID)
+    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
+    #endif
+    if (dialog.exec()) {
+        QStringList dirs = dialog.selectedFiles();
+        if (dirs.size() > 0 && folderExists(dirs.at(0))) dir = dirs.at(0);
+    }
+    return dir;
 }

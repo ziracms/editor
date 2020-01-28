@@ -610,7 +610,8 @@ void FileBrowser::openProject(QString startDir)
 {
     if (startDir.size() == 0) startDir = fbpath;
     treeWidget->clearFocus();
-    QString path = QFileDialog::getExistingDirectory(treeWidget, tr("Select project source directory"), startDir, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    //QString path = QFileDialog::getExistingDirectory(treeWidget, tr("Select project source directory"), startDir, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString path = Helper::getExistingDirectory(treeWidget, tr("Select project source directory"), startDir);
     if (path.size() == 0) return;
     if (Helper::folderExists(path)) {
         emit projectOpenRequested(path);
