@@ -93,6 +93,10 @@ MainWindow::MainWindow(QWidget *parent) :
         submenu->setFont(appFont);
     }
 
+    #if defined(Q_OS_ANDROID)
+    ui->menuBar->setNativeMenuBar(false);
+    #endif
+
     disableActionsForEmptyTabs();
     disableActionsForEmptyProject();
 
