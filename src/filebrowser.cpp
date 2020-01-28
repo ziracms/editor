@@ -321,9 +321,7 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
     if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isWritable()) return;
     if (fInfo.isDir() && QMessageBox::question(treeWidget, tr("Delete"), tr("Do you really want to delete folder \"%1\" ?").arg(fInfo.fileName()), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok) {
         if (!Helper::deleteFolder(path)) {
-            QMessageBox msgBox;
-            msgBox.setText(QObject::tr("Could not delete folder. Is it empty ?"));
-            msgBox.exec();
+            Helper::showMessage(QObject::tr("Could not delete folder. Is it empty ?"));
         } else {
             // reload
             if (parent != nullptr) fbReloadItem(parent);
@@ -331,9 +329,7 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
         }
     } else if (fInfo.isFile() &&  QMessageBox::question(treeWidget, tr("Delete"), tr("Do you really want to delete file \"%1\" ?").arg(fInfo.fileName()), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok) {
         if (!Helper::deleteFile(path)) {
-            QMessageBox msgBox;
-            msgBox.setText(QObject::tr("Could not delete file."));
-            msgBox.exec();
+            Helper::showMessage(QObject::tr("Could not delete file."));
         } else {
             // reload
             if (parent != nullptr) fbReloadItem(parent);
@@ -368,18 +364,14 @@ void FileBrowser::fileBrowserItemChanged(QTreeWidgetItem * item, int col)
             else if (actionName == FB_ACTION_NAME_CREATE_FOLDER) success = Helper::createDir(newPath);
             else if (actionName == FB_ACTION_NAME_RENAME) success = Helper::renameFileOrFolder(oldPath, newPath);
             if (!success) {
-                QMessageBox msgBox;
-                msgBox.setText(QObject::tr("Could not create new file or folder."));
-                msgBox.exec();
+                Helper::showMessage(QObject::tr("Could not create new file or folder."));
             } else {
                 if (actionName == FB_ACTION_NAME_CREATE_FILE) emit fileCreated(newPath);
                 if (actionName == FB_ACTION_NAME_CREATE_FOLDER) emit folderCreated(newPath);
                 if (actionName == FB_ACTION_NAME_RENAME) emit fileOrFolderRenamed(oldPath, newPath);
             }
         } else {
-            QMessageBox msgBox;
-            msgBox.setText(QObject::tr("File or folder with such name already exists."));
-            msgBox.exec();
+            Helper::showMessage(QObject::tr("File or folder with such name already exists."));
         }
         // reload
         if (parent != nullptr) fbReloadItem(parent);
@@ -467,9 +459,7 @@ void FileBrowser::fbPasteItem(QTreeWidgetItem * item)
             fbcopypath = ""; fbcutpath = "";
             fbcopyitem = nullptr; fbcutitem = nullptr;
         } else {
-            QMessageBox msgBox;
-            msgBox.setText(QObject::tr("File or folder with such name already exists."));
-            msgBox.exec();
+            Helper::showMessage(QObject::tr("File or folder with such name already exists."));
         }
     } else if (fbcutpath.size() > 0) {
         QFileInfo fInfo(fbcutpath);
@@ -477,9 +467,7 @@ void FileBrowser::fbPasteItem(QTreeWidgetItem * item)
         QString newPath = path + "/" + fInfo.fileName();
         if (!Helper::fileOrFolderExists(newPath)) {
             if (!Helper::renameFile(fbcutpath, newPath)) {
-                QMessageBox msgBox;
-                msgBox.setText(QObject::tr("Could not create new file or folder."));
-                msgBox.exec();
+                Helper::showMessage(QObject::tr("Could not create new file or folder."));
             } else {
                 // reload
                 fbReloadItem(item);
@@ -493,9 +481,7 @@ void FileBrowser::fbPasteItem(QTreeWidgetItem * item)
             fbcopypath = ""; fbcutpath = "";
             fbcopyitem = nullptr; fbcutitem = nullptr;
         } else {
-            QMessageBox msgBox;
-            msgBox.setText(QObject::tr("File or folder with such name already exists."));
-            msgBox.exec();
+            Helper::showMessage(QObject::tr("File or folder with such name already exists."));
         }
     }
 }
@@ -513,9 +499,7 @@ void FileBrowser::showCreateFileDialog(QString startDir)
     if (directory.size() == 0 || path.size() == 0) return;
     if (!Helper::fileOrFolderExists(path)) {
         if (!Helper::createFile(path)) {
-            QMessageBox msgBox;
-            msgBox.setText(QObject::tr("Could not create new file or folder."));
-            msgBox.exec();
+            Helper::showMessage(QObject::tr("Could not create new file or folder."));
         } else {
             emit fileCreated(path);
             // reload
@@ -543,18 +527,14 @@ void FileBrowser::showCreateFolderDialog(QString startDir)
     if (directory.size() == 0 || path.size() == 0) return;
     if (!Helper::fileOrFolderExists(path)) {
         if (!Helper::createDir(path)) {
-            QMessageBox msgBox;
-            msgBox.setText(QObject::tr("Could not create new file or folder."));
-            msgBox.exec();
+            Helper::showMessage(QObject::tr("Could not create new file or folder."));
         } else {
             emit folderCreated(path);
             // reload
             refreshFileBrowserDirectory(directory);
         }
     } else {
-        QMessageBox msgBox;
-        msgBox.setText(QObject::tr("File or folder with such name already exists."));
-        msgBox.exec();
+        Helper::showMessage(QObject::tr("File or folder with such name already exists."));
     }
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
@@ -578,9 +558,7 @@ void FileBrowser::showCreateProjectDialog(bool phpLintEnabled, bool phpCSEnabled
     if (Helper::folderExists(path)) {
         emit projectCreateRequested(name, path, lintEnabled, csEnabled);
     } else {
-        QMessageBox msgBox;
-        msgBox.setText(QObject::tr("Folder with such name not found."));
-        msgBox.exec();
+        Helper::showMessage(QObject::tr("Folder with such name not found."));
     }
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
@@ -616,9 +594,7 @@ void FileBrowser::openProject(QString startDir)
     if (Helper::folderExists(path)) {
         emit projectOpenRequested(path);
     } else {
-        QMessageBox msgBox;
-        msgBox.setText(QObject::tr("Folder with such name not found."));
-        msgBox.exec();
+        Helper::showMessage(QObject::tr("Folder with such name not found."));
     }
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;

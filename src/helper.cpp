@@ -16,6 +16,8 @@
 #include <QCoreApplication>
 #include <QPluginLoader>
 #include <QFileDialog>
+#include <QApplication>
+#include "mainwindow.h"
 
 const QString APPLICATION_NAME = "Zira Editor";
 const QString APPLICATION_VERSION = "1.6.0";
@@ -39,9 +41,7 @@ QString Helper::loadFile(QString path, std::string encoding, std::string fallbac
     QString txt = codec->toUnicode(byteArray.constData(), byteArray.size(), &state);
     if (state.invalidChars > 0) {
         if (!silent) {
-            QMessageBox msgBox;
-            msgBox.setText(QObject::tr("File has a not valid byte sequence. Fallback encoding will be used."));
-            msgBox.exec();
+            showMessage(QObject::tr("File has a not valid byte sequence. Fallback encoding will be used."));
         }
         QTextCodec *fcodec = QTextCodec::codecForName(fallbackEncoding.c_str());
         txt = fcodec->toUnicode(byteArray.constData(), byteArray.size(), &state);
@@ -62,9 +62,7 @@ QString Helper::loadTextFile(QString path, std::string encoding, std::string fal
     QString txt = codec->toUnicode(byteArray.constData(), byteArray.size(), &state);
     if (state.invalidChars > 0) {
         if (!silent) {
-            QMessageBox msgBox;
-            msgBox.setText(QObject::tr("File has a not valid byte sequence. Fallback encoding will be used."));
-            msgBox.exec();
+            showMessage(QObject::tr("File has a not valid byte sequence. Fallback encoding will be used."));
         }
         QTextCodec *fcodec = QTextCodec::codecForName(fallbackEncoding.c_str());
         txt = fcodec->toUnicode(byteArray.constData(), byteArray.size(), &state);
@@ -317,4 +315,23 @@ QString Helper::getExistingDirectory(QWidget * parent, QString title, QString di
         if (dirs.size() > 0 && folderExists(dirs.at(0))) dir = dirs.at(0);
     }
     return dir;
+}
+
+void Helper::showMessage(QString text)
+{
+    QWidget * widget = QApplication::activeWindow();
+    QWidgetList widgets = QApplication::topLevelWidgets();
+    if (widgets.size() > 0) widget = widgets.at(0);
+    for (auto w : widgets) {
+        MainWindow * wnd = qobject_cast<MainWindow *>(w);
+        if (wnd) {
+            widget = wnd;
+            break;
+        }
+    }
+    QMessageBox msgBox(widget);
+    msgBox.setWindowTitle(QObject::tr("Message"));
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setText(text);
+    msgBox.exec();
 }

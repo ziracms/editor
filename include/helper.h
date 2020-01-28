@@ -50,6 +50,7 @@ public:
     static bool isPluginExists(QString name, QString path = "");
     static SpellCheckerInterface * loadSpellChecker(QString path = "");
     static QString getExistingDirectory(QWidget * parent, QString title, QString directory);
+    static void showMessage(QString text);
 };
 
 #endif // HELPER_H

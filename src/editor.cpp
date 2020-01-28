@@ -409,9 +409,7 @@ void Editor::init()
     // check font
     QFontInfo fontInfo(editorFont);
     if (fontInfo.family() != editorFont.family()) {
-        QMessageBox msgBox;
-        msgBox.setText(QObject::tr("Font \"%1\" was not loaded. Using \"%2\" font family.").arg(editorFont.family()).arg(fontInfo.family()));
-        msgBox.exec();
+        Helper::showMessage(QObject::tr("Font \"%1\" was not loaded. Using \"%2\" font family.").arg(editorFont.family()).arg(fontInfo.family()));
     }
 
     updateViewportMargins();
@@ -6025,9 +6023,7 @@ void Editor::save(QString name)
     QString text = getContent();
     if (name.size() == 0) name = fileName;
     if (!Helper::saveTextFile(name, text, encoding)) {
-        QMessageBox msgBox;
-        msgBox.setText(QObject::tr("Could not save file. Check file permissions."));
-        msgBox.exec();
+        Helper::showMessage(QObject::tr("Could not save file. Check file permissions."));
         return;
     }
     setFileName(name);

@@ -1602,9 +1602,7 @@ void MainWindow::projectCreateRequested(QString name, QString path, bool lintEna
 {
     if (!parsePHPEnabled) return;
     if (!project->create(name, path, lintEnabled, csEnabled, gitCommandsEnabled)) {
-        QMessageBox msgBox;
-        msgBox.setText(QObject::tr("Could not create the project."));
-        msgBox.exec();
+        Helper::showMessage(QObject::tr("Could not create the project."));
         return;
     }
     projectOpenRequested(path);
@@ -1613,9 +1611,7 @@ void MainWindow::projectCreateRequested(QString name, QString path, bool lintEna
 void MainWindow::projectEditRequested(QString name, QString path, bool lintEnabled, bool csEnabled)
 {
     if (!project->edit(name, path, lintEnabled, csEnabled, editorTabs->getOpenTabFiles(), editorTabs->getOpenTabLines(), editorTabs->getCurrentTabIndex(), ui->todoEdit->toPlainText())) {
-        QMessageBox msgBox;
-        msgBox.setText(QObject::tr("Could not edit the project."));
-        msgBox.exec();
+        Helper::showMessage(QObject::tr("Could not edit the project."));
         return;
     }
     clearMessagesTabText();
@@ -1635,17 +1631,13 @@ void MainWindow::projectOpenRequested(QString path)
 {
     if (!parsePHPEnabled) return;
     if (!project->exists(path)) {
-        QMessageBox msgBox;
-        msgBox.setText(QObject::tr("Project not found in this directory."));
-        msgBox.exec();
+        Helper::showMessage(QObject::tr("Project not found in this directory."));
         return;
     }
     project->save(editorTabs->getOpenTabFiles(), editorTabs->getOpenTabLines(), editorTabs->getCurrentTabIndex(), ui->todoEdit->toPlainText());
     closeAllTabsRequested();
     if (!project->open(path)) {
-        QMessageBox msgBox;
-        msgBox.setText(QObject::tr("Could not open the project."));
-        msgBox.exec();
+        Helper::showMessage(QObject::tr("Could not open the project."));
         return;
     }
     filebrowser->rebuildFileBrowserTree(path);
@@ -1938,9 +1930,7 @@ void MainWindow::sidebarDockLocationChanged(Qt::DockWidgetArea area)
 
 void MainWindow::workerMessage(QString text)
 {
-    QMessageBox msgBox;
-    msgBox.setText(text);
-    msgBox.exec();
+    Helper::showMessage(text);
 }
 
 void MainWindow::restartApp()
