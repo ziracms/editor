@@ -1948,7 +1948,11 @@ void MainWindow::restartApp()
     if (QMessageBox::question(this, tr("Restart required"), tr("Some changes will take effect after restart. Restart now ?"), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok
         && close()
     ) {
+        #if defined(Q_OS_ANDROID)
+        qApp->exit();
+        #else
         qApp->exit(MainWindow::EXIT_CODE_RESTART);
+        #endif
     }
 }
 
