@@ -71,4 +71,4 @@ Install in Raspbian:
       - copy bin/themes, bin/zira.png, bin/desktop.txt, bin/install.sh to the same folder
       - run install.sh
 
-If Qt version in your Linux distribution is < 5.10, download archive with linked Qt from releases section.
+If Qt version in your Linux distribution is < 5.12, download archive with linked Qt from releases section.
