@@ -131,3 +131,29 @@ RESOURCES += \
     qrc/help.qrc \
     qrc/style.qrc \
     qrc/spell.qrc
+
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew \
+    android/gradlew.bat \
+    android/res/values/libs.xml \
+    android64/AndroidManifest.xml \
+    android64/build.gradle \
+    android64/gradle/wrapper/gradle-wrapper.jar \
+    android64/gradle/wrapper/gradle-wrapper.properties \
+    android64/gradlew \
+    android64/gradlew.bat \
+    android64/res/values/libs.xml
+
+contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android
+}
+
+contains(ANDROID_TARGET_ARCH,arm64-v8a) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android64
+}
