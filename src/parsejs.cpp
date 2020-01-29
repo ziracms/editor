@@ -12,6 +12,8 @@ const int EXPECT_FUNCTION = 0;
 const int EXPECT_VARIABLE = 1;
 const int EXPECT_CONST = 2;
 const int EXPECT_CONST_VALUE = 3;
+const int EXPECT_CLASS_ES6 = 4;
+const int EXPECT_CLASS_ES6_EXTENDED = 5;
 
 ParseJS::ParseJS()
 {
@@ -284,23 +286,26 @@ void ParseJS::parseCode(QString & code, QString & origText)
     QString current_variable_type = "";
     QString current_constant = "";
     QString current_constant_value = "";
+    QString current_class_es6 = "";
+    QString current_class_es6_parent = "";
 
     QString expected_function_name = "";
     QStringList expected_function_args;
     int scope = 0;
-    int functionScope = -1;
+    int functionScope = -1, classES6Scope = -1;
     int pars = 0;
     int curlyBrackets = 0, roundBrackets = 0, squareBrackets = 0;
     QVector<int> curlyBracketsList, roundBracketsList, squareBracketsList;
     int functionArgPars = -1;
     int functionArgsStart = -1;
     int constantValueStart = -1;
-    bool functionParsFound = false;
+    bool functionParsFound = false, classES6ParsFound = false;
     int expect = -1;
     QString expectName = "";
     QString prevK = "", prevPrevK = "", prevPrevPrevK = "", prevPrevPrevPrevK = "", prevPrevPrevPrevPrevK = "", prevPrevPrevPrevPrevPrevK = "", prevPrevPrevPrevPrevPrevPrevK = "", prevPrevPrevPrevPrevPrevPrevPrevK = "", prevPrevPrevPrevPrevPrevPrevPrevPrevK = "";
-    int functionStart = -1, variableStart = -1, constantStart = -1;
+    int functionStart = -1, variableStart = -1, constantStart = -1, classES6Start = -1;
     QString class_variable = "";
+    QString expected_class_es6_name = "";
 
     QRegularExpressionMatchIterator mi = parseExpression.globalMatch(code);
     while(mi.hasNext()){
@@ -308,6 +313,39 @@ void ParseJS::parseCode(QString & code, QString & origText)
         if (m.capturedStart(1) < 0) continue;
         QString k = m.captured(1).trimmed();
         if (k.size() == 0) continue;
+
+        // classes ES6
+        if ((prevPrevK.size() == 0 || prevPrevK == ";" || prevPrevK == "{" || prevPrevK == "}" || prevPrevK == "var" || prevPrevK == "let" || prevPrevK == "const") && prevK.size() > 0 && k == "=" && functionArgsStart < 0 && ((prevPrevK != "var" && prevPrevK != "let" && prevPrevK != "const") || (current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
+            expected_class_es6_name = prevK;
+        }
+        if ((expect < 0 || expect == EXPECT_VARIABLE) && k.toLower() == "class" && (prevK == ";" || prevK == "{" || prevK == "}" || prevK == "=" || prevK.size() == 0) && current_function.size() == 0) {
+            expect = EXPECT_CLASS_ES6;
+            expectName = "";
+            current_class_es6_parent = "";
+            classES6Start =  m.capturedStart(1);
+            classES6ParsFound = false;
+        } else if (expect == EXPECT_CLASS_ES6 && expectName.size() == 0 && k != "{" && !classES6ParsFound) {
+            if (k != "(" && k != ")" && k != "{" && k != "extends" && current_class_es6.size() == 0) {
+                expectName = k;
+            } else {
+                classES6ParsFound = true;
+            }
+        } else if (expect == EXPECT_CLASS_ES6 && expectName.size() > 0 && k.toLower() == "extends") {
+            expect = EXPECT_CLASS_ES6_EXTENDED;
+        } else if (expect == EXPECT_CLASS_ES6_EXTENDED && expectName.size() > 0 && current_class_es6_parent.size() == 0 && k != "{") {
+            current_class_es6_parent = k;
+        } else if ((expect == EXPECT_CLASS_ES6 || expect == EXPECT_CLASS_ES6_EXTENDED) && (expectName.size() > 0 || expected_class_es6_name.size() > 0) && k == "{") {
+            current_class_es6 = expectName.size() > 0 ? expectName : expected_class_es6_name;
+            int line = 0;
+            if (classES6Start >= 0) line = getLine(origText, classES6Start);
+            addClass(current_class_es6, line);
+            classES6Scope = scope;
+            expect = -1;
+            expectName = "";
+            expected_class_es6_name = "";
+            classES6ParsFound = false;
+            expected_function_name = "";
+        }
 
         // classes
         if (prevPrevPrevPrevPrevK.size() > 0 && prevPrevPrevPrevK == "." && prevPrevPrevK == "prototype" && prevPrevK == "." && prevK.size() > 0 && k == "=" && functionArgsStart < 0) {
@@ -327,10 +365,23 @@ void ParseJS::parseCode(QString & code, QString & origText)
         }
 
         // functions
-        if ((prevPrevK.size() == 0 || prevPrevK == ";" || prevPrevK == "{" || prevPrevK == "}" || prevPrevK == "var" || prevPrevK == "let" || (prevPrevK == "." && prevPrevPrevK == "prototype" && prevPrevPrevPrevK == ".")) && prevK.size() > 0 && k == "=" && functionArgsStart < 0 && ((prevPrevK != "var" && prevPrevK != "let") || (current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
+        if ((prevPrevK.size() == 0 || prevPrevK == ";" || prevPrevK == "{" || prevPrevK == "}" || prevPrevK == "var" || prevPrevK == "let" || prevPrevK == "const" || (prevPrevK == "." && prevPrevPrevK == "prototype" && prevPrevPrevPrevK == ".")) && prevK.size() > 0 && k == "=" && functionArgsStart < 0 && ((prevPrevK != "var" && prevPrevK != "let" && prevPrevK != "const") || (current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
             expected_function_name = prevK;
         }
-        if ((expect < 0 || expect == EXPECT_VARIABLE) && current_function.size() == 0 && k == "function" && functionArgsStart < 0) {
+        if (current_class_es6.size() > 0 && classES6Scope == scope - 1 && k.size() > 0 && k != "(" && k != ")" && k != "{" && k != "}" && current_function.size() == 0 && functionArgPars < 0) {
+            expect = EXPECT_FUNCTION;
+            current_function_args = "";
+            expected_function_args.clear();
+            current_function_min_args = 0;
+            current_function_max_args = 0;
+            current_function_return_type = "";
+            expectName = "";
+            functionArgPars = -1;
+            functionArgsStart = -1;
+            functionParsFound = false;
+            functionStart = m.capturedStart(1);
+            expectName = k;
+        } else if ((expect < 0 || expect == EXPECT_VARIABLE) && current_function.size() == 0 && k == "function" && functionArgsStart < 0) {
             expect = EXPECT_FUNCTION;
             current_function_args = "";
             expected_function_args.clear();
@@ -375,13 +426,13 @@ void ParseJS::parseCode(QString & code, QString & origText)
                 current_comment = current_comment_clean;
             }
             bool isGlobal = (scope == 0);
-            addFunction(current_class, current_function, current_function_args, current_function_min_args, current_function_max_args, isGlobal, current_function_return_type, current_comment, line);
+            QString cls = current_class_es6.size() > 0 ? current_class_es6 : current_class;
+            addFunction(cls, current_function, current_function_args, current_function_min_args, current_function_max_args, isGlobal, current_function_return_type, current_comment, line);
             if (expected_function_args.size() > 0) {
                 for (int i=0; i<expected_function_args.size(); i++) {
                     QString argName = expected_function_args.at(i);
-                    QString clsName = "";
-                    if (current_class.size() > 0) clsName = current_class;
-                    addVariable(current_class, current_function, argName, "", line);
+                    QString cls = current_class_es6.size() > 0 ? current_class_es6 : current_class;
+                    addVariable(cls, current_function, argName, "", line);
                 }
             }
             expect = -1;
@@ -391,6 +442,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
             functionArgsStart = -1;
             expected_function_name = "";
             functionParsFound = false;
+            expected_class_es6_name = "";
         }
 
         // class method return "this" type
@@ -460,24 +512,29 @@ void ParseJS::parseCode(QString & code, QString & origText)
         }
 
         // variables
-        if (expect < 0 && functionArgPars < 0 && k.size() > 0 && (prevK == "var" || prevK == "let") && ((current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
+        if (expect < 0 && functionArgPars < 0 && k.size() > 0 && (prevK == "var" || prevK == "let" || prevK == "const") && ((current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
             expect = EXPECT_VARIABLE;
             expectName = k;
             current_variable = "";
             current_variable_type = "";
             class_variable = "";
             variableStart = m.capturedStart(1);
-        } else if (expect == EXPECT_VARIABLE && expectName.size() > 0 && current_variable.size() == 0 && prevK == "=" && k.size() > 0 && (k != "function" || current_function.size() > 0)) {
+        } else if (expect == EXPECT_VARIABLE && expectName.size() > 0 && current_variable.size() == 0 && prevK == "=" && k.size() > 0 && (k != "function" || current_function.size() > 0) && (k != "class" || current_function.size() > 0)) {
             current_variable = expectName;
             int line = 0;
             if (variableStart >= 0) line = getLine(origText, variableStart);
-            addVariable(current_class, current_function, current_variable, current_variable_type, line);
+            QString cls = current_class_es6.size() > 0 ? current_class_es6 : current_class;
+            addVariable(cls, current_function, current_variable, current_variable_type, line);
             expect = -1;
             expectName = "";
             class_variable = "";
         } else if (functionScope >= 0 && functionScope == scope - 1 && functionArgPars < 0 && current_function.size() > 0 && prevK == "function" && k.size() > 0 && k != "(" && k != ")" && k != "{") {
-            addVariable(current_class, current_function, k, "", getLine(origText, m.capturedStart(1)));
-        } else if (scope == 0 && (prevPrevPrevK.size() == 0 || prevPrevPrevK == ";" || prevPrevPrevK == "{" || prevPrevPrevK == "}") && prevPrevK.size() > 0 && prevK == "=" && k.size() > 0 && k != "function") {
+            QString cls = current_class_es6.size() > 0 ? current_class_es6 : current_class;
+            addVariable(cls, current_function, k, "", getLine(origText, m.capturedStart(1)));
+        } else if (functionScope >= 0 && functionScope == scope - 1 && functionArgPars < 0 && current_function.size() > 0 && prevK == "class" && k.size() > 0 && k != "(" && k != ")" && k != "{") {
+            QString cls = current_class_es6.size() > 0 ? current_class_es6 : current_class;
+            addVariable(cls, current_function, k, "", getLine(origText, m.capturedStart(1)));
+        } else if (scope == 0 && (prevPrevPrevK.size() == 0 || prevPrevPrevK == ";" || prevPrevPrevK == "{" || prevPrevPrevK == "}") && prevPrevK.size() > 0 && prevK == "=" && k.size() > 0 && k != "function" && k != "class") {
             current_variable = prevPrevK;
             int line = getLine(origText, m.capturedStart(1));
             addVariable("", "", current_variable, "", line);
@@ -487,7 +544,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
         }
 
         // class property
-        if (class_variable.size() == 0 && functionArgPars < 0 && k == "=" && prevK.size() > 0 && prevPrevK == "." && prevPrevPrevK == "this" && current_class.size() == 0 && current_function.size() > 0 && functionArgsStart < 0 && functionScope == scope - 1) {
+        if (class_variable.size() == 0 && functionArgPars < 0 && k == "=" && prevK.size() > 0 && prevPrevK == "." && prevPrevPrevK == "this" && current_class.size() == 0 && current_function.size() > 0 && functionArgsStart < 0 && functionScope == scope - 1 && current_class_es6.size() == 0) {
             variableIndexesIterator = variableIndexes.find(current_function.toStdString() + "::" + "::" + prevK.toStdString());
             if (variableIndexesIterator == variableIndexes.end()) {
                 classIndexesIterator = classIndexes.find(current_function.toStdString());
@@ -505,6 +562,14 @@ void ParseJS::parseCode(QString & code, QString & origText)
                 current_variable = "";
                 current_variable_type = "";
                 addVariable(current_function, "", class_variable, "", getLine(origText, m.capturedStart(1)));
+            }
+        } else if (class_variable.size() == 0 && functionArgPars < 0 && k == "=" && prevK.size() > 0 && prevPrevK == "." && prevPrevPrevK == "this" && current_class_es6.size() > 0 && current_function.size() > 0 && current_function == "constructor" && functionArgsStart < 0 && functionScope == scope - 1) {
+            variableIndexesIterator = variableIndexes.find(current_class_es6.toStdString() + "::" + "::" + prevK.toStdString());
+            if (variableIndexesIterator == variableIndexes.end()) {
+                class_variable = prevK;
+                current_variable = "";
+                current_variable_type = "";
+                addVariable(current_class_es6, "", class_variable, "", getLine(origText, m.capturedStart(1)));
             }
         }
 
@@ -540,7 +605,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
             constantValueStart = -1;
         }
 
-        if ((expect == EXPECT_VARIABLE || expect == EXPECT_CONST || class_variable.size() > 0) && (k == "-" || k == "+" || k == "*" || k == "/" || k == "%" || k == "&" || k == "|" || k == ":" || k == ">" || k == "<" || k == "?" || k == "[" || k == "]" || k == "(" || k == ")" || k == ".")) {
+        if ((expect == EXPECT_VARIABLE || expect == EXPECT_CONST || expect == EXPECT_CLASS_ES6_EXTENDED || class_variable.size() > 0) && (k == "-" || k == "+" || k == "*" || k == "/" || k == "%" || k == "&" || k == "|" || k == ":" || k == ">" || k == "<" || k == "?" || k == "[" || k == "]" || k == "(" || k == ")" || k == ".")) {
             expect = -1;
             expectName = "";
             class_variable = "";
@@ -551,6 +616,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
             expectName = "";
             class_variable = "";
             expected_function_name = "";
+            expected_class_es6_name = "";
         }
         // braces
         if (k == "{") {
@@ -563,6 +629,16 @@ void ParseJS::parseCode(QString & code, QString & origText)
             if (scope < 0) scope = 0;
             curlyBrackets--;
             curlyBracketsList.append(-1 * (m.capturedStart(1)+1));
+            // class ES6 close
+            if (current_class_es6.size() > 0 && classES6Scope >= 0 && classES6Scope == scope) {
+                current_class_es6 = "";
+                current_class_es6_parent = "";
+                classES6Scope = -1;
+                classES6Start = -1;
+                expected_class_es6_name = "";
+                classES6ParsFound = false;
+                expected_function_name = "";
+            }
             // function close
             if (current_function.size() > 0 && functionScope >= 0 && functionScope == scope) {
                 current_function = "";
@@ -578,6 +654,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
                 expected_function_name = "";
                 current_class = "";
                 functionParsFound = false;
+                expected_class_es6_name = "";
             }
         }
         // parens
