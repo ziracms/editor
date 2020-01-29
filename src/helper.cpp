@@ -18,6 +18,7 @@
 #include <QFileDialog>
 #include <QApplication>
 #include "mainwindow.h"
+#include "fileiconprovider.h"
 
 const QString APPLICATION_NAME = "Zira Editor";
 const QString APPLICATION_VERSION = "1.6.1";
@@ -306,6 +307,8 @@ QString Helper::getExistingDirectory(QWidget * parent, QString title, QString di
     dialog.setViewMode(QFileDialog::Detail);
     dialog.setOptions(QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     dialog.setDirectory(directory);
+    FileIconProvider * iconProvider = new FileIconProvider();
+    dialog.setIconProvider(iconProvider);
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
     dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
@@ -314,6 +317,7 @@ QString Helper::getExistingDirectory(QWidget * parent, QString title, QString di
         QStringList dirs = dialog.selectedFiles();
         if (dirs.size() > 0 && folderExists(dirs.at(0))) dir = dirs.at(0);
     }
+    delete iconProvider;
     return dir;
 }
 

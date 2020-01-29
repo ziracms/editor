@@ -26,6 +26,7 @@ INCLUDEPATH += include
 
 SOURCES += \
     main.cpp \
+    src/fileiconprovider.cpp \
     src/mainwindow.cpp \
     src/helper.cpp \
     src/settings.cpp \
@@ -70,6 +71,7 @@ SOURCES += \
     src/spellwords.cpp
 
 HEADERS += \
+    include/fileiconprovider.h \
     include/mainwindow.h \
     include/helper.h \
     include/settings.h \

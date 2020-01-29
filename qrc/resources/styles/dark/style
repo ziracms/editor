@@ -186,6 +186,16 @@ QHeaderView::up-arrow {
     image: url(:/icons/asc.png);
 }
 
+QFileDialog
+{
+    filedialog-new-directory-icon: url(:/icons/plus.png);
+    filedialog-parent-directory-icon: url(:/icons/up.png);
+    filedialog-listview-icon: url(:/icons/sidebar.png);
+    filedialog-detailedview-icon: url(:/icons/output.png);
+    backward-icon: url(:/icons/go-previous.png);
+    forward-icon: url(:/icons/go-next.png);
+}
+
 QDialog QLineEdit
 {
     padding: 5px;
@@ -518,6 +528,14 @@ QToolButton:hover
 QToolButton:pressed
 {
     background: #008dc1;
+    border: 1px solid #008dc1;
+}
+
+QFileDialog QToolButton:hover,
+QFileDialog QToolButton:focus,
+QFileDialog QToolButton:pressed
+{
+    background-color: transparent;
     border: 1px solid #008dc1;
 }
 

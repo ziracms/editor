@@ -13,6 +13,7 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QShortcut>
+#include "fileiconprovider.h"
 
 EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords):
     spellChecker(spellChecker),
@@ -224,6 +225,8 @@ void EditorTabs::open(QString dir)
         if (stddirs.size()>0) dir = stddirs.at(0);
     }
     if (dir.size() > 0) dialog.setDirectory(dir);
+    FileIconProvider * iconProvider = new FileIconProvider();
+    dialog.setIconProvider(iconProvider);
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
     dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
@@ -235,6 +238,7 @@ void EditorTabs::open(QString dir)
         QString fileName = fileNames.first();
         openFile(fileName);
     }
+    delete iconProvider;
 }
 
 void EditorTabs::save()
