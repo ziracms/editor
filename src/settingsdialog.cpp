@@ -169,7 +169,7 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     dataMap.clear();
     QString projectHomeStr = ui->projectsHomeLineEdit->text();
     if (projectHomeStr.size() > 1 && projectHomeStr.at(projectHomeStr.size()-1) == "/") projectHomeStr = projectHomeStr.mid(0, projectHomeStr.size()-1);
-    if (projectHomeStr.size() > 0 && Helper::folderExists(projectHomeStr)) {
+    if ((projectHomeStr.size() > 0 && Helper::folderExists(projectHomeStr)) || projectHomeStr.size() == 0) {
         dataMap["file_browser_home"] = projectHomeStr.toStdString();
         dataMap["file_dialog_path"] = projectHomeStr.toStdString();
     }

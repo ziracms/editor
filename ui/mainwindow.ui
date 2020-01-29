@@ -234,6 +234,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpenFile"/>
+   <addaction name="separator"/>
    <addaction name="actionSaveAll"/>
    <addaction name="separator"/>
    <addaction name="actionUndo"/>

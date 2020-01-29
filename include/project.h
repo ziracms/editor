@@ -23,7 +23,7 @@ public:
     explicit Project(QObject *parent = nullptr);
     bool create(QString name, QString path, bool lintEnabled, bool csEnabled, bool gitEnabled);
     bool edit(QString name, QString path, bool lintEnabled, bool csEnabled, QStringList openTabFiles, QList<int> openTabLines, int currentTabIndex, QString todo);
-    bool exists(QString path);
+    static bool exists(QString path);
     bool open(QString path);
     void save(QStringList openTabFiles, QList<int> openTabLines, int currentTabIndex, QString todo);
     void close();

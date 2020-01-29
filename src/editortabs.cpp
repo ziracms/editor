@@ -227,6 +227,16 @@ void EditorTabs::open(QString dir)
     if (dir.size() > 0) dialog.setDirectory(dir);
     FileIconProvider * iconProvider = new FileIconProvider();
     dialog.setIconProvider(iconProvider);
+    QList<QUrl> urls;
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first());
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first());
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first());
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first());
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DownloadLocation).first());
+    if (settings->get("file_dialog_path").size() > 0) {
+        urls << QUrl::fromLocalFile(QString::fromStdString(settings->get("file_dialog_path")));
+    }
+    dialog.setSidebarUrls(urls);
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
     dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);

@@ -17,6 +17,7 @@
 #include <QPluginLoader>
 #include <QFileDialog>
 #include <QApplication>
+#include <QStandardPaths>
 #include "mainwindow.h"
 #include "fileiconprovider.h"
 
@@ -309,6 +310,13 @@ QString Helper::getExistingDirectory(QWidget * parent, QString title, QString di
     dialog.setDirectory(directory);
     FileIconProvider * iconProvider = new FileIconProvider();
     dialog.setIconProvider(iconProvider);
+    QList<QUrl> urls;
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first());
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first());
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first());
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first());
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DownloadLocation).first());
+    dialog.setSidebarUrls(urls);
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
     dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
