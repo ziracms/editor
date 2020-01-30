@@ -1,5 +1,5 @@
-<div>Lightweight PHP Editor with syntax check and autocomplete.</div>
+<div><center>Lightweight PHP Editor with syntax check and autocomplete.</center></div>
 <div>&nbsp;</div>
-<div>Syntax check performed by php executable.</div>
-<div>Context help requires php manual.</div>
-<div>You can download it from php.net (many html files archive).</div>
+<div><center>Syntax check performed by php executable.</center></div>
+<div><center>Context help requires php manual.</center></div>
+<div><center>You can download it from php.net (many html files archive).</center></div>

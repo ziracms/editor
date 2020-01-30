@@ -13,7 +13,7 @@
 const QString TPL_QT_VERSION = "<div><center>Qt %1</center></div>";
 const QString TPL_APPLICATION_NAME = "<div><center><big><b>%1</b></big></center></div>";
 const QString TPL_APPLICATION_VERSION = "<div><center>%1</center></div>";
-const QString TPL_ORGANIZATION = "<div>(C) 2019 %1 (%2)</div>";
+const QString TPL_ORGANIZATION = "<div><center>(C) 2019 %1 (%2)</center></div>";
 const QString TPL_BLANK = "<div>&nbsp;</div>";
 const QString TPL_LOGO_IMAGE = "<div><center><img src=\":/image/splash.png\" width=\"150\" height=\"150\" /></center></div>";
 
