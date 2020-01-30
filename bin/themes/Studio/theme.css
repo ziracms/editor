@@ -912,4 +912,5 @@ QuickAccess QListView:focus
     background: url(:/styles/light/zira.png);
     background-position: center center;
     background-repeat: no-repeat;
+    background-color: #eeeef2;
 }
