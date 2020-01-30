@@ -904,3 +904,10 @@ QuickAccess QListView:focus
     background: transparent;
     border: none;
 }
+
+#tabWidget::pane > QWidget
+{
+    background: url(:/styles/dark/zira.png);
+    background-position: center center;
+    background-repeat: no-repeat;
+}

@@ -15,6 +15,7 @@
         <file alias="float.png">resources/styles/dark/images/float.png</file>
         <file alias="hide-hover.png">resources/styles/dark/images/hide-hover.png</file>
         <file alias="hide.png">resources/styles/dark/images/hide.png</file>
+        <file alias="zira.png">resources/styles/dark/images/zira.png</file>
     </qresource>
     <qresource prefix="/styles/light">
         <file alias="style">resources/styles/light/style</file>
@@ -32,5 +33,6 @@
         <file alias="float.png">resources/styles/light/images/float.png</file>
         <file alias="hide-hover.png">resources/styles/light/images/hide-hover.png</file>
         <file alias="hide.png">resources/styles/light/images/hide.png</file>
+        <file alias="zira.png">resources/styles/light/images/zira.png</file>
     </qresource>
 </RCC>

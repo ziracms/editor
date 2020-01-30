@@ -15,6 +15,7 @@ const QString TPL_APPLICATION_NAME = "<div><center><big><b>%1</b></big></center>
 const QString TPL_APPLICATION_VERSION = "<div><center>%1</center></div>";
 const QString TPL_ORGANIZATION = "<div>(C) 2019 %1 (%2)</div>";
 const QString TPL_BLANK = "<div>&nbsp;</div>";
+const QString TPL_LOGO_IMAGE = "<div><center><img src=\":/image/splash.png\" width=\"150\" height=\"150\" /></center></div>";
 
 HelpDialog::HelpDialog(QWidget *parent) :
     QDialog(parent),
@@ -47,7 +48,7 @@ void HelpDialog::shortcutsContent()
 
 void HelpDialog::aboutContent()
 {
-    QString text = TPL_APPLICATION_NAME.arg(APPLICATION_NAME);
+    QString text = TPL_LOGO_IMAGE+TPL_APPLICATION_NAME.arg(APPLICATION_NAME);
     text += TPL_APPLICATION_VERSION.arg(APPLICATION_VERSION);
     text += TPL_BLANK;
 
