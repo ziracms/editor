@@ -592,6 +592,7 @@ void FileBrowser::showEditProjectDialog(QString title, QString path, bool phpLin
 
 void FileBrowser::openProject(QString startDir)
 {
+    if (startDir.size() == 0) startDir = getHomeDir();
     if (startDir.size() == 0) startDir = fbpath;
     treeWidget->clearFocus();
     //QString path = QFileDialog::getExistingDirectory(treeWidget, tr("Select project source directory"), startDir, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
