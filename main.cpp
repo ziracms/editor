@@ -9,6 +9,7 @@
 
 int main(int argc, char *argv[])
 {
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     int exitCode = 0;
     do {
         QApplication a(argc, argv);
