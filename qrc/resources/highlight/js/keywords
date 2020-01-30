@@ -68,3 +68,5 @@ crypto
 self
 parent
 __proto__
+get
+set
