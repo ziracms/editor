@@ -2016,36 +2016,8 @@ void Editor::keyReleaseEvent(QKeyEvent *e)
     bool ctrl = false;
     if (e->modifiers() & Qt::ControlModifier) ctrl = true;
     int code = e->key();
-    // insert closing tag
     if (code == Qt::Key_Greater && !ctrl && modeOnKeyPress == MODE_HTML) {
-        QTextCursor curs = textCursor();
-        QTextBlock block = curs.block();
-        QString blockText = block.text();
-        blockText = cleanUpText(blockText);
-        int pos = curs.positionInBlock();
-        int start = -1, length = 0, offset = 0;
-        QString tag = "";
-        do {
-            QRegularExpressionMatch match = tagOpenExpr.match(blockText, offset);
-            start = match.capturedStart();
-            if (start>=0) {
-                length = match.capturedLength();
-                if (start+length == pos) {
-                    tag = match.captured(1);
-                    break;
-                }
-                offset = start + length;
-            }
-        } while (start>=0);
-        if (tag.size()>0) {
-            CW->htmlTagsIterator = CW->htmlTags.find(tag.toLower().toStdString());
-            if (CW->htmlTagsIterator != CW->htmlTags.end()) {
-                QString insert = "</"+tag+">";
-                curs.insertText(insert);
-                curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor, insert.size());
-                setTextCursor(curs);
-            }
-        }
+        hideCompletePopup();
     }
     QTextEdit::keyReleaseEvent(e);
 }
@@ -3827,6 +3799,7 @@ void Editor::completePopupSelected(QString text, QString data)
     int state = highlight->findStateAtCursor(& block, pos);
     QChar nextChar = '\0';
     if (pos < total) nextChar = blockText[pos];
+    int moveCursorBack = 0;
     if (cursorTextPos >= 0 && cursorTextPos <= pos) {
         if (mode == MODE_PHP) {
             QTextCursor cursor = textCursor();
@@ -3907,6 +3880,17 @@ void Editor::completePopupSelected(QString text, QString data)
                     text = text.mid(text.indexOf("::")+2);
                 }
             }
+        } else if (mode == MODE_HTML) {
+            QChar prevChar = '\0';
+            if (cursorTextPos - 1 >= 0) prevChar = blockText[cursorTextPos - 1];
+            if (prevChar == '<') {
+                QString tag = text;
+                CW->htmlTagsIterator = CW->htmlTags.find(tag.toLower().toStdString());
+                if (CW->htmlTagsIterator != CW->htmlTags.end()) {
+                    text += "></"+tag+">";
+                    moveCursorBack = tag.size() + 3;
+                }
+            }
         }
         if (cursorTextPos < pos) {
             curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, pos - cursorTextPos);
@@ -3942,6 +3926,8 @@ void Editor::completePopupSelected(QString text, QString data)
                 tooltipText = text + " " + data;
                 tooltipOrigText = origText + " " + data;
             }
+        } else if (moveCursorBack > 0) {
+            curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor, moveCursorBack);
         }
         curs.endEditBlock();
         if (blockS) blockSignals(false);
