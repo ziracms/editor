@@ -2050,32 +2050,37 @@ void Editor::insertFromMimeData(const QMimeData *source)
         int count = 0;
         if (textList.size()>0) {
             QString space = (tabType == "spaces") ? QString(" ").repeated(tabWidth) : "\t";
-            QString line = textList.at(0);
-            textF += line.trimmed() + "\n";
-            for (int i=0; i<textList.size(); i++) {
-                line = textList.at(i);
-                line = line.trimmed();
-                if (line.size()==0) {
-                    if (i>0) textF += prefix + space.repeated(count) + "\n";
-                    continue;
+            if (textList.size()>1) {
+                QString line = textList.at(0);
+                textF += line.trimmed() + "\n";
+                for (int i=0; i<textList.size(); i++) {
+                    line = textList.at(i);
+                    line = line.trimmed();
+                    if (line.size()==0) {
+                        if (i>0) textF += prefix + space.repeated(count) + "\n";
+                        continue;
+                    }
+                    QChar first = line[0];
+                    QChar last = line[line.size()-1];
+                    if (first == "}") {
+                        count--;
+                        if (count < 0) count = 0;
+                    }
+                    if (i>0) {
+                        textF += prefix + space.repeated(count) + line + "\n";
+                    }
+                    if (last == "{" && first != "/") {
+                        count++;
+                    }
                 }
-                QChar first = line[0];
-                QChar last = line[line.size()-1];
-                if (first == "}") {
-                    count--;
-                    if (count < 0) count = 0;
-                }
-                if (i>0) {
-                    textF += prefix + space.repeated(count) + line + "\n";
-                }
-                if (last == "{" && first != "/") {
-                    count++;
-                }
+                textF = textF.trimmed();
+            } else {
+                textF = text;
             }
             QTextCursor cursor = textCursor();
             int startBlockNumber = cursor.block().blockNumber();
             if (tabType == "spaces") textF = textF.replace("\t", space);
-            cursor.insertText(textF.trimmed());
+            cursor.insertText(textF);
             do {
                 // modified state
                 modifiedLinesIterator = modifiedLines.find(cursor.block().blockNumber() + 1);
