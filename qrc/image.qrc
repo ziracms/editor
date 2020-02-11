@@ -45,5 +45,6 @@
         <file alias="levelup.png">resources/images/icons/levelup.png</file>
         <file alias="sidebar.png">resources/images/icons/sidebar.png</file>
         <file alias="output.png">resources/images/icons/output.png</file>
+        <file alias="separator.png">resources/images/icons/separator.png</file>
     </qresource>
 </RCC>

@@ -4462,8 +4462,13 @@ void Editor::breadcrumbsPaintEvent(QPaintEvent *event)
     painter.setPen(breadcrumbsColor);
     QString text = static_cast<Breadcrumbs *>(breadcrumbs)->getText();
     if (pretty) {
-        int listMargin = 10, listOffset = 0;
+        painter.setRenderHint(QPainter::SmoothPixmapTransform);
+        QPixmap delimiter(":/icons/separator.png");
+        int listOffset = 0;
+        /*
+        int listMargin = 10;
         int lineSize = 2;
+        */
         QStringList textList = text.split(BREADCRUMBS_DELIMITER.trimmed());
         for (int i=0; i<textList.size(); i++) {
             QString _text = textList.at(i);
@@ -4471,6 +4476,7 @@ void Editor::breadcrumbsPaintEvent(QPaintEvent *event)
             if (_text.size() == 0) continue;
             int width = fm.width(_text);
             painter.drawText(lineW+markW+listOffset, offset, width, fm.height(), Qt::AlignLeft, _text);
+            /*
             listOffset += width+listMargin-listMargin/4;
             QPointF p1(lineW+markW+listOffset, breadcrumbs->height()/4);
             QPointF p2(lineW+markW+listOffset+listMargin/2, breadcrumbs->height()/2);
@@ -4478,6 +4484,10 @@ void Editor::breadcrumbsPaintEvent(QPaintEvent *event)
             painter.drawLine(p1, p2);
             painter.drawLine(p2, p3);
             listOffset += listMargin+listMargin/4+lineSize;
+            */
+            listOffset += width;
+            painter.drawPixmap(lineW+markW+listOffset, 0, breadcrumbs->height(), breadcrumbs->height(), delimiter);
+            listOffset += breadcrumbs->height();
         }
     } else {
         painter.drawText(lineW+markW, offset, breadcrumbs->width(), fm.height(), Qt::AlignLeft, text);
