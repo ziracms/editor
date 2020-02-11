@@ -66,8 +66,7 @@ Installation:
       - run install.sh
       
 Install in Raspbian:
-      - install qt5-default
-      - install hunspell
+      - install qt5-default (libhunspell is required for spellchecker)
       - download and unpack ZIP-archive**
       - copy bin/arm to any folder
       - copy bin/themes, bin/zira.png, bin/desktop.txt, bin/install.sh to the same folder
