@@ -3886,15 +3886,20 @@ void Editor::completePopupSelected(QString text, QString data)
                 }
             }
         } else if (mode == MODE_HTML) {
-            QChar prevChar = '\0';
-            if (cursorTextPos - 1 >= 0) prevChar = blockText[cursorTextPos - 1];
-            if (prevChar == '<') {
-                QString tag = text;
-                CW->htmlTagsIterator = CW->htmlTags.find(tag.toLower().toStdString());
-                if (CW->htmlTagsIterator != CW->htmlTags.end()) {
+            QString tag = text;
+            CW->htmlTagsIterator = CW->htmlTags.find(tag.toLower().toStdString());
+            if (CW->htmlTagsIterator != CW->htmlTags.end()) {
+                QChar prevChar = '\0';
+                if (cursorTextPos - 1 >= 0) prevChar = blockText[cursorTextPos - 1];
+                if (prevChar == '<') {
                     text += "></"+tag+">";
                     moveCursorBack = tag.size() + 3;
+                } else if (prevChar == '/') {
+                    text += ">";
                 }
+            } else if (state == STATE_TAG && text.toLower().indexOf("on") == 0) {
+                text += "=\"\"";
+                moveCursorBack = 1;
             }
         }
         if (cursorTextPos < pos) {
