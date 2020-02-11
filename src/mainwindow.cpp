@@ -209,6 +209,11 @@ MainWindow::MainWindow(QWidget *parent) :
     std::string serverCommandsEnabledStr = settings->get("parser_enable_servers");
     if (serverCommandsEnabledStr == "yes") serverCommandsEnabled = true;
 
+    // disable server commands on Android
+    #if defined(Q_OS_ANDROID)
+    serverCommandsEnabled = false;
+    #endif
+
     // parser
     parserWorker = new ParserWorker(settings);
     parserWorker->moveToThread(&parserThread);

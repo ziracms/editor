@@ -86,6 +86,10 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->editorParseIntervalSpinBox->setValue(std::stoi(settings->get("editor_parse_interval")) / 1000);
     if (settings->get("parser_enable_git") == CHECKED_YES) ui->gitCheckbox->setChecked(true);
     if (settings->get("parser_enable_servers") == CHECKED_YES) ui->serversCheckbox->setChecked(true);
+    // disable server commands on Android
+    #if defined(Q_OS_ANDROID)
+    ui->serversCheckbox->setEnabled(false);
+    #endif
     if (settings->get("spellchecker_enabled") == CHECKED_YES) ui->spellCheckerCheckbox->setChecked(true);
     if (!Helper::isPluginExists(SPELLCHECKER_PLUGIN_NAME, QString::fromStdString(settings->get("plugins_path")))) ui->spellCheckerCheckbox->setEnabled(false);
     ui->phpPathLineEdit->setText(QString::fromStdString(settings->get("parser_php_path")));
