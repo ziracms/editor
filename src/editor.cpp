@@ -2849,6 +2849,23 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
                 }
             }
         }
+        // highlighted vars
+        if (completePopup->count() < completePopup->limit()) {
+            HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
+            if (blockData != nullptr && blockData->varsChainJS.size()>0 && (blockData->varsChainJS.indexOf(text, 0, Qt::CaseInsensitive)==0 || blockData->varsChainJS.indexOf(","+text, 0, Qt::CaseInsensitive)>0)) {
+                QStringList varsList = blockData->varsChainJS.split(",");
+                for (QString k : varsList) {
+                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                        varsIterator = vars.find(k.toStdString());
+                        if (varsIterator == vars.end()) {
+                            vars[k.toStdString()] = k.toStdString();
+                            completePopup->addItem(k, k);
+                            if (completePopup->count() >= completePopup->limit()) break;
+                        }
+                    }
+                }
+            }
+        }
     } else if (prevChar == ".") {
         // object context
         QString k = "prototype";
