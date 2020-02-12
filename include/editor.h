@@ -163,6 +163,7 @@ protected:
     void initSpellChecker();
     void suggestWords(QStringList words, int cursorTextPos);
     bool isKnownWord(QString word);
+    QString getFixedCompleteClassMethodName(QString clsMethodComplete, QString params);
 public slots:
     void save(QString name = "");
     void back();
