@@ -2964,7 +2964,7 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
             if (prevChar != "\\" && completePopup->count() < completePopup->limit()) {
                 for (auto & it : CW->phpConstsComplete) {
                     QString k = QString::fromStdString(it.first);
-                    if (k == text) continue;
+                    //if (k == text) continue;
                     if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
                         completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                         if (completePopup->count() >= completePopup->limit()) break;
@@ -3060,9 +3060,11 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
             // php class consts
             for (auto & it : CW->phpClassConstsComplete) {
                 QString k = QString::fromStdString(it.first);
-                if (k == text) continue;
+                //if (k == text) continue;
                 if (k.indexOf(_clsName+"::"+text, 0, Qt::CaseInsensitive)==0) {
-                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    //completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    QString classConstComplete = getFixedCompleteClassConstName(QString::fromStdString(it.first));
+                    completePopup->addItem(classConstComplete, QString::fromStdString(it.second));
                     if (completePopup->count() >= completePopup->limit()) break;
                 }
             }
@@ -3070,7 +3072,7 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
                 // php class methods
                 for (auto & it : CW->phpClassMethodsComplete) {
                     QString k = QString::fromStdString(it.first);
-                    if (k == text) continue;
+                    //if (k == text) continue;
                     if (k.indexOf(_clsName+"::"+text, 0, Qt::CaseInsensitive)==0) {
                         //completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                         QString classMethodComplete = getFixedCompleteClassMethodName(QString::fromStdString(it.first), QString::fromStdString(it.second));
@@ -3085,6 +3087,8 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
             completeDetectedPHP = true;
         }
     } else if (text[0] == "$") {
+        std::unordered_map<std::string, std::string> vars;
+        std::unordered_map<std::string, std::string>::iterator varsIterator;
         bool isSelf = false, isClass = false;
         if (prevChar == ":" && prevPrevChar == ":") {
             isClass = true;
@@ -3092,47 +3096,55 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
         if (isClass && (prevWord.toLower() == "self" || prevWord.toLower() == "static")) {
             isSelf = true;
         }
-        // php variables
+        // parsed vars
         if (clsName != "anonymous class" && funcName != "anonymous function" && !isClass) {
             QString ns = "\\";
             if (nsName.size() > 0) ns += nsName + "\\";
             QString _clsName = clsName.size() > 0 ? ns + clsName : "";
-            /*
-            QHash<QString,QString> addedVars;
-            QStringList vars = highlight->getKnownVars(_clsName, funcName);
-            for (int i=vars.size()-1; i>=0; i--) {
-                QString k = vars.at(i);
-                if (k == text) continue;
-                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                    completePopup->addItem(k, k);
-                    addedVars.insert(k, k);
-                    if (completePopup->count() >= completePopup->limit()) break;
-                }
-            }
-            */
             QString _funcName = funcName;
             if (_clsName.size() == 0 && _funcName.size() > 0) _funcName = ns + _funcName;
             for (int i=parseResultPHP.variables.size()-1; i>=0; i--) {
                 ParsePHP::ParseResultVariable _variable = parseResultPHP.variables.at(i);
                 QString k = _variable.name;
                 if (_variable.clsName != _clsName || _variable.funcName != _funcName) continue;
-                if (k == text) continue;
-                //if (addedVars.contains(k)) continue;
+                //if (k == text) continue;
                 if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                    completePopup->addItem(k, k);
-                    if (completePopup->count() >= completePopup->limit()) break;
+                    varsIterator = vars.find(k.toStdString());
+                    if (varsIterator == vars.end()) {
+                        vars[k.toStdString()] = k.toStdString();
+                        completePopup->addItem(k, k);
+                        if (completePopup->count() >= completePopup->limit()) break;
+                    }
                 }
             }
             completeDetectedPHP = true;
         }
+        // highlighted vars
+        if (completePopup->count() < completePopup->limit()) {
+            HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
+            if (blockData != nullptr && blockData->varsChainPHP.size()>0 && (blockData->varsChainPHP.indexOf(text, 0, Qt::CaseInsensitive)==0 || blockData->varsChainPHP.indexOf(","+text, 0, Qt::CaseInsensitive)>0)) {
+                QStringList varsList = blockData->varsChainPHP.split(",");
+                for (QString k : varsList) {
+                    //if (k == text) continue;
+                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                        varsIterator = vars.find(k.toStdString());
+                        if (varsIterator == vars.end()) {
+                            vars[k.toStdString()] = k.toStdString();
+                            completePopup->addItem(k, k);
+                            if (completePopup->count() >= completePopup->limit()) break;
+                        }
+                    }
+                }
+            }
+        }
         // php self::$var
-        if (clsName.size() > 0 && clsName != "anonymous class" && funcName != "anonymous function" && isSelf) {
+        if (clsName.size() > 0 && clsName != "anonymous class" && funcName != "anonymous function" && isSelf && completePopup->count() < completePopup->limit()) {
             QString ns = "\\";
             if (nsName.size() > 0) ns += nsName + "\\";
             QStringList vars = highlight->getKnownVars(ns + clsName, "");
             for (int i=vars.size()-1; i>=0; i--) {
                 QString k = vars.at(i);
-                if (k == text) continue;
+                //if (k == text) continue;
                 if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
                     completePopup->addItem(k, k);
                     if (completePopup->count() >= completePopup->limit()) break;
@@ -3144,7 +3156,7 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
         if (!isClass && completePopup->count() < completePopup->limit()) {
             for (auto & it : CW->phpGlobalsComplete) {
                 QString k = QString::fromStdString(it.first);
-                if (k == text) continue;
+                //if (k == text) continue;
                 if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
                     completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                     if (completePopup->count() >= completePopup->limit()) break;
@@ -3185,7 +3197,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
             QString k = vars.at(i);
             if (k.size() < 2) continue;
             k = k.mid(1);
-            if (k == text) continue;
+            //if (k == text) continue;
             if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
                 completePopup->addItem(k, k);
                 if (completePopup->count() >= completePopup->limit()) break;
@@ -3196,7 +3208,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
             QString _text = ns + clsName + "::" + text;
             for (auto & it : CW->phpClassMethodsComplete) {
                 QString k = "\\"+QString::fromStdString(it.first);
-                if (k == _text) continue;
+                //if (k == _text) continue;
                 if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
                     //completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                     QString classMethodComplete = getFixedCompleteClassMethodName(QString::fromStdString(it.first), QString::fromStdString(it.second));
@@ -3210,7 +3222,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
             QString _text = ns + clsName + "::$" + text;
             for (auto & it : CW->phpClassPropsComplete) {
                 QString k = "\\"+QString::fromStdString(it.first);
-                if (k == _text) continue;
+                //if (k == _text) continue;
                 if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
                     completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                     if (completePopup->count() >= completePopup->limit()) break;
@@ -3244,7 +3256,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
                     QString _text = variable.type + "::" + text;
                     for (auto & it : CW->phpClassMethodsComplete) {
                         QString k = "\\"+QString::fromStdString(it.first);
-                        if (k == _text) continue;
+                        //if (k == _text) continue;
                         if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
                             //completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                             QString classMethodComplete = getFixedCompleteClassMethodName(QString::fromStdString(it.first), QString::fromStdString(it.second));
@@ -3257,7 +3269,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
                         QString _text = variable.type + "::$" + text;
                         for (auto & it : CW->phpClassPropsComplete) {
                             QString k = "\\"+QString::fromStdString(it.first);
-                            if (k == _text) continue;
+                            //if (k == _text) continue;
                             if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
                                 completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                                 if (completePopup->count() >= completePopup->limit()) break;
@@ -3285,7 +3297,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
                 QString _text = variable.type + "::" + text;
                 for (auto & it : CW->phpClassMethodsComplete) {
                     QString k = "\\"+QString::fromStdString(it.first);
-                    if (k == _text) continue;
+                    //if (k == _text) continue;
                     if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
                         //completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                         QString classMethodComplete = getFixedCompleteClassMethodName(QString::fromStdString(it.first), QString::fromStdString(it.second));
@@ -3298,7 +3310,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
                     QString _text = variable.type + "::$" + text;
                     for (auto & it : CW->phpClassPropsComplete) {
                         QString k = "\\"+QString::fromStdString(it.first);
-                        if (k == _text) continue;
+                        //if (k == _text) continue;
                         if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
                             completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                             if (completePopup->count() >= completePopup->limit()) break;
@@ -3330,7 +3342,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
                 QString _text = variable.type + "::" + text;
                 for (auto & it : CW->phpClassMethodsComplete) {
                     QString k = "\\"+QString::fromStdString(it.first);
-                    if (k == _text) continue;
+                    //if (k == _text) continue;
                     if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
                         //completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                         QString classMethodComplete = getFixedCompleteClassMethodName(QString::fromStdString(it.first), QString::fromStdString(it.second));
@@ -3343,7 +3355,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
                     QString _text = variable.type + "::$" + text;
                     for (auto & it : CW->phpClassPropsComplete) {
                         QString k = "\\"+QString::fromStdString(it.first);
-                        if (k == _text) continue;
+                        //if (k == _text) continue;
                         if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
                             completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                             if (completePopup->count() >= completePopup->limit()) break;
@@ -3367,7 +3379,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
             QString _text = type + "::" + text;
             for (auto & it : CW->phpClassMethodsComplete) {
                 QString k = "\\"+QString::fromStdString(it.first);
-                if (k == _text) continue;
+                //if (k == _text) continue;
                 if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
                     //completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                     QString classMethodComplete = getFixedCompleteClassMethodName(QString::fromStdString(it.first), QString::fromStdString(it.second));
@@ -3380,7 +3392,7 @@ void Editor::detectCompleteTextPHPObjectContext(QString text, int cursorTextPos,
                 QString _text = type + "::$" + text;
                 for (auto & it : CW->phpClassPropsComplete) {
                     QString k = "\\"+QString::fromStdString(it.first);
-                    if (k == _text) continue;
+                    //if (k == _text) continue;
                     if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
                         completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
                         if (completePopup->count() >= completePopup->limit()) break;
@@ -3410,6 +3422,27 @@ QString Editor::getFixedCompleteClassMethodName(QString clsMethodComplete, QStri
         }
     }
     return cls + "::" + func;
+}
+
+QString Editor::getFixedCompleteClassConstName(QString clsConstComplete)
+{
+    if (clsConstComplete.indexOf(":") <= 0) return clsConstComplete;
+    QString cls = clsConstComplete.mid(0, clsConstComplete.indexOf(":"));
+    QString cons = clsConstComplete.mid(cls.size()+2);
+    CW->phpClassParentsIterator = CW->phpClassParents.find(cls.toStdString());
+    if (CW->phpClassParentsIterator != CW->phpClassParents.end()) {
+        QStringList parentsList = QString::fromStdString(CW->phpClassParentsIterator->second).split(",");
+        for (QString _cls: parentsList) {
+            QString _clsConst = _cls + "::" + cons;
+            std::map<std::string, std::string>::iterator it = CW->phpClassConstsComplete.find(_clsConst.toStdString());
+            if (it != CW->phpClassConstsComplete.end()) {
+                cls = _cls;
+            } else {
+                break;
+            }
+        }
+    }
+    return cls + "::" + cons;
 }
 
 void Editor::detectParsOpenAtCursor(QTextCursor & curs)
@@ -3774,7 +3807,9 @@ void Editor::detectCompleteTextPHPNotFoundContext(QString text, QChar prevChar, 
         for (auto & it : CW->phpClassConstsComplete) {
             QString k = QString::fromStdString(it.first);
             if (k.indexOf(_text, 0, Qt::CaseInsensitive)==0) {
-                completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                //completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                QString classConstComplete = getFixedCompleteClassConstName(QString::fromStdString(it.first));
+                completePopup->addItem(classConstComplete, QString::fromStdString(it.second));
                 if (completePopup->count() >= completePopup->limit()) break;
             }
         }

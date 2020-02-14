@@ -164,6 +164,7 @@ protected:
     void suggestWords(QStringList words, int cursorTextPos);
     bool isKnownWord(QString word);
     QString getFixedCompleteClassMethodName(QString clsMethodComplete, QString params);
+    QString getFixedCompleteClassConstName(QString clsConstComplete);
 public slots:
     void save(QString name = "");
     void back();
