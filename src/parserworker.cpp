@@ -395,7 +395,7 @@ void ParserWorker::serversCommand(QString command, QString pwd)
     // apache2
     QProcess processApache(this);
     processApache.start(bashPath, QStringList() << "-c" << Servers::generateApacheServiceCommand(command, pwd));
-    if (!processApache.waitForFinished()) return;
+    if (!processApache.waitForFinished(300000)) return;
     QString outputApache = QString(processApache.readAllStandardOutput());
     if (outputApache.size() == 0) errorApache = QString(processApache.readAllStandardError());
     if (errorApache.size() > 0) {
@@ -419,7 +419,7 @@ void ParserWorker::serversCommand(QString command, QString pwd)
     QString errorMariadb = "";
     QProcess processMariadb(this);
     processMariadb.start(bashPath, QStringList() << "-c" << Servers::generateMariaDBServiceCommand(command, pwd));
-    if (!processMariadb.waitForFinished()) return;
+    if (!processMariadb.waitForFinished(300000)) return;
     QString outputMariadb = QString(processMariadb.readAllStandardOutput());
     if (outputMariadb.size() == 0) errorMariadb = QString(processMariadb.readAllStandardError());
     if (errorMariadb.size() > 0) {
