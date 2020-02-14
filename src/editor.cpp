@@ -790,6 +790,7 @@ void Editor::showLineAnnotation()
     int line = block.blockNumber() + 1;
     if (gitAnnotationLastLineNumber == line) {
         static_cast<Annotation *>(lineAnnotation)->setText("");
+        if (lineAnnotation->isVisible()) lineAnnotation->hide();
         return;
     }
     QString annotationText = "";
