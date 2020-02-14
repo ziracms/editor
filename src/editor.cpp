@@ -1920,58 +1920,6 @@ void Editor::keyPressEvent(QKeyEvent *e)
             return;
         }
     }
-    // fix indent on right brace insert
-    if (code == Qt::Key_BraceRight && !ctrl) {
-        QTextCursor curs = textCursor();
-        int cursPos = curs.positionInBlock();
-        QString prefix = "";
-        int braces = 0;
-        if (cursPos > 0 && curs.block().text().trimmed().size() == 0) {
-            while(curs.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor)) {
-                curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
-                QTextBlock block = curs.block();
-                QString blockText = block.text();
-                int pos = curs.positionInBlock();
-                int total = blockText.size();
-                QString blockTextTrimmed = blockText.trimmed();
-                if (blockTextTrimmed.size() == 0) continue;
-                if (blockTextTrimmed[0] == "}") {
-                    braces++;
-                }
-                if (blockTextTrimmed[blockTextTrimmed.size()-1] == "{" && braces > 0) {
-                    braces--;
-                    continue;
-                }
-                if (blockTextTrimmed[blockTextTrimmed.size()-1] != "{") continue;
-                while(pos < total) {
-                    if (!curs.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor)) break;
-                    pos = curs.positionInBlock();
-                    QChar prevChar = blockText[pos-1];
-                    if ((prevChar == " " || prevChar == "\t")) {
-                        prefix += prevChar;
-                    } else {
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-        if (prefix.size() > 0 && prefix.size() < cursPos) {
-            if (tabType == "spaces") {
-                prefix.replace("\t", QString(" ").repeated(tabWidth));
-            } else if (tabType == "tabs") {
-                prefix.replace(QString(" ").repeated(tabWidth), "\t");
-            }
-            curs = textCursor();
-            curs.beginEditBlock();
-            curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
-            curs.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-            curs.deleteChar();
-            curs.insertText(prefix + "}");
-            curs.endEditBlock();
-            return;
-        }
-    }
     // saving mode for keyrelease event
     if (code == Qt::Key_Greater && !ctrl) {
         QTextCursor curs = textCursor();
@@ -2020,6 +1968,65 @@ void Editor::keyReleaseEvent(QKeyEvent *e)
     if (code == Qt::Key_Greater && !ctrl && modeOnKeyPress == MODE_HTML) {
         hideCompletePopup();
     }
+    // fix indent on right brace insert
+    if (code == Qt::Key_BraceRight && !ctrl && textCursor().block().text().trimmed() == "}") {
+        bool foundPrefix = false;
+        QString prefix = "";
+        QChar openChar = '{';
+        QChar closeChar = '}';
+        QTextCursor cursor = textCursor();
+        int pos = cursor.positionInBlock()-1;
+        HighlightData * blockData = dynamic_cast<HighlightData *>(cursor.block().userData());
+        if (blockData != nullptr && blockData->specialChars.size()>0 && blockData->specialCharsPos.size()>0 && blockData->specialChars.size()==blockData->specialCharsPos.size()) {
+            bool sFound = false;
+            int count = 0;
+            int positionInBlock = -1;
+            int iterations = 0;
+            do {
+                if (blockData->specialChars.size()>0 && blockData->specialCharsPos.size()>0) {
+                    for (int i=blockData->specialChars.size()-1; i>=0; i--) {
+                        iterations++;
+                        if (iterations > SEARCH_LIMIT) break;
+                        QChar c = blockData->specialChars.at(i);
+                        if (!sFound && c == closeChar && blockData->specialCharsPos.at(i) == pos) {
+                            sFound = true;
+                        } else if (sFound && c == closeChar) {
+                            count++;
+                        } else if (sFound && c == openChar && count > 0) {
+                            count--;
+                        } else if (sFound && c == openChar && count == 0) {
+                            positionInBlock = blockData->specialCharsPos.at(i);
+                            int total = cursor.block().text().size();
+                            cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+                            do {
+                                int pos = cursor.positionInBlock();
+                                if (pos >= total) break;
+                                QChar chr = cursor.block().text().at(pos);
+                                if (chr.isSpace()) prefix += chr;
+                                else break;
+                            } while(cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor));
+                            foundPrefix = true;
+                            break;
+                        }
+                    }
+                }
+                if (!sFound) break;
+                if (!cursor.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor)) break;
+                blockData = dynamic_cast<HighlightData *>(cursor.block().userData());
+                if (blockData == nullptr || blockData->specialChars.size()!=blockData->specialCharsPos.size()) break;
+            } while(positionInBlock < 0);
+        }
+        if (foundPrefix && textCursor().block().text() != prefix + "}" && ((tabType == "spaces" && prefix.indexOf("\t") < 0) || (tabType == "tabs" && prefix.indexOf(" ") < 0))) {
+            QTextCursor curs = textCursor();
+            curs.beginEditBlock();
+            curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+            curs.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+            curs.deleteChar();
+            curs.insertText(prefix + "}");
+            curs.endEditBlock();
+        }
+    }
+
     QTextEdit::keyReleaseEvent(e);
 }
 
