@@ -1121,6 +1121,7 @@ bool Editor::event(QEvent *e)
                                 if (params.indexOf(TOOLTIP_DELIMITER) >= 0) {
                                     params.replace(TOOLTIP_DELIMITER, "<br />" + fName);
                                 }
+                                if (fName.indexOf("::")>0) fName = getFixedCompleteClassMethodName(fName, params);
                                 descName = fName + " " + params;
                             }
                         }
@@ -4250,6 +4251,7 @@ void Editor::tooltip(int offset)
                 if (CW->tooltipsIteratorPHP != CW->tooltipsPHP.end()) {
                     QString fName = QString::fromStdString(CW->tooltipsIteratorPHP->first);
                     QString params = QString::fromStdString(CW->tooltipsIteratorPHP->second);
+                    fName = getFixedCompleteClassMethodName(fName, params);
                     params.replace("<", "&lt;").replace(">", "&gt;");
                     QStringList paramsList;
                     if (params.size() > 0 && params[0] == "(") {

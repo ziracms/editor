@@ -855,6 +855,10 @@ void Project::parsePHPResult(ParsePHP::ParseResult result, QVariantMap & map, QS
             if (returnType.size() == 0 && func.comment.size() > 0) {
                 QRegularExpression returnExpr = QRegularExpression("[\n]@return (?:[\\?][\\s]*)?([a-zA-Z0-9_\\\\]+)");
                 QRegularExpressionMatch returnMatch = returnExpr.match(func.comment);
+//                if (returnMatch.capturedStart(1) < 0) {
+//                    returnExpr = QRegularExpression("[\n]@return .*[\\[][\\[]([a-zA-Z0-9_\\\\]+?)[\\]][\\]]");
+//                    returnMatch = returnExpr.match(func.comment);
+//                }
                 if (returnMatch.capturedStart(1) > 0) {
                     QString returnStr = returnMatch.captured(1);
                     if (returnStr.at(0) != "\\" && cls.name.indexOf("\\") >= 0) {
