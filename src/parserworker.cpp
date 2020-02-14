@@ -378,7 +378,7 @@ void ParserWorker::gitCommand(QString path, QString command, QStringList attrs, 
     QProcess process(this);
     process.setWorkingDirectory(path);
     process.start(gitPath, QStringList() << command << attrs);
-    if (!process.waitForFinished()) return;
+    if (!process.waitForFinished(300000)) return;
     QString result = QString(process.readAllStandardOutput());
     if (result.size() == 0) result = QString(process.readAllStandardError());
     emit gitCommandFinished(command, result, outputResult);
