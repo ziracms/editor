@@ -17,6 +17,10 @@ Search::Search(Editor * codeEditor) : QWidget(codeEditor)
     editor = codeEditor;
     vLayout = new QVBoxLayout(this);
 
+    scrollBar = new QScrollBar(Qt::Horizontal);
+    scrollBar->setVisible(false);
+    vLayout->addWidget(scrollBar);
+
     findEdit = new QLineEdit();
     findEdit->setMinimumWidth(INPUT_WIDTH_MIN);
     findEdit->setMaximumWidth(INPUT_WIDTH_MAX);
@@ -98,6 +102,7 @@ Search::Search(Editor * codeEditor) : QWidget(codeEditor)
     connect(findEdit, SIGNAL(returnPressed()), this, SLOT(findEnterPressed()));
     connect(replaceEdit, SIGNAL(returnPressed()), this, SLOT(replaceEnterPressed()));
     connect(findEdit, SIGNAL(textChanged(QString)), this, SLOT(findTextChanged(QString)));
+    connect(scrollBar, SIGNAL(valueChanged(int)), this, SLOT(scrollBarValueChanged(int)));
 
     CaSe = false;
     Word = false;
@@ -233,4 +238,34 @@ void Search::replaceEnterPressed()
 bool Search::isFocused()
 {
     return findEdit->hasFocus() || replaceEdit->hasFocus();
+}
+
+void Search::updateScrollBar()
+{
+    scrollBar->setMinimum(editor->horizontalScrollBar()->minimum());
+    scrollBar->setMaximum(editor->horizontalScrollBar()->maximum());
+    scrollBar->setSingleStep(editor->horizontalScrollBar()->singleStep());
+    scrollBar->setPageStep(editor->horizontalScrollBar()->pageStep());
+    scrollBar->setValue(editor->horizontalScrollBar()->value());
+    if (editor->horizontalScrollBar()->maximum() > editor->horizontalScrollBar()->minimum()) {
+        editor->horizontalScrollBar()->show();
+    } else {
+        editor->horizontalScrollBar()->hide();
+    }
+    if (isVisible() && scrollBar->maximum() > scrollBar->minimum()) {
+        scrollBar->show();
+        editor->horizontalScrollBar()->hide();
+    } else {
+        scrollBar->hide();
+    }
+}
+
+void Search::scrollBarValueChanged(int value)
+{
+    editor->horizontalScrollBar()->setValue(value);
+}
+
+QScrollBar * Search::horizontalScrollBar()
+{
+    return scrollBar;
 }

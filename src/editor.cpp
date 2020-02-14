@@ -1252,6 +1252,9 @@ void Editor::resizeEvent(QResizeEvent * e)
     QTextEdit::resizeEvent(e);
     hidePopups();
     updateWidgetsGeometry();
+    if (static_cast<Search *>(search)->isVisible()) {
+        static_cast<Search *>(search)->updateScrollBar();
+    }
 }
 
 void Editor::updateWidgetsGeometry()
@@ -2144,6 +2147,9 @@ void Editor::blockCountChanged(int /*blockCount*/)
 void Editor::horizontalScrollbarValueChanged(int /* sliderPos */)
 {
     updateLineAnnotationView();
+    if (static_cast<Search *>(search)->isVisible()) {
+        static_cast<Search *>(search)->updateScrollBar();
+    }
 }
 
 void Editor::verticalScrollbarValueChanged(int /* sliderPos */)
@@ -5607,12 +5613,14 @@ void Editor::showSearch()
 {
     search->show();
     static_cast<Search *>(search)->setFindEditFocus();
+    static_cast<Search *>(search)->updateScrollBar();
     updateViewportMargins();
 }
 
 void Editor::closeSearch()
 {
     search->hide();
+    static_cast<Search *>(search)->updateScrollBar();
     updateViewportMargins();
     setFocus();
     static_cast<LineMap *>(lineMap)->clearMarks();
