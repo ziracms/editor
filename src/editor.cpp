@@ -1410,7 +1410,8 @@ void Editor::comment()
         total = blockText.size();
         if (highlight->findModeAtCursor(&block, pos) != mode) return;
         if (mode == MODE_PHP || mode == MODE_JS) {
-            if (pos+1 < total && blockText[pos] == "/" && blockText[pos+1] == "/") {
+            if (blockText.trimmed().indexOf("//") == 0) {
+                if (blockText.indexOf("/") > 0) curs.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, blockText.indexOf("/"));
                 curs.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 2);
                 curs.deleteChar();
             } else {
@@ -1479,7 +1480,8 @@ void Editor::comment()
                 pos = curs.positionInBlock();
                 total = blockText.size();
                 if (highlight->findModeAtCursor(&block, pos) != mode) break;
-                if (pos+1 < total && blockText[pos] == "/" && blockText[pos+1] == "/") {
+                if (blockText.trimmed().indexOf("//") == 0) {
+                    if (blockText.indexOf("/") > 0) curs.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, blockText.indexOf("/"));
                     curs.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 2);
                     curs.deleteChar();
                     moveEnd -= 2;
