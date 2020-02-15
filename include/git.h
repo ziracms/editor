@@ -16,6 +16,8 @@ extern const QString GIT_STATUS_COMMAND;
 extern const QString GIT_ANNOTATION_COMMAND;
 extern const QString GIT_DIFF_COMMAND;
 extern const QString GIT_COMMIT_COMMAND;
+extern const QString GIT_PUSH_COMMAND;
+extern const QString GIT_PULL_COMMAND;
 
 class Git : public QObject
 {

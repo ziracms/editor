@@ -186,6 +186,9 @@ MainWindow::MainWindow(QWidget *parent) :
     // messages popup
     popup = new Popup(settings, this);
 
+    // progress line
+    progressLine = new ProgressLine(settings, this);
+
     // enable php lint & cs
     parsePHPLintEnabled = false;
     std::string parsePHPLintEnabledStr = settings->get("parser_enable_php_lint");
@@ -244,6 +247,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(parserWorker, SIGNAL(serversCommandFinished(QString)), this, SLOT(serversCommandFinished(QString)));
     connect(parserWorker, SIGNAL(sassCommandFinished(QString)), this, SLOT(sassCommandFinished(QString)));
     connect(parserWorker, SIGNAL(quickFound(QString,QString,QString,int)), qa, SLOT(quickFound(QString,QString,QString,int)));
+    connect(parserWorker, SIGNAL(activateProgress()), this, SLOT(activateProgressLine()));
+    connect(parserWorker, SIGNAL(deactivateProgress()), this, SLOT(deactivateProgressLine()));
     parserThread.start();
 
     tmpDisableParser = false;
@@ -1321,6 +1326,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     hideQAPanel();
+    progressLine->updateGeometry(ui->menuBar->geometry().x(), ui->menuBar->geometry().y() + ui->menuBar->geometry().height(), ui->menuBar->geometry().width());
     QMainWindow::resizeEvent(event);
 }
 
@@ -2015,4 +2021,14 @@ void MainWindow::applyThemeColors()
     }
 
     if (style.size() > 0) setStyleSheet(style);
+}
+
+void MainWindow::activateProgressLine()
+{
+    progressLine->activate();
+}
+
+void MainWindow::deactivateProgressLine()
+{
+    progressLine->deactivate();
 }

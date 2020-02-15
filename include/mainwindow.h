@@ -25,6 +25,7 @@
 #include "git.h"
 #include "spellcheckerinterface.h"
 #include "quickaccess.h"
+#include "progressline.h"
 #include "popup.h"
 #include "types.h"
 
@@ -198,6 +199,8 @@ private slots:
     void gitDiffUnifiedRequested(QString path);
     void sidebarActionTriggered(bool checked);
     void outputActionTriggered(bool checked);
+    void activateProgressLine();
+    void deactivateProgressLine();
 private:
     Ui::MainWindow *ui;
     Settings * settings;
@@ -236,6 +239,7 @@ private:
     bool serverCommandsEnabled;
     QuickAccess * qa;
     Popup * popup;
+    ProgressLine * progressLine;
     QStringList args;
     bool tmpDisableParser;
 signals:

@@ -29,6 +29,7 @@ SOURCES += \
     src/fileiconprovider.cpp \
     src/mainwindow.cpp \
     src/helper.cpp \
+    src/progressline.cpp \
     src/settings.cpp \
     src/editor.cpp \
     src/linenumber.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     include/fileiconprovider.h \
     include/mainwindow.h \
     include/helper.h \
+    include/progressline.h \
     include/settings.h \
     include/editor.h \
     include/linenumber.h \

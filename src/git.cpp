@@ -14,6 +14,8 @@ const QString GIT_STATUS_COMMAND = "status";
 const QString GIT_ANNOTATION_COMMAND = "blame";
 const QString GIT_DIFF_COMMAND = "diff";
 const QString GIT_COMMIT_COMMAND = "commit";
+const QString GIT_PUSH_COMMAND = "push";
+const QString GIT_PULL_COMMAND = "pull";
 
 Git::Git(Settings * settings, QObject *parent) : QObject(parent)
 {

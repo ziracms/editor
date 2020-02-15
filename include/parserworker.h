@@ -58,6 +58,8 @@ signals:
     void serversCommandFinished(QString output);
     void sassCommandFinished(QString output);
     void quickFound(QString text, QString info, QString file, int line);
+    void activateProgress();
+    void deactivateProgress();
 public slots:
     void disable();
     void lint(int tabIndex, QString path);

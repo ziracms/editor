@@ -13,6 +13,7 @@
 #include "helper.h"
 #include "project.h"
 #include "servers.h"
+#include "git.h"
 
 ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(parent)
 {
@@ -201,6 +202,7 @@ void ParserWorker::parseProject(QString path)
     }
     isBusy = true;
     QStringList files;
+    emit activateProgress();
     parseProjectDir(path, files);
     QVariantMap map = Project::createPHPResultMap();
     QVariantMap data = Project::loadPHPDataMap(path);
@@ -217,6 +219,7 @@ void ParserWorker::parseProject(QString path)
     data.clear();
     files.clear();
     emit parseProjectFinished();
+    emit deactivateProgress();
     isBusy = false;
 }
 
@@ -256,6 +259,7 @@ void ParserWorker::searchInFiles(QString searchDirectory, QString searchText, QS
     }
     isBusy = true;
     if (!Helper::folderExists(searchDirectory) || searchText.size() == 0) return;
+    emit activateProgress();
     QString allowedExtensions = "";
     QStringList searchExtensionsList = searchExtensions.split(",");
     for (int i=0; i<searchExtensionsList.size(); i++) {
@@ -271,6 +275,7 @@ void ParserWorker::searchInFiles(QString searchDirectory, QString searchText, QS
     searchBreaked = false;
     searchInDir(searchDirectory, searchText, allowedExtensions, searchOptionCase, searchOptionWord, searchOptionRegexp);
     emit searchInFilesFinished();
+    emit deactivateProgress();
     isBusy = false;
 }
 
@@ -375,13 +380,20 @@ void ParserWorker::gitCommand(QString path, QString command, QStringList attrs, 
         return;
     }
     if (path.size() == 0 || !Helper::folderExists(path)) return;
+    bool useProgress = false;
+    if (command == GIT_PUSH_COMMAND || command == GIT_PULL_COMMAND) useProgress = true;
+    if (useProgress && !isBusy) emit activateProgress();
     QProcess process(this);
     process.setWorkingDirectory(path);
     process.start(gitPath, QStringList() << command << attrs);
-    if (!process.waitForFinished(300000)) return;
+    if (!process.waitForFinished(300000)) {
+        if (useProgress && !isBusy) emit deactivateProgress();
+        return;
+    }
     QString result = QString(process.readAllStandardOutput());
     if (result.size() == 0) result = QString(process.readAllStandardError());
     emit gitCommandFinished(command, result, outputResult);
+    if (useProgress && !isBusy) emit deactivateProgress();
 }
 
 void ParserWorker::serversCommand(QString command, QString pwd)
@@ -391,11 +403,15 @@ void ParserWorker::serversCommand(QString command, QString pwd)
         return;
     }
     if (command.size() == 0) return;
+    if (!isBusy) emit activateProgress();
     QString errorApache = "";
     // apache2
     QProcess processApache(this);
     processApache.start(bashPath, QStringList() << "-c" << Servers::generateApacheServiceCommand(command, pwd));
-    if (!processApache.waitForFinished(300000)) return;
+    if (!processApache.waitForFinished(300000)) {
+        if (!isBusy) emit deactivateProgress();
+        return;
+    }
     QString outputApache = QString(processApache.readAllStandardOutput());
     if (outputApache.size() == 0) errorApache = QString(processApache.readAllStandardError());
     if (errorApache.size() > 0) {
@@ -413,13 +429,17 @@ void ParserWorker::serversCommand(QString command, QString pwd)
     }
     if (errorApache.size() > 0) {
         emit serversCommandFinished(errorApache.trimmed());
+        if (!isBusy) emit deactivateProgress();
         return;
     }
     // mariadb
     QString errorMariadb = "";
     QProcess processMariadb(this);
     processMariadb.start(bashPath, QStringList() << "-c" << Servers::generateMariaDBServiceCommand(command, pwd));
-    if (!processMariadb.waitForFinished(300000)) return;
+    if (!processMariadb.waitForFinished(300000)) {
+        if (!isBusy) emit deactivateProgress();
+        return;
+    }
     QString outputMariadb = QString(processMariadb.readAllStandardOutput());
     if (outputMariadb.size() == 0) errorMariadb = QString(processMariadb.readAllStandardError());
     if (errorMariadb.size() > 0) {
@@ -437,13 +457,16 @@ void ParserWorker::serversCommand(QString command, QString pwd)
     }
     if (errorMariadb.size() > 0) {
         emit serversCommandFinished(outputApache.trimmed() + "\n\n" + errorMariadb.trimmed());
+        if (!isBusy) emit deactivateProgress();
         return;
     }
     if (command != SERVERS_STATUS_CMD) {
+        //if (!isBusy) emit deactivateProgress();
         serversCommand(SERVERS_STATUS_CMD, pwd);
         return;
     }
     emit serversCommandFinished(outputApache.trimmed() + "\n\n" + outputMariadb.trimmed());
+    if (!isBusy) emit deactivateProgress();
 }
 
 void ParserWorker::sassCommand(QString src, QString dst)
@@ -454,22 +477,28 @@ void ParserWorker::sassCommand(QString src, QString dst)
     }
     if (src.size() == 0 || dst.size() == 0) return;
 
+    if (!isBusy) emit activateProgress();
     QProcess process(this);
     process.start(sasscPath, QStringList() << src << dst);
-    if (!process.waitForFinished()) return;
+    if (!process.waitForFinished()) {
+        if (!isBusy) emit deactivateProgress();
+        return;
+    }
     QString error = QString(process.readAllStandardError());
 
     emit sassCommandFinished(error);
+    if (!isBusy) emit deactivateProgress();
 }
 
 void ParserWorker::quickFind(QString dir, QString text, WordsMapList words, QStringList wordPrefixes)
 {
+    if (!isBusy) emit activateProgress();
     quickResultsCount = 0;
     quickBreaked = false;
     // words
     int it = 0;
     for (auto wordsList : words) {
-        QCoreApplication::processEvents();
+        //QCoreApplication::processEvents();
         if (!enabled) break;
         QString prefix = "";
         if (it < wordPrefixes.size()) prefix = wordPrefixes.at(it);
@@ -493,6 +522,7 @@ void ParserWorker::quickFind(QString dir, QString text, WordsMapList words, QStr
     }
     // search files
     quickFindInDir(dir, dir, text);
+    if (!isBusy) emit deactivateProgress();
 }
 
 void ParserWorker::quickFindInDir(QString startDir, QString dir, QString text)
@@ -500,7 +530,7 @@ void ParserWorker::quickFindInDir(QString startDir, QString dir, QString text)
     QString prefix = "file: ";
     QDirIterator it(dir, QDir::AllEntries | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
     while (it.hasNext()) {
-        QCoreApplication::processEvents();
+        //QCoreApplication::processEvents();
         if (!enabled) break;
         if (quickBreaked) break;
         QString path = it.next();
