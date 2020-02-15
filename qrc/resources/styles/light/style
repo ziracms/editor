@@ -196,6 +196,11 @@ QFileDialog
     forward-icon: url(:/icons/go-next.png);
 }
 
+QDialog
+{
+    messagebox-question-icon: url(:/icons/help-info.png);
+}
+
 QDialog QLineEdit
 {
     padding: 5px;

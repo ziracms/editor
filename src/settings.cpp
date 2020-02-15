@@ -166,8 +166,8 @@ void Settings::applyLightColors()
     data["git_output_message_color"] = "#00842f";
     data["git_output_info_color"] = "#005384";
     data["popup_bg_color"] = "#7aedc8";
+    data["popup_error_bg_color"] = "#ffb5af";
     data["popup_color"] = "#092c21";
-    data["popup_border_color"] = "#0aac79";
     data["annotation_color"] = "#8f8576";
     data["progress_color"] = "#25b9ff";
 }
@@ -242,8 +242,8 @@ void Settings::applyDarkColors()
     data["git_output_message_color"] = "#05d24e";
     data["git_output_info_color"] = "#0483ce";
     data["popup_bg_color"] = "#2d6099";
+    data["popup_error_bg_color"] = "#992d93";
     data["popup_color"] = "#f1f1f1";
-    data["popup_border_color"] = "#2a4d74";
     data["annotation_color"] = "#5e839b";
     data["progress_color"] = "#0076af";
 }

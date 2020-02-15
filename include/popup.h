@@ -21,6 +21,9 @@ protected:
     QHBoxLayout * hLayout;
     QLabel * imgLabel;
     QLabel * textLabel;
+    std::string bgColorStr;
+    std::string errorBgColorStr;
+    std::string colorStr;
 private:
     QPropertyAnimation *animationIn;
     QPropertyAnimation *animationOut;

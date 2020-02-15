@@ -20,9 +20,9 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     setMinimumWidth(WIDGET_MIN_WIDTH);
     setMinimumHeight(WIDGET_MIN_HEIGHT);
 
-    std::string bgColorStr = settings->get("popup_bg_color");
-    std::string colorStr = settings->get("popup_color");
-    std::string borderColorStr = settings->get("popup_border_color");
+    bgColorStr = settings->get("popup_bg_color");
+    errorBgColorStr = settings->get("popup_error_bg_color");
+    colorStr = settings->get("popup_color");
 
     QFont popupFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
 
@@ -60,7 +60,7 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     hLayout->addWidget(textLabel);
 
     hLayout->addStretch();
-    setStyleSheet("background:"+QString::fromStdString(borderColorStr)+";border:"+QString::number(BORDER)+"px solid "+QString::fromStdString(borderColorStr)+";");
+    setStyleSheet("background:"+QString::fromStdString(bgColorStr)+";border:"+QString::number(BORDER)+"px solid "+QString::fromStdString(bgColorStr)+";");
 
     animationInProgress = false;
     QEasingCurve easing(QEasingCurve::OutCubic);
@@ -155,7 +155,8 @@ void Popup::displayText(int x, int y, QString text)
 {
     QPixmap pm(":/image/vanko2");
     imgLabel->setPixmap(pm);
-
+    textLabel->setStyleSheet("background:"+QString::fromStdString(bgColorStr)+";color:"+QString::fromStdString(colorStr)+";");
+    setStyleSheet("background:"+QString::fromStdString(bgColorStr)+";border:"+QString::number(BORDER)+"px solid "+QString::fromStdString(bgColorStr)+";");
     display(x, y, text);
 }
 
@@ -163,6 +164,7 @@ void Popup::displayError(int x, int y, QString text)
 {
     QPixmap pm(":/image/vanko1");
     imgLabel->setPixmap(pm);
-
+    textLabel->setStyleSheet("background:"+QString::fromStdString(errorBgColorStr)+";color:"+QString::fromStdString(colorStr)+";");
+    setStyleSheet("background:"+QString::fromStdString(errorBgColorStr)+";border:"+QString::number(BORDER)+"px solid "+QString::fromStdString(errorBgColorStr)+";");
     display(x, y, text);
 }
