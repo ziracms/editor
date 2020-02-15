@@ -32,7 +32,7 @@ Search::Search(Editor * codeEditor) : QWidget(codeEditor)
     findPrevButton = new QPushButton();
     findPrevButton->setMinimumWidth(INPUT_WIDTH_MIN / 2);
     findPrevButton->setMaximumWidth(INPUT_WIDTH_MAX / 2);
-    findPrevButton->setText(tr("Previous"));
+    findPrevButton->setText(tr("Prev."));
 
     findCaseSensitive = new QCheckBox();
     findCaseSensitive->setText("CaSe");
@@ -215,6 +215,9 @@ void Search::setReplaceEditProp(const char * prop, QString val)
 void Search::setFindEditFocus()
 {
     findEdit->setFocus();
+    if (findEdit->text().size() > 0) {
+        findEdit->selectAll();
+    }
 }
 
 void Search::setFindEditText(QString str)
