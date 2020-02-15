@@ -17,9 +17,8 @@ Search::Search(Editor * codeEditor) : QWidget(codeEditor)
     editor = codeEditor;
     vLayout = new QVBoxLayout(this);
 
-    scrollBar = new QScrollBar(Qt::Horizontal);
+    scrollBar = new QScrollBar(Qt::Horizontal, this);
     scrollBar->setVisible(false);
-    vLayout->addWidget(scrollBar);
 
     findEdit = new QLineEdit();
     findEdit->setMinimumWidth(INPUT_WIDTH_MIN);
@@ -242,6 +241,8 @@ bool Search::isFocused()
 
 void Search::updateScrollBar()
 {
+    scrollBar->setGeometry(0, 0, geometry().width(), editor->horizontalScrollBar()->geometry().height());
+
     scrollBar->setMinimum(editor->horizontalScrollBar()->minimum());
     scrollBar->setMaximum(editor->horizontalScrollBar()->maximum());
     scrollBar->setSingleStep(editor->horizontalScrollBar()->singleStep());
@@ -252,11 +253,14 @@ void Search::updateScrollBar()
     } else {
         editor->horizontalScrollBar()->hide();
     }
+    QMargins margins = vLayout->contentsMargins();
     if (isVisible() && scrollBar->maximum() > scrollBar->minimum()) {
         scrollBar->show();
         editor->horizontalScrollBar()->hide();
+        vLayout->setContentsMargins(margins.left(), margins.bottom() * 2, margins.right(), margins.bottom());
     } else {
         scrollBar->hide();
+        vLayout->setContentsMargins(margins.left(), margins.bottom(), margins.right(), margins.bottom());
     }
 }
 

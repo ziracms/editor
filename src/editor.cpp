@@ -1591,6 +1591,9 @@ void Editor::focusInEvent(QFocusEvent *e)
             emit modifiedStateChanged(tabIndex, modified);
         }
     }
+    if (static_cast<Search *>(search)->isVisible()) {
+        static_cast<Search *>(search)->updateScrollBar();
+    }
     QTextEdit::focusInEvent(e);
     emit focusIn(tabIndex);
 }
