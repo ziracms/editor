@@ -1738,6 +1738,25 @@ void MainWindow::editorShowHelp(QString name)
         setHelpTabSource(php_manual_path + "/" + file);
     } else {
         clearHelpTabSource();
+        QString text = "";
+        if (name.indexOf("::") > 0) {
+            helpWords->phpClassMethodDescsIterator = helpWords->phpClassMethodDescs.find(name.toStdString());
+            if (helpWords->phpClassMethodDescsIterator != helpWords->phpClassMethodDescs.end()) {
+                text = QString::fromStdString(helpWords->phpClassMethodDescsIterator->second);
+            }
+        } else {
+            helpWords->phpFunctionDescsIterator = helpWords->phpFunctionDescs.find(name.toStdString());
+            if (helpWords->phpFunctionDescsIterator != helpWords->phpFunctionDescs.end()) {
+                text = QString::fromStdString(helpWords->phpFunctionDescsIterator->second);
+            }
+        }
+        if (text.size() > 0) {
+            text = text.replace("<", "&lt;").replace(">", "&gt;");
+            text = text.replace("\n", "<br />");
+            ui->helpBrowser->setHtml("<h1>"+name+"</h1>"+text);
+            if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
+            ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_HELP_INDEX);
+        }
     }
 }
 
