@@ -47,5 +47,6 @@
         <file alias="output.png">resources/images/icons/output.png</file>
         <file alias="separator.png">resources/images/icons/separator.png</file>
         <file alias="leveldown.png">resources/images/icons/leveldown.png</file>
+        <file alias="separator-double.png">resources/images/icons/separator-double.png</file>
     </qresource>
 </RCC>

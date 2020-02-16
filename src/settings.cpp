@@ -185,8 +185,8 @@ void Settings::applyDarkColors()
     data["editor_line_map_scroll_area_bg_color"] = "#262635";
     data["editor_search_bg_color"] = "#232627";
     data["editor_breadcrumbs_bg_color"] = "#314661";
-    data["editor_breadcrumbs_warning_bg_color"] = "#9a6e4e";
-    data["editor_breadcrumbs_error_bg_color"] = "#924a4a";
+    data["editor_breadcrumbs_warning_bg_color"] = "#3f3533";
+    data["editor_breadcrumbs_error_bg_color"] = "#1d181a";
     data["editor_breadcrumbs_color"] = "#9fc4d6";
     data["editor_widget_border_color"] = "#15365f";
     data["editor_selected_line_bg_color"] = "#1f1d23";

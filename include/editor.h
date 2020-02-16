@@ -11,6 +11,7 @@
 #include <QRegularExpression>
 #include <QLabel>
 #include <QHash>
+#include <QToolButton>
 #include "spellcheckerinterface.h"
 #include "settings.h"
 #include "highlight.h"
@@ -205,6 +206,7 @@ private slots:
     void reloadRequested();
     void spellCheck(bool suggest = true, bool forceRehighlight = true);
     void spellCheckPasted();
+    void qaBtnClicked();
 private:
     SpellCheckerInterface * spellChecker;
     CompleteWords * CW;
@@ -234,6 +236,7 @@ private:
     Highlight * highlight;
     QWidget * breadcrumbs;
     QWidget * lineAnnotation;
+    QToolButton * qaBtn;
 
     QFont editorFont;
     QFont editorPopupFont;

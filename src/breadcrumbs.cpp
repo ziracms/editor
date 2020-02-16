@@ -9,7 +9,7 @@
 Breadcrumbs::Breadcrumbs(Editor * codeEditor) : QWidget(codeEditor)
 {
     editor = codeEditor;
-    setCursor(Qt::PointingHandCursor);
+    //setCursor(Qt::PointingHandCursor);
 }
 
 QSize Breadcrumbs::sizeHint() const {
@@ -23,7 +23,7 @@ void Breadcrumbs::paintEvent(QPaintEvent *event)
 
 void Breadcrumbs::mousePressEvent(QMouseEvent * /*e*/)
 {
-    emit editor->breadcrumbsClick(editor->getTabIndex());
+    //emit editor->breadcrumbsClick(editor->getTabIndex());
 }
 
 void Breadcrumbs::setText(QString txt)

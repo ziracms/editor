@@ -312,6 +312,12 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     std::string showBreadcrumbsStr = settings->get("editor_breadcrumbs_enabled");
     if (showBreadcrumbsStr == "yes") showBreadcrumbs = true;
 
+    qaBtn = new QToolButton(breadcrumbs);
+    qaBtn->setIcon(QIcon(":/icons/separator-double.png"));
+    //qaBtn->setIconSize(QSize(breadcrumbs->height(), breadcrumbs->height()));
+    qaBtn->setToolTip(tr("Quick Access"));
+    connect(qaBtn, SIGNAL(pressed()), this, SLOT(qaBtnClicked()));
+
     // complete popup
     completePopup = new CompletePopup(this);
     completePopup->setFont(editorPopupFont);
@@ -1281,6 +1287,7 @@ void Editor::updateWidgetsGeometry()
     lineMark->setGeometry(QRect(cr.left()+lineW, cr.top()+breadcrumbsH, markW, cr.top()+cr.height()-searchH-hScrollH));
     lineMap->setGeometry(QRect(cr.right()-mapW-vScrollW+1, cr.top(), mapW+vScrollW, cr.top()+cr.height()));
     breadcrumbs->setGeometry(QRect(cr.left(), cr.top(), cr.width()-mapW-vScrollW, breadcrumbsH));
+    qaBtn->setGeometry(0, 0, lineW, breadcrumbsH-1);
 }
 
 void Editor::backtab()
@@ -6598,4 +6605,9 @@ void Editor::searchInFilesRequested()
     QTextCursor curs = textCursor();
     QString text = curs.selectedText();
     emit searchInFiles(text);
+}
+
+void Editor::qaBtnClicked()
+{
+    emit breadcrumbsClick(tabIndex);
 }

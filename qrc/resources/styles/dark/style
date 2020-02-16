@@ -544,6 +544,18 @@ QFileDialog QToolButton:pressed
     border: 1px solid #008dc1;
 }
 
+QTabWidget QToolButton,
+Breadcrumbs QToolButton
+{
+    border: none;
+}
+
+QTabWidget QToolButton:pressed,
+Breadcrumbs QToolButton:pressed
+{
+    background: none;
+}
+
 QProgressBar
 {
     border: 1px solid #0076af;
