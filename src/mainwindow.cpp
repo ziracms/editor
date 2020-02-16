@@ -139,6 +139,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(editorTabs, SIGNAL(editorShowPopupTextRequested(QString)), this, SLOT(showPopupText(QString)));
     connect(editorTabs, SIGNAL(editorShowPopupErrorRequested(QString)), this, SLOT(showPopupError(QString)));
     connect(editorTabs, SIGNAL(gitTabRefreshRequested()), this, SLOT(gitTabRefreshRequested()));
+    connect(editorTabs, SIGNAL(editorTabsResize()), this, SLOT(editorTabsResize()));
+
+    ui->tabWidget->tabBar()->setExpanding(false);
+
+    // tab list
+    tabsListButton = new QToolButton(ui->tabWidget);
+    tabsListButton->setIcon(QIcon(":/icons/leveldown.png"));
+    tabsListButton->setToolTip(tr("Tabs list"));
+    tabsListButton->hide();
+
+    tabsList = new TabsList(this);
+    connect(tabsListButton, SIGNAL(clicked()), this, SLOT(tabsListTriggered()));
+    connect(tabsList, SIGNAL(itemClicked(int)), this, SLOT(tabsListSelected(int)));
 
     // filebrowser
     filebrowser = new FileBrowser(ui->fileBrowserTreeWidget, ui->fileBrowserPathLine, settings);
@@ -1327,6 +1340,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 {
     hideQAPanel();
     progressLine->updateGeometry(ui->menuBar->geometry().x(), ui->menuBar->geometry().y() + ui->menuBar->geometry().height(), ui->menuBar->geometry().width());
+    updateTabsListButton();
     QMainWindow::resizeEvent(event);
 }
 
@@ -1365,6 +1379,7 @@ void MainWindow::showPopupError(QString text)
 
 void MainWindow::hideQAPanel()
 {
+    tabsList->hide();
     if (!qa->isVisible()) return;
     qa->slideOut();
 }
@@ -2050,4 +2065,54 @@ void MainWindow::activateProgressLine()
 void MainWindow::deactivateProgressLine()
 {
     progressLine->deactivate();
+}
+
+void MainWindow::updateTabsListButton()
+{
+    if (ui->tabWidget->count() > 1) tabsListButton->show();
+    else tabsListButton->hide();
+    if (tabsListButton->isVisible()) {
+        tabsListButton->setGeometry(ui->tabWidget->width()-ui->tabWidget->tabBar()->height(), 0, ui->tabWidget->tabBar()->height(), ui->tabWidget->tabBar()->height());
+        ui->tabWidget->tabBar()->setGeometry(ui->tabWidget->tabBar()->x(), ui->tabWidget->tabBar()->y(), ui->tabWidget->width()-ui->tabWidget->tabBar()->height(), ui->tabWidget->tabBar()->height());
+    }
+}
+
+void MainWindow::editorTabsResize()
+{
+    updateTabsListButton();
+}
+
+
+void MainWindow::tabsListTriggered()
+{
+    if (!tabsList->isVisible()) {
+        tabsList->clear();
+        for (int i=0; i<ui->tabWidget->count(); i++) {
+            tabsList->addItem(ui->tabWidget->tabText(i), i);
+        }
+        tabsList->show();
+        tabsList->raise();
+        tabsList->setFocus();
+        tabsList->setCurrentRow(ui->tabWidget->currentIndex());
+
+        QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
+        int rowCo = tabsList->model()->rowCount();
+        int width = tabsList->sizeHintForColumn(0) + tabsList->frameWidth() * 2;
+        int height = rowCo * tabsList->sizeHintForRow(0) + tabsList->frameWidth() * 2;
+        QRect listRect = tabsList->geometry();
+        listRect.setX(editorTabsRectM.x()+ui->tabWidget->width() - width);
+        listRect.setY(editorTabsRectM.y()+ui->tabWidget->tabBar()->height());
+        listRect.setWidth(width);
+        listRect.setHeight(height);
+        tabsList->setGeometry(listRect);
+    } else {
+        tabsList->hide();
+    }
+}
+
+void MainWindow::tabsListSelected(int index)
+{
+    if (index < 0) return;
+    if (index >= ui->tabWidget->count()) return;
+    editorTabs->setActiveTab(index);
 }

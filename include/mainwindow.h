@@ -11,6 +11,7 @@
 #include <QProgressBar>
 #include <QTreeWidgetItem>
 #include <QThread>
+#include <QToolButton>
 #include "settings.h"
 #include "highlightwords.h"
 #include "completewords.h"
@@ -27,6 +28,7 @@
 #include "quickaccess.h"
 #include "progressline.h"
 #include "popup.h"
+#include "tabslist.h"
 #include "types.h"
 
 namespace Ui {
@@ -76,6 +78,7 @@ protected:
     void runServersCommand(QString command, QString pwd, QString description);
     void compileSass(QString src, QString dst);
     void applyThemeColors();
+    void updateTabsListButton();
 public slots:
     void setStatusBarText(QString text);
     void editorShowLine(int line);
@@ -201,6 +204,9 @@ private slots:
     void outputActionTriggered(bool checked);
     void activateProgressLine();
     void deactivateProgressLine();
+    void editorTabsResize();
+    void tabsListTriggered();
+    void tabsListSelected(int index);
 private:
     Ui::MainWindow *ui;
     Settings * settings;
@@ -217,6 +223,7 @@ private:
     Project * project;
     Git * git;
     SpellCheckerInterface * spellChecker;
+    QToolButton * tabsListButton;
     QString outputMsgErrorTpl;
     QString outputMsgWarningTpl;
     int outputMsgCount;
@@ -240,6 +247,7 @@ private:
     QuickAccess * qa;
     Popup * popup;
     ProgressLine * progressLine;
+    TabsList * tabsList;
     QStringList args;
     bool tmpDisableParser;
 signals:

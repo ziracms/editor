@@ -911,6 +911,7 @@ QuickAccess QListView:focus
     border: none;
 }
 
+/*
 #tabWidget::pane > QWidget
 {
     background: url(:/styles/light/zira.png);
@@ -918,3 +919,4 @@ QuickAccess QListView:focus
     background-repeat: no-repeat;
     background-color: #e7e7e7;
 }
+*/

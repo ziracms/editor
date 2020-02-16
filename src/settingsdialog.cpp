@@ -157,6 +157,8 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->generalThemeCombobox->setItemDelegate(new QStyledItemDelegate());
     ui->generalColorSchemeCombobox->setItemDelegate(new QStyledItemDelegate());
 
+    ui->settingsTabWidget->tabBar()->setExpanding(false);
+
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);

@@ -30,6 +30,7 @@ public:
     QRect getGeometryGlobal();
     QRect getGeometryMappedTo(QWidget * parent);
 protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
     Editor * getTabEditor(int index);
     QString getTabNameFromPath(QString filepath);
     void fileBrowserFileRenamed(QString oldpath, QString newpath);
@@ -68,6 +69,7 @@ signals:
     void editorShowPopupTextRequested(QString text);
     void editorShowPopupErrorRequested(QString text);
     void gitTabRefreshRequested();
+    void editorTabsResize();
 public slots:
     void openFile(QString filepath, bool initHighlight = true);
     void fileBrowserCreated(QString path);

@@ -52,6 +52,7 @@ SOURCES += \
     src/parsecss.cpp \
     src/parse.cpp \
     src/navigator.cpp \
+    src/tabslist.cpp \
     src/tooltip.cpp \
     src/breadcrumbs.cpp \
     src/helpwords.cpp \
@@ -98,6 +99,7 @@ HEADERS += \
     include/parsecss.h \
     include/parse.h \
     include/navigator.h \
+    include/tabslist.h \
     include/tooltip.h \
     include/breadcrumbs.h \
     include/helpwords.h \

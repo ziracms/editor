@@ -41,6 +41,8 @@ EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget
     connect(shortcutSearchInFIles, SIGNAL(activated()), this, SLOT(searchInFilesRequested()));
 
     tabWidget->setCursor(Qt::ArrowCursor);
+
+    tabWidget->tabBar()->installEventFilter(this);
 }
 
 Editor * EditorTabs::getActiveEditor()
@@ -633,4 +635,12 @@ void EditorTabs::showPopupError(int index, QString text)
 {
     if (editor == nullptr || editor->getTabIndex() != index) return;
     emit editorShowPopupErrorRequested(text);
+}
+
+bool EditorTabs::eventFilter(QObject *watched, QEvent *event)
+{
+    if(watched == tabWidget->tabBar() && event->type() == QEvent::Resize) {
+        emit editorTabsResize();
+    }
+    return false;
 }
