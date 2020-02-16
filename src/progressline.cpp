@@ -3,10 +3,10 @@
 #include <QTimer>
 #include "helper.h"
 
-const int PROGRESS_LINE_HEIGHT = 3;
+const int PROGRESS_LINE_HEIGHT = 2;
 const int PROGRESS_PARTS_COUNT = 1;
-const int PROGRESS_MAX = 50;
-const int UPDATE_MILLISECONDS = 25;
+const int PROGRESS_MAX = 100;
+const int UPDATE_MILLISECONDS = 10;
 
 ProgressLine::ProgressLine(Settings * settings, QWidget *parent) : QWidget(parent)
 {
