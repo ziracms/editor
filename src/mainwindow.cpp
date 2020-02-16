@@ -2085,7 +2085,7 @@ void MainWindow::editorTabsResize()
 
 void MainWindow::tabsListTriggered()
 {
-    if (!tabsList->isVisible()) {
+    if (!tabsList->isVisible() && ui->tabWidget->count() > 0) {
         tabsList->clear();
         for (int i=0; i<ui->tabWidget->count(); i++) {
             tabsList->addItem(ui->tabWidget->tabText(i), i);

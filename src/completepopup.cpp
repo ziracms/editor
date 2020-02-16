@@ -7,20 +7,22 @@
 #include "completepopup.h"
 #include <QScrollBar>
 
-const int COMPLETE_POPUP_MIN_WIDTH = 150;
-const int COMPLETE_POPUP_MAX_WIDTH = 400;
-const int COMPLETE_POPUP_MAX_HEIGHT = 160;
-const int COMPLETE_POPUP_ICON_SIZE = 10;
+//const int COMPLETE_POPUP_MIN_WIDTH = 150;
+//const int COMPLETE_POPUP_MAX_WIDTH = 400;
+//const int COMPLETE_POPUP_MAX_HEIGHT = 160;
 const int COMPLETE_POPUP_ITEM_EXTRA_SPACE = 40;
-
+const int COMPLETE_POPUP_ICON_SIZE = 10;
+const int COMPLETE_POPUP_MAX_VISIBLE_ROWS_COUNT = 5;
 const int ITEMS_LIMIT = 100;
 
 CompletePopup::CompletePopup(QWidget * parent) : QListWidget(parent)
 {
     setVisible(false);
+    /*
     setMaximumWidth(COMPLETE_POPUP_MAX_WIDTH);
     setMaximumHeight(COMPLETE_POPUP_MAX_HEIGHT);
     setMinimumWidth(COMPLETE_POPUP_MIN_WIDTH);
+    */
     setFocusProxy(parent);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -72,6 +74,7 @@ void CompletePopup::showPopup(int cursLeft, int cursTop, int viewLeft, int viewT
     setVisible(true);
     int width = geometry().width(), height = geometry().height();
     int rowCo = model()->rowCount();
+    /*
     if (rowCo>0) {
         QFontMetrics fm(font());
         for (int i=0; i<rowCo; i++) {
@@ -84,6 +87,18 @@ void CompletePopup::showPopup(int cursLeft, int cursTop, int viewLeft, int viewT
         height = rowCo * fm.height() + COMPLETE_POPUP_ITEM_EXTRA_SPACE;
         if (height > COMPLETE_POPUP_MAX_HEIGHT) height = COMPLETE_POPUP_MAX_HEIGHT;
         setCurrentRow(0);
+    }
+    */
+    if (rowCo>0) {
+        setCurrentRow(0);
+        width = sizeHintForColumn(0) + frameWidth() * 2;
+        width += COMPLETE_POPUP_ITEM_EXTRA_SPACE; // for right margin
+        int co = COMPLETE_POPUP_MAX_VISIBLE_ROWS_COUNT;
+        if (rowCo < co) co = rowCo;
+        height = co * sizeHintForRow(0) + frameWidth() * 2;
+        if (width < viewWidth) setMaximumWidth(width);
+        else setMaximumWidth(viewWidth);
+        setMaximumHeight(height);
     }
     int x = viewLeft + cursLeft;
     if (x + width > viewLeft + viewWidth) {
