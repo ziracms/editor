@@ -692,8 +692,8 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
     if(watched == treeWidget && event->type() == QEvent::KeyPress) {
         if (keyEvent->key() == Qt::Key_Return && acceptEnter && !editMode) {
             QTreeWidgetItem * item = treeWidget->currentItem();
-            if (ctrl) fileBrowserContextMenuRequested(item);
-            else fileBrowserDoubleClicked(item, 0);
+            if (ctrl && !shift) fileBrowserContextMenuRequested(item);
+            else if (!shift) fileBrowserDoubleClicked(item, 0);
         } else if (keyEvent->key() == Qt::Key_Return && editMode) {
             editMode = false;
         } else if (keyEvent->key() == Qt::Key_Up) {

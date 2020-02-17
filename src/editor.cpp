@@ -1679,7 +1679,7 @@ void Editor::keyPressEvent(QKeyEvent *e)
         }
     }
     // indent
-    if (code == Qt::Key_Tab && !shift) {
+    if (code == Qt::Key_Tab && !shift && !ctrl) {
         QTextCursor curs = textCursor();
         if (curs.selectedText().size()==0 && tabType == "spaces") {
             QString insert = " ";
@@ -1704,7 +1704,7 @@ void Editor::keyPressEvent(QKeyEvent *e)
         }
     }
     // remove spaces, quotes, brackets
-    if (code == Qt::Key_Backspace) {
+    if (code == Qt::Key_Backspace && !shift && !ctrl) {
         QTextCursor curs = textCursor();
         if (curs.selectedText().size()==0) {
             QTextBlock block = curs.block();
@@ -1745,7 +1745,7 @@ void Editor::keyPressEvent(QKeyEvent *e)
         }
     }
     // complete, indent and comment on enter
-    if (code == Qt::Key_Return) {
+    if (code == Qt::Key_Return && !shift && !ctrl) {
         if (search->isVisible() && static_cast<Search *>(search)->isFocused()) {
             return;
         }
@@ -1980,8 +1980,9 @@ void Editor::keyPressEvent(QKeyEvent *e)
 
 void Editor::keyReleaseEvent(QKeyEvent *e)
 {
-    bool ctrl = false;
+    bool ctrl = false, shift = false;
     if (e->modifiers() & Qt::ControlModifier) ctrl = true;
+    if (e->modifiers() & Qt::ShiftModifier) shift = true;
     int code = e->key();
     if (code == Qt::Key_Greater && !ctrl && modeOnKeyPress == MODE_HTML) {
         hideCompletePopup();
@@ -2043,6 +2044,12 @@ void Editor::keyReleaseEvent(QKeyEvent *e)
             curs.insertText(prefix + "}");
             curs.endEditBlock();
         }
+    }
+    // context menu
+    if (code == Qt::Key_Return && ctrl && !shift) {
+        QContextMenuEvent * cEvent = new QContextMenuEvent(QContextMenuEvent::Keyboard, mapFromGlobal(QCursor::pos()));
+        contextMenuEvent(cEvent);
+        delete cEvent;
     }
 
     QTextEdit::keyReleaseEvent(e);
