@@ -138,6 +138,9 @@ private slots:
     void on_actionHelpDonate_triggered();
     void on_actionHelpZiraCMS_triggered();
     void on_actionCompileSass_triggered();
+    void fileBrowserFocusTriggered();
+    void previousTabTriggered();
+    void nextTabTriggered();
     void editorSearchInFilesRequested(QString text);
     void editorActionsChanged();
     void editorUndoRedoChanged();

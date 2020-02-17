@@ -443,6 +443,50 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut * shortcutQuickAccessAlt = new QShortcut(QKeySequence(shortcutQuickAccessAltStr), this);
     connect(shortcutQuickAccessAlt, SIGNAL(activated()), this, SLOT(on_actionQuickAccess_triggered()));
 
+    QString shortcutFileBrowserStr = QString::fromStdString(settings->get("shortcut_filebrowser"));
+    QShortcut * shortcutFileBrowser = new QShortcut(QKeySequence(shortcutFileBrowserStr), this);
+    connect(shortcutFileBrowser, SIGNAL(activated()), this, SLOT(fileBrowserFocusTriggered()));
+
+    QString shortcutOpenFileStr = QString::fromStdString(settings->get("shortcut_open_file"));
+    QShortcut * shortcutOpenFile = new QShortcut(QKeySequence(shortcutOpenFileStr), this);
+    connect(shortcutOpenFile, SIGNAL(activated()), this, SLOT(on_actionOpenFile_triggered()));
+
+    QString shortcutOpenProjectStr = QString::fromStdString(settings->get("shortcut_open_project"));
+    QShortcut * shortcutOpenProject = new QShortcut(QKeySequence(shortcutOpenProjectStr), this);
+    connect(shortcutOpenProject, SIGNAL(activated()), this, SLOT(on_actionOpenProject_triggered()));
+
+    QString shortcutNewFileStr = QString::fromStdString(settings->get("shortcut_new_file"));
+    QShortcut * shortcutNewFile = new QShortcut(QKeySequence(shortcutNewFileStr), this);
+    connect(shortcutNewFile, SIGNAL(activated()), this, SLOT(on_actionNewFile_triggered()));
+
+    QString shortcutNewFolderStr = QString::fromStdString(settings->get("shortcut_new_folder"));
+    QShortcut * shortcutNewFolder = new QShortcut(QKeySequence(shortcutNewFolderStr), this);
+    connect(shortcutNewFolder, SIGNAL(activated()), this, SLOT(on_actionNewFolder_triggered()));
+
+    QString shortcutPreviousTabStr = QString::fromStdString(settings->get("shortcut_previous_tab"));
+    QShortcut * shortcutPreviousTab = new QShortcut(QKeySequence(shortcutPreviousTabStr), this);
+    connect(shortcutPreviousTab, SIGNAL(activated()), this, SLOT(previousTabTriggered()));
+
+    QString shortcutNextTabStr = QString::fromStdString(settings->get("shortcut_next_tab"));
+    QShortcut * shortcutNextTab = new QShortcut(QKeySequence(shortcutNextTabStr), this);
+    connect(shortcutNextTab, SIGNAL(activated()), this, SLOT(nextTabTriggered()));
+
+    QString shortcutTabsListStr = QString::fromStdString(settings->get("shortcut_tabs_list"));
+    QShortcut * shortcutTabsList = new QShortcut(QKeySequence(shortcutTabsListStr), this);
+    connect(shortcutTabsList, SIGNAL(activated()), this, SLOT(tabsListTriggered()));
+
+    QString shortcutCloseTabStr = QString::fromStdString(settings->get("shortcut_close_tab"));
+    QShortcut * shortcutCloseTab = new QShortcut(QKeySequence(shortcutCloseTabStr), this);
+    connect(shortcutCloseTab, SIGNAL(activated()), this, SLOT(on_actionClose_triggered()));
+
+    QString shortcutCloseProjectStr = QString::fromStdString(settings->get("shortcut_close_project"));
+    QShortcut * shortcutCloseProject = new QShortcut(QKeySequence(shortcutCloseProjectStr), this);
+    connect(shortcutCloseProject, SIGNAL(activated()), this, SLOT(on_actionCloseProject_triggered()));
+
+    QString shortcutCloseAppStr = QString::fromStdString(settings->get("shortcut_close_app"));
+    QShortcut * shortcutCloseApp = new QShortcut(QKeySequence(shortcutCloseAppStr), this);
+    connect(shortcutCloseApp, SIGNAL(activated()), this, SLOT(on_actionQuit_triggered()));
+
     // styles
     applyThemeColors();
 
@@ -683,6 +727,31 @@ void MainWindow::openFromArgs() {
     editorTabs->initHighlighters();
 }
 
+void MainWindow::previousTabTriggered()
+{
+    if (ui->tabWidget->count() < 2) return;
+    int index = ui->tabWidget->currentIndex();
+    index--;
+    if (index < 0) index = ui->tabWidget->count()-1;
+    editorTabs->setActiveTab(index);
+}
+
+void MainWindow::nextTabTriggered()
+{
+    if (ui->tabWidget->count() < 2) return;
+    int index = ui->tabWidget->currentIndex();
+    index++;
+    if (index >= ui->tabWidget->count()) index = 0;
+    editorTabs->setActiveTab(index);
+}
+
+void MainWindow::fileBrowserFocusTriggered()
+{
+    if (!ui->sidebarDockWidget->isVisible()) ui->sidebarDockWidget->show();
+    ui->sidebarTabWidget->setCurrentIndex(0);
+    filebrowser->focus();
+}
+
 void MainWindow::on_actionOpenFile_triggered()
 {
     setStatusBarText("");
@@ -859,6 +928,7 @@ void MainWindow::on_actionShowHideSidebar_triggered()
         ui->sidebarDockWidget->hide();
     } else {
         ui->sidebarDockWidget->show();
+        ui->sidebarTabWidget->setFocus();
     }
 }
 
@@ -879,6 +949,7 @@ void MainWindow::on_actionShowHideOutput_triggered()
         ui->outputDockWidget->hide();
     } else {
         ui->outputDockWidget->show();
+        ui->outputTabWidget->setFocus();
     }
 }
 

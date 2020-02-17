@@ -11,6 +11,7 @@
 #include <QTreeWidget>
 #include <QLineEdit>
 #include <QEvent>
+#include <QMenu>
 
 class FileBrowser : public QObject
 {
@@ -26,6 +27,7 @@ public:
     void rebuildFileBrowserTree(QString path);
     QString getRootPath();
     QString getHomeDir();
+    void focus();
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
     void initFileBrowser(QString homeDir = "");
@@ -38,6 +40,7 @@ protected:
     void fbCutItem(QTreeWidgetItem * item);
     void fbPasteItem(QTreeWidgetItem * item);
     void fileBrowserRemoveEmptyItems();
+    void fileBrowserContextMenuRequested(QTreeWidgetItem * item);
 private:
     QTreeWidget * treeWidget;
     QLineEdit * pathLine;
@@ -46,7 +49,10 @@ private:
     QString fbcutpath;
     QTreeWidgetItem * fbcopyitem;
     QTreeWidgetItem * fbcutitem;
+    QMenu menu;
     QString fileBrowserHomeDir;
+    bool acceptEnter;
+    bool editMode;
 private slots:
     void fileBrowserExpanded(QTreeWidgetItem * item);
     void fileBrowserCollapsed(QTreeWidgetItem * item);

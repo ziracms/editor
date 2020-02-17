@@ -30,12 +30,15 @@ const QString FB_ACTION_NAME_CUT = "fb_cut";
 const QString FB_ACTION_NAME_PASTE = "fb_paste";
 
 FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * settings):
-    treeWidget(widget), pathLine(line)
+    treeWidget(widget), pathLine(line), menu(widget)
 {
     fbpath = ""; fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
     fileBrowserHomeDir = QString::fromStdString(settings->get("file_browser_home"));
     initFileBrowser(fileBrowserHomeDir);
+    menu.hide();
+    acceptEnter = true;
+    editMode = false;
 }
 
 void FileBrowser::initFileBrowser(QString homeDir)
@@ -57,6 +60,7 @@ void FileBrowser::initFileBrowser(QString homeDir)
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(fileBrowserContextMenuRequested(QPoint)));
     treeWidget->installEventFilter(this);
+    pathLine->installEventFilter(this);
 }
 
 void FileBrowser::buildFileBrowserTree(QString startDir, QTreeWidgetItem * parent)
@@ -155,7 +159,7 @@ void FileBrowser::fileBrowserDoubleClicked(QTreeWidgetItem * item, int column)
     QString path = item->data(0, Qt::UserRole).toString();
     if (path.size() == 0) return;
     QFileInfo fInfo(path);
-    if (!fInfo.exists() || !fInfo.isReadable()) return;
+    if (!fInfo.exists() || !fInfo.isWritable()) return;
     if (fInfo.isFile()) emit openFile(path);
     else if (fInfo.isDir()) rebuildFileBrowserTree(path);
 }
@@ -186,6 +190,11 @@ void FileBrowser::upActionTriggered(bool)
 void FileBrowser::fileBrowserContextMenuRequested(QPoint p)
 {
     QTreeWidgetItem * item = treeWidget->itemAt(p);
+    fileBrowserContextMenuRequested(item);
+}
+
+void FileBrowser::fileBrowserContextMenuRequested(QTreeWidgetItem * item)
+{
     QString path;
     if (item != nullptr) path = item->data(0, Qt::UserRole).toString();
     else path = fbpath;
@@ -196,13 +205,13 @@ void FileBrowser::fileBrowserContextMenuRequested(QPoint p)
     bool disabled = !fInfo.isWritable();
     bool isFolder = fInfo.isDir();
 
-    QMenu menu(treeWidget);
+    menu.clear();
     menu.setFont(QApplication::font());
 
     //QAction * openAction = menu.addAction(treeWidget->style()->standardIcon(QStyle::SP_DialogOpenButton), tr("Open"));
     QAction * openAction = menu.addAction(QIcon(":icons/document-open.png"), tr("Open"));
     openAction->setData(QVariant(FB_ACTION_NAME_OPEN));
-    if (disabled || isFolder || item == nullptr) openAction->setDisabled(true);
+    if (disabled || item == nullptr) openAction->setDisabled(true);
 
     //QAction * reloadAction = menu.addAction(treeWidget->style()->standardIcon(QStyle::SP_BrowserReload), tr("Refresh"));
     QAction * reloadAction = menu.addAction(QIcon(":icons/view-refresh.png"), tr("Refresh"));
@@ -247,11 +256,22 @@ void FileBrowser::fileBrowserContextMenuRequested(QPoint p)
     deleteAction->setData(QVariant(FB_ACTION_NAME_DELETE));
     if (disabled || item == nullptr) deleteAction->setDisabled(true);
 
-    QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));
-    if (selectedAction == nullptr) return;
+    acceptEnter = false;
+
+    //QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));
+    QPoint p = QCursor::pos();
+    QAction * selectedAction = menu.exec(p);
+    menu.hide();
+    if (selectedAction == nullptr) {
+        acceptEnter = true;
+        return;
+    }
 
     QString actionName = selectedAction->data().toString();
-    if (actionName.size() == 0) return;
+    if (actionName.size() == 0) {
+        acceptEnter = true;
+        return;
+    }
 
     if (item != nullptr) {
         if (actionName == FB_ACTION_NAME_CREATE_FILE || actionName == FB_ACTION_NAME_CREATE_FOLDER) fbCreateNewItemRequested(item, actionName);
@@ -266,6 +286,8 @@ void FileBrowser::fileBrowserContextMenuRequested(QPoint p)
         if (actionName == FB_ACTION_NAME_CREATE_FILE) showCreateFileDialog(path);
         if (actionName == FB_ACTION_NAME_CREATE_FOLDER) showCreateFolderDialog(path);
     }
+
+    acceptEnter = true;
 }
 
 void FileBrowser::fbCreateNewItemRequested(QTreeWidgetItem * item, QString actionName)
@@ -276,6 +298,8 @@ void FileBrowser::fbCreateNewItemRequested(QTreeWidgetItem * item, QString actio
     if (path.size() == 0) return;
     QFileInfo fInfo(path);
     if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isWritable() || !fInfo.isDir()) return;
+
+    editMode = true;
 
     if (!item->isExpanded()) treeWidget->expandItem(item);
     QTreeWidgetItem * tmpitem = new QTreeWidgetItem();
@@ -305,6 +329,8 @@ void FileBrowser::fbEditItemRequested(QTreeWidgetItem * item, QString actionName
     if (path.size() == 0) return;
     QFileInfo fInfo(path);
     if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isWritable()) return;
+
+    editMode = true;
 
     item->setData(0, Qt::UserRole+1, QVariant(actionName));
     item->setFlags(item->flags() | Qt::ItemIsEditable);
@@ -350,6 +376,10 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
 
 void FileBrowser::fileBrowserItemChanged(QTreeWidgetItem * item, int col)
 {
+    if (menu.isVisible()) {
+        menu.hide();
+        acceptEnter = true;
+    }
     if (item == nullptr || col != 0) return;
     QTreeWidgetItem * parent = item->parent();
 
@@ -390,6 +420,7 @@ void FileBrowser::fileBrowserItemChanged(QTreeWidgetItem * item, int col)
 void FileBrowser::fileBrowserItemSelectionChanged()
 {
     fileBrowserRemoveEmptyItems();
+    editMode = false;
 }
 
 void FileBrowser::fileBrowserRemoveEmptyItems()
@@ -633,13 +664,48 @@ QString FileBrowser::getHomeDir()
     return fileBrowserHomeDir;
 }
 
+void FileBrowser::focus()
+{
+    treeWidget->setFocus();
+    QList<QTreeWidgetItem *> items = treeWidget->selectedItems();
+    if (items.count() == 0 && treeWidget->topLevelItemCount() > 0)  {
+        QTreeWidgetItem * item = treeWidget->topLevelItem(0);
+        if (item != nullptr) {
+            treeWidget->setCurrentItem(item);
+        }
+    }
+}
+
 bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
 {
+    QKeyEvent * keyEvent = static_cast<QKeyEvent *>(event);
+    bool shift = false, ctrl = false;
+    if (keyEvent->modifiers() & Qt::ShiftModifier) shift = true;
+    if (keyEvent->modifiers() & Qt::ControlModifier) ctrl = true;
     // refresh file browser selected item
     if(watched == treeWidget && event->type() == QEvent::KeyRelease) {
-        QKeyEvent * keyEvent = static_cast<QKeyEvent *>(event);
-        if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Escape || keyEvent->key() == Qt::Key_Tab) {
+        if (!editMode && (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Escape || (keyEvent->key() == Qt::Key_Tab && !shift))) {
             fileBrowserRemoveEmptyItems();
+        }
+    }
+    // context menu
+    if(watched == treeWidget && event->type() == QEvent::KeyPress) {
+        if (keyEvent->key() == Qt::Key_Return && acceptEnter && !editMode) {
+            QTreeWidgetItem * item = treeWidget->currentItem();
+            if (ctrl) fileBrowserContextMenuRequested(item);
+            else fileBrowserDoubleClicked(item, 0);
+        } else if (keyEvent->key() == Qt::Key_Return && editMode) {
+            editMode = false;
+        } else if (keyEvent->key() == Qt::Key_Up) {
+            if (treeWidget->topLevelItemCount() == 0 || treeWidget->currentItem() == treeWidget->topLevelItem(0)) {
+                pathLine->setFocus();
+            }
+        }
+    }
+    // focus
+    if(watched == pathLine && event->type() == QEvent::KeyPress) {
+        if (keyEvent->key() == Qt::Key_Down) {
+            focus();
         }
     }
     return false;
