@@ -468,6 +468,11 @@ QTreeView
     background: #f1f1f1;
 }
 
+QTreeView:focus
+{
+    background: #f5ffe0;
+}
+
 QMainWindow::separator
 {
     background-color: #e7e7e7;
@@ -582,6 +587,7 @@ QStatusBar QProgressBar
 
 QTabBar
 {
+    outline: none;
     qproperty-drawBase: 0; /* workaround for dock tabs bottom line */
 }
 

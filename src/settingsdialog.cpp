@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QDirIterator>
 #include <QStyledItemDelegate>
+#include <QAbstractItemView>
 #include "helper.h"
 
 const std::string CHECKED_YES = "yes";
@@ -28,6 +29,9 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
 {
     ui->setupUi(this);
     setModal(true);
+
+    // combobox frame background workaround
+    //ui->generalThemeCombobox->view()->parentWidget()->setStyleSheet("background:"+QString::fromStdString(settings->get("editor_search_bg_color"))+";");
 
     // app font
     appFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);

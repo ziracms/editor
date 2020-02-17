@@ -1,5 +1,5 @@
 <div><center>
-<table>
+<table cellspacing="0" cellpadding="5">
 <tr><td>Undo:</td><td><b>Ctrl+Z</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Open file:</td><td><b>Ctrl+O</b></td></tr>
 <tr><td>Redo:</td><td><b>Ctrl+Shift+Z</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Open project:</td><td><b>Ctrl+Shift+O</b></td></tr>
 <tr><td>Indent:</td><td><b>Tab</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>New file:</td><td><b>Ctrl+N</b></td></tr>
