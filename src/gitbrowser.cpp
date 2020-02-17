@@ -1,6 +1,7 @@
 #include "gitbrowser.h"
 #include <QDir>
 #include <QMenu>
+#include <QKeyEvent>
 
 const QString GB_ACTION_NAME_ADD = "add";
 const QString GB_ACTION_NAME_RESET = "reset";
@@ -16,6 +17,8 @@ GitBrowser::GitBrowser(QTreeWidget * widget, Settings * settings):
     errorColor = QColor(errorColorStr);
     QString msgColorStr = QString::fromStdString(settings->get("git_output_message_color"));
     msgColor = QColor(msgColorStr);
+
+    treeWidget->installEventFilter(this);
 }
 
 void GitBrowser::clear()
@@ -57,6 +60,11 @@ void GitBrowser::build(QString output)
 void GitBrowser::gitBrowserContextMenuRequested(QPoint p)
 {
     QTreeWidgetItem * item = treeWidget->itemAt(p);
+    gitBrowserContextMenuRequested(item);
+}
+
+void GitBrowser::gitBrowserContextMenuRequested(QTreeWidgetItem * item)
+{
     QString path = "";
     if (item != nullptr) path = item->data(0, Qt::UserRole).toString();
 
@@ -75,7 +83,9 @@ void GitBrowser::gitBrowserContextMenuRequested(QPoint p)
     QAction * commitAction = menu.addAction(QIcon(":icons/ok.png"), tr("Commit"));
     commitAction->setData(QVariant(GB_ACTION_NAME_COMMIT));
 
-    QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));
+    //QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));
+    QPoint p = QCursor::pos();
+    QAction * selectedAction = menu.exec(p);
     if (selectedAction == nullptr) return;
 
     QString actionName = selectedAction->data().toString();
@@ -105,4 +115,20 @@ void GitBrowser::gbResetRequested(QTreeWidgetItem * item)
 void GitBrowser::gbCommitRequested()
 {
     emit commitRequested();
+}
+
+bool GitBrowser::eventFilter(QObject *watched, QEvent *event)
+{
+    QKeyEvent * keyEvent = static_cast<QKeyEvent *>(event);
+    bool shift = false, ctrl = false;
+    if (keyEvent->modifiers() & Qt::ShiftModifier) shift = true;
+    if (keyEvent->modifiers() & Qt::ControlModifier) ctrl = true;
+    // context menu
+    if(watched == treeWidget && event->type() == QEvent::KeyPress) {
+        if (keyEvent->key() == Qt::Key_Return && ctrl && !shift) {
+            QTreeWidgetItem * item = treeWidget->currentItem();
+            gitBrowserContextMenuRequested(item);
+        }
+    }
+    return false;
 }

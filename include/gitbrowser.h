@@ -13,9 +13,11 @@ public:
     void build(QString output);
     void clear();
 protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
     void gbAddRequested(QTreeWidgetItem * item);
     void gbResetRequested(QTreeWidgetItem * item);
     void gbCommitRequested();
+    void gitBrowserContextMenuRequested(QTreeWidgetItem * item);
 private:
     QTreeWidget * treeWidget;
     QColor errorColor;

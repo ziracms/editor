@@ -14,6 +14,7 @@ Navigator::Navigator(QTreeWidget * widget, Settings * /*settings*/) : treeWidget
     connect(treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), SLOT(navigatorDoubleClicked(QTreeWidgetItem*,int)));
     connect(treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(navigatorExpanded(QTreeWidgetItem*)));
     connect(treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(navigatorCollapsed(QTreeWidgetItem*)));
+    treeWidget->installEventFilter(this);
 }
 
 void Navigator::clear()
@@ -501,4 +502,19 @@ void Navigator::navigatorCollapsed(QTreeWidgetItem * item)
 {
     if (item == nullptr) return;
     treeWidget->resizeColumnToContents(0);
+}
+
+bool Navigator::eventFilter(QObject *watched, QEvent *event)
+{
+    QKeyEvent * keyEvent = static_cast<QKeyEvent *>(event);
+    bool shift = false, ctrl = false;
+    if (keyEvent->modifiers() & Qt::ShiftModifier) shift = true;
+    if (keyEvent->modifiers() & Qt::ControlModifier) ctrl = true;
+    if(watched == treeWidget && event->type() == QEvent::KeyPress) {
+        if (keyEvent->key() == Qt::Key_Return && !ctrl && !shift) {
+            QTreeWidgetItem * item = treeWidget->currentItem();
+            navigatorDoubleClicked(item, 0);
+        }
+    }
+    return false;
 }

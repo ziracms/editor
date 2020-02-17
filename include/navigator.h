@@ -24,7 +24,7 @@ public:
     void build(ParseCSS::ParseResult result);
     void clear();
 protected:
-
+    bool eventFilter(QObject *watched, QEvent *event) override;
 private:
     QTreeWidget * treeWidget;
 signals:
