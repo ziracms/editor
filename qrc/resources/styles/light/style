@@ -127,6 +127,8 @@ QLineEdit
     border: 1px solid #c5cfd6;
     border-radius: 3;
     padding: 5px;
+    selection-color: #ffffff;
+    selection-background-color: #1666e0;
 }
 
 QTreeWidget
@@ -922,13 +924,3 @@ QuickAccess QListView:focus
     background: transparent;
     border: none;
 }
-
-/*
-#tabWidget::pane > QWidget
-{
-    background: url(:/styles/light/zira.png);
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-color: #e7e7e7;
-}
-*/

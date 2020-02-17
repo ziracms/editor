@@ -143,6 +143,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     std::string selectedTagBgColorStr = settings->get("editor_selected_tag_bg_color");
     std::string selectedExpressionBgColorStr = settings->get("editor_selected_expression_bg_color");
     std::string searchWordBgColorStr = settings->get("editor_search_word_bg_color");
+    std::string searchWordColorStr = settings->get("editor_search_word_color");
     std::string searchInputBgColorStr = settings->get("editor_search_input_bg_color");
     std::string searchInputErrorBgColorStr = settings->get("editor_search_input_error_bg_color");
     std::string lineMarkColorStr = settings->get("editor_line_mark_color");
@@ -177,6 +178,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     selectedTagBgColor = QColor(selectedTagBgColorStr.c_str());
     selectedExpressionBgColor = QColor(selectedExpressionBgColorStr.c_str());
     searchWordBgColor = QColor(searchWordBgColorStr.c_str());
+    searchWordColor = QColor(searchWordColorStr.c_str());
     searchInputBgColor = QColor(searchInputBgColorStr.c_str());
     searchInputErrorBgColor = QColor(searchInputErrorBgColorStr.c_str());
     lineMarkColor = QColor(lineMarkColorStr.c_str());
@@ -5515,6 +5517,7 @@ void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPre
                 if (!searchWordCursor.isNull()) {
                     QTextEdit::ExtraSelection selectedWordSelection;
                     selectedWordSelection.format.setBackground(searchWordBgColor);
+                    selectedWordSelection.format.setForeground(searchWordColor);
                     selectedWordSelection.cursor = searchWordCursor;
                     extraSelections.append(selectedWordSelection);
                     if (searchWordBlockNumber != searchWordCursor.block().blockNumber()) {

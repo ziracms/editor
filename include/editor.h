@@ -265,6 +265,7 @@ private:
     QColor selectedTagBgColor;
     QColor selectedExpressionBgColor;
     QColor searchWordBgColor;
+    QColor searchWordColor;
     QColor textColor;
     QColor bgColor;
     QColor searchInputBgColor;
