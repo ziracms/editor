@@ -23,6 +23,7 @@
 #include <QDesktopServices>
 #include <QPluginLoader>
 #include <QStyleFactory>
+#include <QStylePlugin>
 #include <QVersionNumber>
 #include "editortab.h"
 #include "searchdialog.h"
@@ -67,6 +68,8 @@ MainWindow::MainWindow(QWidget *parent) :
     appFont.setStyleName("");
     QApplication::setFont(appFont);
 
+    QString pluginsDir = QString::fromStdString(settings->get("plugins_path"));
+
     theme = QString::fromStdString(settings->get("theme"));
     colorSheme = QString::fromStdString(settings->get("color_scheme"));
     customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
@@ -75,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
         customThemesPath = customThemesPathDir.absolutePath();
         if (!Helper::folderExists(customThemesPath)) customThemesPath = "";
     }
-    if (theme != THEME_SYSTEM) {
+    if (theme != THEME_SYSTEM && !Helper::loadStylePlugin(pluginsDir)) {
         QStyle * wStyle = QStyleFactory::create("Windows");
         if (wStyle != nullptr) QApplication::setStyle(wStyle);
     }
@@ -106,7 +109,6 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreState(windowSettings.value("main_window_state").toByteArray());
 
     // plugins
-    QString pluginsDir = QString::fromStdString(settings->get("plugins_path"));
     spellChecker = Helper::loadSpellChecker(pluginsDir);
 
     // load words
@@ -2169,6 +2171,7 @@ void MainWindow::tabsListTriggered()
         QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
         int rowCo = tabsList->model()->rowCount();
         int width = tabsList->sizeHintForColumn(0) + tabsList->frameWidth() * 2;
+        width += 100; // right margin
         int height = rowCo * tabsList->sizeHintForRow(0) + tabsList->frameWidth() * 2;
         QRect listRect = tabsList->geometry();
         listRect.setX(editorTabsRectM.x()+ui->tabWidget->width() - width);

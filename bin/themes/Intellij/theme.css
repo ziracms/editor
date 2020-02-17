@@ -27,6 +27,11 @@ QWidget:item:selected
     background-color: #474a4d;
 }
 
+QMenuBar
+{
+    padding: 0px;
+}
+
 QMenuBar::item
 {
     background: transparent;
@@ -190,7 +195,7 @@ QHeaderView::up-arrow {
 
 QFileDialog
 {
-    filedialog-new-directory-icon: url(:/icons/plus.png);
+    filedialog-new-directory-icon: url(:/icons/folder-new.png);
     filedialog-parent-directory-icon: url(:/icons/up.png);
     filedialog-listview-icon: url(:/icons/sidebar.png);
     filedialog-detailedview-icon: url(:/icons/output.png);
@@ -468,9 +473,27 @@ QTreeView
     background: #3c3f41;
 }
 
-QTreeView:focus
+QDockWidget QTreeView:focus
 {
     background: #323b38;
+}
+
+QDockWidget QTreeView::item:selected
+{
+    background: #189487;
+    color: #ffffff;
+}
+
+QDockWidget QTreeView::branch:closed:has-children:selected,
+QDockWidget QTreeView::branch:closed:has-children:!has-siblings:selected,
+QDockWidget QTreeView::branch:open:has-children:!has-siblings:selected,
+QDockWidget QTreeView::branch:open:has-children:has-siblings:selected,
+QDockWidget QTreeView::branch:closed:!has-children:selected,
+QDockWidget QTreeView::branch:closed:!has-children:!has-siblings:selected,
+QDockWidget QTreeView::branch:open:!has-children:!has-siblings:selected,
+QDockWidget QTreeView::branch:open:!has-children:has-siblings:selected
+{
+    background: #189487;
 }
 
 QMainWindow::separator
@@ -773,6 +796,7 @@ QDockWidget::close-button
     border: none; 
     background: none;
     padding: 0px;
+    icon-size: 10px;
 }
 
 QDockWidget::close-button:hover
@@ -788,6 +812,7 @@ QDockWidget::float-button
     border: none; 
     background: none;
     padding: 0px;
+    icon-size: 10px;
 }
 
 QDockWidget::float-button:hover

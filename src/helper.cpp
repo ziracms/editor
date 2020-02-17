@@ -18,6 +18,7 @@
 #include <QFileDialog>
 #include <QApplication>
 #include <QStandardPaths>
+#include <QStylePlugin>
 #include "mainwindow.h"
 #include "fileiconprovider.h"
 
@@ -30,6 +31,9 @@ const QString AUTHOR_CARD_URL = "https://money.yandex.ru/to";
 const QString AUTHOR_CARD_ID = "410014796567498";
 const QString AUTHOR_CMS_URL = "https://github.com/ziracms/zira";
 const QString GITHUB_EDITOR_URL = "https://github.com/ziracms/editor";
+
+const QString APPLICATION_STYLE_PLUGIN = "QPlastiqueStyle";
+const QString APPLICATION_STYLE = "plastique";
 
 QString Helper::loadFile(QString path, std::string encoding, std::string fallbackEncoding, bool silent)
 {
@@ -290,6 +294,21 @@ SpellCheckerInterface * Helper::loadSpellChecker(QString path)
     }
     spellChecker->initialize(path);
     return spellChecker;
+}
+
+bool Helper::loadStylePlugin(QString path)
+{
+    QObject * plugin = loadPlugin(APPLICATION_STYLE_PLUGIN, path);
+    if (plugin == nullptr) return false;
+    QStylePlugin * stylePlugin = qobject_cast<QStylePlugin *>(plugin);
+    if (!stylePlugin) {
+        delete plugin;
+        return false;
+    }
+    QStyle * style = stylePlugin->create(APPLICATION_STYLE);
+    if (style == nullptr) return false;
+    QApplication::setStyle(style);
+    return true;
 }
 
 bool Helper::isPluginExists(QString name, QString path)
