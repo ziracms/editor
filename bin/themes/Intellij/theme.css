@@ -473,25 +473,25 @@ QTreeView
     background: #3c3f41;
 }
 
-QDockWidget QTreeView:focus
+QTreeView:focus
 {
     background: #323b38;
 }
 
-QDockWidget QTreeView::item:selected
+QTreeView::item:selected
 {
     background: #189487;
     color: #ffffff;
 }
 
-QDockWidget QTreeView::branch:closed:has-children:selected,
-QDockWidget QTreeView::branch:closed:has-children:!has-siblings:selected,
-QDockWidget QTreeView::branch:open:has-children:!has-siblings:selected,
-QDockWidget QTreeView::branch:open:has-children:has-siblings:selected,
-QDockWidget QTreeView::branch:closed:!has-children:selected,
-QDockWidget QTreeView::branch:closed:!has-children:!has-siblings:selected,
-QDockWidget QTreeView::branch:open:!has-children:!has-siblings:selected,
-QDockWidget QTreeView::branch:open:!has-children:has-siblings:selected
+QTreeView::branch:closed:has-children:selected,
+QTreeView::branch:closed:has-children:!has-siblings:selected,
+QTreeView::branch:open:has-children:!has-siblings:selected,
+QTreeView::branch:open:has-children:has-siblings:selected,
+QTreeView::branch:closed:!has-children:selected,
+QTreeView::branch:closed:!has-children:!has-siblings:selected,
+QTreeView::branch:open:!has-children:!has-siblings:selected,
+QTreeView::branch:open:!has-children:has-siblings:selected
 {
     background: #189487;
 }
