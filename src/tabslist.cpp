@@ -27,13 +27,13 @@ void TabsList::keyPressEvent(QKeyEvent *e)
     QListWidget::keyPressEvent(e);
 }
 
-void TabsList::addItem(QString str, int index)
+void TabsList::addItem(QString text, QString tooltip, int index)
 {
     QListWidgetItem * newItem = new QListWidgetItem;
     QVariant itemData(index);
     newItem->setData(Qt::UserRole, itemData);
-    newItem->setText(str);
+    newItem->setText(text);
     newItem->setIcon(QIcon(":/icons/item.png"));
-    newItem->setToolTip(str);
+    newItem->setToolTip(tooltip);
     insertItem(count(), newItem);
 }

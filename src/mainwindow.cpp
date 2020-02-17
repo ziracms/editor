@@ -2088,7 +2088,7 @@ void MainWindow::tabsListTriggered()
     if (!tabsList->isVisible() && ui->tabWidget->count() > 0) {
         tabsList->clear();
         for (int i=0; i<ui->tabWidget->count(); i++) {
-            tabsList->addItem(ui->tabWidget->tabText(i), i);
+            tabsList->addItem(ui->tabWidget->tabText(i), ui->tabWidget->tabToolTip(i), i);
         }
         tabsList->show();
         tabsList->raise();
