@@ -9,7 +9,7 @@
 #include <QPainter>
 #include <QAction>
 
-const int INPUT_WIDTH_MIN = 100;
+const int INPUT_WIDTH_MIN = 50;
 const int INPUT_WIDTH_MAX = 300;
 
 Search::Search(Editor * codeEditor) : QWidget(codeEditor)
@@ -25,14 +25,12 @@ Search::Search(Editor * codeEditor) : QWidget(codeEditor)
     findEdit->setMaximumWidth(INPUT_WIDTH_MAX);
 
     findButton = new QPushButton();
-    findButton->setMinimumWidth(INPUT_WIDTH_MIN / 2);
-    findButton->setMaximumWidth(INPUT_WIDTH_MAX / 2);
     findButton->setText(tr("Find"));
+    findButton->setIcon(QIcon(":/icons/go-next.png"));
 
     findPrevButton = new QPushButton();
-    findPrevButton->setMinimumWidth(INPUT_WIDTH_MIN / 2);
-    findPrevButton->setMaximumWidth(INPUT_WIDTH_MAX / 2);
     findPrevButton->setText(tr("Prev."));
+    findPrevButton->setIcon(QIcon(":/icons/go-previous.png"));
 
     findCaseSensitive = new QCheckBox();
     findCaseSensitive->setText("CaSe");
@@ -65,25 +63,20 @@ Search::Search(Editor * codeEditor) : QWidget(codeEditor)
     replaceEdit->setMaximumWidth(INPUT_WIDTH_MAX);
 
     replaceButton = new QPushButton();
-    replaceButton->setMinimumWidth(INPUT_WIDTH_MIN / 2);
-    replaceButton->setMaximumWidth(INPUT_WIDTH_MAX / 2);
     replaceButton->setText(tr("Replace"));
 
     replaceAllButton = new QPushButton();
-    replaceAllButton->setMinimumWidth(INPUT_WIDTH_MIN / 2);
-    replaceAllButton->setMaximumWidth(INPUT_WIDTH_MAX / 2);
     replaceAllButton->setText(tr("Replace all"));
 
     closeButton = new QPushButton();
-    closeButton->setMinimumWidth(INPUT_WIDTH_MIN / 2);
-    closeButton->setMaximumWidth(INPUT_WIDTH_MAX / 2);
     closeButton->setText(tr("Close"));
+    closeButton->setIcon(QIcon(":/icons/close.png"));
 
     hLayoutReplace = new QHBoxLayout();
     hLayoutReplace->addWidget(replaceEdit);
     hLayoutReplace->addWidget(replaceButton);
     hLayoutReplace->addWidget(replaceAllButton);
-    hLayoutReplace->addWidget(closeButton);
+    hLayoutReplace->addWidget(closeButton, 1, Qt::AlignRight);
     hLayoutReplace->addStretch();
 
     vLayout->addLayout(hLayoutReplace);
