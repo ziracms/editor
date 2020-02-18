@@ -81,6 +81,11 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     setAcceptRichText(false);
     setAcceptDrops(false);
 
+    QString theme = QString::fromStdString(settings->get("theme"));
+    if (theme == THEME_SYSTEM) {
+        setFrameStyle(QFrame::NoFrame);
+    }
+
     //QFont generalFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     QFont generalFont = QApplication::font();
 
@@ -331,6 +336,10 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     qaBtn->setIcon(QIcon(":/icons/separator-double.png"));
     //qaBtn->setIconSize(QSize(breadcrumbs->height(), breadcrumbs->height()));
     qaBtn->setToolTip(tr("Quick Access"));
+    if (theme == THEME_SYSTEM) {
+        qaBtn->setStyleSheet("border:none");
+        qaBtn->setCursor(Qt::PointingHandCursor);
+    }
     connect(qaBtn, SIGNAL(pressed()), this, SLOT(qaBtnClicked()));
 
     // complete popup

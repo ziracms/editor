@@ -253,7 +253,7 @@ void Search::updateScrollBar()
     if (isVisible() && scrollBar->maximum() > scrollBar->minimum()) {
         scrollBar->show();
         editor->horizontalScrollBar()->hide();
-        vLayout->setContentsMargins(margins.left(), margins.bottom() * 2, margins.right(), margins.bottom());
+        vLayout->setContentsMargins(margins.left(), margins.bottom() + scrollBar->height(), margins.right(), margins.bottom());
     } else {
         scrollBar->hide();
         vLayout->setContentsMargins(margins.left(), margins.bottom(), margins.right(), margins.bottom());

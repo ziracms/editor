@@ -85,6 +85,8 @@ MainWindow::MainWindow(QWidget *parent) :
     if (theme != THEME_SYSTEM && !Helper::loadStylePlugin(pluginsDir)) {
         QStyle * wStyle = QStyleFactory::create("Windows");
         if (wStyle != nullptr) QApplication::setStyle(wStyle);
+    } else if (theme == THEME_SYSTEM) {
+        Helper::loadSystemStylePlugin(pluginsDir, colorSheme == COLOR_SCHEME_LIGHT);
     }
     if (colorSheme == COLOR_SCHEME_DARK) settings->applyDarkColors();
     else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyLightColors();
@@ -148,6 +150,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(editorTabs, SIGNAL(editorTabsResize()), this, SLOT(editorTabsResize()));
 
     ui->tabWidget->tabBar()->setExpanding(false);
+    ui->sidebarTabWidget->tabBar()->setExpanding(false);
+    ui->outputTabWidget->tabBar()->setExpanding(false);
+    if (theme == THEME_SYSTEM) {
+        ui->tabWidget->tabBar()->setStyleSheet("QTabBar{qproperty-drawBase:0}");
+    }
 
     // tab list
     tabsListButton = new QToolButton(ui->tabWidget);
@@ -1517,6 +1524,7 @@ void MainWindow::editorTabOpened(int)
         clearMessagesTabText();
         editorActionsChanged();
     }
+    updateTabsListButton();
 }
 
 void MainWindow::editorTabSwitched(int)
@@ -1542,6 +1550,7 @@ void MainWindow::editorTabClosed(int)
     if (editor == nullptr) {
         disableActionsForEmptyTabs();
     }
+    updateTabsListButton();
 }
 
 void MainWindow::editorModifiedStateChanged(bool m)

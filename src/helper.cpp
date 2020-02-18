@@ -34,6 +34,9 @@ const QString GITHUB_EDITOR_URL = "https://github.com/ziracms/editor";
 
 const QString APPLICATION_STYLE_PLUGIN = "QPlastiqueStyle";
 const QString APPLICATION_STYLE = "plastique";
+const QString APPLICATION_SYSTEM_STYLE_PLUGIN = "AdwaitaStyle";
+const QString APPLICATION_SYSTEM_STYLE_LIGHT = "adwaita";
+const QString APPLICATION_SYSTEM_STYLE_DARK = "adwaita-dark";
 
 QString Helper::loadFile(QString path, std::string encoding, std::string fallbackEncoding, bool silent)
 {
@@ -306,6 +309,22 @@ bool Helper::loadStylePlugin(QString path)
         return false;
     }
     QStyle * style = stylePlugin->create(APPLICATION_STYLE);
+    if (style == nullptr) return false;
+    QApplication::setStyle(style);
+    return true;
+}
+
+bool Helper::loadSystemStylePlugin(QString path, bool light)
+{
+    QObject * plugin = loadPlugin(APPLICATION_SYSTEM_STYLE_PLUGIN, path);
+    if (plugin == nullptr) return false;
+    QStylePlugin * stylePlugin = qobject_cast<QStylePlugin *>(plugin);
+    if (!stylePlugin) {
+        delete plugin;
+        return false;
+    }
+    QString styleName = light ? APPLICATION_SYSTEM_STYLE_LIGHT : APPLICATION_SYSTEM_STYLE_DARK;
+    QStyle * style = stylePlugin->create(styleName);
     if (style == nullptr) return false;
     QApplication::setStyle(style);
     return true;
