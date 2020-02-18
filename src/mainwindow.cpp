@@ -37,6 +37,10 @@ const int OUTPUT_TAB_SEARCH_INDEX = 2;
 const int OUTPUT_TAB_RESULTS_INDEX = 3;
 //const int OUTPUT_TAB_TODO_INDEX = 4;
 
+const int SIDEBAR_TAB_FILE_BROWSER_INDEX = 0;
+const int SIDEBAR_TAB_NAVIGATOR_INDEX = 1;
+const int SIDEBAR_TAB_GIT_BROWSER_INDEX = 2;
+
 int const MainWindow::EXIT_CODE_RESTART = -123456789;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -445,9 +449,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut * shortcutQuickAccessAlt = new QShortcut(QKeySequence(shortcutQuickAccessAltStr), this);
     connect(shortcutQuickAccessAlt, SIGNAL(activated()), this, SLOT(on_actionQuickAccess_triggered()));
 
-    QString shortcutFileBrowserStr = QString::fromStdString(settings->get("shortcut_filebrowser"));
-    QShortcut * shortcutFileBrowser = new QShortcut(QKeySequence(shortcutFileBrowserStr), this);
-    connect(shortcutFileBrowser, SIGNAL(activated()), this, SLOT(fileBrowserFocusTriggered()));
+    QString shortcutFocusTreeStr = QString::fromStdString(settings->get("shortcut_focus_tree"));
+    QShortcut * shortcutFocusTree = new QShortcut(QKeySequence(shortcutFocusTreeStr), this);
+    connect(shortcutFocusTree, SIGNAL(activated()), this, SLOT(focusTreeTriggered()));
 
     QString shortcutOpenFileStr = QString::fromStdString(settings->get("shortcut_open_file"));
     QShortcut * shortcutOpenFile = new QShortcut(QKeySequence(shortcutOpenFileStr), this);
@@ -747,11 +751,19 @@ void MainWindow::nextTabTriggered()
     editorTabs->setActiveTab(index);
 }
 
-void MainWindow::fileBrowserFocusTriggered()
+void MainWindow::focusTreeTriggered()
 {
     if (!ui->sidebarDockWidget->isVisible()) ui->sidebarDockWidget->show();
-    ui->sidebarTabWidget->setCurrentIndex(0);
-    filebrowser->focus();
+    if (!filebrowser->isFocused() && !navigator->isFocused()) {
+        ui->sidebarTabWidget->setCurrentIndex(SIDEBAR_TAB_FILE_BROWSER_INDEX);
+        filebrowser->focus();
+    } else if (!navigator->isFocused() && !gitBrowser->isFocused()) {
+        ui->sidebarTabWidget->setCurrentIndex(SIDEBAR_TAB_NAVIGATOR_INDEX);
+        navigator->focus();
+    } else if (!gitBrowser->isFocused() && !filebrowser->isFocused()) {
+        ui->sidebarTabWidget->setCurrentIndex(SIDEBAR_TAB_GIT_BROWSER_INDEX);
+        gitBrowser->focus();
+    }
 }
 
 void MainWindow::on_actionOpenFile_triggered()

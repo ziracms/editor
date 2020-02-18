@@ -262,40 +262,53 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     // shortcuts
     QString shortcutBackTabStr = QString::fromStdString(settings->get("shortcut_backtab"));
     QShortcut * shortcutShiftTab = new QShortcut(QKeySequence(shortcutBackTabStr), this);
-    //shortcutShiftTab->setContext(Qt::ApplicationShortcut);
+    shortcutShiftTab->setContext(Qt::WidgetShortcut);
     connect(shortcutShiftTab, SIGNAL(activated()), this, SLOT(backtab()));
 
     QString shortcutSaveStr = QString::fromStdString(settings->get("shortcut_save"));
     QShortcut * shortcutSave = new QShortcut(QKeySequence(shortcutSaveStr), this);
+    shortcutSave->setContext(Qt::WidgetShortcut);
     connect(shortcutSave, SIGNAL(activated()), this, SLOT(save()));
 
     QString shortcutCommentStr = QString::fromStdString(settings->get("shortcut_comment"));
     QShortcut * shortcutComment = new QShortcut(QKeySequence(shortcutCommentStr), this);
+    shortcutComment->setContext(Qt::WidgetShortcut);
     connect(shortcutComment, SIGNAL(activated()), this, SLOT(comment()));
 
     QString shortcutOverwriteModeStr = QString::fromStdString(settings->get("shortcut_overwrite_mode"));
     QShortcut * shortcutOverwriteMode = new QShortcut(QKeySequence(shortcutOverwriteModeStr), this);
+    shortcutOverwriteMode->setContext(Qt::WidgetShortcut);
     connect(shortcutOverwriteMode, SIGNAL(activated()), this, SLOT(switchOverwrite()));
 
     QString shortcutTooltipStr = QString::fromStdString(settings->get("shortcut_tooltip"));
     QShortcut * shortcutTooltip = new QShortcut(QKeySequence(shortcutTooltipStr), this);
+    shortcutTooltip->setContext(Qt::WidgetShortcut);
     connect(shortcutTooltip, SIGNAL(activated()), this, SLOT(tooltip()));
 
     QString shortcutSearchStr = QString::fromStdString(settings->get("shortcut_search"));
     QShortcut * shortcutSearch = new QShortcut(QKeySequence(shortcutSearchStr), this);
+    shortcutSearch->setContext(Qt::WidgetWithChildrenShortcut);
     connect(shortcutSearch, SIGNAL(activated()), this, SLOT(findToggle()));
 
     QString shortcutHelpStr = QString::fromStdString(settings->get("shortcut_help"));
     QShortcut * shortcutHelp = new QShortcut(QKeySequence(shortcutHelpStr), this);
+    shortcutHelp->setContext(Qt::WidgetShortcut);
     connect(shortcutHelp, SIGNAL(activated()), this, SLOT(showHelpRequested()));
 
     QString shortcutDuplicateStr = QString::fromStdString(settings->get("shortcut_duplicate_line"));
     QShortcut * shortcutDuplicate = new QShortcut(QKeySequence(shortcutDuplicateStr), this);
+    shortcutDuplicate->setContext(Qt::WidgetShortcut);
     connect(shortcutDuplicate, SIGNAL(activated()), this, SLOT(duplicateLine()));
 
     QString shortcutDeleteStr = QString::fromStdString(settings->get("shortcut_delete_line"));
     QShortcut * shortcutDelete = new QShortcut(QKeySequence(shortcutDeleteStr), this);
+    shortcutDelete->setContext(Qt::WidgetShortcut);
     connect(shortcutDelete, SIGNAL(activated()), this, SLOT(deleteLine()));
+
+    QString shortcutContextMenuStr = QString::fromStdString(settings->get("shortcut_context_menu"));
+    QShortcut * shortcutContextMenu = new QShortcut(QKeySequence(shortcutContextMenuStr), this);
+    shortcutContextMenu->setContext(Qt::WidgetShortcut);
+    connect(shortcutContextMenu, SIGNAL(activated()), this, SLOT(contextMenu()));
 
     // order matters
     // annotation
@@ -1980,9 +1993,8 @@ void Editor::keyPressEvent(QKeyEvent *e)
 
 void Editor::keyReleaseEvent(QKeyEvent *e)
 {
-    bool ctrl = false, shift = false;
+    bool ctrl = false;
     if (e->modifiers() & Qt::ControlModifier) ctrl = true;
-    if (e->modifiers() & Qt::ShiftModifier) shift = true;
     int code = e->key();
     if (code == Qt::Key_Greater && !ctrl && modeOnKeyPress == MODE_HTML) {
         hideCompletePopup();
@@ -2045,14 +2057,15 @@ void Editor::keyReleaseEvent(QKeyEvent *e)
             curs.endEditBlock();
         }
     }
-    // context menu
-    if (code == Qt::Key_Return && ctrl && !shift) {
-        QContextMenuEvent * cEvent = new QContextMenuEvent(QContextMenuEvent::Keyboard, mapFromGlobal(QCursor::pos()));
-        contextMenuEvent(cEvent);
-        delete cEvent;
-    }
 
     QTextEdit::keyReleaseEvent(e);
+}
+
+void Editor::contextMenu()
+{
+    QContextMenuEvent * cEvent = new QContextMenuEvent(QContextMenuEvent::Keyboard, mapFromGlobal(QCursor::pos()));
+    contextMenuEvent(cEvent);
+    delete cEvent;
 }
 
 void Editor::insertFromMimeData(const QMimeData *source)

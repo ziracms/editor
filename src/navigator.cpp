@@ -22,6 +22,23 @@ void Navigator::clear()
     treeWidget->clear();
 }
 
+void Navigator::focus()
+{
+    treeWidget->setFocus();
+    QList<QTreeWidgetItem *> items = treeWidget->selectedItems();
+    if (items.count() == 0 && treeWidget->topLevelItemCount() > 0)  {
+        QTreeWidgetItem * item = treeWidget->topLevelItem(0);
+        if (item != nullptr) {
+            treeWidget->setCurrentItem(item);
+        }
+    }
+}
+
+bool Navigator::isFocused()
+{
+    return treeWidget->hasFocus();
+}
+
 void Navigator::build(ParsePHP::ParseResult result)
 {
     clear();

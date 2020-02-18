@@ -1,6 +1,7 @@
 #include "gitbrowser.h"
 #include <QDir>
 #include <QMenu>
+#include <QShortcut>
 #include <QKeyEvent>
 
 const QString GB_ACTION_NAME_ADD = "add";
@@ -19,11 +20,33 @@ GitBrowser::GitBrowser(QTreeWidget * widget, Settings * settings):
     msgColor = QColor(msgColorStr);
 
     treeWidget->installEventFilter(this);
+
+    QString shortcutContextMenuStr = QString::fromStdString(settings->get("shortcut_context_menu"));
+    QShortcut * shortcutContextMenu = new QShortcut(QKeySequence(shortcutContextMenuStr), treeWidget);
+    shortcutContextMenu->setContext(Qt::WidgetShortcut);
+    connect(shortcutContextMenu, SIGNAL(activated()), this, SLOT(contextMenu()));
 }
 
 void GitBrowser::clear()
 {
     treeWidget->clear();
+}
+
+void GitBrowser::focus()
+{
+    treeWidget->setFocus();
+    QList<QTreeWidgetItem *> items = treeWidget->selectedItems();
+    if (items.count() == 0 && treeWidget->topLevelItemCount() > 0)  {
+        QTreeWidgetItem * item = treeWidget->topLevelItem(0);
+        if (item != nullptr) {
+            treeWidget->setCurrentItem(item);
+        }
+    }
+}
+
+bool GitBrowser::isFocused()
+{
+    return treeWidget->hasFocus();
 }
 
 void GitBrowser::build(QString output)
@@ -123,12 +146,18 @@ bool GitBrowser::eventFilter(QObject *watched, QEvent *event)
     bool shift = false, ctrl = false;
     if (keyEvent->modifiers() & Qt::ShiftModifier) shift = true;
     if (keyEvent->modifiers() & Qt::ControlModifier) ctrl = true;
-    // context menu
+    // add on enter
     if(watched == treeWidget && event->type() == QEvent::KeyPress) {
-        if (keyEvent->key() == Qt::Key_Return && ctrl && !shift) {
+        if (keyEvent->key() == Qt::Key_Return && !ctrl && !shift) {
             QTreeWidgetItem * item = treeWidget->currentItem();
-            gitBrowserContextMenuRequested(item);
+            gbAddRequested(item);
         }
     }
     return false;
+}
+
+void GitBrowser::contextMenu()
+{
+    QTreeWidgetItem * item = treeWidget->currentItem();
+    gitBrowserContextMenuRequested(item);
 }

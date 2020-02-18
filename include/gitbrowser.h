@@ -12,6 +12,8 @@ public:
     GitBrowser(QTreeWidget * widget, Settings * settings);
     void build(QString output);
     void clear();
+    void focus();
+    bool isFocused();
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
     void gbAddRequested(QTreeWidgetItem * item);
@@ -22,6 +24,8 @@ private:
     QTreeWidget * treeWidget;
     QColor errorColor;
     QColor msgColor;
+public slots:
+    void contextMenu();
 private slots:
     void gitBrowserContextMenuRequested(QPoint p);
 signals:

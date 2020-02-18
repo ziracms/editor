@@ -23,6 +23,8 @@ public:
     void build(ParseJS::ParseResult result);
     void build(ParseCSS::ParseResult result);
     void clear();
+    void focus();
+    bool isFocused();
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 private:

@@ -171,6 +171,7 @@ public slots:
     void back();
     void forward();
     void findToggle();
+    void contextMenu();
 protected slots:
     void resizeEvent(QResizeEvent *event) override;
 private slots:

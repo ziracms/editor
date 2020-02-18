@@ -28,6 +28,7 @@ public:
     QString getRootPath();
     QString getHomeDir();
     void focus();
+    bool isFocused();
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
     void initFileBrowser(QString homeDir = "");
@@ -53,6 +54,8 @@ private:
     QString fileBrowserHomeDir;
     bool acceptEnter;
     bool editMode;
+public slots:
+    void contextMenu();
 private slots:
     void fileBrowserExpanded(QTreeWidgetItem * item);
     void fileBrowserCollapsed(QTreeWidgetItem * item);

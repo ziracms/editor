@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QKeyEvent>
 #include <QFileDialog>
+#include <QShortcut>
 #include "helper.h"
 #include "createfiledialog.h"
 #include "createfolderdialog.h"
@@ -39,6 +40,11 @@ FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * sett
     menu.hide();
     acceptEnter = true;
     editMode = false;
+
+    QString shortcutContextMenuStr = QString::fromStdString(settings->get("shortcut_context_menu"));
+    QShortcut * shortcutContextMenu = new QShortcut(QKeySequence(shortcutContextMenuStr), treeWidget);
+    shortcutContextMenu->setContext(Qt::WidgetShortcut);
+    connect(shortcutContextMenu, SIGNAL(activated()), this, SLOT(contextMenu()));
 }
 
 void FileBrowser::initFileBrowser(QString homeDir)
@@ -676,6 +682,11 @@ void FileBrowser::focus()
     }
 }
 
+bool FileBrowser::isFocused()
+{
+    return treeWidget->hasFocus();
+}
+
 bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
 {
     QKeyEvent * keyEvent = static_cast<QKeyEvent *>(event);
@@ -690,10 +701,9 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
     }
     // context menu
     if(watched == treeWidget && event->type() == QEvent::KeyPress) {
-        if (keyEvent->key() == Qt::Key_Return && acceptEnter && !editMode) {
+        if (keyEvent->key() == Qt::Key_Return && !ctrl && !shift && acceptEnter && !editMode) {
             QTreeWidgetItem * item = treeWidget->currentItem();
-            if (ctrl && !shift) fileBrowserContextMenuRequested(item);
-            else if (!shift) fileBrowserDoubleClicked(item, 0);
+            fileBrowserDoubleClicked(item, 0);
         } else if (keyEvent->key() == Qt::Key_Return && editMode) {
             editMode = false;
         } else if (keyEvent->key() == Qt::Key_Up) {
@@ -709,4 +719,10 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
         }
     }
     return false;
+}
+
+void FileBrowser::contextMenu()
+{
+    QTreeWidgetItem * item = treeWidget->currentItem();
+    fileBrowserContextMenuRequested(item);
 }
