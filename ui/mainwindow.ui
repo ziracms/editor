@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../qrc/image.qrc">
-    <normaloff>:/icons/zira.png</normaloff>:/icons/zira.png</iconset>
+    <normaloff>:/icons/zira.svg</normaloff>:/icons/zira.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="contextMenuPolicy">
