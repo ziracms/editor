@@ -475,12 +475,30 @@ QTreeView
 
 QTreeView:focus
 {
-    background: #323b38;
+    background: #3b3239;
+}
+
+QTreeView::item:hover
+{
+    background: #435cab;
+    color: #ffffff;
+}
+
+QTreeView::branch:closed:has-children:hover,
+QTreeView::branch:closed:has-children:!has-siblings:hover,
+QTreeView::branch:open:has-children:!has-siblings:hover,
+QTreeView::branch:open:has-children:has-siblings:hover,
+QTreeView::branch:closed:!has-children:hover,
+QTreeView::branch:closed:!has-children:!has-siblings:hover,
+QTreeView::branch:open:!has-children:!has-siblings:hover,
+QTreeView::branch:open:!has-children:has-siblings:hover
+{
+    background: #435cab;
 }
 
 QTreeView::item:selected
 {
-    background: #189487;
+    background: #1d8277;
     color: #ffffff;
 }
 
@@ -493,7 +511,7 @@ QTreeView::branch:closed:!has-children:!has-siblings:selected,
 QTreeView::branch:open:!has-children:!has-siblings:selected,
 QTreeView::branch:open:!has-children:has-siblings:selected
 {
-    background: #189487;
+    background: #1d8277;
 }
 
 QMainWindow::separator

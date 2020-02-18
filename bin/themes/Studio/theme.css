@@ -475,7 +475,25 @@ QTreeView
 
 QTreeView:focus
 {
-    background: #f4e4f6;
+    background: #f2e8f3;
+}
+
+QTreeView::item:hover
+{
+    background: #5b72bf;
+    color: #ffffff;
+}
+
+QTreeView::branch:closed:has-children:hover,
+QTreeView::branch:closed:has-children:!has-siblings:hover,
+QTreeView::branch:open:has-children:!has-siblings:hover,
+QTreeView::branch:open:has-children:has-siblings:hover,
+QTreeView::branch:closed:!has-children:hover,
+QTreeView::branch:closed:!has-children:!has-siblings:hover,
+QTreeView::branch:open:!has-children:!has-siblings:hover,
+QTreeView::branch:open:!has-children:has-siblings:hover
+{
+    background: #5b72bf;
 }
 
 QTreeView::item:selected

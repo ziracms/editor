@@ -58,7 +58,8 @@ QMenu
 
 QMenu::item
 {
-    background: #2a363b;
+    /*background: #2a363b;*/
+    background: #232f3d;
     padding: 5px 80px 5px 30px;
 }
 
@@ -107,7 +108,7 @@ QMenu::indicator:unchecked
 QMenu::separator
 {
     height: 1px;
-    background-color: #1e1e1e;
+    background-color: #273742;
     color: white;
 }
 
@@ -478,9 +479,27 @@ QTreeView:focus
     background: #342a3b;
 }
 
+QTreeView::item:hover
+{
+    background: #435cab;
+    color: #ffffff;
+}
+
+QTreeView::branch:closed:has-children:hover,
+QTreeView::branch:closed:has-children:!has-siblings:hover,
+QTreeView::branch:open:has-children:!has-siblings:hover,
+QTreeView::branch:open:has-children:has-siblings:hover,
+QTreeView::branch:closed:!has-children:hover,
+QTreeView::branch:closed:!has-children:!has-siblings:hover,
+QTreeView::branch:open:!has-children:!has-siblings:hover,
+QTreeView::branch:open:!has-children:has-siblings:hover
+{
+    background: #435cab;
+}
+
 QTreeView::item:selected
 {
-    background: #811894;
+    background: #2247bf;
     color: #ffffff;
 }
 
@@ -493,7 +512,7 @@ QTreeView::branch:closed:!has-children:!has-siblings:selected,
 QTreeView::branch:open:!has-children:!has-siblings:selected,
 QTreeView::branch:open:!has-children:has-siblings:selected
 {
-    background: #811894;
+    background: #2247bf;
 }
 
 QMainWindow::separator
