@@ -82,9 +82,6 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     setAcceptDrops(false);
 
     QString theme = QString::fromStdString(settings->get("theme"));
-    if (theme == THEME_SYSTEM) {
-        setFrameStyle(QFrame::NoFrame);
-    }
 
     //QFont generalFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     QFont generalFont = QApplication::font();
@@ -1300,16 +1297,16 @@ void Editor::updateWidgetsGeometry()
 
     int vScrollW = verticalScrollBar()->geometry().width();
     int hScrollH = horizontalScrollBar()->geometry().height();
-    if (!verticalScrollBar()->isVisible()) vScrollW = 0;
-    if (!horizontalScrollBar()->isVisible() || searchH == 0) hScrollH = 0;
+    if (verticalScrollBar()->maximum() <= verticalScrollBar()->minimum()) vScrollW = 0;
+    if (horizontalScrollBar()->maximum() <= horizontalScrollBar()->minimum() || searchH == 0) hScrollH = 0;
 
     search->setGeometry(QRect(cr.left(), cr.bottom()-searchH-hScrollH+1, cr.width()-mapW-vScrollW, searchH+hScrollH));
     QMargins searchMargins = search->contentsMargins();
     searchMargins.setBottom(hScrollH);
     search->setContentsMargins(searchMargins);
-    lineNumber->setGeometry(QRect(cr.left(), cr.top()+breadcrumbsH, lineW, cr.top()+cr.height()-searchH-hScrollH));
-    lineMark->setGeometry(QRect(cr.left()+lineW, cr.top()+breadcrumbsH, markW, cr.top()+cr.height()-searchH-hScrollH));
-    lineMap->setGeometry(QRect(cr.right()-mapW-vScrollW+1, cr.top(), mapW+vScrollW, cr.top()+cr.height()));
+    lineNumber->setGeometry(QRect(cr.left(), cr.top()+breadcrumbsH, lineW, cr.height()-breadcrumbsH-searchH-hScrollH));
+    lineMark->setGeometry(QRect(cr.left()+lineW, cr.top()+breadcrumbsH, markW, cr.height()-breadcrumbsH-searchH-hScrollH));
+    lineMap->setGeometry(QRect(cr.right()-mapW-vScrollW+1, cr.top(), mapW+vScrollW, cr.height()));
     breadcrumbs->setGeometry(QRect(cr.left(), cr.top(), cr.width()-mapW-vScrollW, breadcrumbsH));
     qaBtn->setGeometry(0, 0, lineW, breadcrumbsH-1);
 }

@@ -152,9 +152,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabWidget->tabBar()->setExpanding(false);
     ui->sidebarTabWidget->tabBar()->setExpanding(false);
     ui->outputTabWidget->tabBar()->setExpanding(false);
-    if (theme == THEME_SYSTEM) {
-        ui->tabWidget->tabBar()->setStyleSheet("QTabBar{qproperty-drawBase:0}");
-    }
 
     // tab list
     tabsListButton = new QToolButton(ui->tabWidget);
