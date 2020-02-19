@@ -10,6 +10,7 @@
 #include <QObject>
 #include <unordered_map>
 
+extern const QString COLOR_SCHEME_TYPE;
 extern const QString COLOR_SCHEME_LIGHT;
 extern const QString COLOR_SCHEME_DARK;
 

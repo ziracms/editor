@@ -82,15 +82,20 @@ MainWindow::MainWindow(QWidget *parent) :
         customThemesPath = customThemesPathDir.absolutePath();
         if (!Helper::folderExists(customThemesPath)) customThemesPath = "";
     }
-    if (theme != THEME_SYSTEM && !Helper::loadStylePlugin(pluginsDir)) {
-        QStyle * wStyle = QStyleFactory::create("Windows");
-        if (wStyle != nullptr) QApplication::setStyle(wStyle);
-    } else if (theme == THEME_SYSTEM) {
-        Helper::loadSystemStylePlugin(pluginsDir, colorSheme == COLOR_SCHEME_LIGHT);
-    }
     if (colorSheme == COLOR_SCHEME_DARK) settings->applyDarkColors();
     else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyLightColors();
     else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyCustomColors(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE);
+
+    QString schemeType = QString::fromStdString(settings->get(COLOR_SCHEME_TYPE.toStdString()));
+    if (theme != THEME_SYSTEM && !Helper::loadStylePlugin(pluginsDir, schemeType == COLOR_SCHEME_LIGHT)) {
+        QStyle * wStyle = QStyleFactory::create("Windows");
+        if (wStyle != nullptr) {
+            QApplication::setStyle(wStyle);
+            QApplication::setPalette(wStyle->standardPalette());
+        }
+    } else if (theme == THEME_SYSTEM) {
+        Helper::loadSystemStylePlugin(pluginsDir, schemeType == COLOR_SCHEME_LIGHT);
+    }
 
     ui->setupUi(this);
     setAcceptDrops(true);

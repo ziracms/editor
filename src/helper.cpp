@@ -33,7 +33,8 @@ const QString AUTHOR_CMS_URL = "https://github.com/ziracms/zira";
 const QString GITHUB_EDITOR_URL = "https://github.com/ziracms/editor";
 
 const QString APPLICATION_STYLE_PLUGIN = "QPlastiqueStyle";
-const QString APPLICATION_STYLE = "plastique";
+const QString APPLICATION_STYLE_LIGHT = "plastique";
+const QString APPLICATION_STYLE_DARK = "plastique-dark";
 const QString APPLICATION_SYSTEM_STYLE_PLUGIN = "AdwaitaStyle";
 const QString APPLICATION_SYSTEM_STYLE_LIGHT = "adwaita";
 const QString APPLICATION_SYSTEM_STYLE_DARK = "adwaita-dark";
@@ -299,7 +300,7 @@ SpellCheckerInterface * Helper::loadSpellChecker(QString path)
     return spellChecker;
 }
 
-bool Helper::loadStylePlugin(QString path)
+bool Helper::loadStylePlugin(QString path, bool light)
 {
     QObject * plugin = loadPlugin(APPLICATION_STYLE_PLUGIN, path);
     if (plugin == nullptr) return false;
@@ -308,9 +309,11 @@ bool Helper::loadStylePlugin(QString path)
         delete plugin;
         return false;
     }
-    QStyle * style = stylePlugin->create(APPLICATION_STYLE);
+    QString styleName = light ? APPLICATION_STYLE_LIGHT : APPLICATION_STYLE_DARK;
+    QStyle * style = stylePlugin->create(styleName);
     if (style == nullptr) return false;
     QApplication::setStyle(style);
+    QApplication::setPalette(style->standardPalette());
     return true;
 }
 
@@ -327,6 +330,7 @@ bool Helper::loadSystemStylePlugin(QString path, bool light)
     QStyle * style = stylePlugin->create(styleName);
     if (style == nullptr) return false;
     QApplication::setStyle(style);
+    QApplication::setPalette(style->standardPalette());
     return true;
 }
 

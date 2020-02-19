@@ -10,6 +10,7 @@
 #include <QTextStream>
 #include <QColor>
 
+const QString COLOR_SCHEME_TYPE = "scheme";
 const QString COLOR_SCHEME_LIGHT = "light";
 const QString COLOR_SCHEME_DARK = "dark";
 
@@ -110,6 +111,7 @@ Settings::Settings(QObject * parent) : QObject(parent)
 
 void Settings::applyLightColors()
 {
+    data[COLOR_SCHEME_TYPE.toStdString()] = COLOR_SCHEME_LIGHT.toStdString();
     data["editor_line_number_bg_color"] = "#eeeeee";
     data["editor_line_number_color"] = "#999999";
     data["editor_line_number_modified_bg_color"] = "#bdf1ad";
@@ -187,6 +189,7 @@ void Settings::applyLightColors()
 
 void Settings::applyDarkColors()
 {
+    data[COLOR_SCHEME_TYPE.toStdString()] = COLOR_SCHEME_DARK.toStdString();
     data["editor_line_number_bg_color"] = "#232627";
     data["editor_line_number_color"] = "#555555";
     data["editor_line_number_modified_bg_color"] = "#093833";
@@ -274,7 +277,7 @@ void Settings::applyCustomColors(QString path)
         k = s.mid(0, s.indexOf("=")).trimmed();
         v = s.mid(s.indexOf("=")+1).trimmed();
         if (k.size() == 0 || v.size() == 0) continue;
-        if (!QColor::isValidColor(v)) continue;
+        if (!QColor::isValidColor(v) && v != COLOR_SCHEME_LIGHT && v != COLOR_SCHEME_DARK) continue;
         data[k.toStdString()] = v.toStdString();
     }
     f.close();
