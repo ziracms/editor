@@ -80,6 +80,7 @@ protected:
     void compileSass(QString src, QString dst);
     void applyThemeColors();
     void updateTabsListButton();
+    void resetLastSearchParams();
 public slots:
     void setStatusBarText(QString text);
     void editorShowLine(int line);
@@ -239,6 +240,9 @@ private:
     QString lastSearchText;
     QString lastSearchExtensions;
     QStringList lastSearchExcludeDirs;
+    bool lastSearchOptionCase;
+    bool lastSearchOptionWord;
+    bool lastSearchOptionRegexp;
     QColor searchResultsColor;
     QColor outputColor;
     QColor outputBgColor;

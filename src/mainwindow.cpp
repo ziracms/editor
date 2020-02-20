@@ -306,9 +306,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->helpBrowser->document()->setDefaultStyleSheet("a { text-decoration: none; }");
     connect(ui->helpBrowser, SIGNAL(anchorClicked(QUrl)), this, SLOT(helpBrowserAnchorClicked(QUrl)));
 
-    lastSearchText = "";
-    lastSearchExtensions = "";
-    lastSearchExcludeDirs.clear();
+    resetLastSearchParams();
     connect(ui->searchListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(searchListItemDoubleClicked(QListWidgetItem*)));
 
     // todo tab is disabled by default
@@ -835,9 +833,7 @@ void MainWindow::on_actionCloseProject_triggered()
     reloadWords();
     disableActionsForEmptyProject();
     filebrowser->rebuildFileBrowserTree(filebrowser->getHomeDir());
-    lastSearchText = "";
-    lastSearchExtensions = "";
-    lastSearchExcludeDirs.clear();
+    resetLastSearchParams();
     // update window title
     setWindowTitleText("");
     gitTabRefreshRequested();
@@ -1330,6 +1326,18 @@ void MainWindow::on_actionHelpZiraCMS_triggered()
     QDesktopServices::openUrl(QUrl(AUTHOR_CMS_URL));
 }
 
+void MainWindow::resetLastSearchParams()
+{
+    lastSearchText = "";
+    lastSearchExtensions = "";
+    lastSearchExcludeDirs.clear();
+    lastSearchOptionCase = false;
+    lastSearchOptionWord = false;
+    lastSearchOptionRegexp = false;
+
+    ui->searchListWidget->clear();
+}
+
 void MainWindow::editorSearchInFilesRequested(QString text)
 {
     if (text.size() == 0) text = lastSearchText;
@@ -1351,6 +1359,21 @@ void MainWindow::editorSearchInFilesRequested(QString text)
     } else {
         dialog.clearExcludeDirs();
     }
+    if (lastSearchOptionCase) {
+        dialog.setCaseOption(true);
+    } else {
+        dialog.setCaseOption(false);
+    }
+    if (lastSearchOptionWord) {
+        dialog.setWordOption(true);
+    } else {
+        dialog.setWordOption(false);
+    }
+    if (lastSearchOptionRegexp) {
+        dialog.setRegexpOption(true);
+    } else {
+        dialog.setRegexpOption(false);
+    }
     dialog.focusText();
     if (dialog.exec() != QDialog::Accepted) return;
     QString searchDirectory = dialog.getDirectory();
@@ -1363,6 +1386,9 @@ void MainWindow::editorSearchInFilesRequested(QString text)
     lastSearchText = searchText;
     lastSearchExtensions = searchExtensions;
     lastSearchExcludeDirs = excludeDirs;
+    lastSearchOptionCase = searchOptionCase;
+    lastSearchOptionWord = searchOptionWord;
+    lastSearchOptionRegexp = searchOptionRegexp;
     if (searchDirectory.size() == 0 || searchText.size() == 0) return;
     if (!Helper::folderExists(searchDirectory)) return;
     hideQAPanel();
@@ -1789,9 +1815,7 @@ void MainWindow::projectOpenRequested(QString path)
     }
     filebrowser->rebuildFileBrowserTree(path);
     ui->outputEdit->clear();
-    lastSearchText = "";
-    lastSearchExtensions = "";
-    lastSearchExcludeDirs.clear();
+    resetLastSearchParams();
     enableActionsForOpenProject();
     setStatusBarText(tr("Scanning project..."));
     emit parseProject(project->getPath());
