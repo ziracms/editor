@@ -18,9 +18,15 @@ SearchDialog::SearchDialog(QWidget * parent) :
     connect(ui->searchDialogDirectoryLineEdit, SIGNAL(textChanged(QString)), this, SLOT(directoryChanged(QString)));
     connect(ui->searchDialogTextLineEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
     connect(ui->searchDialogChooseButton, SIGNAL(pressed()), this, SLOT(chooseButtonPressed()));
+    connect(ui->searchDialogExcludeButton, SIGNAL(pressed()), this, SLOT(excludeButtonPressed()));
 
     ui->buttonBox->setContentsMargins(0, 0, 20, 0);
     ui->searchDialogHeaderLabel->setProperty("abstract_label", true);
+
+    clearExcludeDirs();
+    QHBoxLayout * excludeLayout = new QHBoxLayout();
+    excludeLayout->setContentsMargins(0, 0, 0, 0);
+    ui->searchDialogExcludeFrame->setLayout(excludeLayout);
 
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
@@ -133,4 +139,69 @@ void SearchDialog::focusDirectory()
 void SearchDialog::focusText()
 {
     ui->searchDialogTextLineEdit->setFocus();
+}
+
+void SearchDialog::excludeButtonPressed()
+{
+    //QString dir = QFileDialog::getExistingDirectory(this, tr("Choose directory"), getDirectory(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString dir = Helper::getExistingDirectory(this, tr("Choose directory"), getDirectory());
+    if (dir.size() > 0) {
+        addExcludeDir(dir);
+    }
+}
+
+void SearchDialog::setExcludeDirs(QStringList dirs)
+{
+    for (QString dir : dirs) {
+        addExcludeDir(dir);
+    }
+}
+
+void SearchDialog::addExcludeDir(QString dir)
+{
+    if (dir.size() == 0) return;
+    if (dir.mid(dir.size()-1, 1) == "/") dir = dir.mid(0, dir.size()-1);
+    if (dir.indexOf(getDirectory()+"/") != 0) return;
+    if (excludeDirs.contains(dir)) return;
+    excludeDirs.append(dir);
+    addExcludeDirButton(dir);
+}
+
+void SearchDialog::removeExcludeDir(QString dir)
+{
+    if (!excludeDirs.contains(dir)) return;
+    excludeDirs.removeOne(dir);
+}
+
+void SearchDialog::clearExcludeDirs()
+{
+    excludeDirs.clear();
+}
+
+QStringList SearchDialog::getExcludeDirs()
+{
+    return excludeDirs;
+}
+
+void SearchDialog::addExcludeDirButton(QString dir)
+{
+    QString dirName = dir;
+    if (dirName.indexOf("/") >= 0) dirName = dirName.mid(dirName.lastIndexOf("/")+1);
+    QPushButton * btn = new QPushButton();
+    btn->setText(dirName);
+    btn->setIcon(QIcon(":/icons/close.png"));
+    btn->setToolTip(dir);
+    ui->searchDialogExcludeFrame->layout()->addWidget(btn);
+    connect(btn, SIGNAL(pressed()), this, SLOT(removeExcludeDirButton()));
+}
+
+void SearchDialog::removeExcludeDirButton()
+{
+    QPushButton * btnSender = qobject_cast<QPushButton*>(sender());
+    if (btnSender == nullptr) return;
+    QString dir = btnSender->toolTip();
+    removeExcludeDir(dir);
+    disconnect(btnSender, SIGNAL(pressed()), this, SLOT(removeExcludeDirButton()));
+    ui->searchDialogExcludeFrame->layout()->removeWidget(btnSender);
+    delete btnSender;
 }

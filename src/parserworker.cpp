@@ -251,7 +251,7 @@ void ParserWorker::parseProjectFile(QString file, QVariantMap & map)
     Project::parsePHPResult(result, map, file, dts);
 }
 
-void ParserWorker::searchInFiles(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp)
+void ParserWorker::searchInFiles(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp, QStringList excludeDirs)
 {
     if (isBusy) {
         emit message(tr("Worker is busy. Please wait..."));
@@ -273,13 +273,13 @@ void ParserWorker::searchInFiles(QString searchDirectory, QString searchText, QS
     }
     searchResultsCount = 0;
     searchBreaked = false;
-    searchInDir(searchDirectory, searchText, allowedExtensions, searchOptionCase, searchOptionWord, searchOptionRegexp);
+    searchInDir(searchDirectory, searchText, allowedExtensions, searchOptionCase, searchOptionWord, searchOptionRegexp, excludeDirs);
     emit searchInFilesFinished();
     emit deactivateProgress();
     isBusy = false;
 }
 
-void ParserWorker::searchInDir(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp)
+void ParserWorker::searchInDir(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp, QStringList excludeDirs)
 {
     QDirIterator it(searchDirectory, QDir::AllEntries | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
     while (it.hasNext()) {
@@ -289,8 +289,9 @@ void ParserWorker::searchInDir(QString searchDirectory, QString searchText, QStr
         QFileInfo fInfo(path);
         if (!fInfo.exists() || !fInfo.isReadable()) continue;
         if (fInfo.isDir() && (fInfo.fileName() == ".git" || fInfo.fileName() == PROJECT_SUBDIR || fInfo.fileName() == ".idea" || fInfo.fileName() == ".vscode" || fInfo.fileName() == "nbproject")) continue;
+        if (fInfo.isDir() && excludeDirs.contains(fInfo.absoluteFilePath())) continue;
         if (fInfo.isDir()) {
-            searchInDir(path, searchText, searchExtensions, searchOptionCase, searchOptionWord, searchOptionRegexp);
+            searchInDir(path, searchText, searchExtensions, searchOptionCase, searchOptionWord, searchOptionRegexp, excludeDirs);
         } else if (fInfo.isFile()) {
             if (searchExtensions.size() > 0) {
                 int p = path.lastIndexOf(".");

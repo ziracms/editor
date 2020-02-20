@@ -22,7 +22,7 @@ public:
 protected:
     void parseProjectDir(QString dir, QStringList & files);
     void parseProjectFile(QString file, QVariantMap & map);
-    void searchInDir(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp);
+    void searchInDir(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp, QStringList excludeDirs);
     void searchInFile(QString file, QString searchText, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp);
     void searchInFilesResultFound(QString file, QString lineText, int line, int symbol);
     void quickFindInDir(QString startDir, QString dir, QString text);
@@ -68,7 +68,7 @@ public slots:
     void parseJS(int tabIndex, QString text);
     void parseCSS(int tabIndex, QString text);
     void parseProject(QString path);
-    void searchInFiles(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp);
+    void searchInFiles(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp, QStringList excludeDirs);
     void gitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
     void serversCommand(QString command, QString pwd);
     void sassCommand(QString src, QString dst);

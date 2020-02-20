@@ -234,6 +234,7 @@ private:
     QRegularExpression phpManualBreadcrumbsExpr;
     QString lastSearchText;
     QString lastSearchExtensions;
+    QStringList lastSearchExcludeDirs;
     QColor searchResultsColor;
     QColor outputColor;
     QColor outputBgColor;
@@ -261,7 +262,7 @@ signals:
     void parseJS(int tabIndex, QString content);
     void parseCSS(int tabIndex, QString content);
     void parseProject(QString path);
-    void searchInFiles(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp);
+    void searchInFiles(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp, QStringList excludeDirs);
     void gitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
     void serversCommand(QString command, QString pwd);
     void sassCommand(QString src, QString dst);

@@ -256,7 +256,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(parseJS(int,QString)), parserWorker, SLOT(parseJS(int,QString)));
     connect(this, SIGNAL(parseCSS(int,QString)), parserWorker, SLOT(parseCSS(int,QString)));
     connect(this, SIGNAL(parseProject(QString)), parserWorker, SLOT(parseProject(QString)));
-    connect(this, SIGNAL(searchInFiles(QString,QString,QString,bool,bool,bool)), parserWorker, SLOT(searchInFiles(QString,QString,QString,bool,bool,bool)));
+    connect(this, SIGNAL(searchInFiles(QString,QString,QString,bool,bool,bool,QStringList)), parserWorker, SLOT(searchInFiles(QString,QString,QString,bool,bool,bool,QStringList)));
     connect(this, SIGNAL(gitCommand(QString, QString, QStringList, bool)), parserWorker, SLOT(gitCommand(QString, QString, QStringList, bool)));
     connect(this, SIGNAL(serversCommand(QString, QString)), parserWorker, SLOT(serversCommand(QString,QString)));
     connect(this, SIGNAL(sassCommand(QString, QString)), parserWorker, SLOT(sassCommand(QString,QString)));
@@ -303,6 +303,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     lastSearchText = "";
     lastSearchExtensions = "";
+    lastSearchExcludeDirs.clear();
     connect(ui->searchListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(searchListItemDoubleClicked(QListWidgetItem*)));
 
     // todo tab is disabled by default
@@ -829,6 +830,9 @@ void MainWindow::on_actionCloseProject_triggered()
     reloadWords();
     disableActionsForEmptyProject();
     filebrowser->rebuildFileBrowserTree(filebrowser->getHomeDir());
+    lastSearchText = "";
+    lastSearchExtensions = "";
+    lastSearchExcludeDirs.clear();
     // update window title
     setWindowTitleText("");
     gitTabRefreshRequested();
@@ -1337,6 +1341,11 @@ void MainWindow::editorSearchInFilesRequested(QString text)
     } else {
         dialog.setExtensions(".*");
     }
+    if (lastSearchExcludeDirs.size() > 0) {
+        dialog.setExcludeDirs(lastSearchExcludeDirs);
+    } else {
+        dialog.clearExcludeDirs();
+    }
     dialog.focusText();
     if (dialog.exec() != QDialog::Accepted) return;
     QString searchDirectory = dialog.getDirectory();
@@ -1345,8 +1354,10 @@ void MainWindow::editorSearchInFilesRequested(QString text)
     bool searchOptionCase = dialog.getCaseOption();
     bool searchOptionWord = dialog.getWordOption();
     bool searchOptionRegexp = dialog.getRegexpOption();
+    QStringList excludeDirs = dialog.getExcludeDirs();
     lastSearchText = searchText;
     lastSearchExtensions = searchExtensions;
+    lastSearchExcludeDirs = excludeDirs;
     if (searchDirectory.size() == 0 || searchText.size() == 0) return;
     if (!Helper::folderExists(searchDirectory)) return;
     hideQAPanel();
@@ -1355,7 +1366,7 @@ void MainWindow::editorSearchInFilesRequested(QString text)
     ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_SEARCH_INDEX);
     ui->outputTabWidget->setTabText(OUTPUT_TAB_SEARCH_INDEX, tr("Searching..."));
     setStatusBarText("Searching...");
-    emit searchInFiles(searchDirectory, searchText, searchExtensions, searchOptionCase, searchOptionWord, searchOptionRegexp);
+    emit searchInFiles(searchDirectory, searchText, searchExtensions, searchOptionCase, searchOptionWord, searchOptionRegexp, excludeDirs);
 }
 
 void MainWindow::searchInFilesFound(QString file, QString lineText, int line, int symbol)
@@ -1770,6 +1781,9 @@ void MainWindow::projectOpenRequested(QString path)
     }
     filebrowser->rebuildFileBrowserTree(path);
     ui->outputEdit->clear();
+    lastSearchText = "";
+    lastSearchExtensions = "";
+    lastSearchExcludeDirs.clear();
     enableActionsForOpenProject();
     setStatusBarText(tr("Scanning project..."));
     emit parseProject(project->getPath());

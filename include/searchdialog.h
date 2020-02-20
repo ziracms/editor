@@ -30,14 +30,23 @@ public:
     bool getRegexpOption();
     void focusDirectory();
     void focusText();
+    void setExcludeDirs(QStringList dirs);
+    void addExcludeDir(QString dir);
+    void removeExcludeDir(QString dir);
+    void clearExcludeDirs();
+    QStringList getExcludeDirs();
+    void addExcludeDirButton(QString dir);
 protected:
     void checkPath(QString directory, QString text);
 private:
     Ui::SearchDialog * ui;
+    QStringList excludeDirs;
 private slots:
     void directoryChanged(QString path);
     void textChanged(QString text);
     void chooseButtonPressed(void);
+    void excludeButtonPressed(void);
+    void removeExcludeDirButton();
 };
 
 #endif // SEARCHDIALOG_H

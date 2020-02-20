@@ -10,13 +10,13 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>400</height>
+    <height>450</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>600</width>
-    <height>400</height>
+    <height>450</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -154,7 +154,7 @@
          <widget class="QLabel" name="searchDialogDirectoryLabel">
           <property name="minimumSize">
            <size>
-            <width>100</width>
+            <width>150</width>
             <height>0</height>
            </size>
           </property>
@@ -193,7 +193,7 @@
          <widget class="QLabel" name="searchDialogTextLabel">
           <property name="minimumSize">
            <size>
-            <width>100</width>
+            <width>150</width>
             <height>0</height>
            </size>
           </property>
@@ -210,6 +210,12 @@
         </item>
         <item>
          <widget class="QLineEdit" name="searchDialogTextLineEdit">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="maximumSize">
            <size>
             <width>300</width>
@@ -245,7 +251,7 @@
          <widget class="QLabel" name="searchDialogOptionsLabel">
           <property name="minimumSize">
            <size>
-            <width>100</width>
+            <width>150</width>
             <height>0</height>
            </size>
           </property>
@@ -306,6 +312,55 @@
        </layout>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="searchDialogExcludeLayout">
+        <property name="leftMargin">
+         <number>20</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>20</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="searchDialogExcludeLabel">
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Exclude folders:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="searchDialogExcludeFrame">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="searchDialogExcludeButton">
+          <property name="text">
+           <string>Choose</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="searchDialogExtensionsLayout">
         <property name="leftMargin">
          <number>20</number>
@@ -317,7 +372,7 @@
          <widget class="QLabel" name="searchDialogExtensionsLabel">
           <property name="minimumSize">
            <size>
-            <width>100</width>
+            <width>150</width>
             <height>0</height>
            </size>
           </property>
