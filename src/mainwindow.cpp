@@ -216,6 +216,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // progress line
     progressLine = new ProgressLine(settings, this);
+    progressInfo = new ProgressInfo(settings, this);
 
     // enable php lint & cs
     parsePHPLintEnabled = false;
@@ -261,12 +262,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(serversCommand(QString, QString)), parserWorker, SLOT(serversCommand(QString,QString)));
     connect(this, SIGNAL(sassCommand(QString, QString)), parserWorker, SLOT(sassCommand(QString,QString)));
     connect(this, SIGNAL(quickFind(QString, QString, WordsMapList, QStringList)), parserWorker, SLOT(quickFind(QString, QString, WordsMapList, QStringList)));
+    connect(progressInfo, SIGNAL(cancelTriggered()), parserWorker, SLOT(cancelRequested()));
     connect(parserWorker, SIGNAL(lintFinished(int,QStringList,QStringList,QString)), this, SLOT(parseLintFinished(int,QStringList,QStringList,QString)));
     connect(parserWorker, SIGNAL(phpcsFinished(int,QStringList,QStringList)), this, SLOT(parsePHPCSFinished(int,QStringList,QStringList)));
     connect(parserWorker, SIGNAL(parseMixedFinished(int,ParsePHP::ParseResult)), this, SLOT(parseMixedFinished(int,ParsePHP::ParseResult)));
     connect(parserWorker, SIGNAL(parseJSFinished(int,ParseJS::ParseResult)), this, SLOT(parseJSFinished(int,ParseJS::ParseResult)));
     connect(parserWorker, SIGNAL(parseCSSFinished(int,ParseCSS::ParseResult)), this, SLOT(parseCSSFinished(int,ParseCSS::ParseResult)));
-    connect(parserWorker, SIGNAL(parseProjectFinished()), this, SLOT(parseProjectFinished()));
+    connect(parserWorker, SIGNAL(parseProjectFinished(bool)), this, SLOT(parseProjectFinished(bool)));
     connect(parserWorker, SIGNAL(parseProjectProgress(int)), this, SLOT(sidebarProgressChanged(int)));
     connect(parserWorker, SIGNAL(searchInFilesFound(QString,QString,int,int)), this, SLOT(searchInFilesFound(QString,QString,int,int)));
     connect(parserWorker, SIGNAL(searchInFilesFinished()), this, SLOT(searchInFilesFinished()));
@@ -277,6 +279,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(parserWorker, SIGNAL(quickFound(QString,QString,QString,int)), qa, SLOT(quickFound(QString,QString,QString,int)));
     connect(parserWorker, SIGNAL(activateProgress()), this, SLOT(activateProgressLine()));
     connect(parserWorker, SIGNAL(deactivateProgress()), this, SLOT(deactivateProgressLine()));
+    connect(parserWorker, SIGNAL(activateProgressInfo(QString)), this, SLOT(activateProgressInfo(QString)));
+    connect(parserWorker, SIGNAL(deactivateProgressInfo()), this, SLOT(deactivateProgressInfo()));
+    connect(parserWorker, SIGNAL(updateProgressInfo(QString)), this, SLOT(updateProgressInfo(QString)));
     parserThread.start();
 
     tmpDisableParser = false;
@@ -1445,6 +1450,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 {
     hideQAPanel();
     progressLine->updateGeometry(ui->menuBar->geometry().x(), ui->menuBar->geometry().y() + ui->menuBar->geometry().height(), ui->menuBar->geometry().width());
+    progressInfo->updateGeometry(ui->statusBar->geometry().x(), ui->statusBar->geometry().y(), ui->statusBar->width(), ui->statusBar->height());
     updateTabsListButton();
     QMainWindow::resizeEvent(event);
 }
@@ -1726,15 +1732,17 @@ void MainWindow::parseCSSFinished(int tabIndex, ParseCSS::ParseResult result)
     qa->setParseResult(result, textEditor->getFileName());
 }
 
-void MainWindow::parseProjectFinished()
+void MainWindow::parseProjectFinished(bool success)
 {
-    setStatusBarText(tr("Loading project..."));
-    reloadWords();
-    project->loadWords(completeWords, highlightWords, helpWords);
+    if (success) {
+        setStatusBarText(tr("Loading project..."));
+        reloadWords();
+        project->loadWords(completeWords, highlightWords, helpWords);
+    }
     setStatusBarText(tr(""));
     if (ui->sidebarProgressBarWrapperWidget->isVisible()) ui->sidebarProgressBarWrapperWidget->hide();
     editorTabs->initHighlighters();
-    showPopupText(tr("Project '%1' updated").arg(project->getName()));
+    if (success) showPopupText(tr("Project '%1' updated").arg(project->getName()));
 }
 
 void MainWindow::projectCreateRequested(QString name, QString path, bool lintEnabled, bool csEnabled)
@@ -2175,6 +2183,22 @@ void MainWindow::activateProgressLine()
 void MainWindow::deactivateProgressLine()
 {
     progressLine->deactivate();
+}
+
+void MainWindow::activateProgressInfo(QString text)
+{
+    progressInfo->setText(text);
+    progressInfo->activate();
+}
+
+void MainWindow::deactivateProgressInfo()
+{
+    progressInfo->deactivate();
+}
+
+void MainWindow::updateProgressInfo(QString text)
+{
+    progressInfo->setText(text);
 }
 
 void MainWindow::updateTabsListButton()

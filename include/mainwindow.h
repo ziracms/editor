@@ -27,6 +27,7 @@
 #include "spellcheckerinterface.h"
 #include "quickaccess.h"
 #include "progressline.h"
+#include "progressinfo.h"
 #include "popup.h"
 #include "tabslist.h"
 #include "types.h"
@@ -158,7 +159,7 @@ private slots:
     void parseMixedFinished(int tabIndex, ParsePHP::ParseResult result);
     void parseJSFinished(int tabIndex, ParseJS::ParseResult result);
     void parseCSSFinished(int tabIndex, ParseCSS::ParseResult result);
-    void parseProjectFinished();
+    void parseProjectFinished(bool success = true);
     void projectCreateRequested(QString name, QString path, bool lintEnabled, bool csEnabled);
     void projectEditRequested(QString name, QString path, bool lintEnabled, bool csEnabled);
     void projectOpenRequested(QString path);
@@ -207,6 +208,9 @@ private slots:
     void outputActionTriggered(bool checked);
     void activateProgressLine();
     void deactivateProgressLine();
+    void activateProgressInfo(QString text);
+    void updateProgressInfo(QString text);
+    void deactivateProgressInfo();
     void editorTabsResize();
     void tabsListTriggered();
     void tabsListSelected(int index);
@@ -251,6 +255,7 @@ private:
     QuickAccess * qa;
     Popup * popup;
     ProgressLine * progressLine;
+    ProgressInfo * progressInfo;
     TabsList * tabsList;
     QStringList args;
     bool tmpDisableParser;

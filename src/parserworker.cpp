@@ -96,6 +96,7 @@ ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(paren
     isBusy = false;
     quickResultsCount = 0;
     quickBreaked = false;
+    wantStop = false;
 }
 
 void ParserWorker::disable()
@@ -201,26 +202,37 @@ void ParserWorker::parseProject(QString path)
         return;
     }
     isBusy = true;
+    wantStop = false;
     QStringList files;
     emit activateProgress();
+    emit activateProgressInfo(tr("Scanning")+": "+path);
     parseProjectDir(path, files);
     QVariantMap map = Project::createPHPResultMap();
     QVariantMap data = Project::loadPHPDataMap(path);
     Project::checkParsePHPFilesModified(files, data, map);
+    bool isBreaked = false;
     for (int i=0; i<files.size(); i++) {
-        if (!enabled) break;
+        if (!enabled || wantStop) {
+            isBreaked = true;
+            break;
+        }
         QString file = files.at(i);
         parseProjectFile(file, map);
         int v = (i + 1) * 100 / files.size();
         emit parseProjectProgress(v);
     }
-    Project::savePHPResults(path, map);
+    if (!isBreaked) {
+        emit updateProgressInfo(tr("Updating project")+"...");
+        Project::savePHPResults(path, map);
+    }
     map.clear();
     data.clear();
     files.clear();
-    emit parseProjectFinished();
+    emit parseProjectFinished(!isBreaked);
     emit deactivateProgress();
+    emit deactivateProgressInfo();
     isBusy = false;
+    wantStop = false;
 }
 
 void ParserWorker::parseProjectDir(QString dir, QStringList & files)
@@ -242,6 +254,7 @@ void ParserWorker::parseProjectFile(QString file, QVariantMap & map)
 {
     QCoreApplication::processEvents();
     if (!Helper::fileExists(file)) return;
+    emit updateProgressInfo(tr("Scanning")+": "+file);
     QString content = Helper::loadTextFile(file, encoding, encodingFallback, true);
     ParsePHP parser;
     ParsePHP::ParseResult result = parser.parse(content);
@@ -258,8 +271,10 @@ void ParserWorker::searchInFiles(QString searchDirectory, QString searchText, QS
         return;
     }
     isBusy = true;
+    wantStop = false;
     if (!Helper::folderExists(searchDirectory) || searchText.size() == 0) return;
     emit activateProgress();
+    emit activateProgressInfo(tr("Searching in")+": "+searchDirectory);
     QString allowedExtensions = "";
     QStringList searchExtensionsList = searchExtensions.split(",");
     for (int i=0; i<searchExtensionsList.size(); i++) {
@@ -276,7 +291,9 @@ void ParserWorker::searchInFiles(QString searchDirectory, QString searchText, QS
     searchInDir(searchDirectory, searchText, allowedExtensions, searchOptionCase, searchOptionWord, searchOptionRegexp, excludeDirs);
     emit searchInFilesFinished();
     emit deactivateProgress();
+    emit deactivateProgressInfo();
     isBusy = false;
+    wantStop = false;
 }
 
 void ParserWorker::searchInDir(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp, QStringList excludeDirs)
@@ -284,7 +301,7 @@ void ParserWorker::searchInDir(QString searchDirectory, QString searchText, QStr
     QDirIterator it(searchDirectory, QDir::AllEntries | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
     while (it.hasNext()) {
         if (!enabled) break;
-        if (searchBreaked) break;
+        if (searchBreaked || wantStop) break;
         QString path = it.next();
         QFileInfo fInfo(path);
         if (!fInfo.exists() || !fInfo.isReadable()) continue;
@@ -309,6 +326,7 @@ void ParserWorker::searchInFile(QString file, QString searchText, bool searchOpt
 {
     QCoreApplication::processEvents();
     if (!Helper::fileExists(file) || searchText.size() == 0) return;
+    emit updateProgressInfo(tr("Searching in")+": "+file);
     QString content = Helper::loadTextFile(file, encoding, encodingFallback, true);
     Parse parser;
     if (!searchOptionWord && !searchOptionRegexp) {
@@ -316,7 +334,7 @@ void ParserWorker::searchInFile(QString file, QString searchText, bool searchOpt
         int p = -1, offset = 0;
         Qt::CaseSensitivity cs = searchOptionCase ? Qt::CaseSensitive : Qt::CaseInsensitive;
         do {
-            if (searchBreaked) break;
+            if (searchBreaked || wantStop) break;
             p = content.indexOf(searchText, offset, cs);
             if (p >= 0) {
                 offset = p + searchText.size();
@@ -333,7 +351,7 @@ void ParserWorker::searchInFile(QString file, QString searchText, bool searchOpt
         QRegularExpression regexp = QRegularExpression("\\b"+QRegularExpression::escape(searchText)+"\\b", opt);
         if (!regexp.isValid()) return;
         do {
-            if (searchBreaked) break;
+            if (searchBreaked || wantStop) break;
             QRegularExpressionMatch match = regexp.match(content, offset);
             p = match.capturedStart();
             if (p >= 0) {
@@ -351,7 +369,7 @@ void ParserWorker::searchInFile(QString file, QString searchText, bool searchOpt
         QRegularExpression regexp = QRegularExpression(searchText, opt);
         if (!regexp.isValid()) return;
         do {
-            if (searchBreaked) break;
+            if (searchBreaked || wantStop) break;
             QRegularExpressionMatch match = regexp.match(content, offset);
             p = match.capturedStart();
             if (p >= 0) {
@@ -553,4 +571,9 @@ void ParserWorker::quickFindInDir(QString startDir, QString dir, QString text)
             }
         }
     }
+}
+
+void ParserWorker::cancelRequested()
+{
+    wantStop = true;
 }

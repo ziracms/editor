@@ -43,13 +43,14 @@ private:
     bool isBusy;
     int quickResultsCount;
     bool quickBreaked;
+    bool wantStop;
 signals:
     void lintFinished(int tabIndex, QStringList errorTexts, QStringList errorLines, QString output);
     void phpcsFinished(int tabIndex, QStringList errorTexts, QStringList errorLines);
     void parseMixedFinished(int tabIndex, ParsePHP::ParseResult result);
     void parseJSFinished(int tabIndex, ParseJS::ParseResult result);
     void parseCSSFinished(int tabIndex, ParseCSS::ParseResult result);
-    void parseProjectFinished();
+    void parseProjectFinished(bool success = true);
     void parseProjectProgress(int v);
     void searchInFilesFound(QString file, QString lineText, int line, int symbol);
     void searchInFilesFinished();
@@ -60,6 +61,9 @@ signals:
     void quickFound(QString text, QString info, QString file, int line);
     void activateProgress();
     void deactivateProgress();
+    void activateProgressInfo(QString text);
+    void deactivateProgressInfo();
+    void updateProgressInfo(QString text);
 public slots:
     void disable();
     void lint(int tabIndex, QString path);
@@ -73,6 +77,7 @@ public slots:
     void serversCommand(QString command, QString pwd);
     void sassCommand(QString src, QString dst);
     void quickFind(QString dir, QString text, WordsMapList words, QStringList wordPrefixes);
+    void cancelRequested();
 };
 
 #endif // PARSERWORKER_H
