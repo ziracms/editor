@@ -70,6 +70,7 @@ signals:
     void editorShowPopupErrorRequested(QString text);
     void gitTabRefreshRequested();
     void editorTabsResize();
+    void editorPaneResize();
 public slots:
     void openFile(QString filepath, bool initHighlight = true);
     void fileBrowserCreated(QString path);

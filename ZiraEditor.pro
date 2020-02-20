@@ -71,7 +71,8 @@ SOURCES += \
     src/annotation.cpp \
     src/spellcheckerinterface.cpp \
     src/plugininterface.cpp \
-    src/spellwords.cpp
+    src/spellwords.cpp \
+    src/welcome.cpp
 
 HEADERS += \
     include/fileiconprovider.h \
@@ -120,7 +121,8 @@ HEADERS += \
     include/annotation.h \
     include/spellcheckerinterface.h \
     include/plugininterface.h \
-    include/spellwords.h
+    include/spellwords.h \
+    include/welcome.h
 
 FORMS += \
     ui/mainwindow.ui \
@@ -130,7 +132,8 @@ FORMS += \
     ui/search.ui \
     ui/editproject.ui \
     ui/settings.ui \
-    ui/helpdialog.ui
+    ui/helpdialog.ui \
+    ui/welcome.ui
 
 RESOURCES += \
     qrc/highlight.qrc \

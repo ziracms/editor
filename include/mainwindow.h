@@ -30,6 +30,7 @@
 #include "progressinfo.h"
 #include "popup.h"
 #include "tabslist.h"
+#include "welcome.h"
 #include "types.h"
 
 namespace Ui {
@@ -41,6 +42,7 @@ namespace Ui {
     class SearchDialog;
     class SettingsDialog;
     class HelpDialog;
+    class WelcomeScreen;
 }
 
 Q_DECLARE_METATYPE(ParsePHP::ParseResult)
@@ -81,17 +83,20 @@ protected:
     void applyThemeColors();
     void updateTabsListButton();
     void resetLastSearchParams();
+    void updateWelcomeScreen();
+    void showWelcomeScreen();
+    void hideWelcomeScreen();
 public slots:
     void setStatusBarText(QString text);
     void editorShowLine(int line);
     void editorShowLineSymbol(int line, int symbol);
     void restartApp();
+    void on_actionOpenProject_triggered();
+    void on_actionNewProject_triggered();
 private slots:
     void on_actionOpenFile_triggered();
     void on_actionNewFile_triggered();
     void on_actionNewFolder_triggered();
-    void on_actionNewProject_triggered();
-    void on_actionOpenProject_triggered();
     void on_actionUpdateProject_triggered();
     void on_actionRescanProject_triggered();
     void on_actionCloseProject_triggered();
@@ -213,6 +218,7 @@ private slots:
     void updateProgressInfo(QString text);
     void deactivateProgressInfo();
     void editorTabsResize();
+    void editorPaneResize();
     void tabsListTriggered();
     void tabsListSelected(int index);
 private:
@@ -263,6 +269,7 @@ private:
     TabsList * tabsList;
     QStringList args;
     bool tmpDisableParser;
+    Welcome * welcomeScreen;
 signals:
     void disableWorker();
     void parseLint(int tabIndex, QString path);

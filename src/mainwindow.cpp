@@ -128,6 +128,9 @@ MainWindow::MainWindow(QWidget *parent) :
     helpWords = new HelpWords();
     spellWords = new SpellWords();
 
+    // welcome screen
+    welcomeScreen = new Welcome(schemeType == COLOR_SCHEME_LIGHT, this);
+
     // editor tabs
     editorTabs = new EditorTabs(spellChecker, ui->tabWidget, settings, highlightWords, completeWords, helpWords, spellWords);
     connect(editorTabs, SIGNAL(statusBarText(QString)), this, SLOT(setStatusBarText(QString)));
@@ -153,6 +156,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(editorTabs, SIGNAL(editorShowPopupErrorRequested(QString)), this, SLOT(showPopupError(QString)));
     connect(editorTabs, SIGNAL(gitTabRefreshRequested()), this, SLOT(gitTabRefreshRequested()));
     connect(editorTabs, SIGNAL(editorTabsResize()), this, SLOT(editorTabsResize()));
+    connect(editorTabs, SIGNAL(editorPaneResize()), this, SLOT(editorPaneResize()));
 
     ui->tabWidget->tabBar()->setExpanding(false);
     ui->sidebarTabWidget->tabBar()->setExpanding(false);
@@ -727,6 +731,7 @@ void MainWindow::enableActionsForOpenProject()
 
 void MainWindow::projectLoadOnStart()
 {
+    showWelcomeScreen();
     QSettings windowSettings;
     QString projectPath = windowSettings.value("project_path").toString();
     if (projectPath.size() > 0 && Helper::folderExists(projectPath) && project->exists(projectPath)) {
@@ -1478,7 +1483,25 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     progressLine->updateGeometry(ui->menuBar->geometry().x(), ui->menuBar->geometry().y() + ui->menuBar->geometry().height(), ui->menuBar->geometry().width());
     progressInfo->updateGeometry(ui->statusBar->geometry().x(), ui->statusBar->geometry().y(), ui->statusBar->width(), ui->statusBar->height());
     updateTabsListButton();
+    updateWelcomeScreen();
     QMainWindow::resizeEvent(event);
+}
+
+void MainWindow::showWelcomeScreen()
+{
+    welcomeScreen->show();
+    updateWelcomeScreen();
+}
+
+void MainWindow::updateWelcomeScreen()
+{
+    QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
+    welcomeScreen->setGeometry(editorTabsRectM.x(), editorTabsRectM.y(), editorTabsRectM.width(), editorTabsRectM.height());
+}
+
+void MainWindow::hideWelcomeScreen()
+{
+    welcomeScreen->hide();
 }
 
 void MainWindow::editorFocused()
@@ -1561,6 +1584,7 @@ void MainWindow::editorFilenameChanged(QString name)
 
 void MainWindow::editorTabOpened(int)
 {
+    hideWelcomeScreen();
     navigator->clear();
     enableActionsForOpenTabs();
     Editor * editor = editorTabs->getActiveEditor();
@@ -1594,6 +1618,7 @@ void MainWindow::editorTabClosed(int)
     Editor * editor = editorTabs->getActiveEditor();
     if (editor == nullptr) {
         disableActionsForEmptyTabs();
+        showWelcomeScreen();
     }
     updateTabsListButton();
 }
@@ -2238,6 +2263,11 @@ void MainWindow::updateTabsListButton()
 void MainWindow::editorTabsResize()
 {
     updateTabsListButton();
+}
+
+void MainWindow::editorPaneResize()
+{
+    updateWelcomeScreen();
 }
 
 

@@ -43,6 +43,7 @@ EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget
     tabWidget->setCursor(Qt::ArrowCursor);
 
     tabWidget->tabBar()->installEventFilter(this);
+    tabWidget->installEventFilter(this);
 }
 
 Editor * EditorTabs::getActiveEditor()
@@ -641,6 +642,9 @@ bool EditorTabs::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched == tabWidget->tabBar() && event->type() == QEvent::Resize) {
         emit editorTabsResize();
+    }
+    if (watched == tabWidget && event->type() == QEvent::Resize) {
+        emit editorPaneResize();
     }
     return false;
 }
