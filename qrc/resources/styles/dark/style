@@ -789,7 +789,7 @@ QDockWidget
     titlebar-normal-icon: url(:/icons/blank.png);
     padding: 5px;
 }
-
+/*
 QDockWidget::title
 {
     padding: 5px;
@@ -797,8 +797,10 @@ QDockWidget::title
     text-align: center;
     background: transparent;
 }
+*/
 
 /* order matters - vertical first, then horizontal */
+/*
 QDockWidget::title:vertical
 {
     margin: 0px 1px;
@@ -808,6 +810,7 @@ QDockWidget::title:horizontal
 {
     margin: 0px 0px 1px 0px;
 }
+*/
 
 QDockWidget::close-button
 { 

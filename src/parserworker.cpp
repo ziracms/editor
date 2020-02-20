@@ -253,6 +253,7 @@ void ParserWorker::parseProjectDir(QString dir, QStringList & files)
 void ParserWorker::parseProjectFile(QString file, QVariantMap & map)
 {
     QCoreApplication::processEvents();
+    if (wantStop) return;
     if (!Helper::fileExists(file)) return;
     emit updateProgressInfo(tr("Scanning")+": "+file);
     QString content = Helper::loadTextFile(file, encoding, encodingFallback, true);
@@ -325,6 +326,7 @@ void ParserWorker::searchInDir(QString searchDirectory, QString searchText, QStr
 void ParserWorker::searchInFile(QString file, QString searchText, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp)
 {
     QCoreApplication::processEvents();
+    if (wantStop) return;
     if (!Helper::fileExists(file) || searchText.size() == 0) return;
     emit updateProgressInfo(tr("Searching in")+": "+file);
     QString content = Helper::loadTextFile(file, encoding, encodingFallback, true);
