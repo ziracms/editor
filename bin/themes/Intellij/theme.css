@@ -260,7 +260,7 @@ QPushButton:pressed
     background-color:  #474a4d;
 }
 
-QComboBox,
+/*QComboBox,*/ /* use built-in style */
 QSpinBox
 {
     /*selection-background-color: #ffaa00;*/
@@ -270,18 +270,19 @@ QSpinBox
     padding: 5px;
 }
 
-QComboBox:hover,
+/*QComboBox:hover,*/ /* use built-in style */
 QSpinBox:hover
 {
     border: 1px solid #4d5052;
 }
 
-
+/* use built-in style */
+/*
 QComboBox:on
 {
     background-color: #333237;
-    /*selection-background-color: #ffaa00;*/
 }
+*/
 
 QComboBox QAbstractItemView
 {
@@ -788,6 +789,8 @@ QDockWidget
     titlebar-normal-icon: url(:/icons/blank.png);
     padding: 5px;
 }
+
+/* use built-in style */
 /*
 QDockWidget::title
 {
