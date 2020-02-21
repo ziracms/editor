@@ -88,11 +88,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString schemeType = QString::fromStdString(settings->get(COLOR_SCHEME_TYPE.toStdString()));
     if (theme != THEME_SYSTEM && !Helper::loadStylePlugin(pluginsDir, schemeType == COLOR_SCHEME_LIGHT)) {
-        QStyle * wStyle = QStyleFactory::create("Windows");
-        if (wStyle != nullptr) {
-            QApplication::setStyle(wStyle);
-            QApplication::setPalette(wStyle->standardPalette());
-        }
+        Style * style = new Style(schemeType == COLOR_SCHEME_LIGHT);
+        QApplication::setStyle(style);
+        QApplication::setPalette(style->standardPalette());
     } else if (theme == THEME_SYSTEM) {
         Helper::loadSystemStylePlugin(pluginsDir, schemeType == COLOR_SCHEME_LIGHT);
     }

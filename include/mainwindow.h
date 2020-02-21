@@ -32,6 +32,7 @@
 #include "tabslist.h"
 #include "welcome.h"
 #include "types.h"
+#include "style.h"
 
 namespace Ui {
     class MainWindow;
