@@ -3099,57 +3099,57 @@ void QPlastiqueStyle::drawControl(ControlElement element, const QStyleOption *op
 #endif // QT_NO_SPLITTER
 #ifndef QT_NO_DOCKWIDGET
     case CE_DockWidgetTitle:
-        if (const QStyleOptionDockWidget *dockWidget = qstyleoption_cast<const QStyleOptionDockWidget *>(option)) {
-            painter->save();
+//        if (const QStyleOptionDockWidget *dockWidget = qstyleoption_cast<const QStyleOptionDockWidget *>(option)) {
+//            painter->save();
 
-            bool verticalTitleBar = dockWidget->verticalTitleBar;
+//            bool verticalTitleBar = dockWidget->verticalTitleBar;
 
-            // Find text width and title rect
-            int textWidth = option->fontMetrics.width(dockWidget->title);
-            int margin = 4;
-            QRect titleRect = subElementRect(SE_DockWidgetTitleBarText, option, widget);
-            QRect rect = dockWidget->rect;
+//            // Find text width and title rect
+//            int textWidth = option->fontMetrics.width(dockWidget->title);
+//            int margin = 4;
+//            QRect titleRect = subElementRect(SE_DockWidgetTitleBarText, option, widget);
+//            QRect rect = dockWidget->rect;
 
-            if (verticalTitleBar) {
-                QRect r = rect;
-                QSize s = r.size();
-                s.transpose();
-                r.setSize(s);
+//            if (verticalTitleBar) {
+//                QRect r = rect;
+//                QSize s = r.size();
+//                s.transpose();
+//                r.setSize(s);
 
-                titleRect = QRect(r.left() + rect.bottom()
-                                    - titleRect.bottom(),
-                                r.top() + titleRect.left() - rect.left(),
-                                titleRect.height(), titleRect.width());
+//                titleRect = QRect(r.left() + rect.bottom()
+//                                    - titleRect.bottom(),
+//                                r.top() + titleRect.left() - rect.left(),
+//                                titleRect.height(), titleRect.width());
 
-                painter->translate(r.left(), r.top() + r.width());
-                painter->rotate(-90);
-                painter->translate(-r.left(), -r.top());
+//                painter->translate(r.left(), r.top() + r.width());
+//                painter->rotate(-90);
+//                painter->translate(-r.left(), -r.top());
 
-                rect = r;
-            }
+//                rect = r;
+//            }
 
-            // Chop and insert ellide into title if text is too wide
-            QString title = elliditide(dockWidget->title, dockWidget->fontMetrics, titleRect, &textWidth);
+//            // Chop and insert ellide into title if text is too wide
+//            QString title = elliditide(dockWidget->title, dockWidget->fontMetrics, titleRect, &textWidth);
 
-            // Draw the toolbar handle pattern to the left and right of the text
-            QImage handle(qt_toolbarhandle);
-            alphaCornerColor.setAlpha(170);
-            handle.setColor(1, alphaCornerColor.rgba());
-            handle.setColor(2, mergedColors(alphaCornerColor, option->palette.light().color()).rgba());
-            handle.setColor(3, option->palette.light().color().rgba());
+//            // Draw the toolbar handle pattern to the left and right of the text
+//            QImage handle(qt_toolbarhandle);
+//            alphaCornerColor.setAlpha(170);
+//            handle.setColor(1, alphaCornerColor.rgba());
+//            handle.setColor(2, mergedColors(alphaCornerColor, option->palette.light().color()).rgba());
+//            handle.setColor(3, option->palette.light().color().rgba());
 
-            if (title.isEmpty()) {
-                // Joint handle if there's no title
-                QRect r;
-                    r.setRect(titleRect.left(), titleRect.top(), titleRect.width(), titleRect.bottom());
-                    int nchunks = (r.width() / handle.width()) - 1;
-                    int indent = (r.width() - (nchunks * handle.width())) / 2;
-                    for (int i = 0; i < nchunks; ++i) {
-                        painter->drawImage(QPoint(r.left() + indent + i * handle.width(),
-                                                r.center().y() - handle.height() / 2),
-                                        handle);
-                    }
-            } else {
+//            if (title.isEmpty()) {
+//                // Joint handle if there's no title
+//                QRect r;
+//                    r.setRect(titleRect.left(), titleRect.top(), titleRect.width(), titleRect.bottom());
+//                    int nchunks = (r.width() / handle.width()) - 1;
+//                    int indent = (r.width() - (nchunks * handle.width())) / 2;
+//                    for (int i = 0; i < nchunks; ++i) {
+//                        painter->drawImage(QPoint(r.left() + indent + i * handle.width(),
+//                                                r.center().y() - handle.height() / 2),
+//                                        handle);
+//                    }
+//            } else {
                 // Handle pattern to the left of the title
 //                QRect leftSide(titleRect.left(), titleRect.top(),
 //                               titleRect.width() / 2 - textWidth / 2 - margin, titleRect.bottom());
@@ -3173,16 +3173,16 @@ void QPlastiqueStyle::drawControl(ControlElement element, const QStyleOption *op
 //                                       handle);
 //                }
 
-                QRect allSide(titleRect.left(), titleRect.top(),
-                               titleRect.width() - margin, titleRect.height());
-                int nchunks = allSide.width() / handle.width();
-                int indent = (allSide.width() - (nchunks * handle.width())) / 2;
-                for (int j = 0; j < nchunks; ++j) {
-                    painter->drawImage(QPoint(allSide.left() + indent + j * handle.width(),
-                                              allSide.center().y() - handle.height() / 2),
-                                       handle);
-                }
-            }
+//                QRect allSide(titleRect.left(), titleRect.top(),
+//                               titleRect.width() - margin, titleRect.height());
+//                int nchunks = allSide.width() / handle.width();
+//                int indent = (allSide.width() - (nchunks * handle.width())) / 2;
+//                for (int j = 0; j < nchunks; ++j) {
+//                    painter->drawImage(QPoint(allSide.left() + indent + j * handle.width(),
+//                                              allSide.center().y() - handle.height() / 2),
+//                                       handle);
+//                }
+//            }
 
             // Draw the text centered
 //            QFont font = painter->font();
@@ -3193,8 +3193,8 @@ void QPlastiqueStyle::drawControl(ControlElement element, const QStyleOption *op
 //                              int(Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextShowMnemonic),
 //                              title);
 
-            painter->restore();
-        }
+//            painter->restore();
+//        }
 
         break;
 #endif // QT_NO_DOCKWIDGET
@@ -4204,13 +4204,14 @@ void QPlastiqueStyle::drawComplexControl(ComplexControl control, const QStyleOpt
         if (const QStyleOptionComboBox *comboBox = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
             bool sunken = comboBox->state & State_On; // play dead if combobox has no items
             bool reverse = comboBox->direction == Qt::RightToLeft;
-            int menuButtonWidth = 16;
+            int menuButtonWidth = 20; // bigger button
             int xoffset = sunken ? (reverse ? -1 : 1) : 0;
             int yoffset = sunken ? 1 : 0;
             QRect rect = comboBox->rect;
             QPen oldPen = painter->pen();
 
             // Fill
+            /*
             if (comboBox->editable) {
                 // Button colors
                 QBrush alphaCornerBrush = qBrushDark(option->palette.button(), 165);
@@ -4391,13 +4392,18 @@ void QPlastiqueStyle::drawComplexControl(ComplexControl control, const QStyleOpt
                                       QPointF(buttonRect.right() - 1, buttonRect.bottom() - 2));
                 }
             } else {
+            */
                 // Start with a standard panel button fill
                 QStyleOptionButton buttonOption;
                 buttonOption.QStyleOption::operator=(*comboBox);
                 if (!sunken) {
                     buttonOption.state &= ~State_Sunken;
                 }
-                proxy()->drawPrimitive(PE_PanelButtonCommand, &buttonOption, painter, widget);
+                //proxy()->drawPrimitive(PE_PanelButtonCommand, &buttonOption, painter, widget);
+                if (buttonOption.state & State_MouseOver) {
+                    buttonOption.state &= ~State_MouseOver;
+                }
+                drawPrimitive(PE_PanelButtonCommand, &buttonOption, painter, widget);
 
                 // Draw the menu button separator line
                 QBrush border = qMapBrushToRect(option->palette.shadow(), rect);
@@ -4410,7 +4416,9 @@ void QPlastiqueStyle::drawComplexControl(ComplexControl control, const QStyleOpt
                     painter->drawLine(rect.left() + menuButtonWidth + xoffset, rect.top() + 1,
                                       rect.left() + menuButtonWidth + xoffset, rect.bottom() - 1);
                 }
+                /*
             }
+            */
 
             // Draw the little arrow
             if (comboBox->subControls & SC_ComboBoxArrow) {
@@ -4874,6 +4882,7 @@ QSize QPlastiqueStyle::sizeFromContents(ContentsType type, const QStyleOption *o
     case CT_SpinBox:
         // Make sure the size is odd
         newSize.rheight() -= ((1 - newSize.rheight()) & 1);
+        newSize.rheight() += 2; // bigger box
         break;
 #endif
 #ifndef QT_NO_TOOLBUTTON
@@ -4887,6 +4896,7 @@ QSize QPlastiqueStyle::sizeFromContents(ContentsType type, const QStyleOption *o
         newSize = sizeFromContents(CT_PushButton, option, size, widget);
         newSize.rwidth() += 30; // Make room for drop-down indicator
         newSize.rheight() += 4;
+        newSize.rheight() += 8; // bigger box
         break;
 #endif
     case CT_MenuItem:
@@ -4897,6 +4907,17 @@ QSize QPlastiqueStyle::sizeFromContents(ContentsType type, const QStyleOption *o
         break;
     case CT_MenuBarItem:
         newSize.setHeight(newSize.height());
+        break;
+    case CT_LineEdit:
+        newSize.rheight() += 6; // bigger box
+        break;
+    case CT_TabBarTab:
+        newSize.rwidth() += 6; // bigger box
+        newSize.rheight() += 6; // bigger box
+        break;
+    case CT_ItemViewItem:
+        // bad idea
+        //newSize.rheight() += 10; // bigger box
         break;
     default:
         break;
@@ -4922,6 +4943,10 @@ QRect QPlastiqueStyle::subElementRect(SubElement element, const QStyleOption *op
     case SE_ProgressBarGroove:
         return option->rect;
 #endif // QT_NO_PROGRESSBAR
+    case QStyle::SE_LineEditContents:
+        rect = visualRect(option->direction, option->rect,
+                          QProxyStyle::subElementRect(element, option, widget)).adjusted(5, 0, 5, 0);
+        break;
     default:
         return QProxyStyle::subElementRect(element, option, widget);
     }
@@ -5123,11 +5148,14 @@ QRect QPlastiqueStyle::subControlRect(ComplexControl control, const QStyleOption
                 rect = visualRect(option->direction, option->rect, rect);
 
                 if (box->editable) {
-                    rect = box->rect.adjusted(blueFrameWidth, blueFrameWidth, -blueFrameWidth, -blueFrameWidth);
-                    rect.setRight(rect.right() - 16); // Overlaps the combobox button by 2 pixels
+                    //rect = box->rect.adjusted(blueFrameWidth, blueFrameWidth, -blueFrameWidth, -blueFrameWidth);
+                    rect = box->rect; // bigger box
+                    //rect.setRight(rect.right() - 16); // Overlaps the combobox button by 2 pixels
+                    rect.setRight(rect.right() - 20); // bigger button
                 } else {
                     rect.setRect(option->rect.left() + frameWidth, option->rect.top() + frameWidth,
-                                 option->rect.width() - 16 - 2 * frameWidth,
+                                 //option->rect.width() - 16 - 2 * frameWidth,
+                                 option->rect.width() - 20 - 2 * frameWidth, // bigger button
                                  option->rect.height() - 2 * frameWidth);
                     rect.setLeft(rect.left() + 2);
                     rect.setRight(rect.right() - 2);
@@ -5474,9 +5502,11 @@ int QPlastiqueStyle::pixelMetric(PixelMetric metric, const QStyleOption *option,
         return -1;
     case PM_DockWidgetTitleMargin:
         return 2;
+        /*
     case PM_LayoutHorizontalSpacing:
     case PM_LayoutVerticalSpacing:
         return -1;  // rely on layoutHorizontalSpacing()
+        */
     case PM_LayoutLeftMargin:
     case PM_LayoutTopMargin:
     case PM_LayoutRightMargin:
@@ -5509,57 +5539,75 @@ QPalette QPlastiqueStyle::standardPalette() const
 {
     QPalette palette;
 
-    palette.setBrush(QPalette::Disabled, QPalette::WindowText, QColor(QRgb(0xff808080)));
-    palette.setBrush(QPalette::Disabled, QPalette::Button, QColor(QRgb(0xffdddfe4)));
-    palette.setBrush(QPalette::Disabled, QPalette::Light, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Disabled, QPalette::Midlight, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Disabled, QPalette::Dark, QColor(QRgb(0xff555555)));
-    palette.setBrush(QPalette::Disabled, QPalette::Mid, QColor(QRgb(0xffc7c7c7)));
-    palette.setBrush(QPalette::Disabled, QPalette::Text, QColor(QRgb(0xffc7c7c7)));
-    palette.setBrush(QPalette::Disabled, QPalette::BrightText, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Disabled, QPalette::ButtonText, QColor(QRgb(0xff808080)));
-    palette.setBrush(QPalette::Disabled, QPalette::Base, QColor(QRgb(0xffefefef)));
-    palette.setBrush(QPalette::Disabled, QPalette::AlternateBase, palette.color(QPalette::Disabled, QPalette::Base).darker(110));
-    palette.setBrush(QPalette::Disabled, QPalette::Window, QColor(QRgb(0xffefefef)));
-    palette.setBrush(QPalette::Disabled, QPalette::Shadow, QColor(QRgb(0xff000000)));
-    palette.setBrush(QPalette::Disabled, QPalette::Highlight, QColor(QRgb(0xff567594)));
-    palette.setBrush(QPalette::Disabled, QPalette::HighlightedText, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Disabled, QPalette::Link, QColor(QRgb(0xff0000ee)));
-    palette.setBrush(QPalette::Disabled, QPalette::LinkVisited, QColor(QRgb(0xff52188b)));
-    palette.setBrush(QPalette::Active, QPalette::WindowText, QColor(QRgb(0xff000000)));
-    palette.setBrush(QPalette::Active, QPalette::Button, QColor(QRgb(0xffdddfe4)));
-    palette.setBrush(QPalette::Active, QPalette::Light, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Active, QPalette::Midlight, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Active, QPalette::Dark, QColor(QRgb(0xff555555)));
-    palette.setBrush(QPalette::Active, QPalette::Mid, QColor(QRgb(0xffc7c7c7)));
-    palette.setBrush(QPalette::Active, QPalette::Text, QColor(QRgb(0xff000000)));
-    palette.setBrush(QPalette::Active, QPalette::BrightText, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Active, QPalette::ButtonText, QColor(QRgb(0xff000000)));
-    palette.setBrush(QPalette::Active, QPalette::Base, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Active, QPalette::AlternateBase, palette.color(QPalette::Active, QPalette::Base).darker(110));
-    palette.setBrush(QPalette::Active, QPalette::Window, QColor(QRgb(0xffefefef)));
-    palette.setBrush(QPalette::Active, QPalette::Shadow, QColor(QRgb(0xff000000)));
-    palette.setBrush(QPalette::Active, QPalette::Highlight, QColor(QRgb(0xff678db2)));
-    palette.setBrush(QPalette::Active, QPalette::HighlightedText, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Active, QPalette::Link, QColor(QRgb(0xff0000ee)));
-    palette.setBrush(QPalette::Active, QPalette::LinkVisited, QColor(QRgb(0xff52188b)));
-    palette.setBrush(QPalette::Inactive, QPalette::WindowText, QColor(QRgb(0xff000000)));
-    palette.setBrush(QPalette::Inactive, QPalette::Button, QColor(QRgb(0xffdddfe4)));
-    palette.setBrush(QPalette::Inactive, QPalette::Light, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Inactive, QPalette::Midlight, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Inactive, QPalette::Dark, QColor(QRgb(0xff555555)));
-    palette.setBrush(QPalette::Inactive, QPalette::Mid, QColor(QRgb(0xffc7c7c7)));
-    palette.setBrush(QPalette::Inactive, QPalette::Text, QColor(QRgb(0xff000000)));
-    palette.setBrush(QPalette::Inactive, QPalette::BrightText, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Inactive, QPalette::ButtonText, QColor(QRgb(0xff000000)));
-    palette.setBrush(QPalette::Inactive, QPalette::Base, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Inactive, QPalette::AlternateBase, palette.color(QPalette::Inactive, QPalette::Base).darker(110));
-    palette.setBrush(QPalette::Inactive, QPalette::Window, QColor(QRgb(0xffefefef)));
-    palette.setBrush(QPalette::Inactive, QPalette::Shadow, QColor(QRgb(0xff000000)));
-    palette.setBrush(QPalette::Inactive, QPalette::Highlight, QColor(QRgb(0xff678db2)));
-    palette.setBrush(QPalette::Inactive, QPalette::HighlightedText, QColor(QRgb(0xffffffff)));
-    palette.setBrush(QPalette::Inactive, QPalette::Link, QColor(QRgb(0xff0000ee)));
-    palette.setBrush(QPalette::Inactive, QPalette::LinkVisited, QColor(QRgb(0xff52188b)));
+    QColor base_color = QColor("#f5f5f5");
+    QColor text_color = QColor("#111111");
+    QColor bg_color = QColor("#e9e9e9");
+    QColor fg_color = QColor("#111111");
+    QColor selected_bg_color = QColor("#3584e4");
+    QColor selected_fg_color = QColor("white");
+    QColor shadow = QColor(10, 10, 10, 200);
+    QColor backdrop_fg_color = QColor("#333333");
+    QColor backdrop_base_color = QColor("#e9e9e9");
+    QColor backdrop_selected_fg_color = QColor("#ffffff");
+    QColor button_base_color = bg_color.lighter(110);
+    QColor link_color = selected_bg_color.darker(160);
+    QColor link_visited_color = selected_bg_color.darker(110);
+    QColor insensitive_fg_color = QColor("#555555");
+    QColor insensitive_bg_color = QColor("#e9e9e9");
+
+    palette.setBrush(QPalette::Disabled, QPalette::WindowText, insensitive_fg_color);
+    palette.setBrush(QPalette::Disabled, QPalette::Button, insensitive_bg_color);
+    palette.setBrush(QPalette::Disabled, QPalette::Light, insensitive_bg_color.lighter(160));
+    palette.setBrush(QPalette::Disabled, QPalette::Midlight, insensitive_bg_color.lighter(110));
+    palette.setBrush(QPalette::Disabled, QPalette::Dark, insensitive_bg_color.darker(160));
+    palette.setBrush(QPalette::Disabled, QPalette::Mid, insensitive_bg_color.darker(110));
+    palette.setBrush(QPalette::Disabled, QPalette::Text, insensitive_fg_color);
+    palette.setBrush(QPalette::Disabled, QPalette::BrightText, text_color);
+    palette.setBrush(QPalette::Disabled, QPalette::ButtonText, insensitive_fg_color);
+    palette.setBrush(QPalette::Disabled, QPalette::Base, base_color);
+    palette.setBrush(QPalette::Disabled, QPalette::AlternateBase, base_color.darker(110));
+    palette.setBrush(QPalette::Disabled, QPalette::Window, insensitive_bg_color);
+    palette.setBrush(QPalette::Disabled, QPalette::Shadow, shadow);
+    palette.setBrush(QPalette::Disabled, QPalette::Highlight, selected_bg_color);
+    palette.setBrush(QPalette::Disabled, QPalette::HighlightedText, selected_fg_color);
+    palette.setBrush(QPalette::Disabled, QPalette::Link, link_color);
+    palette.setBrush(QPalette::Disabled, QPalette::LinkVisited, link_visited_color);
+    palette.setBrush(QPalette::Active, QPalette::WindowText, fg_color);
+    palette.setBrush(QPalette::Active, QPalette::Button, button_base_color);
+    palette.setBrush(QPalette::Active, QPalette::Light, button_base_color.lighter(160));
+    palette.setBrush(QPalette::Active, QPalette::Midlight, button_base_color.lighter(110));
+    palette.setBrush(QPalette::Active, QPalette::Dark, button_base_color.darker(160));
+    palette.setBrush(QPalette::Active, QPalette::Mid, button_base_color.darker(110));
+    palette.setBrush(QPalette::Active, QPalette::Text, fg_color);
+    palette.setBrush(QPalette::Active, QPalette::BrightText, text_color);
+    palette.setBrush(QPalette::Active, QPalette::ButtonText, fg_color);
+    palette.setBrush(QPalette::Active, QPalette::Base, base_color);
+    palette.setBrush(QPalette::Active, QPalette::AlternateBase, base_color.darker(110));
+    palette.setBrush(QPalette::Active, QPalette::Window, bg_color);
+    palette.setBrush(QPalette::Active, QPalette::Shadow, shadow);
+    palette.setBrush(QPalette::Active, QPalette::Highlight, selected_bg_color);
+    palette.setBrush(QPalette::Active, QPalette::HighlightedText, selected_fg_color);
+    palette.setBrush(QPalette::Active, QPalette::Link, link_color);
+    palette.setBrush(QPalette::Active, QPalette::LinkVisited, link_visited_color);
+    palette.setBrush(QPalette::Inactive, QPalette::WindowText, backdrop_fg_color);
+    palette.setBrush(QPalette::Inactive, QPalette::Button, button_base_color);
+    palette.setBrush(QPalette::Inactive, QPalette::Light, insensitive_bg_color.lighter(160));
+    palette.setBrush(QPalette::Inactive, QPalette::Midlight, insensitive_bg_color.lighter(110));
+    palette.setBrush(QPalette::Inactive, QPalette::Dark, insensitive_bg_color.darker(160));
+    palette.setBrush(QPalette::Inactive, QPalette::Mid, insensitive_bg_color.darker(110));
+    palette.setBrush(QPalette::Inactive, QPalette::Text, backdrop_fg_color);
+    palette.setBrush(QPalette::Inactive, QPalette::BrightText, text_color);
+    palette.setBrush(QPalette::Inactive, QPalette::ButtonText, backdrop_fg_color);
+    palette.setBrush(QPalette::Inactive, QPalette::Base, backdrop_base_color);
+    palette.setBrush(QPalette::Inactive, QPalette::AlternateBase, backdrop_base_color.darker(110));
+    palette.setBrush(QPalette::Inactive, QPalette::Window, bg_color);
+    palette.setBrush(QPalette::Inactive, QPalette::Shadow, shadow);
+    palette.setBrush(QPalette::Inactive, QPalette::Highlight, selected_bg_color);
+    palette.setBrush(QPalette::Inactive, QPalette::HighlightedText, backdrop_selected_fg_color);
+    palette.setBrush(QPalette::Inactive, QPalette::Link, link_color);
+    palette.setBrush(QPalette::Inactive, QPalette::LinkVisited, link_visited_color);
+    palette.setColor(QPalette::All, QPalette::ToolTipBase, base_color);
+    palette.setColor(QPalette::All, QPalette::ToolTipText, fg_color);
     return palette;
 }
 
