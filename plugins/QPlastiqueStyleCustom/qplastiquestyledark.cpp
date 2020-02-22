@@ -40,6 +40,7 @@
 ****************************************************************************/
 
 #include "qplastiquestyledark.h"
+#include <QItemDelegate>
 
 static const bool AnimateBusyProgressBar = true;
 static const bool AnimateProgressBar = false;
@@ -429,6 +430,40 @@ static const char * const qt_titlebar_context_help[] = {
 "                           ",
 "                           ",
 "                           "};
+
+namespace QPlastiqueDarkPrivate {
+
+//* needed to have spacing added to items in combobox
+class ComboBoxItemDelegate: public QItemDelegate
+{
+public:
+    //* constructor
+    ComboBoxItemDelegate(QAbstractItemView *parent)
+        : QItemDelegate(parent)
+    {}
+
+    //* destructor
+    virtual ~ComboBoxItemDelegate(void)
+    {}
+
+    //* paint
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QItemDelegate::paint(painter, option, index);
+    }
+
+    //* size hint
+    virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QSize size(QItemDelegate::sizeHint(option, index));
+        if (size.isValid()) {
+            size.rheight() += 5;
+        }
+        return size;
+    }
+};
+
+} // end namespace
 
 static QLinearGradient qMapGradientToRect(const QLinearGradient &gradient, const QRectF &rect)
 {
@@ -848,6 +883,7 @@ static void qt_plastique_drawFrame(QPainter *painter, const QStyleOption *option
 static void qt_plastique_drawShadedPanel(QPainter *painter, const QStyleOption *option, bool base,
                                          const QWidget *widget)
 {
+    if (!(option->state & QStyle::State_MouseOver) && !(option->state & QStyle::State_Selected)) return;
     QRect rect = option->rect;
     QPen oldPen = painter->pen();
 
@@ -4903,6 +4939,7 @@ QSize QPlastiqueStyleDark::sizeFromContents(ContentsType type, const QStyleOptio
         if (const QStyleOptionMenuItem *menuItem = qstyleoption_cast<const QStyleOptionMenuItem *>(option)) {
             if (menuItem->menuItemType == QStyleOptionMenuItem::Separator)
                 newSize.setHeight(menuItem->text.isEmpty() ? 2 : menuItem->fontMetrics.height());
+            else newSize.rheight() += 5; // bigger box
         }
         break;
     case CT_MenuBarItem:
@@ -4917,7 +4954,7 @@ QSize QPlastiqueStyleDark::sizeFromContents(ContentsType type, const QStyleOptio
         break;
     case CT_ItemViewItem:
         // bad idea
-        //newSize.rheight() += 10; // bigger box
+        newSize.rheight() += 5; // bigger box
         break;
     default:
         break;
@@ -5636,6 +5673,13 @@ void QPlastiqueStyleDark::polish(QWidget *widget)
 #endif
         ) {
         widget->setAttribute(Qt::WA_Hover);
+
+        if (QComboBox *comboBox = qobject_cast<QComboBox *>(widget)) {
+            QAbstractItemView *itemView(comboBox->view());
+            QAbstractItemDelegate * delegate = itemView->itemDelegate();
+            itemView->setItemDelegate(new QPlastiqueDarkPrivate::ComboBoxItemDelegate(itemView));
+            if (delegate != nullptr) delegate->deleteLater();
+        }
     }
 
     if (widget->inherits("QDockSeparator")
@@ -5755,7 +5799,7 @@ void QPlastiqueStyleDark::unpolish(QApplication *app)
 /*
  * helper method from Adwaita-Qt style
  */
-void QPlastiqueStyleDark::renderDecorationButton(QPainter *painter, const QRect &rect, const QColor &color, QPlastiqueDark::ButtonType buttonType, bool inverted) const
+void QPlastiqueStyleDark::renderDecorationButton(QPainter *painter, const QRect &rect, const QColor &color, QPlastiqueButtonDark::ButtonType buttonType, bool inverted) const
 {
     painter->save();
     painter->setViewport(rect);
@@ -5776,32 +5820,37 @@ void QPlastiqueStyleDark::renderDecorationButton(QPainter *painter, const QRect 
     painter->setPen(pen);
 
     switch (buttonType) {
-    case QPlastiqueDark::ButtonClose: {
+    case QPlastiqueButtonDark::ButtonClose: {
         painter->setRenderHints(QPainter::Antialiasing, true);
-        painter->drawLine(QPointF(5, 5), QPointF(13, 13));
-        painter->drawLine(13, 5, 5, 13);
+        painter->drawLine(QPointF(0, 0), QPointF(18, 18));
+        painter->drawLine(18, 0, 0, 18);
         break;
     }
-    case QPlastiqueDark::ButtonMaximize: {
-        painter->drawPolyline(QPolygonF()
-                              << QPointF(4, 4)
-                              << QPointF(4, 14)
-                              << QPointF(14, 14)
-                              << QPointF(14, 4));
+    case QPlastiqueButtonDark::ButtonMaximize: {
+        painter->drawPolygon(QPolygonF()
+                              << QPointF(1, 1)
+                              << QPointF(1, 17)
+                              << QPointF(17, 17)
+                              << QPointF(17, 1));
         break;
     }
-    case QPlastiqueDark::ButtonMinimize: {
+    case QPlastiqueButtonDark::ButtonMinimize: {
 
         painter->drawPolyline(QPolygonF()
-                              << QPointF(4, 14)
-                              << QPointF(14, 14));
+                              << QPointF(1, 17)
+                              << QPointF(17, 17));
         break;
     }
-    case QPlastiqueDark::ButtonRestore: {
+    case QPlastiqueButtonDark::ButtonRestore: {
         painter->setPen(pen);
-        QPolygonF rect = QPolygonF() << QPointF(0, 0) << QPointF(8, 0) << QPointF(8, 8) << QPointF(0, 8);
-        painter->drawPolygon(rect.translated(7, 3));
-        painter->drawPolygon(rect.translated(3, 7));
+//        QPolygonF rect = QPolygonF() << QPointF(0, 0) << QPointF(8, 0) << QPointF(8, 8) << QPointF(0, 8);
+//        painter->drawPolygon(rect.translated(9, 1));
+//        painter->drawPolygon(rect.translated(1, 9));
+        painter->drawPolygon(QPolygonF()
+                              << QPointF(1, 1)
+                              << QPointF(1, 17)
+                              << QPointF(17, 17)
+                              << QPointF(17, 1));
         break;
     }
     default:
@@ -5818,20 +5867,20 @@ void QPlastiqueStyleDark::renderDecorationButton(QPainter *painter, const QRect 
 QIcon QPlastiqueStyleDark::titleBarButtonIcon(StandardPixmap standardPixmap, const QStyleOption *option, const QWidget *widget) const
 {
     // map standardPixmap to button type
-    QPlastiqueDark::ButtonType buttonType;
+    QPlastiqueButtonDark::ButtonType buttonType;
     switch (standardPixmap) {
     case SP_TitleBarNormalButton:
-        buttonType = QPlastiqueDark::ButtonRestore;
+        buttonType = QPlastiqueButtonDark::ButtonRestore;
         break;
     case SP_TitleBarMinButton:
-        buttonType = QPlastiqueDark::ButtonMinimize;
+        buttonType = QPlastiqueButtonDark::ButtonMinimize;
         break;
     case SP_TitleBarMaxButton:
-        buttonType = QPlastiqueDark::ButtonMaximize;
+        buttonType = QPlastiqueButtonDark::ButtonMaximize;
         break;
     case SP_TitleBarCloseButton:
     case SP_DockWidgetCloseButton:
-        buttonType = QPlastiqueDark::ButtonClose;
+        buttonType = QPlastiqueButtonDark::ButtonClose;
         break;
 
     default:
@@ -5874,7 +5923,7 @@ QIcon QPlastiqueStyleDark::titleBarButtonIcon(StandardPixmap standardPixmap, con
     };
 
     // default icon sizes
-    static const QList<int> iconSizes = { 8, 16, 22, 32, 48 };
+    static const QList<int> iconSizes = { 64 };
 
     // output icon
     QIcon icon;
@@ -5906,8 +5955,6 @@ QIcon QPlastiqueStyleDark::standardIcon(StandardPixmap standardIcon, const QStyl
                                     const QWidget *widget) const
 {
     switch (standardIcon) {
-//    case SP_TitleBarCloseButton:
-//        return QProxyStyle::standardIcon(SP_DialogCloseButton, option, widget);
     case SP_TitleBarNormalButton:
     case SP_TitleBarMinButton:
     case SP_TitleBarMaxButton:

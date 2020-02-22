@@ -51,7 +51,7 @@ QT_BEGIN_NAMESPACE
 
 class QProgressBar;
 
-namespace QPlastiqueDark {
+namespace QPlastiqueButtonDark {
     enum ButtonType {
         ButtonClose,
         ButtonMaximize,
@@ -112,7 +112,7 @@ protected:
     bool event(QEvent *event) Q_DECL_OVERRIDE;
     void startProgressAnimation(QProgressBar *bar);
     void stopProgressAnimation(QProgressBar *bar);
-    void renderDecorationButton(QPainter *painter, const QRect &rect, const QColor &, QPlastiqueDark::ButtonType, bool inverted) const;
+    void renderDecorationButton(QPainter *painter, const QRect &rect, const QColor &, QPlastiqueButtonDark::ButtonType, bool inverted) const;
     QIcon titleBarButtonIcon(StandardPixmap, const QStyleOption *option, const QWidget *widget) const;
 private:
     int animateStep;

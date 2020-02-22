@@ -2554,7 +2554,7 @@ QRect Style::spinBoxSubControlRect(const QStyleOptionComplex *option, SubControl
         return flat ? QRect() : rect;
 
     case SC_SpinBoxUp:
-        if (rect.width() > 2 * rect.height() + 24)
+        if (rect.width() > 2 * rect.height() + 24 || true)
             return QRect(rect.right() - rect.height() - 1,
                          rect.top(),
                          rect.height(),
@@ -2566,7 +2566,7 @@ QRect Style::spinBoxSubControlRect(const QStyleOptionComplex *option, SubControl
                          rect.height() / 2 + 3);
 
     case SC_SpinBoxDown: {
-        if (rect.width() > 2 * rect.height() + 24)
+        if (rect.width() > 2 * rect.height() + 24 || true)
             return QRect(rect.right() - 2 * rect.height(),
                          rect.top(),
                          rect.height(),
@@ -2583,7 +2583,7 @@ QRect Style::spinBoxSubControlRect(const QStyleOptionComplex *option, SubControl
 
         QRect labelRect;
 
-        if (rect.width() > 2 * rect.height() + 24)
+        if (rect.width() > 2 * rect.height() + 24 || true)
             labelRect = QRect(rect.left(), rect.top(),
                               rect.width() - 2 * rect.height() - frameWidth,
                               rect.height());
@@ -2887,14 +2887,14 @@ QSize Style::spinBoxSizeFromContents(const QStyleOption *option, const QSize &co
 
     // add editor margins
     int frameWidth(pixelMetric(PM_SpinBoxFrameWidth, option, widget));
-    if (!flat)
-        size = expandSize(size, frameWidth);
+//    if (!flat)
+//        size = expandSize(size, frameWidth);
 
     size.rwidth() += 2 * Metrics::SpinBox_MinHeight;
     size.rwidth() += Metrics::Button_ItemSpacing;
 
     // FIXME this shouldn't be needed but apparently some width is still missing
-    size.rwidth() += size.height() / 2;
+    //size.rwidth() += size.height() / 2;
 
     // set minimum size
     size.setHeight(qMax(size.height(), int(Metrics::SpinBox_MinHeight)));

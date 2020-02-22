@@ -40,6 +40,7 @@
 ****************************************************************************/
 
 #include "qplastiquestyle.h"
+#include <QItemDelegate>
 
 static const bool AnimateBusyProgressBar = true;
 static const bool AnimateProgressBar = false;
@@ -429,6 +430,40 @@ static const char * const qt_titlebar_context_help[] = {
 "                           ",
 "                           ",
 "                           "};
+
+namespace QPlastiquePrivate {
+
+//* needed to have spacing added to items in combobox
+class ComboBoxItemDelegate: public QItemDelegate
+{
+public:
+    //* constructor
+    ComboBoxItemDelegate(QAbstractItemView *parent)
+        : QItemDelegate(parent)
+    {}
+
+    //* destructor
+    virtual ~ComboBoxItemDelegate(void)
+    {}
+
+    //* paint
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QItemDelegate::paint(painter, option, index);
+    }
+
+    //* size hint
+    virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+    {
+        QSize size(QItemDelegate::sizeHint(option, index));
+        if (size.isValid()) {
+            size.rheight() += 5;
+        }
+        return size;
+    }
+};
+
+} // end namespace
 
 static QLinearGradient qMapGradientToRect(const QLinearGradient &gradient, const QRectF &rect)
 {
@@ -848,6 +883,7 @@ static void qt_plastique_drawFrame(QPainter *painter, const QStyleOption *option
 static void qt_plastique_drawShadedPanel(QPainter *painter, const QStyleOption *option, bool base,
                                          const QWidget *widget)
 {
+    if (!(option->state & QStyle::State_MouseOver) && !(option->state & QStyle::State_Selected)) return;
     QRect rect = option->rect;
     QPen oldPen = painter->pen();
 
@@ -4903,6 +4939,7 @@ QSize QPlastiqueStyle::sizeFromContents(ContentsType type, const QStyleOption *o
         if (const QStyleOptionMenuItem *menuItem = qstyleoption_cast<const QStyleOptionMenuItem *>(option)) {
             if (menuItem->menuItemType == QStyleOptionMenuItem::Separator)
                 newSize.setHeight(menuItem->text.isEmpty() ? 2 : menuItem->fontMetrics.height());
+            else newSize.rheight() += 5; // bigger box
         }
         break;
     case CT_MenuBarItem:
@@ -4917,7 +4954,7 @@ QSize QPlastiqueStyle::sizeFromContents(ContentsType type, const QStyleOption *o
         break;
     case CT_ItemViewItem:
         // bad idea
-        //newSize.rheight() += 10; // bigger box
+        newSize.rheight() += 5; // bigger box
         break;
     default:
         break;
@@ -5636,6 +5673,13 @@ void QPlastiqueStyle::polish(QWidget *widget)
 #endif
         ) {
         widget->setAttribute(Qt::WA_Hover);
+
+        if (QComboBox *comboBox = qobject_cast<QComboBox *>(widget)) {
+            QAbstractItemView *itemView(comboBox->view());
+            QAbstractItemDelegate * delegate = itemView->itemDelegate();
+            itemView->setItemDelegate(new QPlastiquePrivate::ComboBoxItemDelegate(itemView));
+            if (delegate != nullptr) delegate->deleteLater();
+        }
     }
 
     if (widget->inherits("QDockSeparator")
@@ -5752,13 +5796,174 @@ void QPlastiqueStyle::unpolish(QApplication *app)
     QProxyStyle::unpolish(app);
 }
 
+/*
+ * helper method from Adwaita-Qt style
+ */
+void QPlastiqueStyle::renderDecorationButton(QPainter *painter, const QRect &rect, const QColor &color, QPlastiqueButton::ButtonType buttonType, bool inverted) const
+{
+    painter->save();
+    painter->setViewport(rect);
+    painter->setWindow(0, 0, 18, 18);
+    painter->setRenderHints(QPainter::Antialiasing, false);
+
+    // initialize pen
+    QPen pen;
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::MiterJoin);
+
+    painter->setBrush(Qt::NoBrush);
+
+    pen.setColor(color);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::MiterJoin);
+    pen.setWidthF(2.0 * qMax(1.0, 18.0 / rect.width()));
+    painter->setPen(pen);
+
+    switch (buttonType) {
+    case QPlastiqueButton::ButtonClose: {
+        painter->setRenderHints(QPainter::Antialiasing, true);
+        painter->drawLine(QPointF(0, 0), QPointF(18, 18));
+        painter->drawLine(18, 0, 0, 18);
+        break;
+    }
+    case QPlastiqueButton::ButtonMaximize: {
+        painter->drawPolygon(QPolygonF()
+                              << QPointF(1, 1)
+                              << QPointF(1, 17)
+                              << QPointF(17, 17)
+                              << QPointF(17, 1));
+        break;
+    }
+    case QPlastiqueButton::ButtonMinimize: {
+
+        painter->drawPolyline(QPolygonF()
+                              << QPointF(1, 17)
+                              << QPointF(17, 17));
+        break;
+    }
+    case QPlastiqueButton::ButtonRestore: {
+        painter->setPen(pen);
+//        QPolygonF rect = QPolygonF() << QPointF(0, 0) << QPointF(8, 0) << QPointF(8, 8) << QPointF(0, 8);
+//        painter->drawPolygon(rect.translated(9, 1));
+//        painter->drawPolygon(rect.translated(1, 9));
+        painter->drawPolygon(QPolygonF()
+                              << QPointF(1, 1)
+                              << QPointF(1, 17)
+                              << QPointF(17, 17)
+                              << QPointF(17, 1));
+        break;
+    }
+    default:
+        break;
+    }
+
+    painter->restore();
+    return;
+}
+
+/*
+ * helper method from Adwaita-Qt style
+ */
+QIcon QPlastiqueStyle::titleBarButtonIcon(StandardPixmap standardPixmap, const QStyleOption *option, const QWidget *widget) const
+{
+    // map standardPixmap to button type
+    QPlastiqueButton::ButtonType buttonType;
+    switch (standardPixmap) {
+    case SP_TitleBarNormalButton:
+        buttonType = QPlastiqueButton::ButtonRestore;
+        break;
+    case SP_TitleBarMinButton:
+        buttonType = QPlastiqueButton::ButtonMinimize;
+        break;
+    case SP_TitleBarMaxButton:
+        buttonType = QPlastiqueButton::ButtonMaximize;
+        break;
+    case SP_TitleBarCloseButton:
+    case SP_DockWidgetCloseButton:
+        buttonType = QPlastiqueButton::ButtonClose;
+        break;
+
+    default:
+        return QIcon();
+    }
+
+    // store palette
+    // due to Qt, it is not always safe to assume that either option, nor widget are defined
+    QPalette palette;
+    if (option)
+        palette = option->palette;
+    else if (widget)
+        palette = widget->palette();
+    else
+        palette = QApplication::palette();
+
+    palette.setCurrentColorGroup(QPalette::Active);
+
+    // convenience class to map color to icon mode
+    struct IconData {
+        QColor _color;
+        bool _inverted;
+        QIcon::Mode _mode;
+        QIcon::State _state;
+    };
+
+    // map colors to icon states
+    const QList<IconData> iconTypes = {
+        // state off icons
+        { palette.color(QPalette::WindowText), true, QIcon::Normal, QIcon::Off },
+        { palette.color(QPalette::WindowText), true, QIcon::Selected, QIcon::Off },
+        { palette.color(QPalette::WindowText), true, QIcon::Active, QIcon::Off },
+        { palette.color(QPalette::WindowText), true, QIcon::Disabled, QIcon::Off },
+
+        // state on icons
+        { palette.color(QPalette::WindowText), false, QIcon::Normal, QIcon::On },
+        { palette.color(QPalette::WindowText), false, QIcon::Selected, QIcon::On },
+        { palette.color(QPalette::WindowText), false, QIcon::Active, QIcon::On },
+        { palette.color(QPalette::WindowText), false, QIcon::Disabled, QIcon::On }
+    };
+
+    // default icon sizes
+    static const QList<int> iconSizes = { 64 };
+
+    // output icon
+    QIcon icon;
+
+    foreach (const IconData &iconData, iconTypes) {
+        foreach (const int &iconSize, iconSizes) {
+            // create pixmap
+            QPixmap pixmap(iconSize, iconSize);
+            pixmap.fill(Qt::transparent);
+
+            // create painter and render
+            QPainter painter(&pixmap);
+            renderDecorationButton(&painter, pixmap.rect(), iconData._color, buttonType, iconData._inverted);
+
+            painter.end();
+
+            // store
+            icon.addPixmap(pixmap, iconData._mode, iconData._state);
+        }
+    }
+
+    return icon;
+}
+
 /*!
     \reimp
 */
 QIcon QPlastiqueStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption *option,
                                     const QWidget *widget) const
 {
-    return QProxyStyle::standardIcon(standardIcon, option, widget);
+    switch (standardIcon) {
+    case SP_TitleBarNormalButton:
+    case SP_TitleBarMinButton:
+    case SP_TitleBarMaxButton:
+    case SP_TitleBarCloseButton:
+    case SP_DockWidgetCloseButton:
+        return titleBarButtonIcon(standardIcon, option, widget);
+    default:
+        return QProxyStyle::standardIcon(standardIcon, option, widget);
+    }
 }
 
 /*!

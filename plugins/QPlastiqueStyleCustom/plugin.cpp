@@ -56,9 +56,9 @@ public:
 
 QStyle *QPlastiqueStylePlugin::create(const QString &key)
 {
-    if (key == "plastique")
+    if (key.toLower() == "plastique" || key.toLower() == "qplastiquestyle-light")
         return new QPlastiqueStyle;
-    else if (key == "plastique-dark")
+    else if (key.toLower() == "plastique-dark" || key.toLower() == "qplastiquestyle-dark")
         return new QPlastiqueStyleDark;
     return 0;
 }

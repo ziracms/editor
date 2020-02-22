@@ -91,7 +91,7 @@ namespace Adwaita
         const int ScrollBarSubLineButtons { 0 };
         const bool ScrollBarShowOnMouseOver { true };
         const int MnemonicsMode { MN_AUTO };
-        const bool ToolBarDrawItemSeparator { 0 };
+        const bool ToolBarDrawItemSeparator { 1 };
         const bool ViewDrawFocusIndicator { true };
         const bool SliderDrawTickMarks { true };
         const bool ViewDrawTreeBranchLines { true };

@@ -33,11 +33,11 @@ namespace Adwaita
     //_________________________________________________
     QStyle* StylePlugin::create( const QString &key )
     {
-        if( key.toLower() == QStringLiteral( "adwaita" ) )
+        if( key.toLower() == QStringLiteral( "adwaita" ) || key.toLower() == QStringLiteral( "adwaitastyle-light" ) )
         {
             return new Style(false);
         }
-        if ( key.toLower() == QStringLiteral( "adwaita-dark") )
+        if ( key.toLower() == QStringLiteral( "adwaita-dark") || key.toLower() == QStringLiteral( "adwaitastyle-dark") )
         {
             return new Style(true);
         }
