@@ -6,6 +6,7 @@
 
 #include "editprojectdialog.h"
 #include <QPushButton>
+#include "helper.h"
 
 EditProjectDialog::EditProjectDialog(QWidget * parent) :
     QDialog(parent),
@@ -20,7 +21,7 @@ EditProjectDialog::EditProjectDialog(QWidget * parent) :
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 
     ui->buttonBox->setContentsMargins(0, 0, 20, 0);
-    ui->editProjectDialogHeaderLabel->setProperty("abstract_label", true);
+    ui->editProjectDialogHeaderLabel->setStyleSheet(DIALOG_HEADER_STYLESHEET);
 
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)

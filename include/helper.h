@@ -23,6 +23,7 @@ extern const QString GITHUB_EDITOR_URL;
 
 extern const QString STYLE_PLUGIN_SUFFIX;
 extern const QString STYLE_PLUGIN_DISPLAY_NAME_SUFFIX;
+extern const QString DIALOG_HEADER_STYLESHEET;
 
 class Helper
 {

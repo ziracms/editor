@@ -21,7 +21,7 @@ SearchDialog::SearchDialog(QWidget * parent) :
     connect(ui->searchDialogExcludeButton, SIGNAL(pressed()), this, SLOT(excludeButtonPressed()));
 
     ui->buttonBox->setContentsMargins(0, 0, 20, 0);
-    ui->searchDialogHeaderLabel->setProperty("abstract_label", true);
+    ui->searchDialogHeaderLabel->setStyleSheet(DIALOG_HEADER_STYLESHEET);
 
     clearExcludeDirs();
     QHBoxLayout * excludeLayout = new QHBoxLayout();

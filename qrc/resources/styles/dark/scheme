@@ -31,12 +31,3 @@ Search QLineEdit[results="notfound"]
     background: #710044;
     color: #ffffff;
 }
-
-QLabel[abstract_label="true"]
-{
-    color: #fff;
-    font-size: 17px;
-    background-image: url(:image/abstract);
-    background-position: left bottom;
-    background-repeat: repeat-x;
-}

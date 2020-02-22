@@ -35,6 +35,7 @@ const QString GITHUB_EDITOR_URL = "https://github.com/ziracms/editor";
 
 const QString STYLE_PLUGIN_SUFFIX = "Style";
 const QString STYLE_PLUGIN_DISPLAY_NAME_SUFFIX = " Plugin";
+const QString DIALOG_HEADER_STYLESHEET = "color:#fff;font-size:17px;background-image:url(:/image/abstract);background-position:left bottom;background-repeat:repeat-x;";
 
 QString Helper::loadFile(QString path, std::string encoding, std::string fallbackEncoding, bool silent)
 {

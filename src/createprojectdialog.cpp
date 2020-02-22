@@ -24,7 +24,7 @@ CreateProjectDialog::CreateProjectDialog(QWidget * parent) :
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 
     ui->buttonBox->setContentsMargins(0, 0, 20, 0);
-    ui->createProjectDialogHeaderLabel->setProperty("abstract_label", true);
+    ui->createProjectDialogHeaderLabel->setStyleSheet(DIALOG_HEADER_STYLESHEET);
 
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)

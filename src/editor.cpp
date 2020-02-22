@@ -349,9 +349,9 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     search->setFont(generalFont);
     QPalette searchPallete = search->palette();
     searchPallete.setColor(QPalette::Foreground, textColor);
-    searchPallete.setColor(QPalette::Base, searchBgColor);
+    searchPallete.setColor(QPalette::Base, searchBgColor.lighter(110));
     searchPallete.setColor(QPalette::ButtonText, textColor);
-    searchPallete.setColor(QPalette::Button, searchBgColor);
+    searchPallete.setColor(QPalette::Button, searchBgColor.lighter(110));
     search->setPalette(searchPallete);
     searchCaSe = false;
     searchWord = false;
