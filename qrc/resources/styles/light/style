@@ -15,6 +15,8 @@ QWidget
     background-color: #e7e7e7;
 }
 
+/* use built-in style */
+/*
 QWidget:item:hover
 {
     color: #333333;
@@ -26,6 +28,7 @@ QWidget:item:selected
     color: #fff;
     background-color: #1666e0;
 }
+*/
 
 QMenuBar
 {
@@ -316,6 +319,18 @@ QComboBox::down-arrow
     image: url(:/styles/light/down_arrow.png);
 }
 
+QComboBox QListView::item:hover
+{
+    color: #333333;
+    background-color: #8dbae8;
+}
+
+QComboBox QListView::item:selected
+{
+    color: #fff;
+    background-color: #1666e0;
+}
+
 QSpinBox::up-button,
 QSpinBox::down-button
 { 
@@ -441,11 +456,22 @@ QListWidget
     outline: none;
 }
 
-QListWidget::item,
-QListWidget::item:selected
+QListWidget::item
 {
     padding: 5px;
     border: none;
+}
+
+QListWidget::item:hover
+{
+    color: #333333;
+    background-color: #8dbae8;
+}
+
+QListWidget::item:selected
+{
+    color: #fff;
+    background-color: #1666e0;
 }
 
 QPlainTextEdit,
