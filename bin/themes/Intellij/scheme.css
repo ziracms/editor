@@ -13,6 +13,13 @@ Search QCheckBox
     color: #c4c8cc;
 }
 
+Search QLineEdit,
+Search QPushButton
+{
+    background: #4a4e50;
+    color: #c4c8cc;
+}
+
 Search QLineEdit[results="found"]
 {
     background: #3a4a50;
