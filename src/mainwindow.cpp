@@ -87,12 +87,10 @@ MainWindow::MainWindow(QWidget *parent) :
     else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyCustomColors(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE);
 
     QString schemeType = QString::fromStdString(settings->get(COLOR_SCHEME_TYPE.toStdString()));
-    if (theme != THEME_SYSTEM && !Helper::loadStylePlugin(pluginsDir, schemeType == COLOR_SCHEME_LIGHT)) {
+    if (theme != THEME_SYSTEM && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) < 0) {
         Style * style = new Style(schemeType == COLOR_SCHEME_LIGHT);
         QApplication::setStyle(style);
         QApplication::setPalette(style->standardPalette());
-    } else if (theme == THEME_SYSTEM) {
-        Helper::loadSystemStylePlugin(pluginsDir, schemeType == COLOR_SCHEME_LIGHT);
     }
 
     ui->setupUi(this);
@@ -509,7 +507,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(shortcutCloseApp, SIGNAL(activated()), this, SLOT(on_actionQuit_triggered()));
 
     // styles
-    applyThemeColors();
+    applyThemeColors(pluginsDir, schemeType == COLOR_SCHEME_LIGHT);
 
     // make sure that window is maximized in Android
     #if defined(Q_OS_ANDROID)
@@ -2163,14 +2161,14 @@ void MainWindow::restartApp()
     }
 }
 
-void MainWindow::applyThemeColors()
+void MainWindow::applyThemeColors(QString pluginsDir, bool light)
 {
     QString style = "";
 
     // setting widgets font
     QString qV = QString(qVersion());
     QStringList qVL = qV.split(".");
-    if (qVL.size() == 3 && theme != THEME_SYSTEM) {
+    if (qVL.size() == 3 && theme != THEME_SYSTEM && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) < 0) {
         QVersionNumber v1(qVL.at(0).toInt(), qVL.at(1).toInt(), qVL.at(2).toInt());
         QVersionNumber v2(5, 12, 0);
         if (QVersionNumber::compare(v1, v2) < 0) {
@@ -2191,12 +2189,18 @@ void MainWindow::applyThemeColors()
         QTextStream in(&f);
         style += in.readAll() + "\n";
         f.close();
-    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_CSS_FILE)) {
+    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_CSS_FILE) && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) < 0) {
         QFile f(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_CSS_FILE);
         f.open(QIODevice::ReadOnly);
         QTextStream in(&f);
         style += in.readAll() + "\n";
         f.close();
+    } else if (theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) > 0) {
+        QStringList stylePlugins = Helper::getInstalledStylePlugins(pluginsDir);
+        QString stylePlugin = theme.mid(0, theme.size() - STYLE_PLUGIN_DISPLAY_NAME_SUFFIX.size());
+        if (stylePlugins.contains(stylePlugin)) {
+            Helper::loadStylePlugin(stylePlugin, pluginsDir, light);
+        }
     }
 
     if (colorSheme == COLOR_SCHEME_DARK) {

@@ -21,6 +21,9 @@ extern const QString AUTHOR_CARD_ID;
 extern const QString AUTHOR_CMS_URL;
 extern const QString GITHUB_EDITOR_URL;
 
+extern const QString STYLE_PLUGIN_SUFFIX;
+extern const QString STYLE_PLUGIN_DISPLAY_NAME_SUFFIX;
+
 class Helper
 {
 public:
@@ -49,8 +52,8 @@ public:
     static QObject * loadPlugin(QString name, QString path = "");
     static bool isPluginExists(QString name, QString path = "");
     static SpellCheckerInterface * loadSpellChecker(QString path = "");
-    static bool loadStylePlugin(QString path, bool light = false);
-    static bool loadSystemStylePlugin(QString path, bool light = false);
+    static bool loadStylePlugin(QString name, QString path, bool light = false);
+    static QStringList getInstalledStylePlugins(QString path);
     static QString getExistingDirectory(QWidget * parent, QString title, QString directory);
     static QWidget * getWindowWidget();
     static void showMessage(QString text);

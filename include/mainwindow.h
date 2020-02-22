@@ -81,7 +81,7 @@ protected:
     QString getGitWorkingDir();
     void runServersCommand(QString command, QString pwd, QString description);
     void compileSass(QString src, QString dst);
-    void applyThemeColors();
+    void applyThemeColors(QString pluginsDir, bool light);
     void updateTabsListButton();
     void resetLastSearchParams();
     void updateWelcomeScreen();

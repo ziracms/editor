@@ -19,6 +19,7 @@
 #include <QApplication>
 #include <QStandardPaths>
 #include <QStylePlugin>
+#include <QDirIterator>
 #include "mainwindow.h"
 #include "fileiconprovider.h"
 
@@ -32,12 +33,8 @@ const QString AUTHOR_CARD_ID = "410014796567498";
 const QString AUTHOR_CMS_URL = "https://github.com/ziracms/zira";
 const QString GITHUB_EDITOR_URL = "https://github.com/ziracms/editor";
 
-const QString APPLICATION_STYLE_PLUGIN = "QPlastiqueStyle";
-const QString APPLICATION_STYLE_LIGHT = "plastique";
-const QString APPLICATION_STYLE_DARK = "plastique-dark";
-const QString APPLICATION_SYSTEM_STYLE_PLUGIN = "AdwaitaStyle";
-const QString APPLICATION_SYSTEM_STYLE_LIGHT = "adwaita";
-const QString APPLICATION_SYSTEM_STYLE_DARK = "adwaita-dark";
+const QString STYLE_PLUGIN_SUFFIX = "Style";
+const QString STYLE_PLUGIN_DISPLAY_NAME_SUFFIX = " Plugin";
 
 QString Helper::loadFile(QString path, std::string encoding, std::string fallbackEncoding, bool silent)
 {
@@ -300,16 +297,16 @@ SpellCheckerInterface * Helper::loadSpellChecker(QString path)
     return spellChecker;
 }
 
-bool Helper::loadStylePlugin(QString path, bool light)
+bool Helper::loadStylePlugin(QString name, QString path, bool light)
 {
-    QObject * plugin = loadPlugin(APPLICATION_STYLE_PLUGIN, path);
+    QObject * plugin = loadPlugin(name, path);
     if (plugin == nullptr) return false;
     QStylePlugin * stylePlugin = qobject_cast<QStylePlugin *>(plugin);
     if (!stylePlugin) {
         delete plugin;
         return false;
     }
-    QString styleName = light ? APPLICATION_STYLE_LIGHT : APPLICATION_STYLE_DARK;
+    QString styleName = light ? name+"-"+COLOR_SCHEME_LIGHT : name+"-"+COLOR_SCHEME_DARK;
     QStyle * style = stylePlugin->create(styleName);
     if (style == nullptr) return false;
     QApplication::setStyle(style);
@@ -317,21 +314,21 @@ bool Helper::loadStylePlugin(QString path, bool light)
     return true;
 }
 
-bool Helper::loadSystemStylePlugin(QString path, bool light)
+QStringList Helper::getInstalledStylePlugins(QString path)
 {
-    QObject * plugin = loadPlugin(APPLICATION_SYSTEM_STYLE_PLUGIN, path);
-    if (plugin == nullptr) return false;
-    QStylePlugin * stylePlugin = qobject_cast<QStylePlugin *>(plugin);
-    if (!stylePlugin) {
-        delete plugin;
-        return false;
+    if (path.size() == 0) path = QCoreApplication::applicationDirPath() + "/" + PLUGINS_DEFAULT_FOLDER_NAME;
+    QDirIterator it(path, QDir::Dirs | QDir::NoDotAndDotDot);
+    QStringList pluginsList;
+    while (it.hasNext()) {
+        QString _path = it.next();
+        QFileInfo fInfo(_path);
+        if (!fInfo.exists() || !fInfo.isDir() || !fInfo.isReadable()) continue;
+        if (fInfo.baseName().size() < STYLE_PLUGIN_SUFFIX.size()+1) continue;
+        if (fInfo.baseName().mid(fInfo.baseName().size() - STYLE_PLUGIN_SUFFIX.size()) != STYLE_PLUGIN_SUFFIX) continue;
+        if (!isPluginExists(fInfo.baseName(), path)) continue;
+        pluginsList.append(fInfo.baseName());
     }
-    QString styleName = light ? APPLICATION_SYSTEM_STYLE_LIGHT : APPLICATION_SYSTEM_STYLE_DARK;
-    QStyle * style = stylePlugin->create(styleName);
-    if (style == nullptr) return false;
-    QApplication::setStyle(style);
-    QApplication::setPalette(style->standardPalette());
-    return true;
+    return pluginsList;
 }
 
 bool Helper::isPluginExists(QString name, QString path)

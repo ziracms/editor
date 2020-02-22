@@ -58,6 +58,8 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     tabsType = settings->get("editor_tab_type");
     newLineMode = settings->get("editor_new_line_mode");
 
+    QString pluginsDir = QString::fromStdString(settings->get("plugins_path"));
+
     ui->settingsTabWidget->setFocusPolicy(Qt::NoFocus);
     ui->projectsHomeLineEdit->setText(QString::fromStdString(settings->get("file_browser_home")));
     if (settings->get("experimental_mode_enabled") == CHECKED_YES) ui->experimentalModeCheckbox->setChecked(true);
@@ -95,7 +97,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->serversCheckbox->setEnabled(false);
     #endif
     if (settings->get("spellchecker_enabled") == CHECKED_YES) ui->spellCheckerCheckbox->setChecked(true);
-    if (!Helper::isPluginExists(SPELLCHECKER_PLUGIN_NAME, QString::fromStdString(settings->get("plugins_path")))) ui->spellCheckerCheckbox->setEnabled(false);
+    if (!Helper::isPluginExists(SPELLCHECKER_PLUGIN_NAME, pluginsDir)) ui->spellCheckerCheckbox->setEnabled(false);
     ui->phpPathLineEdit->setText(QString::fromStdString(settings->get("parser_php_path")));
     ui->phpcsPathLineEdit->setText(QString::fromStdString(settings->get("parser_phpcs_path")));
     ui->gitPathLineEdit->setText(QString::fromStdString(settings->get("parser_git_path")));
@@ -125,12 +127,18 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
             if (!Helper::fileExists(path + "/" + CUSTOM_THEME_COLORS_FILE)) continue;
             if (fInfo.fileName() == THEME_SYSTEM || fInfo.fileName() == THEME_LIGHT || fInfo.fileName() == THEME_DARK) continue;
             if (fInfo.fileName() == COLOR_SCHEME_LIGHT || fInfo.fileName() == COLOR_SCHEME_DARK) continue;
+            if (fInfo.fileName().indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) >= 0) continue;
             customThemesList.append(fInfo.fileName());
         }
     }
     for (auto customTheme : customThemesList) {
         ui->generalThemeCombobox->addItem(customTheme);
         ui->generalColorSchemeCombobox->addItem(customTheme);
+    }
+
+    QStringList stylePlugins = Helper::getInstalledStylePlugins(pluginsDir);
+    for (auto stylePlugin : stylePlugins) {
+        ui->generalThemeCombobox->addItem(stylePlugin+STYLE_PLUGIN_DISPLAY_NAME_SUFFIX);
     }
 
     QString theme = QString::fromStdString(settings->get("theme"));
@@ -399,8 +407,13 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     if (themeStr.size() > 0) themeStrL = themeStr.at(0).toLower() + themeStr.mid(1);
     if (themeStrL == THEME_SYSTEM || themeStrL == THEME_LIGHT || themeStrL == THEME_DARK) {
         dataMap["theme"] = themeStrL.toStdString();
-    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + themeStr + "/" + CUSTOM_THEME_CSS_FILE)) {
+    } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + themeStr + "/" + CUSTOM_THEME_CSS_FILE) && themeStr.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) < 0) {
         dataMap["theme"] = themeStr.toStdString();
+    } else if (themeStr.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) > 0) {
+        QStringList stylePlugins = Helper::getInstalledStylePlugins(pluginsPathStr);
+        if (stylePlugins.contains(themeStr.mid(0, themeStr.size() - STYLE_PLUGIN_DISPLAY_NAME_SUFFIX.size()))) {
+            dataMap["theme"] = themeStr.toStdString();
+        }
     }
     QString colorSchemeStr = ui->generalColorSchemeCombobox->currentText();
     QString colorSchemeStrL = colorSchemeStr;
