@@ -93,6 +93,9 @@ MainWindow::MainWindow(QWidget *parent) :
         QApplication::setPalette(style->standardPalette());
     }
 
+    // styles
+    applyThemeColors(pluginsDir, schemeType == COLOR_SCHEME_LIGHT);
+
     ui->setupUi(this);
     setAcceptDrops(true);
 
@@ -505,9 +508,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QString shortcutCloseAppStr = QString::fromStdString(settings->get("shortcut_close_app"));
     QShortcut * shortcutCloseApp = new QShortcut(QKeySequence(shortcutCloseAppStr), this);
     connect(shortcutCloseApp, SIGNAL(activated()), this, SLOT(on_actionQuit_triggered()));
-
-    // styles
-    applyThemeColors(pluginsDir, schemeType == COLOR_SCHEME_LIGHT);
 
     // make sure that window is maximized in Android
     #if defined(Q_OS_ANDROID)
@@ -2201,6 +2201,7 @@ void MainWindow::applyThemeColors(QString pluginsDir, bool light)
         if (stylePlugins.contains(stylePlugin)) {
             Helper::loadStylePlugin(stylePlugin, pluginsDir, light);
         }
+        return; // do not load scheme for style plugins
     }
 
     if (colorSheme == COLOR_SCHEME_DARK) {
@@ -2223,7 +2224,7 @@ void MainWindow::applyThemeColors(QString pluginsDir, bool light)
         f.close();
     }
 
-    if (style.size() > 0) setStyleSheet(style);
+    if (style.trimmed().size() > 0) setStyleSheet(style);
 }
 
 void MainWindow::activateProgressLine()
