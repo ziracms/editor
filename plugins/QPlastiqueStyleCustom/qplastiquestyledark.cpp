@@ -5594,7 +5594,8 @@ QPalette QPlastiqueStyleDark::standardPalette() const
 
     palette.setBrush(QPalette::Disabled, QPalette::WindowText, insensitive_fg_color);
     palette.setBrush(QPalette::Disabled, QPalette::Button, insensitive_bg_color);
-    palette.setBrush(QPalette::Disabled, QPalette::Light, insensitive_bg_color.lighter(160));
+    //palette.setBrush(QPalette::Disabled, QPalette::Light, insensitive_bg_color.lighter(160));
+    palette.setBrush(QPalette::Disabled, QPalette::Light, Qt::transparent); // remove text shadow
     palette.setBrush(QPalette::Disabled, QPalette::Midlight, insensitive_bg_color.lighter(110));
     palette.setBrush(QPalette::Disabled, QPalette::Dark, insensitive_bg_color.darker(160));
     palette.setBrush(QPalette::Disabled, QPalette::Mid, insensitive_bg_color.darker(110));

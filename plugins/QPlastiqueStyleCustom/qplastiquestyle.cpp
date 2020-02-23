@@ -5589,12 +5589,13 @@ QPalette QPlastiqueStyle::standardPalette() const
     QColor button_base_color = bg_color.lighter(110);
     QColor link_color = selected_bg_color.darker(160);
     QColor link_visited_color = selected_bg_color.darker(110);
-    QColor insensitive_fg_color = QColor("#555555");
+    QColor insensitive_fg_color = QColor("#777777");
     QColor insensitive_bg_color = QColor("#e9e9e9");
 
     palette.setBrush(QPalette::Disabled, QPalette::WindowText, insensitive_fg_color);
     palette.setBrush(QPalette::Disabled, QPalette::Button, insensitive_bg_color);
-    palette.setBrush(QPalette::Disabled, QPalette::Light, insensitive_bg_color.lighter(160));
+    //palette.setBrush(QPalette::Disabled, QPalette::Light, insensitive_bg_color.lighter(160));
+    palette.setBrush(QPalette::Disabled, QPalette::Light, Qt::transparent); // remove text shadow
     palette.setBrush(QPalette::Disabled, QPalette::Midlight, insensitive_bg_color.lighter(110));
     palette.setBrush(QPalette::Disabled, QPalette::Dark, insensitive_bg_color.darker(160));
     palette.setBrush(QPalette::Disabled, QPalette::Mid, insensitive_bg_color.darker(110));
