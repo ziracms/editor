@@ -131,6 +131,7 @@ void FileBrowser::buildFileBrowserTree(QString startDir, QTreeWidgetItem * paren
 
 void FileBrowser::rebuildFileBrowserTree(QString path)
 {
+    if (path.size() == 0) return;
     treeWidget->clear();
     buildFileBrowserTree(path);
 }
