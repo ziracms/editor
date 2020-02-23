@@ -93,11 +93,29 @@ MainWindow::MainWindow(QWidget *parent) :
         QApplication::setPalette(style->standardPalette());
     }
 
+    // font issue workaround for Qt < 5.12
+    bool applyWidgetsFont = false;
+    QString qV = QString(qVersion());
+    QStringList qVL = qV.split(".");
+    if (qVL.size() == 3) {
+        QVersionNumber v1(qVL.at(0).toInt(), qVL.at(1).toInt(), qVL.at(2).toInt());
+        QVersionNumber v2(5, 12, 0);
+        if (QVersionNumber::compare(v1, v2) < 0) {
+            applyWidgetsFont = true;
+        }
+    }
+
     // styles
-    applyThemeColors(pluginsDir, schemeType == COLOR_SCHEME_LIGHT);
+    applyThemeColors(pluginsDir, schemeType == COLOR_SCHEME_LIGHT, applyWidgetsFont && theme != THEME_SYSTEM && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) < 0);
 
     ui->setupUi(this);
     setAcceptDrops(true);
+
+    if (applyWidgetsFont && theme != THEME_SYSTEM && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) > 0) {
+        ui->tabWidget->setFont(appFont);
+        ui->sidebarTabWidget->setFont(appFont);
+        ui->outputTabWidget->setFont(appFont);
+    }
 
     // setting main menu font
     ui->menuBar->setFont(appFont);
@@ -2161,20 +2179,14 @@ void MainWindow::restartApp()
     }
 }
 
-void MainWindow::applyThemeColors(QString pluginsDir, bool light)
+void MainWindow::applyThemeColors(QString pluginsDir, bool light, bool applyFont)
 {
     QString style = "";
 
     // setting widgets font
-    QString qV = QString(qVersion());
-    QStringList qVL = qV.split(".");
-    if (qVL.size() == 3 && theme != THEME_SYSTEM && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) < 0) {
-        QVersionNumber v1(qVL.at(0).toInt(), qVL.at(1).toInt(), qVL.at(2).toInt());
-        QVersionNumber v2(5, 12, 0);
-        if (QVersionNumber::compare(v1, v2) < 0) {
-            QFont font = QApplication::font();
-            style += "QMenu, QTreeWidget, QTabBar::tab, QLineEdit, QPushButton, QLabel, QCheckBox, QRadioButton, QComboBox, QDockWidget::title {font: "+Helper::intToStr(font.pointSize())+"pt \""+font.family()+"\";}" + "\n";
-        }
+    if (applyFont) {
+        QFont font = QApplication::font();
+        style += "QMenu, QTreeWidget, QTabBar::tab, QLineEdit, QPushButton, QLabel, QCheckBox, QRadioButton, QComboBox, QDockWidget::title {font: "+Helper::intToStr(font.pointSize())+"pt \""+font.family()+"\";}" + "\n";
     }
 
     if (theme == THEME_DARK) {
