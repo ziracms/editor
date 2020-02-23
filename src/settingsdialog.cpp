@@ -30,7 +30,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->setupUi(this);
     setModal(true);
 
-    // combobox frame background workaround
+    // combobox frame background workaround (now using QStyle for paddings)
     //ui->generalThemeCombobox->view()->parentWidget()->setStyleSheet("background:"+QString::fromStdString(settings->get("editor_search_bg_color"))+";");
 
     // app font
