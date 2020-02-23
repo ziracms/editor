@@ -1503,6 +1503,9 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::showWelcomeScreen()
 {
+    QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
+    if (editorTabsRectM.width() < welcomeScreen->minimumWidth()) return;
+    if (editorTabsRectM.height() < welcomeScreen->minimumHeight()) return;
     welcomeScreen->show();
     updateWelcomeScreen();
 }
