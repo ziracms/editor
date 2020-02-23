@@ -435,13 +435,6 @@ Editor::~Editor()
 void Editor::init()
 {
     setMouseTracking(true);
-
-    // check font
-    QFontInfo fontInfo(editorFont);
-    if (fontInfo.family() != editorFont.family()) {
-        Helper::showMessage(QObject::tr("Font \"%1\" was not loaded. Using \"%2\" font family.").arg(editorFont.family()).arg(fontInfo.family()));
-    }
-
     updateViewportMargins();
 }
 
@@ -600,6 +593,13 @@ void Editor::initMode(QString ext)
             isBlocksHeightEquals = false;
             break;
         }
+    }
+
+    // check font
+    QFontInfo fontInfo(editorFont);
+    if (fontInfo.family() != editorFont.family()) {
+        //Helper::showMessage(QObject::tr("Font \"%1\" was not loaded. Using \"%2\" font family.").arg(editorFont.family()).arg(fontInfo.family()));
+        emit showPopupText(tabIndex, QObject::tr("Font \"%1\" was not loaded. Using \"%2\" font family.").arg(editorFont.family()).arg(fontInfo.family()));
     }
 }
 
