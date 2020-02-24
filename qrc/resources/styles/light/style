@@ -62,7 +62,7 @@ QMenu
 QMenu::item
 {
     background: #f1f1f1;
-    padding: 5px 80px 5px 30px;
+    padding: 5px 80px 5px 20px;
 }
 
 QMenu::item:selected
@@ -73,31 +73,35 @@ QMenu::item:selected
 
 QMenu::icon
 {
-    width: 20px;
-    height: 20px;
+    width: 12px;
+    height: 12px;
     margin-left: 15px;
 }
 
 QMenu::indicator
 {
-    width: 15px;
-    height: 15px;
+    width: 12px;
+    height: 12px;
     margin-left: 10px;
 }
 
 QMenu::indicator:checked
 {
+    /*
     background: qradialgradient(
         cx: 0.5, cy: 0.5,
         fx: 0.5, fy: 0.5,
         radius: 1.0,
-        stop: 0.25 #4d5cc5,
+        stop: 0.25 #2b85ff,
         stop: 0.3 transparent
     );
+    */
+    image: url(:/icons/ok.png);
 }
 
 QMenu::indicator:unchecked
 {
+    /*
     background: qradialgradient(
         cx: 0.5, cy: 0.5,
         fx: 0.5, fy: 0.5,
@@ -105,6 +109,8 @@ QMenu::indicator:unchecked
         stop: 0.25 #90989a,
         stop: 0.3 transparent
     );
+    */
+    image: none;
 }
 
 QMenu::separator
@@ -915,7 +921,7 @@ QRadioButton::indicator:checked
         cx: 0.5, cy: 0.5,
         fx: 0.5, fy: 0.5,
         radius: 1.0,
-        stop: 0.25 #4d5cc5,
+        stop: 0.25 #2b85ff,
         stop: 0.3 transparent
     );
 }
@@ -953,7 +959,7 @@ QCheckBox::indicator:checked
         cx: 0.5, cy: 0.5,
         fx: 0.5, fy: 0.5,
         radius: 1.0,
-        stop: 0.25 #4d5cc5,
+        stop: 0.25 #2b85ff,
         stop: 0.3 transparent
     );
 }

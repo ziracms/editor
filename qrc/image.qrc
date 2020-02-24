@@ -49,5 +49,9 @@
         <file alias="leveldown.png">resources/images/icons/leveldown.png</file>
         <file alias="separator-double.png">resources/images/icons/separator-double.png</file>
         <file alias="zira.svg">resources/images/icons/zira.svg</file>
+        <file alias="start.png">resources/images/icons/start.png</file>
+        <file alias="stop.png">resources/images/icons/stop.png</file>
+        <file alias="mail.png">resources/images/icons/mail.png</file>
+        <file alias="list.png">resources/images/icons/list.png</file>
     </qresource>
 </RCC>

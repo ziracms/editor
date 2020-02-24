@@ -74,7 +74,7 @@
     </rect>
    </property>
    <property name="contextMenuPolicy">
-    <enum>Qt::DefaultContextMenu</enum>
+    <enum>Qt::CustomContextMenu</enum>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="minimumSize">
@@ -918,6 +918,10 @@
    </property>
   </action>
   <action name="actionGitDiscardChanges">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/edit-undo.png</normaloff>:/icons/edit-undo.png</iconset>
+   </property>
    <property name="text">
     <string>Discard &amp;uncommitted</string>
    </property>
@@ -928,16 +932,28 @@
    </property>
   </action>
   <action name="actionGitResetAll">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
+   </property>
    <property name="text">
     <string>R&amp;eset All</string>
    </property>
   </action>
   <action name="actionGitAddAll">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Add All</string>
    </property>
   </action>
   <action name="actionGitCommit">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/ok.png</normaloff>:/icons/ok.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Commit</string>
    </property>
@@ -958,6 +974,10 @@
    </property>
   </action>
   <action name="actionGitDiffTree">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/list.png</normaloff>:/icons/list.png</iconset>
+   </property>
    <property name="text">
     <string>S&amp;how last committed</string>
    </property>
@@ -973,21 +993,37 @@
    </property>
   </action>
   <action name="actionGitPush">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/up.png</normaloff>:/icons/up.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Push to master</string>
    </property>
   </action>
   <action name="actionGitPull">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/down.png</normaloff>:/icons/down.png</iconset>
+   </property>
    <property name="text">
     <string>Pull &amp;from master</string>
    </property>
   </action>
   <action name="actionStartServers">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/start.png</normaloff>:/icons/start.png</iconset>
+   </property>
    <property name="text">
     <string>Sta&amp;rt servers</string>
    </property>
   </action>
   <action name="actionStopServers">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
+   </property>
    <property name="text">
     <string>St&amp;op servers</string>
    </property>
@@ -1059,6 +1095,10 @@
    </property>
   </action>
   <action name="actionHelpContact">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/mail.png</normaloff>:/icons/mail.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Contact</string>
    </property>
