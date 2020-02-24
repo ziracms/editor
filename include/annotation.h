@@ -23,6 +23,7 @@ public:
     void fadeOut();
 protected:
     void wheelEvent(QWheelEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
 private:
     Editor * editor;
     QHBoxLayout * hLayout;

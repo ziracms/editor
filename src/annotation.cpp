@@ -98,9 +98,15 @@ void Annotation::animationOutFinished()
     hide();
 }
 
-void Annotation::wheelEvent(QWheelEvent */*event*/)
+void Annotation::wheelEvent(QWheelEvent *event)
 {
-    if (isVisible()) hide();
+    //if (isVisible()) hide();
+    editor->verticalScrollBar()->setValue(editor->verticalScrollBar()->value() - event->pixelDelta().ry());
+}
+
+void Annotation::contextMenuEvent(QContextMenuEvent */*event*/)
+{
+    editor->contextMenu();
 }
 
 void Annotation::setText(QString text)

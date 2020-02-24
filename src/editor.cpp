@@ -122,6 +122,15 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
 
     setFont(editorFont);
 
+    // updating font family if using fallback font
+    QFontInfo fontInfo(editorFont);
+    if (fontInfo.family() != editorFont.family()) {
+        std::unordered_map<std::string, std::string> sData;
+        sData["editor_font_family"] = fontInfo.family().toStdString();
+        settings->change(sData);
+        // showing message in initMode after slots connection
+    }
+
     // colors
     std::string lineNumberBgColorStr = settings->get("editor_line_number_bg_color");
     std::string lineNumberColorStr = settings->get("editor_line_number_color");
