@@ -21,6 +21,7 @@ public:
     void setSize(int w, int h);
     void fadeIn();
     void fadeOut();
+    QFont font();
 protected:
     void wheelEvent(QWheelEvent *event) override;
     void contextMenuEvent(QContextMenuEvent *event) override;

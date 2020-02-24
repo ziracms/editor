@@ -30,7 +30,7 @@ Annotation::Annotation(Editor * editor, Settings * settings) :
     txtLabel = new QLabel();
     txtLabel->setTextFormat(Qt::PlainText);
     txtLabel->setWordWrap(false);
-    txtLabel->setAlignment(Qt::AlignRight);
+    txtLabel->setAlignment(Qt::AlignLeft);
     txtLabel->setMinimumWidth(0);
     txtLabel->setFont(editor->font());
     txtLabel->setContentsMargins(0, 0, 0, 0);
@@ -101,7 +101,9 @@ void Annotation::animationOutFinished()
 void Annotation::wheelEvent(QWheelEvent *event)
 {
     //if (isVisible()) hide();
-    editor->verticalScrollBar()->setValue(editor->verticalScrollBar()->value() - event->pixelDelta().ry());
+    int delta = event->pixelDelta().y();
+    if (!delta) delta = event->angleDelta().y() / 8;
+    editor->verticalScrollBar()->setValue(editor->verticalScrollBar()->value() - delta);
 }
 
 void Annotation::contextMenuEvent(QContextMenuEvent */*event*/)
@@ -126,4 +128,9 @@ void Annotation::setSize(int w, int h)
     imgLabel->setFixedSize(h, h);
     txtLabel->setFixedSize(w - h, h);
     setFixedSize(w, h);
+}
+
+QFont Annotation::font()
+{
+    return txtLabel->font();
 }
