@@ -802,7 +802,7 @@ void Editor::updateLineAnnotationView()
             int x = static_cast<int>(document()->documentLayout()->blockBoundingRect(block).width());
             x += lineNumber->geometry().width() + lineMark->geometry().width();
             x += ANNOTATION_LEFT_MARGIN;
-            QFontMetrics fm(lineAnnotation->font());
+            QFontMetrics fm(font());
             int tw = fm.width(static_cast<Annotation *>(lineAnnotation)->getText());
             tw += bottom - top; // icon
             int bw = geometry().width() - lineMap->geometry().width();

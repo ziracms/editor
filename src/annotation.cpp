@@ -102,7 +102,7 @@ void Annotation::wheelEvent(QWheelEvent *event)
 {
     //if (isVisible()) hide();
     int delta = event->pixelDelta().y();
-    if (!delta) delta = event->angleDelta().y() / 8;
+    if (!delta) delta = ((event->angleDelta().y() / 8) / 15) * (editor->verticalScrollBar()->singleStep() * 3);
     editor->verticalScrollBar()->setValue(editor->verticalScrollBar()->value() - delta);
 }
 
