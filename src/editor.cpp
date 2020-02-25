@@ -4773,6 +4773,14 @@ void Editor::lineMapAreaPaintEvent(QPaintEvent *event)
         if (top > height-1) top = height-1;
         painter.drawLine(QPoint(0, top), QPoint(mapW, top));
     }
+    for (auto & iterator: modifiedLines) {
+        int top = iterator.first * height / lines;
+        if (top > height) continue;
+        top -= offset;
+        if (top < 1) top = 1;
+        if (top > height-1) top = height-1;
+        painter.drawLine(QPoint(mapW / 2, top), QPoint(mapW, top));
+    }
     painter.setPen(lineWarningColor);
     for (int i=0; i<warnings.size(); i++){
         int top = warnings.at(i) * height / lines;
