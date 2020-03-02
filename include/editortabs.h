@@ -85,6 +85,7 @@ public slots:
 private slots:
     void ready(int index);
     void switchTab(int index);
+    void movedTab(int from, int to);
     void editorModifiedStateChanged(int index, bool m);
     void statusBarTextChangeRequested(int index, QString text);
     void filenameChanged(int index, QString name);

@@ -30,6 +30,7 @@ EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget
 
     connect(tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(switchTab(int)));
+    connect(tabWidget->tabBar(), SIGNAL(tabMoved(int,int)), SLOT(movedTab(int,int)));
 
     // shortcuts
     QString shortcutSaveAllStr = QString::fromStdString(settings->get("shortcut_save_all"));
@@ -146,6 +147,17 @@ void EditorTabs::switchTab(int index)
         editor = nullptr;
     }
     if (!blockSig) emit tabSwitched(index);
+}
+
+void EditorTabs::movedTab(int /*from*/, int /*to*/)
+{
+    // update indexes
+    for (int i=0; i<tabWidget->count(); i++) {
+        Editor * textEditor = getTabEditor(i);
+        if (textEditor != nullptr) {
+            textEditor->setTabIndex(i);
+        }
+    }
 }
 
 void EditorTabs::closeTab(int index)
