@@ -41,7 +41,7 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     hLayout->setSpacing(0);
 
     imgLabel = new QLabel();
-    QPixmap pm(":/image/vanko1");
+    QPixmap pm(":/image/zira.png");
     imgLabel->setPixmap(pm);
     imgLabel->setScaledContents(false);
     imgLabel->setFixedWidth(IMAGE_WIDTH);
@@ -153,8 +153,6 @@ void Popup::display(int x, int y, QString text)
 
 void Popup::displayText(int x, int y, QString text)
 {
-    QPixmap pm(":/image/vanko2");
-    imgLabel->setPixmap(pm);
     textLabel->setStyleSheet("background:"+QString::fromStdString(bgColorStr)+";color:"+QString::fromStdString(colorStr)+";");
     setStyleSheet("background:"+QString::fromStdString(bgColorStr)+";border:"+QString::number(BORDER)+"px solid "+QString::fromStdString(bgColorStr)+";");
     display(x, y, text);
@@ -162,8 +160,6 @@ void Popup::displayText(int x, int y, QString text)
 
 void Popup::displayError(int x, int y, QString text)
 {
-    QPixmap pm(":/image/vanko1");
-    imgLabel->setPixmap(pm);
     textLabel->setStyleSheet("background:"+QString::fromStdString(errorBgColorStr)+";color:"+QString::fromStdString(colorStr)+";");
     setStyleSheet("background:"+QString::fromStdString(errorBgColorStr)+";border:"+QString::number(BORDER)+"px solid "+QString::fromStdString(errorBgColorStr)+";");
     display(x, y, text);

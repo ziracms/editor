@@ -1,9 +1,8 @@
 <RCC>
     <qresource prefix="/image">
         <file alias="abstract">resources/images/abstract.png</file>
-        <file alias="vanko1">resources/images/vanko1.jpg</file>
-        <file alias="vanko2">resources/images/vanko2.jpg</file>
         <file alias="splash.png">resources/images/splash.png</file>
+        <file alias="zira.png">resources/images/zira.png</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="application-exit.png">resources/images/icons/application-exit.png</file>
