@@ -1507,6 +1507,7 @@ void MainWindow::showWelcomeScreen()
     if (editorTabsRectM.width() < welcomeScreen->minimumWidth()) return;
     if (editorTabsRectM.height() < welcomeScreen->minimumHeight()) return;
     welcomeScreen->show();
+    welcomeScreen->raise();
     updateWelcomeScreen();
 }
 
