@@ -33,6 +33,7 @@ QWidget:item:selected
 QMenuBar
 {
     padding: 0px;
+    spacing: 0px;
 }
 
 QMenuBar::item
