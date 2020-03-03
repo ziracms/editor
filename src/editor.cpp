@@ -2233,12 +2233,7 @@ void Editor::mousePressEvent(QMouseEvent *e)
 
 void Editor::mouseReleaseEvent(QMouseEvent *e)
 {
-    QTextCursor curs = textCursor();
-    int pos = curs.positionInBlock();
-    QString blockText = curs.block().text();
-    QChar prevChar = '\0';
-    if (pos > 0) prevChar = blockText[pos-1];
-    if (!(e->modifiers() & Qt::ControlModifier) && prevChar != "}" && prevChar != ")" && prevChar != "]") {
+    if (!(e->modifiers() & Qt::ControlModifier)) {
         hideTooltip();
     }
     QTextEdit::mouseReleaseEvent(e);
@@ -4246,7 +4241,7 @@ void Editor::tooltip(int offset)
             thCaptured = tnMatch.capturedStart();
             int tnLength = tnMatch.capturedLength();
             if (thCaptured >= 0) {
-                if (cursPos >= 0 && thCaptured > cursPos) break;
+                if (cursPos >= 0 && thCaptured >= cursPos) break;
                 if (tnMatch.captured(1) != "array") {
                     tooltipStart = thCaptured;
                     tooltipName = tnMatch.captured(1);
@@ -4339,7 +4334,8 @@ void Editor::followTooltip()
 {
     if (tooltipLabel.isVisible() && tooltipSavedText.size() > 0) {
         QRegularExpressionMatch tMatch = functionParamsExpr.match(tooltipSavedText);
-        if (tMatch.capturedStart() >= 0 && tMatch.captured(2).trimmed().size() > 0 && tMatch.captured(2).trimmed() != "void") {
+        if (tMatch.capturedStart() >= 0 && tMatch.captured(2).trimmed().size() > 0) {
+            bool isVoid = tMatch.captured(2).trimmed() == "void";
             QString tooltipName = tMatch.captured(1);
             QStringList tooltipTextList = tMatch.captured(2).split(",");
             QString tooltipEnd = tMatch.captured(3);
@@ -4391,7 +4387,7 @@ void Editor::followTooltip()
                     }
                     if (blockNumber == blockNumberStart && pos >= blockText.size()) break;
                 }
-                if (tooltipOffset >= 0) {
+                if (tooltipOffset >= 0 && !isVoid) {
                     QString newText = tooltipSavedOrigName + " (";
                     for (int i=0; i<tooltipTextList.size(); i++) {
                         if (i > 0) newText += ",";
@@ -4403,7 +4399,7 @@ void Editor::followTooltip()
                     }
                     newText += ")" + tooltipEnd;
                     tooltipLabel.setText(newText);
-                } else {
+                } else if (tooltipOffset < 0) {
                     hideTooltip();
                 }
             } else {
@@ -4930,9 +4926,6 @@ void Editor::highlightCloseCharPair(QChar openChar, QChar closeChar, QList<QText
                                     positionInBlock = prevTooltipText.size() + 1;
                                 }
                             }
-                            if (positionInBlock >= 0 && positionInBlock < tooltipText.size()) {
-                                tooltipText = tooltipText.mid(0, positionInBlock) + tooltipBoldTagStart + tooltipText.mid(positionInBlock, 1) + tooltipBoldTagEnd + tooltipText.mid(positionInBlock + 1);
-                            }
                             int xOffset = 0;
                             if (positionInBlock >= 0) {
                                 QRegularExpression indentExpr = QRegularExpression("^[\\s]+");
@@ -4947,9 +4940,12 @@ void Editor::highlightCloseCharPair(QChar openChar, QChar closeChar, QList<QText
                                     if (xOffset < 0) xOffset = 0;
                                 }
                             }
-                            showTooltip(xOffset+lineNumberAreaWidth()+lineMarkAreaWidth(), 0, tooltipText.trimmed());
-                        } else {
-                            hideTooltip();
+                            tooltipSavedText = "";
+                            tooltipSavedList.clear();
+                            tooltipSavedPageOffset = -1;
+                            tooltipSavedOrigName = "";
+                            tooltipSavedBlockNumber = -1;
+                            showTooltip(xOffset+lineNumberAreaWidth()+lineMarkAreaWidth(), 0, tooltipText.trimmed(), false);
                         }
                         break;
                     }
