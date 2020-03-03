@@ -68,6 +68,13 @@ void GitBrowser::build(QString output)
         QString status = lineParts.at(0).trimmed();
         QString path = lineParts.at(1).trimmed();
         QString name = path;
+        if (name.count('/') >= 2) {
+            int p1 = name.indexOf('/');
+            int p2 = name.lastIndexOf('/');
+            if (p1 > 0 && p2 < name.length()-1 && p2 > p1) {
+                name = name.mid(0, p1+1) + "..." + name.mid(p2);
+            }
+        }
         QTreeWidgetItem * item = new QTreeWidgetItem();
         item->setText(0, name);
         item->setText(1, status);
