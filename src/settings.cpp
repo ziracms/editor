@@ -102,6 +102,7 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"shortcut_close_app", "Ctrl+Alt+Q"},
         {"experimental_mode_enabled", "yes"},
         {"spellchecker_enabled", "yes"},
+        {"show_dock_buttons", "yes"},
         {"color_scheme", COLOR_SCHEME_DARK.toStdString()},
         {"theme", THEME_DARK.toStdString()},
         {"custom_themes_path", ""},

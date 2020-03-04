@@ -187,6 +187,8 @@
     <addaction name="actionShowHideToolbar"/>
     <addaction name="actionShowHideOutput"/>
     <addaction name="separator"/>
+    <addaction name="actionDisplayDockButtons"/>
+    <addaction name="separator"/>
     <addaction name="actionQuickAccess"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -1125,6 +1127,14 @@
   <action name="actionGitCancelCommit">
    <property name="text">
     <string>Cancel last commit</string>
+   </property>
+  </action>
+  <action name="actionDisplayDockButtons">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Dock Buttons</string>
    </property>
   </action>
  </widget>

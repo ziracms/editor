@@ -26,6 +26,7 @@ INCLUDEPATH += include
 
 SOURCES += \
     main.cpp \
+    src/docktitlebar.cpp \
     src/fileiconprovider.cpp \
     src/mainwindow.cpp \
     src/helper.cpp \
@@ -76,6 +77,7 @@ SOURCES += \
     src/welcome.cpp
 
 HEADERS += \
+    include/docktitlebar.h \
     include/fileiconprovider.h \
     include/mainwindow.h \
     include/helper.h \

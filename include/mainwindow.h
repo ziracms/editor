@@ -138,6 +138,7 @@ private slots:
     void on_actionShowHideSidebar_triggered();
     void on_actionShowHideToolbar_triggered();
     void on_actionShowHideOutput_triggered();
+    void on_actionDisplayDockButtons_triggered();
     void on_actionQuickAccess_triggered();
     void on_actionSettings_triggered();
     void on_actionHelpShortcuts_triggered();

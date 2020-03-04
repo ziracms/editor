@@ -30,6 +30,7 @@
 #include "servers.h"
 #include "settingsdialog.h"
 #include "helpdialog.h"
+#include "docktitlebar.h"
 
 const int OUTPUT_TAB_MESSAGES_INDEX = 0;
 const int OUTPUT_TAB_HELP_INDEX = 1;
@@ -384,6 +385,15 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     connect(ui->sidebarDockWidget, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(sidebarDockLocationChanged(Qt::DockWidgetArea)));
 
+    bool showDockButtons = false;
+    if (settings->get("show_dock_buttons") == "yes") showDockButtons = true;
+    if (!showDockButtons) {
+        QWidget * sidebarTitleBarWidget = new DockTitleBar();
+        ui->sidebarDockWidget->setTitleBarWidget(sidebarTitleBarWidget);
+        QWidget * outputTitleBarWidget = new DockTitleBar();
+        ui->outputDockWidget->setTitleBarWidget(outputTitleBarWidget);
+    }
+
     searchResultsColor = QColor(QString::fromStdString(settings->get("search_results_color")));
     outputColor = QColor(QString::fromStdString(settings->get("output_color")));
     outputBgColor = QColor(QString::fromStdString(settings->get("output_bg_color")));
@@ -588,6 +598,10 @@ void MainWindow::menuViewOnShow()
         } else if (action->objectName() == "actionShowHideOutput") {
             if (ui->outputDockWidget->isVisible()) action->setChecked(true);
             else action->setChecked(false);
+        } else if (action->objectName() == "actionDisplayDockButtons") {
+            bool showDockButtons = false;
+            if (settings->get("show_dock_buttons") == "yes") showDockButtons = true;
+            action->setChecked(showDockButtons);
         }
     }
 }
@@ -998,6 +1012,31 @@ void MainWindow::on_actionShowHideOutput_triggered()
         ui->outputDockWidget->show();
         ui->outputTabWidget->setFocus();
     }
+}
+
+void MainWindow::on_actionDisplayDockButtons_triggered()
+{
+    QWidget * oldSidebarTitleBarWidget = ui->sidebarDockWidget->titleBarWidget();
+    QWidget * oldOutputTitleBarWidget = ui->outputDockWidget->titleBarWidget();
+
+    bool showDockButtons = false;
+    if (settings->get("show_dock_buttons") == "yes") showDockButtons = true;
+    std::unordered_map<std::string, std::string> data;
+    if (showDockButtons) {
+        QWidget * sidebarTitleBarWidget = new DockTitleBar();
+        ui->sidebarDockWidget->setTitleBarWidget(sidebarTitleBarWidget);
+        QWidget * outputTitleBarWidget = new DockTitleBar();
+        ui->outputDockWidget->setTitleBarWidget(outputTitleBarWidget);
+        data["show_dock_buttons"] = "no";
+    } else {
+        ui->sidebarDockWidget->setTitleBarWidget(nullptr);
+        ui->outputDockWidget->setTitleBarWidget(nullptr);
+        data["show_dock_buttons"] = "yes";
+    }
+
+    settings->change(data);
+    if (oldSidebarTitleBarWidget != nullptr) oldSidebarTitleBarWidget->deleteLater();
+    if (oldOutputTitleBarWidget != nullptr) oldOutputTitleBarWidget->deleteLater();
 }
 
 void MainWindow::on_actionQuickAccess_triggered()
