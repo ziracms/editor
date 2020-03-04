@@ -2917,6 +2917,7 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
             if (blockData != nullptr && blockData->varsChainJS.size()>0 && (blockData->varsChainJS.indexOf(text, 0, Qt::CaseInsensitive)==0 || blockData->varsChainJS.indexOf(","+text, 0, Qt::CaseInsensitive)>0)) {
                 QStringList varsList = blockData->varsChainJS.split(",");
                 for (QString k : varsList) {
+                    if (k == text) continue; // need this
                     if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
                         varsIterator = vars.find(k.toStdString());
                         if (varsIterator == vars.end()) {
@@ -3187,7 +3188,7 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
             if (blockData != nullptr && blockData->varsChainPHP.size()>0 && (blockData->varsChainPHP.indexOf(text, 0, Qt::CaseInsensitive)==0 || blockData->varsChainPHP.indexOf(","+text, 0, Qt::CaseInsensitive)>0)) {
                 QStringList varsList = blockData->varsChainPHP.split(",");
                 for (QString k : varsList) {
-                    //if (k == text) continue;
+                    if (k == text) continue; // need this
                     if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
                         varsIterator = vars.find(k.toStdString());
                         if (varsIterator == vars.end()) {
