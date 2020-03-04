@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/image">
         <file alias="abstract">resources/images/abstract.png</file>
-        <file alias="splash.png">resources/images/splash.png</file>
         <file alias="zira.png">resources/images/zira.png</file>
     </qresource>
     <qresource prefix="/icons">

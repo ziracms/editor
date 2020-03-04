@@ -15,7 +15,7 @@ const QString TPL_APPLICATION_NAME = "<div><center><big><b>%1</b></big></center>
 const QString TPL_APPLICATION_VERSION = "<div><center>%1</center></div>";
 const QString TPL_ORGANIZATION = "<div><center>(C) 2019 %1 (%2)</center></div>";
 const QString TPL_BLANK = "<div>&nbsp;</div>";
-const QString TPL_LOGO_IMAGE = "<div><center><img src=\":/image/splash.png\" width=\"150\" height=\"150\" /></center></div>";
+const QString TPL_LOGO_IMAGE = "<div><center><img src=\":/image/zira.png\" width=\"150\" height=\"150\" /></center></div>";
 
 HelpDialog::HelpDialog(QWidget *parent) :
     QDialog(parent),
