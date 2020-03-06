@@ -5537,7 +5537,7 @@ void Editor::highlightCurrentLine(QList<QTextEdit::ExtraSelection> * extraSelect
     selectedLineSelection.cursor.clearSelection();
     if (selectedLineSelection.cursor.block().layout() != nullptr && selectedLineSelection.cursor.block().layout()->lineCount() > 1) {
         selectedLineSelection.cursor.movePosition(QTextCursor::StartOfBlock);
-        selectedLineSelection.cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+        selectedLineSelection.cursor.movePosition(QTextCursor::NextRow, QTextCursor::KeepAnchor);
     }
     extraSelections->append(selectedLineSelection);
 }
