@@ -51,6 +51,7 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"editor_breadcrumbs_enabled", "yes"},
         {"editor_show_annotations", "yes"},
         {"editor_parse_interval", "5000"},
+        {"editor_long_line_marker_enabled", "yes"},
         {"highlight_spaces", "no"},
         {"highlight_tabs", "no"},
         {"highlight_php_extensions", "php, phtml, tpl, html"},

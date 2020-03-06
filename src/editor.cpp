@@ -71,6 +71,8 @@ const QString TOOLTIP_COLOR_TPL = "<span style=\"background:%1;\">&nbsp;&nbsp;&n
 const int SEARCH_LIMIT = 10000;
 const int BIG_FILE_SIZE = 512000;
 
+const int LONG_LINE_CHARS_COUNT = 72;
+
 Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent) : QTextEdit(parent), spellChecker(spellChecker), tooltipLabel(settings)
 {
     setMinimumSize(0, 0);
@@ -431,6 +433,10 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     std::string spellCheckerEnabledStr = settings->get("spellchecker_enabled");
     if (spellCheckerEnabledStr == "yes") spellCheckerEnabled = true;
 
+    drawLongLineMarker = false;
+    std::string drawLongLineMarkerStr = settings->get("editor_long_line_marker_enabled");
+    if (drawLongLineMarkerStr == "yes") drawLongLineMarker = true;
+
     // cursor is not set to default sometimes
     horizontalScrollBar()->setCursor(Qt::ArrowCursor);
     verticalScrollBar()->setCursor(Qt::ArrowCursor);
@@ -681,6 +687,18 @@ bool Editor::isReady()
 void Editor::paintEvent(QPaintEvent *e)
 {
     if (highlight->isDirty()) return;
+
+    if (drawLongLineMarker) {
+        QFontMetrics fm(font());
+        int longMarkerX = fm.width(QString(" ").repeated(LONG_LINE_CHARS_COUNT));
+
+        QPainter painter(viewport());
+        QPen pen(widgetBorderColor);
+        pen.setStyle(Qt::DotLine);
+        painter.setPen(pen);
+        painter.drawLine(longMarkerX, 0, longMarkerX, viewport()->geometry().height());
+    }
+
     QTextEdit::paintEvent(e);
 }
 

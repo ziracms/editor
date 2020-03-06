@@ -374,6 +374,7 @@ private:
     bool isBigFile;
     int highlightProgressPercent;
     int spellProgressPercent;
+    bool drawLongLineMarker;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

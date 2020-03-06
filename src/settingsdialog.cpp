@@ -80,6 +80,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     if (settings->get("editor_breadcrumbs_enabled") == CHECKED_YES) ui->breadcrumbsCheckbox->setChecked(true);
     if (settings->get("highlight_spaces") == CHECKED_YES) ui->highlightSpacesCheckbox->setChecked(true);
     if (settings->get("editor_show_annotations") == CHECKED_YES) ui->editorAnnotationsCheckBox->setChecked(true);
+    if (settings->get("editor_long_line_marker_enabled") == CHECKED_YES) ui->editorLongLineMarkerCheckBox->setChecked(true);
     ui->phpTypesEdit->setPlainText(QString::fromStdString(settings->get("highlight_php_extensions")).replace(" ", "").replace(",","\n"));
     ui->jsTypesEdit->setPlainText(QString::fromStdString(settings->get("highlight_js_extensions")).replace(" ", "").replace(",","\n"));
     ui->cssTypesEdit->setPlainText(QString::fromStdString(settings->get("highlight_css_extensions")).replace(" ", "").replace(",","\n"));
@@ -241,6 +242,9 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
 
     if (ui->editorAnnotationsCheckBox->isChecked()) dataMap["editor_show_annotations"] = CHECKED_YES;
     else dataMap["editor_show_annotations"] = CHECKED_NO;
+
+    if (ui->editorLongLineMarkerCheckBox->isChecked()) dataMap["editor_long_line_marker_enabled"] = CHECKED_YES;
+    else dataMap["editor_long_line_marker_enabled"] = CHECKED_NO;
 
     QString projectTypes = "";
     QString phpTypes = "";
