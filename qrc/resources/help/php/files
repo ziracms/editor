@@ -8071,6 +8071,8 @@ mysqli_stmt::execute mysqli-stmt.execute.html
 mysqli_stmt::fetch mysqli-stmt.fetch.html
 mysqli_stmt::prepare mysqli-stmt.prepare.html
 mysqli_stmt::reset mysqli-stmt.reset.html
+mysqli_stmt::bind_param mysqli-stmt.bind-param.html
+mysqli_stmt::bind_result mysqli-stmt.bind-result.html
 mysqli_warning::next mysqli-warning.next.html
 MysqlndUhConnection::changeUser mysqlnduhconnection.changeuser.html
 MysqlndUhConnection::charsetName mysqlnduhconnection.charsetname.html
