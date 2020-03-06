@@ -2756,6 +2756,12 @@ void Editor::showCompletePopup()
         curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor, curs.positionInBlock() - cursorTextPos);
         cursLeft = cursorRect(curs).left();
     }
+    if (curs.block().layout() != nullptr && curs.block().layout()->lineCount() > 1) {
+        QTextLine line = curs.block().layout()->lineForTextPosition(curs.positionInBlock());
+        if (line.isValid()) {
+            blockHeight = static_cast<int>(line.height());
+        }
+    }
 
     completePopup->showPopup(cursLeft, cursTop, viewLeft, viewTop, viewWidth, viewHeight, blockHeight);
 }
@@ -4757,7 +4763,7 @@ void Editor::lineMarkAreaPaintEvent(QPaintEvent *event)
                     painter.fillRect(markW-LINE_MARK_WIDGET_RECT_WIDTH, top, LINE_MARK_WIDGET_RECT_WIDTH, fm.height(), lineWarningRectColor);
                 }
                 if (mark > 0) {
-                    painter.fillRect(markW-LINE_MARK_WIDGET_LINE_WIDTH, top, LINE_MARK_WIDGET_LINE_WIDTH, fm.height(), lineMarkRectColor);
+                    painter.fillRect(markW-LINE_MARK_WIDGET_LINE_WIDTH, top, LINE_MARK_WIDGET_LINE_WIDTH, bottom-top, lineMarkRectColor);
                 }
             }
             int markRectWidth = LINE_MARK_WIDGET_RECT_WIDTH;
