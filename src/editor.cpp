@@ -691,12 +691,13 @@ void Editor::paintEvent(QPaintEvent *e)
     if (drawLongLineMarker) {
         QFontMetrics fm(font());
         int longMarkerX = fm.width(QString(" ").repeated(LONG_LINE_CHARS_COUNT));
+        int scrollX = horizontalScrollBar()->value();
 
         QPainter painter(viewport());
         QPen pen(widgetBorderColor);
         pen.setStyle(Qt::DotLine);
         painter.setPen(pen);
-        painter.drawLine(longMarkerX, 0, longMarkerX, viewport()->geometry().height());
+        painter.drawLine(longMarkerX-scrollX, 0, longMarkerX-scrollX, viewport()->geometry().height());
     }
 
     QTextEdit::paintEvent(e);
