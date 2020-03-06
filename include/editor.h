@@ -375,6 +375,7 @@ private:
     int highlightProgressPercent;
     int spellProgressPercent;
     bool drawLongLineMarker;
+    bool wrapLines;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

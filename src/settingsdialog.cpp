@@ -77,6 +77,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     else if (newLineMode == NEW_LINE_CR) ui->filesNewLineCRRadio->setChecked(true);
     else if (newLineMode == NEW_LINE_CRLF) ui->filesNewLineCRLFRadio->setChecked(true);
     if (settings->get("editor_clean_before_save") == CHECKED_YES) ui->filesCleanForSaveCheckbox->setChecked(true);
+    if (settings->get("editor_wrap_long_lines") == CHECKED_YES) ui->filesLongLineWrapCheckBox->setChecked(true);
     if (settings->get("editor_breadcrumbs_enabled") == CHECKED_YES) ui->breadcrumbsCheckbox->setChecked(true);
     if (settings->get("highlight_spaces") == CHECKED_YES) ui->highlightSpacesCheckbox->setChecked(true);
     if (settings->get("editor_show_annotations") == CHECKED_YES) ui->editorAnnotationsCheckBox->setChecked(true);
@@ -245,6 +246,9 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
 
     if (ui->editorLongLineMarkerCheckBox->isChecked()) dataMap["editor_long_line_marker_enabled"] = CHECKED_YES;
     else dataMap["editor_long_line_marker_enabled"] = CHECKED_NO;
+
+    if (ui->filesLongLineWrapCheckBox->isChecked()) dataMap["editor_wrap_long_lines"] = CHECKED_YES;
+    else dataMap["editor_wrap_long_lines"] = CHECKED_NO;
 
     QString projectTypes = "";
     QString phpTypes = "";

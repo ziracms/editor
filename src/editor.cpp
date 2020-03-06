@@ -78,10 +78,20 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     setMinimumSize(0, 0);
     setMaximumSize(16777215, 16777215);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setLineWrapMode(LineWrapMode::NoWrap);
-    setWordWrapMode(QTextOption::WrapMode::NoWrap);
     setAcceptRichText(false);
     setAcceptDrops(false);
+
+    wrapLines = false;
+    std::string wrapLinesStr = settings->get("editor_wrap_long_lines");
+    if (wrapLinesStr == "yes") wrapLines = true;
+    if (wrapLines) {
+        setLineWrapMode(LineWrapMode::FixedColumnWidth);
+        setLineWrapColumnOrWidth(LONG_LINE_CHARS_COUNT);
+        setWordWrapMode(QTextOption::WrapMode::WordWrap);
+    } else {
+        setLineWrapMode(LineWrapMode::NoWrap);
+        setWordWrapMode(QTextOption::WrapMode::NoWrap);
+    }
 
     QString theme = QString::fromStdString(settings->get("theme"));
 
@@ -819,17 +829,27 @@ void Editor::updateLineAnnotationView()
             int y = top;
             if (breadcrumbs->isVisible()) y += breadcrumbs->geometry().height();
             int x = static_cast<int>(document()->documentLayout()->blockBoundingRect(block).width());
+            int h = bottom - top;
+            if (wrapLines && block.layout() != nullptr) {
+                QFontMetrics fm(font());
+                x = static_cast<int>(block.layout()->lineAt(block.layout()->lineCount()-1).naturalTextWidth());
+                if (block.layout()->lineCount() > 1) {
+                    y += h;
+                    h = static_cast<int>(block.layout()->lineAt(block.layout()->lineCount()-1).height());
+                    y -= h;
+                }
+            }
             x += lineNumber->geometry().width() + lineMark->geometry().width();
             x += ANNOTATION_LEFT_MARGIN;
             QFontMetrics fm(font());
             int tw = fm.width(static_cast<Annotation *>(lineAnnotation)->getText());
-            tw += bottom - top; // icon
+            tw += h; // icon
             int bw = geometry().width() - lineMap->geometry().width();
             bw -= ANNOTATION_RIGHT_MARGIN;
             if (x + tw < bw) x += bw - x - tw;
             if (horizontalScrollBar()->isVisible()) x -= horizontalScrollBar()->value();
             lineAnnotation->move(x, y);
-            static_cast<Annotation *>(lineAnnotation)->setSize(tw, bottom - top);
+            static_cast<Annotation *>(lineAnnotation)->setSize(tw, h);
             if (!lineAnnotation->isVisible()) static_cast<Annotation *>(lineAnnotation)->fadeIn();
             return;
         }
@@ -1311,6 +1331,7 @@ void Editor::resizeEvent(QResizeEvent * e)
     QTextEdit::resizeEvent(e);
     hidePopups();
     updateWidgetsGeometry();
+    updateLineAnnotationView();
     if (static_cast<Search *>(search)->isVisible()) {
         static_cast<Search *>(search)->updateScrollBar();
     }
@@ -5523,6 +5544,10 @@ void Editor::highlightCurrentLine(QList<QTextEdit::ExtraSelection> * extraSelect
     selectedLineSelection.format.setProperty(QTextFormat::FullWidthSelection, true);
     selectedLineSelection.cursor = textCursor();
     selectedLineSelection.cursor.clearSelection();
+    if (selectedLineSelection.cursor.block().layout() != nullptr && selectedLineSelection.cursor.block().layout()->lineCount() > 1) {
+        selectedLineSelection.cursor.movePosition(QTextCursor::StartOfBlock);
+        selectedLineSelection.cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+    }
     extraSelections->append(selectedLineSelection);
 }
 
