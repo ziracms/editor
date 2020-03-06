@@ -370,12 +370,13 @@ private:
     QVector<int> spellBlocksQueue;
     QVector<int> spellPastedBlocksQueue;
     int spellCheckInitBlockNumber;
-    bool isBlocksHeightEquals;
     bool isBigFile;
     int highlightProgressPercent;
     int spellProgressPercent;
     bool drawLongLineMarker;
     bool wrapLines;
+    int firstVisibleBlockIndex;
+    int lastVisibleBlockIndex;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

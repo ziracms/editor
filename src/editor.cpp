@@ -530,9 +530,10 @@ void Editor::reset()
     spellPastedBlocksQueue.clear();
     errorsExtraSelections.clear();
     spellCheckInitBlockNumber = 0;
-    isBlocksHeightEquals = true;
     highlightProgressPercent = 0;
     spellProgressPercent = 0;
+    firstVisibleBlockIndex = -1;
+    lastVisibleBlockIndex = -1;
 }
 
 void Editor::highlightProgressChanged(int percent)
@@ -608,17 +609,6 @@ void Editor::initMode(QString ext)
     document()->setModified(modified);
     emit modifiedStateChanged(tabIndex, modified);
     updateWidgetsGeometry();
-
-    // checking if all blocks have the same height
-    QTextCursor curs = textCursor();
-    curs.movePosition(QTextCursor::Start);
-    int h = static_cast<int>(document()->documentLayout()->blockBoundingRect(curs.block()).height());
-    while(curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor)) {
-        if (static_cast<int>(document()->documentLayout()->blockBoundingRect(curs.block()).height()) != h) {
-            isBlocksHeightEquals = false;
-            break;
-        }
-    }
 
     // check font
     QFontInfo fontInfo(editorFont);
@@ -1329,6 +1319,8 @@ void Editor::updateSizes()
 void Editor::resizeEvent(QResizeEvent * e)
 {
     QTextEdit::resizeEvent(e);
+    firstVisibleBlockIndex = -1;
+    lastVisibleBlockIndex = -1;
     hidePopups();
     updateWidgetsGeometry();
     updateLineAnnotationView();
@@ -2245,6 +2237,9 @@ void Editor::horizontalScrollbarValueChanged(int /* sliderPos */)
 
 void Editor::verticalScrollbarValueChanged(int /* sliderPos */)
 {
+    firstVisibleBlockIndex = -1;
+    lastVisibleBlockIndex = -1;
+
     hidePopups();
     updateLineWidgetsArea();
     updateLineAnnotationView();
@@ -4617,28 +4612,18 @@ int Editor::findLastVisibleBlockIndex()
 
 int Editor::getFirstVisibleBlockIndex()
 {
-    if (!isBlocksHeightEquals) return findFirstVisibleBlockIndex();
-    if (document()->blockCount()<1) return -1;
-    int slider_pos = verticalScrollBar()->sliderPosition();
-    QTextBlock first = document()->findBlockByNumber(0);
-    QRectF fRect = document()->documentLayout()->blockBoundingRect(first);
-    slider_pos -= static_cast<int>(fRect.y());
-    if (slider_pos<=0) return 0;
-    if (document()->blockCount()<2) return 0;
-    int block_d = static_cast<int>(slider_pos / fRect.height()) + 1;
-    return block_d;
+    if (firstVisibleBlockIndex < 0) {
+        firstVisibleBlockIndex = findFirstVisibleBlockIndex();
+    }
+    return firstVisibleBlockIndex;
 }
 
 int Editor::getLastVisibleBlockIndex()
 {
-    if (!isBlocksHeightEquals) return findLastVisibleBlockIndex();
-    if (document()->blockCount()<1) return -1;
-    int slider_pos = verticalScrollBar()->sliderPosition();
-    QTextBlock first = document()->findBlockByNumber(0);
-    QRectF fRect = document()->documentLayout()->blockBoundingRect(first);
-    int block_d = static_cast<int>((size().height() + slider_pos) / fRect.height());
-    if (block_d >= document()->blockCount()) block_d = document()->blockCount()-1;
-    return block_d;
+    if (lastVisibleBlockIndex < 0) {
+        lastVisibleBlockIndex = findLastVisibleBlockIndex();
+    }
+    return lastVisibleBlockIndex;
 }
 
 void Editor::setBreadcrumbsText(QString text) {
