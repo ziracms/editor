@@ -235,7 +235,7 @@ void Settings::applyDarkColors()
     data["highlight_function_color"] = "#00b7ae";
     data["highlight_known_function_color"] = "#1071ff";
     data["highlight_variable_color"] = "#05aeff";
-    data["highlight_known_variable_color"] = "#ffb341";
+    data["highlight_known_variable_color"] = "#ffcd56";
     data["highlight_unused_variable_color"] = "#858871";
     data["highlight_single_line_comment_color"] = "#5d5d5d";
     data["highlight_multi_line_comment_color"] = "#6c7556";
