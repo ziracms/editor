@@ -211,6 +211,7 @@ void ParserWorker::parseProject(QString path)
     QVariantMap data = Project::loadPHPDataMap(path);
     Project::checkParsePHPFilesModified(files, data, map);
     bool isBreaked = false;
+    bool isModified = files.count() > 0;
     for (int i=0; i<files.size(); i++) {
         if (!enabled || wantStop) {
             isBreaked = true;
@@ -221,14 +222,14 @@ void ParserWorker::parseProject(QString path)
         int v = (i + 1) * 100 / files.size();
         emit parseProjectProgress(v);
     }
-    if (!isBreaked) {
+    if (!isBreaked && isModified) {
         emit updateProgressInfo(tr("Updating project")+"...");
         Project::savePHPResults(path, map);
     }
     map.clear();
     data.clear();
     files.clear();
-    emit parseProjectFinished(!isBreaked);
+    emit parseProjectFinished(!isBreaked, isModified);
     emit deactivateProgress();
     emit deactivateProgressInfo();
     isBusy = false;

@@ -50,7 +50,7 @@ signals:
     void parseMixedFinished(int tabIndex, ParsePHP::ParseResult result);
     void parseJSFinished(int tabIndex, ParseJS::ParseResult result);
     void parseCSSFinished(int tabIndex, ParseCSS::ParseResult result);
-    void parseProjectFinished(bool success = true);
+    void parseProjectFinished(bool success = true, bool isModified = true);
     void parseProjectProgress(int v);
     void searchInFilesFound(QString file, QString lineText, int line, int symbol);
     void searchInFilesFinished();

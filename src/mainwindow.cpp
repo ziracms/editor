@@ -290,7 +290,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(parserWorker, SIGNAL(parseMixedFinished(int,ParsePHP::ParseResult)), this, SLOT(parseMixedFinished(int,ParsePHP::ParseResult)));
     connect(parserWorker, SIGNAL(parseJSFinished(int,ParseJS::ParseResult)), this, SLOT(parseJSFinished(int,ParseJS::ParseResult)));
     connect(parserWorker, SIGNAL(parseCSSFinished(int,ParseCSS::ParseResult)), this, SLOT(parseCSSFinished(int,ParseCSS::ParseResult)));
-    connect(parserWorker, SIGNAL(parseProjectFinished(bool)), this, SLOT(parseProjectFinished(bool)));
+    connect(parserWorker, SIGNAL(parseProjectFinished(bool,bool)), this, SLOT(parseProjectFinished(bool,bool)));
     connect(parserWorker, SIGNAL(parseProjectProgress(int)), this, SLOT(sidebarProgressChanged(int)));
     connect(parserWorker, SIGNAL(searchInFilesFound(QString,QString,int,int)), this, SLOT(searchInFilesFound(QString,QString,int,int)));
     connect(parserWorker, SIGNAL(searchInFilesFinished()), this, SLOT(searchInFilesFinished()));
@@ -1840,7 +1840,7 @@ void MainWindow::parseCSSFinished(int tabIndex, ParseCSS::ParseResult result)
     qa->setParseResult(result, textEditor->getFileName());
 }
 
-void MainWindow::parseProjectFinished(bool success)
+void MainWindow::parseProjectFinished(bool success, bool isModified)
 {
     if (success) {
         setStatusBarText(tr("Loading project..."));
@@ -1850,7 +1850,7 @@ void MainWindow::parseProjectFinished(bool success)
     setStatusBarText(tr(""));
     if (ui->sidebarProgressBarWrapperWidget->isVisible()) ui->sidebarProgressBarWrapperWidget->hide();
     editorTabs->initHighlighters();
-    if (success) showPopupText(tr("Project '%1' updated").arg(project->getName()));
+    if (success && isModified) showPopupText(tr("Project '%1' updated").arg(project->getName()));
 }
 
 void MainWindow::projectCreateRequested(QString name, QString path, bool lintEnabled, bool csEnabled)

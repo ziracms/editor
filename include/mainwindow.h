@@ -167,7 +167,7 @@ private slots:
     void parseMixedFinished(int tabIndex, ParsePHP::ParseResult result);
     void parseJSFinished(int tabIndex, ParseJS::ParseResult result);
     void parseCSSFinished(int tabIndex, ParseCSS::ParseResult result);
-    void parseProjectFinished(bool success = true);
+    void parseProjectFinished(bool success = true, bool isModified = true);
     void projectCreateRequested(QString name, QString path, bool lintEnabled, bool csEnabled);
     void projectEditRequested(QString name, QString path, bool lintEnabled, bool csEnabled);
     void projectOpenRequested(QString path);
