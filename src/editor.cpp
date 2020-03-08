@@ -72,6 +72,7 @@ const int SEARCH_LIMIT = 10000;
 const int BIG_FILE_SIZE = 512000;
 
 const int LONG_LINE_CHARS_COUNT = 72;
+const int FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE = 300;
 
 Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent) : QTextEdit(parent), spellChecker(spellChecker), tooltipLabel(settings)
 {
@@ -80,6 +81,8 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setAcceptRichText(false);
     setAcceptDrops(false);
+
+    //document()->setDocumentMargin(0);
 
     wrapLines = false;
     std::string wrapLinesStr = settings->get("editor_wrap_long_lines");
@@ -800,7 +803,6 @@ void Editor::updateLineAnnotationView()
     if (blockNumber>0) blockNumber--;
 
     QTextBlock block = document()->findBlockByNumber(blockNumber);
-    //int top = viewport()->geometry().top();
     int top = contentsMargins().top();
 
     if (blockNumber == 0) {
@@ -4580,12 +4582,22 @@ void Editor::cursorPositionChangedDelayed()
 
 int Editor::findFirstVisibleBlockIndex()
 {
+    if (verticalScrollBar()->sliderPosition() <= FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE) {
+        return searchFirstVisibleBlockIndexLinear();
+    } else {
+        return searchFirstVisibleBlockIndexBinary();
+    }
+}
+
+int Editor::searchFirstVisibleBlockIndexLinear()
+{
+    int top = contentsMargins().top();
     QTextCursor curs = QTextCursor(document());
     curs.movePosition(QTextCursor::Start);
     for(int i = 0; i < document()->blockCount(); i++)
     {
         QTextBlock block = curs.block();
-        int block_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(block).y());
+        int block_y = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).y());
         if (verticalScrollBar()->sliderPosition()<=block_y) {
             return i;
         }
@@ -4594,20 +4606,52 @@ int Editor::findFirstVisibleBlockIndex()
     return 0;
 }
 
+int Editor::searchFirstVisibleBlockIndexBinary()
+{
+    int top = contentsMargins().top();
+    int total = document()->blockCount();
+    if (total < 2) return 0;
+    int offsetLeft = 0, offsetRight = total;
+    int blockNumber = 0;
+    do {
+        blockNumber = offsetLeft + (offsetRight - offsetLeft) / 2;
+        QTextBlock block = document()->findBlockByNumber(blockNumber);
+        int block_y = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).y());
+        if (verticalScrollBar()->sliderPosition()>block_y) {
+            offsetLeft = blockNumber;
+            blockNumber++; // block is partly visible ?
+            if (offsetLeft + 1 >= offsetRight) break;
+        } else if (verticalScrollBar()->sliderPosition()<block_y) {
+            offsetRight = blockNumber;
+        } else {
+            break;
+        }
+    } while (offsetLeft < offsetRight);
+    return blockNumber;
+}
+
 int Editor::findLastVisibleBlockIndex()
 {
+    int top = contentsMargins().top();
+    int bottom = contentsMargins().bottom();
+    int first = getFirstVisibleBlockIndex();
     QTextCursor curs = QTextCursor(document());
     curs.movePosition(QTextCursor::Start);
-    for(int i = 0; i < document()->blockCount(); i++)
+    if (first > 0) curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, first);
+    for(int i = first; i < document()->blockCount(); i++)
     {
         QTextBlock block = curs.block();
         int block_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(block).y());
-        if (size().height()+verticalScrollBar()->sliderPosition()<=block_y) {
+        int block_h = static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
+        if (viewport()->geometry().height()+verticalScrollBar()->sliderPosition()-top-bottom<block_y+block_h) {
+            if (i > 0) i--; // block is partly visible ?
+            return i;
+        } else if (viewport()->geometry().height()+verticalScrollBar()->sliderPosition()-top-bottom==block_y+block_h) {
             return i;
         }
         curs.movePosition(QTextCursor::NextBlock);
     }
-    return 0;
+    return document()->blockCount()-1;
 }
 
 int Editor::getFirstVisibleBlockIndex()
@@ -4711,8 +4755,8 @@ void Editor::lineMarkAreaPaintEvent(QPaintEvent *event)
     if (blockNumber>0) blockNumber--;
 
     QTextBlock block = document()->findBlockByNumber(blockNumber);
-    //int top = viewport()->geometry().top()-1;
-    int top = contentsMargins().top();
+    //int top = contentsMargins().top();
+    int top = 0; // widget has offset
 
     if (blockNumber == 0) {
         top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
@@ -4854,8 +4898,8 @@ void Editor::lineNumberAreaPaintEvent(QPaintEvent *event)
 
     QTextBlock block = document()->findBlockByNumber(blockNumber);
     QFontMetrics fm(editorFont);
-    //int top = viewport()->geometry().top()-1;
-    int top = contentsMargins().top();
+    //int top = contentsMargins().top();
+    int top = 0; // widget has offset
 
     if (blockNumber == 0) {
         top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
@@ -5886,8 +5930,8 @@ void Editor::showLineNumber(int y)
     if (blockNumber>0) blockNumber--;
 
     QTextBlock block = document()->findBlockByNumber(blockNumber);
-    //int top = viewport()->geometry().top();
-    int top = contentsMargins().top();
+    //int top = contentsMargins().top();
+    int top = 0; // widget has offset
 
     if (blockNumber == 0) {
         top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
@@ -5990,8 +6034,8 @@ void Editor::showLineMark(int y)
     if (blockNumber>0) blockNumber--;
 
     QTextBlock block = document()->findBlockByNumber(blockNumber);
-    //int top = viewport()->geometry().top();
-    int top = contentsMargins().top();
+    //int top = contentsMargins().top();
+    int top = 0; // widget has offset
 
     if (blockNumber == 0) {
         top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
@@ -6053,8 +6097,8 @@ void Editor::addLineMark(int y)
     if (blockNumber>0) blockNumber--;
 
     QTextBlock block = document()->findBlockByNumber(blockNumber);
-    //int top = viewport()->geometry().top();
-    int top = contentsMargins().top();
+    //int top = contentsMargins().top();
+    int top = 0; // widget has offset
 
     if (blockNumber == 0) {
         top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();

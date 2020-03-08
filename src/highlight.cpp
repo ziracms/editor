@@ -40,7 +40,7 @@ const int STATE_REGEXP_JS = 18;
 const int STATE_EXPRESSION_JS = 19;
 const int STATE_EXPRESSION_PHP = 20;
 
-const int EXTRA_HIGHLIGHT_BLOCKS_COUNT = 100;
+const int EXTRA_HIGHLIGHT_BLOCKS_COUNT = 100; // should be >= 1
 
 Highlight::Highlight(Settings * settings, HighlightWords * hWords, QTextDocument * parent) :
     doc(parent)

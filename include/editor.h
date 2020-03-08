@@ -132,6 +132,8 @@ protected:
     int findLastVisibleBlockIndex();
     int getFirstVisibleBlockIndex();
     int getLastVisibleBlockIndex();
+    int searchFirstVisibleBlockIndexLinear();
+    int searchFirstVisibleBlockIndexBinary();
     void highlightExtras(QChar prevChar='\0', QChar nextChar='\0', QChar cursorTextPrevChar='\0', QString cursorText="", int cursorTextPos=-1, std::string mode="");
     void highlightCloseCharPair(QChar openChar, QChar closeChar, QList<QTextEdit::ExtraSelection> * extraSelections);
     void highlightOpenCharPair(QChar openChar, QChar closeChar, QList<QTextEdit::ExtraSelection> * extraSelections);
