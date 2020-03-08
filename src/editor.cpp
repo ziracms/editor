@@ -3963,7 +3963,9 @@ void Editor::detectCompleteTextPHP(QString text, int cursorTextPos)
 
 void Editor::detectCompleteText(QString text, QChar cursorTextPrevChar, int cursorTextPos, std::string mode, int state)
 {
-    if (text.size() < 2) return;
+    int min = 2;
+    if (mode == MODE_HTML) min = 1;
+    if (text.size() < min) return;
     completePopup->clearItems();
 
     if (mode == MODE_HTML) {
