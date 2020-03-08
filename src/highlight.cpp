@@ -339,6 +339,7 @@ void Highlight::resetMode()
     rehighlightBlockMode = false;
     lastVisibleBlockNumber = -1;
     dirty = false;
+    foundModes.clear();
 }
 
 void Highlight::setIsBigFile(bool isBig) {
@@ -353,6 +354,9 @@ void Highlight::initMode(QString ext, int lastBlockNumber)
     if (modeTypesIterator != modeTypes.end()) {
         modeType = modeTypesIterator->second;
         lastVisibleBlockNumber = lastBlockNumber;
+        if (modeType != MODE_MIXED) {
+            foundModes.append(QString::fromStdString(modeType));
+        }
     }
 }
 
@@ -595,6 +599,11 @@ void Highlight::setHighlightVarsMode(bool varsMode)
 void Highlight::setFirstRunMode(bool runMode)
 {
     firstRunMode = runMode;
+}
+
+QStringList Highlight::getFoundModes()
+{
+    return foundModes;
 }
 
 void Highlight::highlightString(int start, int length, const QTextCharFormat format)
@@ -1678,6 +1687,8 @@ bool Highlight::parseMode(const QChar & c, int pos, bool isWSpace, bool isLast, 
 
         modeSpos = -1;
         modeCpos = -1;
+
+        if (!foundModes.contains(QString::fromStdString(mode))) foundModes.append(QString::fromStdString(mode));
     } else if (modeSpos<0 && modeCpos>=0) {
         state = prevState;
         prevState = prevPrevState;
@@ -1750,6 +1761,8 @@ bool Highlight::parseMode(const QChar & c, int pos, bool isWSpace, bool isLast, 
         modeExpectC = prevModeExpectC;
         modeSkipC = prevModeSkipC;
         modeCpos = prevModeCpos;
+
+        if (!foundModes.contains(QString::fromStdString(mode))) foundModes.append(QString::fromStdString(mode));
     } else {
         modeSpos = -1;
         modeCpos = -1;

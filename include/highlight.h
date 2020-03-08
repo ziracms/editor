@@ -69,6 +69,7 @@ public:
     void setFirstRunMode(bool runMode);
     bool isDirty();
     void setIsBigFile(bool isBig);
+    QStringList getFoundModes();
 
     std::unordered_map<std::string, int> unusedVars;
     std::unordered_map<std::string, int>::iterator unusedVarsIterator;
@@ -335,6 +336,7 @@ private:
     bool rehighlightBlockMode;
     int lastVisibleBlockNumber;
     bool isBigFile;
+    QStringList foundModes;
 signals:
     void progressChanged(int percent);
 };

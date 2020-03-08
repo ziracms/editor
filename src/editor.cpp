@@ -6161,7 +6161,7 @@ QString Editor::getContent()
 void Editor::highlightUnusedVars(bool update)
 {
     if (!experimentalMode) return;
-    if (isBigFile) return;
+    if (isBigFile || highlight->getFoundModes().contains(QString::fromStdString(MODE_HTML))) return;
     setReadOnly(true);
     QVector<QTextBlock> unusedVarsBlocks;
     highlight->unusedVars.clear();
