@@ -576,7 +576,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
     QSettings windowSettings;
     windowSettings.setValue("main_window_geometry", saveGeometry());
     windowSettings.setValue("main_window_state", saveState());
-    windowSettings.setValue("project_path", project->getPath());
+    if (args.length() <= 1) {
+        windowSettings.setValue("project_path", project->getPath());
+    }
     QMainWindow::closeEvent(event);
 }
 
@@ -1895,6 +1897,7 @@ void MainWindow::projectOpenRequested(QString path)
         Helper::showMessage(QObject::tr("Could not open the project."));
         return;
     }
+    args.clear();
     filebrowser->rebuildFileBrowserTree(path);
     ui->outputEdit->clear();
     resetLastSearchParams();
