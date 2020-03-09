@@ -2263,14 +2263,13 @@ void Editor::mousePressEvent(QMouseEvent *e)
 {
     hideCompletePopup();
     QTextEdit::mousePressEvent(e);
-    if (!(e->modifiers() & Qt::ControlModifier)) return;
-
-    showDeclarationRequested();
 }
 
 void Editor::mouseReleaseEvent(QMouseEvent *e)
 {
-    if (!(e->modifiers() & Qt::ControlModifier)) {
+    if (e->modifiers() & Qt::ControlModifier) {
+        showDeclarationRequested();
+    } else {
         hideTooltip();
     }
     QTextEdit::mouseReleaseEvent(e);
