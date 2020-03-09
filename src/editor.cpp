@@ -3225,7 +3225,7 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
             completeDetectedPHP = true;
         }
         // highlighted vars
-        if (completePopup->count() < completePopup->limit()) {
+        if (!isClass && completePopup->count() < completePopup->limit()) {
             HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
             if (blockData != nullptr && blockData->varsChainPHP.size()>0 && (blockData->varsChainPHP.indexOf(text, 0, Qt::CaseInsensitive)==0 || blockData->varsChainPHP.indexOf(","+text, 0, Qt::CaseInsensitive)>0)) {
                 QStringList varsList = blockData->varsChainPHP.split(",");
@@ -3268,6 +3268,37 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
                 }
             }
             completeDetectedPHP = true;
+        }
+        // class props
+        if (isClass && !isSelf && prevWord.size() > 0 && prevWord[0] != "$" && completePopup->count() < completePopup->limit()) {
+            // detect class name
+            QString _clsName;
+            if (prevWord.toLower() == "parent" && clsName.size() > 0) {
+                QString ns = "";
+                if (nsName.size() > 0) ns = nsName + "\\";
+                for (int i=0; i<parseResultPHP.classes.size(); i++) {
+                    ParsePHP::ParseResultClass _cls = parseResultPHP.classes.at(i);
+                    if (_cls.name == "\\"+ns+clsName) {
+                        QString parentClass = _cls.parent;
+                        if (parentClass.size() > 0 && parentClass.at(0) == "\\") parentClass = parentClass.mid(1);
+                        if (parentClass.size() > 0) {
+                            _clsName = parentClass;
+                        }
+                        break;
+                    }
+                }
+            } else {
+                _clsName= completeClassNamePHPAtCursor(curs, prevWord, nsName);
+            }
+            // php class vars
+            for (auto & it : CW->phpClassPropsComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(_clsName+"::"+text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
         }
     } else {
         // do not detect if previous word is known keyword
