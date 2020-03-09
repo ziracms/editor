@@ -5928,13 +5928,17 @@ void Editor::gotoLine(int line, bool focus) {
     cursor.movePosition(QTextCursor::Start);
     if (line > 1) cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
     QString blockText = cursor.block().text();
-//    do {
-//        int pos = cursor.positionInBlock();
-//        if (pos >= blockText.size()) break;
-//        QChar c = blockText[pos];
-//        if (!c.isSpace()) break;
-//    } while(cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor));
-    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
+    QFontMetrics fm(font());
+    if (fm.width(blockText) > viewport()->width()) {
+        do {
+            int pos = cursor.positionInBlock();
+            if (pos >= blockText.size()) break;
+            QChar c = blockText[pos];
+            if (!c.isSpace()) break;
+        } while(cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor));
+    } else {
+        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
+    }
     setTextCursor(cursor);
     if (focus) setFocus();
     scrollToMiddle(cursor, line);
