@@ -117,6 +117,7 @@ protected:
     void parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordCSSStartPrev, int & keywordCSSLengthPrev, bool & cssValuePart);
     void parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordJSStartPrev, int & keywordJSLengthPrev);
     void parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordPHPStartPrev, int & keywordPHPLengthPrev);
+    void parseUnknown(const QChar & c, int pos);
     void updateState(const QChar & c, int pos, int & pState);
     void openBlockDataLists();
     void closeBlockDataLists(int textSize);

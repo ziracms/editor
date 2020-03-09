@@ -2950,6 +2950,22 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
     }
 }
 
+void Highlight::parseUnknown(const QChar &c, int pos)
+{
+    if (mode != MODE_UNKNOWN) return;
+
+    if (highlightTabs && c == "\t") {
+        highlightChar(pos, HW->tabFormat);
+    } else if (highlightSpaces && c == " ") {
+        highlightChar(pos, HW->spaceFormat);
+    }
+    if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@" || c == "&" || c == "<" || c == ">" || c == "." || c == "*" || c == "/" || c == "?" || c == ":" || c == "%" || c == "$" || c == "^" || c == "#" || c == "@" || c == "!" || c == "-" || c == "=" || c == "+" || c == "'" || c == "\"" || c == "|" || c == "~" || c == "`")) {
+        highlightChar(pos, HW->punctuationFormat);
+    } else if (!isBigFile && c.isUpper()) {
+        highlightChar(pos, HW->constFormat);
+    }
+}
+
 void Highlight::updateState(const QChar & c, int pos, int & pState)
 {
     if (state == pState) return;
@@ -3311,6 +3327,9 @@ bool Highlight::parseBlock(const QString & text)
 
         // php mode
         parsePHP(c, i, isAlpha, isAlnum, isWSpace, isLast, keywordPHPStartPrev, keywordPHPLengthPrev);
+
+        // unknown
+        parseUnknown(c, i);
 
         // state changes
         updateState(c, i, pState);
