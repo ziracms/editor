@@ -1716,7 +1716,7 @@ void MainWindow::parseTab()
     QString path = textEditor->getFileName();
     std::string modeType = textEditor->getModeType();
     clearMessagesTabText();
-    if (modeType == MODE_UNKNOWN) return;
+    //if (modeType == MODE_UNKNOWN) return;
     if (modeType == MODE_MIXED) {
         if ((!project->isOpen() && parsePHPLintEnabled) || (project->isOpen() && project->isPHPLintEnabled())) emit parseLint(tabIndex, path);
         if (textEditor->isReady() && parsePHPEnabled) emit parseMixed(tabIndex, textEditor->getContent());

@@ -2961,8 +2961,6 @@ void Highlight::parseUnknown(const QChar &c, int pos)
     }
     if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@" || c == "&" || c == "<" || c == ">" || c == "." || c == "*" || c == "/" || c == "?" || c == ":" || c == "%" || c == "$" || c == "^" || c == "#" || c == "@" || c == "!" || c == "-" || c == "=" || c == "+" || c == "'" || c == "\"" || c == "|" || c == "~" || c == "`")) {
         highlightChar(pos, HW->punctuationFormat);
-    } else if (!isBigFile && c.isUpper()) {
-        highlightChar(pos, HW->constFormat);
     }
 }
 
