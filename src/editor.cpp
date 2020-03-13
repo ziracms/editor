@@ -111,9 +111,13 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     if (fontFamily=="") {
         QFont sysFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
         editorFont.setFamily(sysFont.family());
+        editorFont.setStyleHint(QFont::Monospace);
         editorPopupFont.setFamily(sysFont.family());
+        editorPopupFont.setStyleHint(QFont::Monospace);
         editorTooltipFont.setFamily(sysFont.family());
+        editorTooltipFont.setStyleHint(QFont::Monospace);
         editorBreadcrumbsFont.setFamily(sysFont.family());
+        editorBreadcrumbsFont.setStyleHint(QFont::Monospace);
     } else {
         editorFont.setStyleHint(QFont::Monospace);
         editorFont.setFamily(QString::fromStdString(fontFamily));
