@@ -2851,6 +2851,17 @@ void Editor::detectCompleteTextCSS(QString text, QChar cursorTextPrevChar)
             }
         }
     }
+    if (completePopup->count() < completePopup->limit()) {
+        // html tags
+        for (auto & it : CW->htmlAllTagsComplete) {
+            QString k = QString::fromStdString(it.first);
+            //if (k == text) continue;
+            if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                if (completePopup->count() >= completePopup->limit()) break;
+            }
+        }
+    }
     if (cursorTextPrevChar == ":" && completePopup->count() < completePopup->limit()) {
         // css pseudo
         for (auto & it : CW->cssPseudoComplete) {
@@ -3194,6 +3205,16 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
         } else if (prevChar == "?" && text == "php") {
             // do not detect php tag
             completeDetectedPHP = true;
+        }
+    } else if (text[0] == "_" && prevWord == "function") {
+        // php magic methods
+        for (auto & it : CW->phpMagicComplete) {
+            QString k = QString::fromStdString(it.first);
+            //if (k == text) continue;
+            if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                if (completePopup->count() >= completePopup->limit()) break;
+            }
         }
     } else if (text[0] == "$") {
         std::unordered_map<std::string, std::string> vars;

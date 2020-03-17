@@ -48,6 +48,7 @@ public:
     std::map<std::string, std::string> phpClassMethodsComplete;
     std::map<std::string, std::string> phpGlobalsComplete;
     std::map<std::string, std::string> phpSpecialsComplete;
+    std::map<std::string, std::string> phpMagicComplete;
 protected:
     void loadCSSWords();
     void loadHTMLWords();

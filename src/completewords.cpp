@@ -392,4 +392,15 @@ void CompleteWords::loadPHPWords()
         phpClassMethodTypes[kList.at(0).toStdString()] = kList.at(1).toStdString();
     }
     mtf.close();
+
+    // php magic methods
+    QFile magf(":/syntax/php_magic");
+    magf.open(QIODevice::ReadOnly);
+    QTextStream magin(&magf);
+    while (!magin.atEnd()) {
+        k = magin.readLine();
+        if (k == "") continue;
+        phpMagicComplete[k.toStdString()] = k.toStdString();
+    }
+    magf.close();
 }
