@@ -697,7 +697,7 @@ void Editor::paintEvent(QPaintEvent *e)
 
     if (drawLongLineMarker) {
         QFontMetrics fm(font());
-        int longMarkerX = fm.width(QString(" ").repeated(LONG_LINE_CHARS_COUNT));
+        int longMarkerX = fm.width(QString("w").repeated(LONG_LINE_CHARS_COUNT));
         int scrollX = horizontalScrollBar()->value();
 
         QPainter painter(viewport());
