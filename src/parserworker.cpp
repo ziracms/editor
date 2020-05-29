@@ -132,7 +132,10 @@ void ParserWorker::lint(int tabIndex, QString path)
 
 void ParserWorker::execPHP(int tabIndex, QString path)
 {
-    if (phpPath.size() == 0) return; // silence
+    if (phpPath.size() == 0)  {
+        emit message(tr("PHP executable not found."));
+        return;
+    }
     QStringList errorTexts, errorLines;
     QProcess process(this);
     process.start(phpPath, QStringList() << "-n" << "-f" << path);
