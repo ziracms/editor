@@ -130,6 +130,19 @@ void ParserWorker::lint(int tabIndex, QString path)
     emit lintFinished(tabIndex, errorTexts, errorLines, errors);
 }
 
+void ParserWorker::execPHP(int tabIndex, QString path)
+{
+    if (phpPath.size() == 0) return; // silence
+    QStringList errorTexts, errorLines;
+    QProcess process(this);
+    process.start(phpPath, QStringList() << "-n" << "-f" << path);
+    if (!process.waitForFinished()) return;
+    QString result = QString(process.readAllStandardOutput());
+    if (result.size() == 0) result = QString(process.readAllStandardError());
+    QString output = QString(result).trimmed();
+    emit execPHPFinished(tabIndex, output);
+}
+
 void ParserWorker::phpcs(int tabIndex, QString path)
 {
     if (phpcsPath.size() == 0) return; //silence

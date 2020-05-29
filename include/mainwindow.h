@@ -147,6 +147,7 @@ private slots:
     void on_actionHelpDonate_triggered();
     void on_actionHelpZiraCMS_triggered();
     void on_actionCompileSass_triggered();
+    void on_actionExecuteFile_triggered();
     void focusTreeTriggered();
     void previousTabTriggered();
     void nextTabTriggered();
@@ -163,6 +164,7 @@ private slots:
     void editorSaved(int index);
     void editorReady(int index);
     void parseLintFinished(int tabIndex, QStringList errorTexts, QStringList errorLines, QString output);
+    void execPHPFinished(int tabIndex, QString output);
     void parsePHPCSFinished(int tabIndex, QStringList errorTexts, QStringList errorLines);
     void parseMixedFinished(int tabIndex, ParsePHP::ParseResult result);
     void parseJSFinished(int tabIndex, ParseJS::ParseResult result);
@@ -275,6 +277,7 @@ private:
 signals:
     void disableWorker();
     void parseLint(int tabIndex, QString path);
+    void execPHP(int tabIndex, QString path);
     void parsePHPCS(int tabIndex, QString path);
     void parseMixed(int tabIndex, QString content);
     void parseJS(int tabIndex, QString content);

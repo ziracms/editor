@@ -178,6 +178,8 @@
     <addaction name="actionColorPicker"/>
     <addaction name="separator"/>
     <addaction name="actionCompileSass"/>
+    <addaction name="separator"/>
+    <addaction name="actionExecuteFile"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -1135,6 +1137,11 @@
    </property>
    <property name="text">
     <string>Display Dock Buttons</string>
+   </property>
+  </action>
+  <action name="actionExecuteFile">
+   <property name="text">
+    <string>Execute file</string>
    </property>
   </action>
  </widget>

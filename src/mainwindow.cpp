@@ -274,6 +274,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&parserThread, &QThread::finished, parserWorker, &QObject::deleteLater);
     connect(this, SIGNAL(disableWorker()), parserWorker, SLOT(disable()));
     connect(this, SIGNAL(parseLint(int,QString)), parserWorker, SLOT(lint(int,QString)));
+    connect(this, SIGNAL(execPHP(int,QString)), parserWorker, SLOT(execPHP(int,QString)));
     connect(this, SIGNAL(parsePHPCS(int,QString)), parserWorker, SLOT(phpcs(int,QString)));
     connect(this, SIGNAL(parseMixed(int,QString)), parserWorker, SLOT(parseMixed(int,QString)));
     connect(this, SIGNAL(parseJS(int,QString)), parserWorker, SLOT(parseJS(int,QString)));
@@ -286,6 +287,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(quickFind(QString, QString, WordsMapList, QStringList)), parserWorker, SLOT(quickFind(QString, QString, WordsMapList, QStringList)));
     connect(progressInfo, SIGNAL(cancelTriggered()), parserWorker, SLOT(cancelRequested()));
     connect(parserWorker, SIGNAL(lintFinished(int,QStringList,QStringList,QString)), this, SLOT(parseLintFinished(int,QStringList,QStringList,QString)));
+    connect(parserWorker, SIGNAL(execPHPFinished(int,QString)), this, SLOT(execPHPFinished(int,QString)));
     connect(parserWorker, SIGNAL(phpcsFinished(int,QStringList,QStringList)), this, SLOT(parsePHPCSFinished(int,QStringList,QStringList)));
     connect(parserWorker, SIGNAL(parseMixedFinished(int,ParsePHP::ParseResult)), this, SLOT(parseMixedFinished(int,ParsePHP::ParseResult)));
     connect(parserWorker, SIGNAL(parseJSFinished(int,ParseJS::ParseResult)), this, SLOT(parseJSFinished(int,ParseJS::ParseResult)));
@@ -537,6 +539,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut * shortcutCloseApp = new QShortcut(QKeySequence(shortcutCloseAppStr), this);
     connect(shortcutCloseApp, SIGNAL(activated()), this, SLOT(on_actionQuit_triggered()));
 
+    QString shortcutExecuteStr = QString::fromStdString(settings->get("shortcut_execute"));
+    QShortcut * shortcutExecute = new QShortcut(QKeySequence(shortcutExecuteStr), this);
+    connect(shortcutExecute, SIGNAL(activated()), this, SLOT(on_actionExecuteFile_triggered()));
+
     // make sure that window is maximized in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
@@ -611,17 +617,22 @@ void MainWindow::menuViewOnShow()
 void MainWindow::menuToolsOnShow()
 {
     bool sassEnabled = false;
+    bool execEnabled = false;
     Editor * textEditor = editorTabs->getActiveEditor();
     if (textEditor != nullptr && !textEditor->isModified()) {
         QString ext = textEditor->getFileExtension().toLower();
         if (ext == "scss" || ext == "sass") {
             sassEnabled = true;
+        } else if (ext == "php") {
+            execEnabled = true;
         }
     }
     QList<QAction *> toolsActions = ui->menuTools->actions();
     foreach (QAction * action, toolsActions) {
         if (action->objectName() == "actionCompileSass") {
             action->setEnabled(sassEnabled);
+        } else if (action->objectName() == "actionExecuteFile") {
+            action->setEnabled(execEnabled);
         }
     }
 }
@@ -1126,6 +1137,38 @@ void MainWindow::sassCommandFinished(QString output)
     QTextCursor cursor = ui->outputEdit->textCursor();
     cursor.movePosition(QTextCursor::Start);
     ui->outputEdit->setTextCursor(cursor);
+}
+
+void MainWindow::on_actionExecuteFile_triggered()
+{
+    Editor * textEditor = editorTabs->getActiveEditor();
+    if (textEditor == nullptr || textEditor->isModified()) return;
+    QString ext = textEditor->getFileExtension().toLower();
+    if (ext != "php") return;
+    QString fileName = textEditor->getFileName();
+
+    hideQAPanel();
+    if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
+    ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
+    ui->outputEdit->clear();
+    QString cmdStr = "php -n -f "+fileName;
+    ui->outputEdit->setHtml(Servers::highlightServersCommand(cmdStr, settings));
+
+    emit execPHP(textEditor->getTabIndex(), fileName);
+}
+
+void MainWindow::execPHPFinished(int tabIndex, QString output)
+{
+    Editor * textEditor = editorTabs->getActiveEditor();
+    if (textEditor == nullptr) return;
+    if (tabIndex != textEditor->getTabIndex()) return;
+
+    if (output.size() == 0) output = tr("Finished.");
+    ui->outputEdit->append(git->highlightOutput(output));
+    QTextCursor cursor = ui->outputEdit->textCursor();
+    cursor.movePosition(QTextCursor::Start);
+    ui->outputEdit->setTextCursor(cursor);
+    ui->outputEdit->setFocus();
 }
 
 QString MainWindow::getGitWorkingDir()

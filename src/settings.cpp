@@ -83,6 +83,7 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"shortcut_search", "Ctrl+F"},
         {"shortcut_search_in_files", "Ctrl+Shift+F"},
         {"shortcut_help", "F1"},
+        {"shortcut_execute", "F5"},
         {"shortcut_sidebar", "Ctrl+Return"},
         {"shortcut_toolbar", "Ctrl+T"},
         {"shortcut_output", "Ctrl+Shift+Return"},

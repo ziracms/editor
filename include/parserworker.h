@@ -46,6 +46,7 @@ private:
     bool wantStop;
 signals:
     void lintFinished(int tabIndex, QStringList errorTexts, QStringList errorLines, QString output);
+    void execPHPFinished(int tabIndex, QString output);
     void phpcsFinished(int tabIndex, QStringList errorTexts, QStringList errorLines);
     void parseMixedFinished(int tabIndex, ParsePHP::ParseResult result);
     void parseJSFinished(int tabIndex, ParseJS::ParseResult result);
@@ -67,6 +68,7 @@ signals:
 public slots:
     void disable();
     void lint(int tabIndex, QString path);
+    void execPHP(int tabIndex, QString path);
     void phpcs(int tabIndex, QString path);
     void parseMixed(int tabIndex, QString text);
     void parseJS(int tabIndex, QString text);
