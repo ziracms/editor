@@ -46,6 +46,7 @@ Main features:
       class methods
 - search in files
 - spell checker plugin (Hunspell library should be installed)
+- terminal emulator plugin (qtermwidget5 library required)
 - built-in colorpicker
 - built-in light and dark themes
 - custom themes support
