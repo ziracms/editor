@@ -10,6 +10,7 @@
 #include <QList>
 #include "plugininterface.h"
 #include "spellcheckerinterface.h"
+#include "terminalinterface.h"
 
 extern const QString APPLICATION_NAME;
 extern const QString APPLICATION_VERSION;
@@ -54,6 +55,7 @@ public:
     static bool isPluginExists(QString name, QString path = "");
     static SpellCheckerInterface * loadSpellChecker(QString path = "");
     static bool loadStylePlugin(QString name, QString path, bool light = false);
+    static TerminalInterface * loadTerminalPlugin(QString path = "");
     static QStringList getInstalledStylePlugins(QString path);
     static QString getExistingDirectory(QWidget * parent, QString title, QString directory);
     static QWidget * getWindowWidget();

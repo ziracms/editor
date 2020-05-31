@@ -12,7 +12,8 @@
 <tr><td>Context help:</td><td><b>F1</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Search in files:</td><td><b>Ctrl+Shift+F</b></td></tr>
 <tr><td>Duplicate line:</td><td><b>Ctrl+D</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Focus on tree:</td><td><b>Alt+&darr;</b></td></tr>
 <tr><td>Delete line:</td><td><b>Ctrl+Shift+D</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Quick Access: </td><td><b>F3 / Ctrl+P</b></td></tr>
-<tr><td>Show Toolbar:</td><td><b>Ctrl+T</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Close tab:</td><td><b>Ctrl+Q</b></td></tr>
+<tr><td>Show Terminal:</td><td><b>Ctrl+T</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Execute file:</td><td><b>F5</b></td></tr>
+<tr><td>Show Toolbar:</td><td><b>Ctrl+Shift+T</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Close tab:</td><td><b>Ctrl+Q</b></td></tr>
 <tr><td>Show Sidebar:</td><td><b>Ctrl+Enter</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Close project:</td><td><b>Ctrl+Shift+Q</b></td></tr>
 <tr><td>Show Output:</td><td><b>Ctrl+Shift+Enter</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Exit:</td><td><b>Ctrl+Alt+Q</b></td></tr>
 </table>

@@ -332,6 +332,19 @@ QStringList Helper::getInstalledStylePlugins(QString path)
     return pluginsList;
 }
 
+TerminalInterface * Helper::loadTerminalPlugin(QString path)
+{
+    QObject * plugin = loadPlugin(TERMINAL_PLUGIN_NAME, path);
+    if (!plugin) return nullptr;
+    TerminalInterface * terminal = qobject_cast<TerminalInterface *>(plugin);
+    if (!terminal) {
+        delete plugin;
+        return nullptr;
+    }
+    terminal->initialize(QDir::homePath());
+    return terminal;
+}
+
 bool Helper::isPluginExists(QString name, QString path)
 {
     QString pluginFile = getPluginFile(name, path);

@@ -56,6 +56,7 @@ SOURCES += \
     src/navigator.cpp \
     src/style.cpp \
     src/tabslist.cpp \
+    src/terminalinterface.cpp \
     src/tooltip.cpp \
     src/breadcrumbs.cpp \
     src/helpwords.cpp \
@@ -107,6 +108,7 @@ HEADERS += \
     include/navigator.h \
     include/style.h \
     include/tabslist.h \
+    include/terminalinterface.h \
     include/tooltip.h \
     include/breadcrumbs.h \
     include/helpwords.h \

@@ -25,6 +25,7 @@
 #include "project.h"
 #include "git.h"
 #include "spellcheckerinterface.h"
+#include "terminalinterface.h"
 #include "quickaccess.h"
 #include "progressline.h"
 #include "progressinfo.h"
@@ -225,6 +226,9 @@ private slots:
     void editorPaneResize();
     void tabsListTriggered();
     void tabsListSelected(int index);
+    void terminalCopy();
+    void terminalPaste();
+    void showTerminal();
 private:
     Ui::MainWindow *ui;
     Settings * settings;
@@ -241,6 +245,7 @@ private:
     Project * project;
     Git * git;
     SpellCheckerInterface * spellChecker;
+    TerminalInterface * terminal;
     QToolButton * tabsListButton;
     QString outputMsgErrorTpl;
     QString outputMsgWarningTpl;
@@ -274,6 +279,7 @@ private:
     QStringList args;
     bool tmpDisableParser;
     Welcome * welcomeScreen;
+    int terminalTabIndex;
 signals:
     void disableWorker();
     void parseLint(int tabIndex, QString path);

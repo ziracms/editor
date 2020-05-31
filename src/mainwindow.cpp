@@ -139,6 +139,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // plugins
     spellChecker = Helper::loadSpellChecker(pluginsDir);
+    terminal = Helper::loadTerminalPlugin(pluginsDir);
 
     // load words
     highlightWords = new HighlightWords(settings);
@@ -418,6 +419,32 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->searchListWidget->setFont(outputFont);
     ui->outputEdit->setFont(outputFont);
     ui->todoEdit->setFont(outputFont);
+
+    if (terminal != nullptr) {
+        terminal->setFont(outputFont);
+
+        QVBoxLayout * terminalLayout = new QVBoxLayout();
+        terminalLayout->setContentsMargins(3, 3, 3, 3);
+        terminalLayout->addWidget(terminal->getWidget());
+        QWidget * terminalTab = new QWidget(ui->outputTabWidget);
+        terminalTab->setLayout(terminalLayout);
+        terminalTab->setStyleSheet("background:black");
+        terminalTabIndex = ui->outputTabWidget->addTab(terminalTab, tr("Terminal"));
+
+        QString shortcutCopyStr = QString::fromStdString("Ctrl+Shift+C");
+        QShortcut * shortcutCopy = new QShortcut(QKeySequence(shortcutCopyStr), this);
+        connect(shortcutCopy, SIGNAL(activated()), this, SLOT(terminalCopy()));
+
+        QString shortcutPasteStr = QString::fromStdString("Ctrl+Shift+V");
+        QShortcut * shortcutPaste = new QShortcut(QKeySequence(shortcutPasteStr), this);
+        connect(shortcutPaste, SIGNAL(activated()), this, SLOT(terminalPaste()));
+
+        QString showTerminalStr = QString::fromStdString(settings->get("shortcut_terminal"));
+        QShortcut * showTerminal = new QShortcut(QKeySequence(showTerminalStr), this);
+        connect(showTerminal, SIGNAL(activated()), this, SLOT(showTerminal()));
+    } else {
+        terminalTabIndex = -1;
+    }
 
     QPalette outputPalette;
     outputPalette.setColor(QPalette::Base, outputBgColor);
@@ -883,6 +910,9 @@ void MainWindow::on_actionCloseProject_triggered()
     // update window title
     setWindowTitleText("");
     gitTabRefreshRequested();
+    if (terminal != nullptr) {
+        terminal->changeDir(QDir::homePath());
+    }
 }
 
 void MainWindow::on_actionSave_triggered()
@@ -1948,6 +1978,9 @@ void MainWindow::projectOpenRequested(QString path)
     setStatusBarText(tr("Scanning project..."));
     emit parseProject(project->getPath());
     gitTabRefreshRequested();
+    if (terminal != nullptr) {
+        terminal->changeDir(project->getPath());
+    }
 }
 
 void MainWindow::openTabsRequested(QStringList files, bool initHighlight)
@@ -2408,4 +2441,30 @@ void MainWindow::tabsListSelected(int index)
     if (index < 0) return;
     if (index >= ui->tabWidget->count()) return;
     editorTabs->setActiveTab(index);
+}
+
+void MainWindow::showTerminal()
+{
+    if (terminal == nullptr) return;
+    if (terminalTabIndex < 0) return;
+    hideQAPanel();
+    if (!ui->outputDockWidget->isVisible() || !terminal->getWidget()->hasFocus()) {
+        if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
+        ui->outputTabWidget->setCurrentIndex(terminalTabIndex);
+        terminal->getWidget()->setFocus();
+    } else {
+        ui->outputDockWidget->hide();
+    }
+}
+
+void MainWindow::terminalCopy()
+{
+    if (terminal == nullptr) return;
+    terminal->copy();
+}
+
+void MainWindow::terminalPaste()
+{
+    if (terminal == nullptr) return;
+    terminal->paste();
 }
