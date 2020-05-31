@@ -207,7 +207,7 @@ private slots:
     void duplicateLine();
     void deleteLine();
     void reloadRequested();
-    void spellCheck(bool suggest = true, bool forceRehighlight = true);
+    void spellCheck(bool suggest = false, bool forceRehighlight = true);
     void spellCheckPasted();
     void qaBtnClicked();
 private:
