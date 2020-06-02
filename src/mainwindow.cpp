@@ -43,6 +43,7 @@ const int SIDEBAR_TAB_NAVIGATOR_INDEX = 1;
 const int SIDEBAR_TAB_GIT_BROWSER_INDEX = 2;
 
 int const MainWindow::EXIT_CODE_RESTART = -123456789;
+int const TERMINAL_START_DELAY = 250; // should not be less then PROJECT_LOAD_DELAY
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -442,6 +443,8 @@ MainWindow::MainWindow(QWidget *parent) :
         QString showTerminalStr = QString::fromStdString(settings->get("shortcut_terminal"));
         QShortcut * showTerminal = new QShortcut(QKeySequence(showTerminalStr), this);
         connect(showTerminal, SIGNAL(activated()), this, SLOT(showTerminal()));
+
+        QTimer::singleShot(TERMINAL_START_DELAY, this, SLOT(startTerminal()));
     } else {
         terminalTabIndex = -1;
     }
@@ -2467,4 +2470,10 @@ void MainWindow::terminalPaste()
 {
     if (terminal == nullptr) return;
     terminal->paste();
+}
+
+void MainWindow::startTerminal()
+{
+    if (terminal == nullptr) return;
+    terminal->startShell();
 }

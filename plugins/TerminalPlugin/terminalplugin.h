@@ -22,6 +22,7 @@ public:
     void changeDir(QString path) override;
     void copy() override;
     void paste() override;
+    void startShell() override;
 private:
     QTermWidget * console;
 };

@@ -229,6 +229,7 @@ private slots:
     void terminalCopy();
     void terminalPaste();
     void showTerminal();
+    void startTerminal();
 private:
     Ui::MainWindow *ui;
     Settings * settings;

@@ -17,6 +17,7 @@ public:
     virtual void changeDir(QString path) = 0;
     virtual void copy() = 0;
     virtual void paste() = 0;
+    virtual void startShell() = 0;
 };
 
 #define TerminalInterface_iid "com.github.ziracms.editor.TerminalInterface"

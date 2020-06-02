@@ -11,7 +11,6 @@ void TerminalPlugin::initialize(QString path)
     console->setEnvironment(QStringList() << "TERM=konsole-256color");
     console->setColorScheme("Linux"); // "GreenOnBlack", "Linux", "SolarizedLight", "BlackOnWhite", "DarkPastels", "BlackOnRandomLight", "WhiteOnBlack", "BlackOnLightYellow", "Solarized", "BreezeModified"
     console->setWorkingDirectory(path);
-    console->startShellProgram();
 }
 
 QString TerminalPlugin::getDirName()
@@ -47,4 +46,9 @@ void TerminalPlugin::exec(QString text)
 void TerminalPlugin::changeDir(QString path)
 {
     console->changeDir(path);
+}
+
+void TerminalPlugin::startShell()
+{
+    console->startShellProgram();
 }
