@@ -1,0 +1,18 @@
+<div><b>Optional dependencies:</b></div>
+<div>
+<ul>
+<li>libhunspell (spell checker plugin)</li>
+<li>libqtermwidget5 (terminal plugin)</li>
+<li>php</li>
+<li>phpcs (php code sniffer)</li>
+<li>git</li>
+<li>sassc (SASS compiler)</li>
+<li>apache2</li>
+<li>mariadb</li>
+<li>bash (start/stop servers)</li>
+</ul>
+</div>
+<div>&nbsp;</div>
+<div>Syntax check performed by php executable.</div>
+<div>Context help (F1) requires php manual.</div>
+<div>You can download it from php.net (many html files archive).</div>

@@ -18,6 +18,7 @@ public:
     explicit HelpDialog(QWidget *parent = nullptr);
     ~HelpDialog() override;
     void shortcutsContent();
+    void faqContent();
     void aboutContent();
 private:
     Ui::HelpDialog *ui;

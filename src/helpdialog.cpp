@@ -46,6 +46,18 @@ void HelpDialog::shortcutsContent()
     ui->helpLabel->setText(text);
 }
 
+void HelpDialog::faqContent()
+{
+    QFile f(":/help/faq");
+    f.open(QIODevice::ReadOnly);
+    QTextStream in(&f);
+    QString text = in.readAll();
+    f.close();
+
+    setWindowTitle(tr("FAQ"));
+    ui->helpLabel->setText(text);
+}
+
 void HelpDialog::aboutContent()
 {
     QString text = TPL_LOGO_IMAGE+TPL_APPLICATION_NAME.arg(APPLICATION_NAME);

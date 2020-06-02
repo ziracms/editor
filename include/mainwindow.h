@@ -147,6 +147,7 @@ private slots:
     void on_actionHelpContact_triggered();
     void on_actionHelpDonate_triggered();
     void on_actionHelpZiraCMS_triggered();
+    void on_actionHelpFAQ_triggered();
     void on_actionCompileSass_triggered();
     void on_actionExecuteFile_triggered();
     void focusTreeTriggered();

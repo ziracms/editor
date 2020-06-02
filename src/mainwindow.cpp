@@ -1446,6 +1446,13 @@ void MainWindow::on_actionHelpAbout_triggered()
     dialog.exec();
 }
 
+void MainWindow::on_actionHelpFAQ_triggered()
+{
+    HelpDialog dialog(this);
+    dialog.faqContent();
+    dialog.exec();
+}
+
 void MainWindow::on_actionHelpContact_triggered()
 {
     QString url = "mailto:" + AUTHOR_EMAIL_USERNAME + "@" + AUTHOR_EMAIL_DOMAIN;

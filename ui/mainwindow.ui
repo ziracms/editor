@@ -203,6 +203,7 @@
     <addaction name="actionHelpZiraCMS"/>
     <addaction name="separator"/>
     <addaction name="actionHelpShortcuts"/>
+    <addaction name="actionHelpFAQ"/>
     <addaction name="actionHelpAbout"/>
    </widget>
    <addaction name="menuFile"/>
@@ -1142,6 +1143,11 @@
   <action name="actionExecuteFile">
    <property name="text">
     <string>Execute file</string>
+   </property>
+  </action>
+  <action name="actionHelpFAQ">
+   <property name="text">
+    <string>FAQ</string>
    </property>
   </action>
  </widget>

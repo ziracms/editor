@@ -5,5 +5,6 @@
         <file alias="php_manual_files">resources/help/php/files</file>
         <file alias="editor_shortcuts">resources/help/shortcuts</file>
         <file alias="about">resources/help/about</file>
+        <file alias="faq">resources/help/faq</file>
     </qresource>
 </RCC>
