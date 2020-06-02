@@ -69,6 +69,7 @@ Installation:
       
 Install in Raspbian:
       - install qt5-default (libhunspell is required for spellchecker)
+      - install libqtermwidget5-0 (required by terminal plugin)
       - download and unpack ZIP-archive**
       - copy bin/arm to any folder
       - copy bin/themes, bin/zira.png, bin/desktop.txt, bin/install.sh to the same folder
