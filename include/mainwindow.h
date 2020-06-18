@@ -231,6 +231,7 @@ private slots:
     void terminalPaste();
     void showTerminal();
     void startTerminal();
+    void outputTabSwitched(int index);
 private:
     Ui::MainWindow *ui;
     Settings * settings;

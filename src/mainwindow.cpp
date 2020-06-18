@@ -360,6 +360,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(outputAction, SIGNAL(triggered(bool)), this, SLOT(outputActionTriggered(bool)));
 
     ui->outputTabWidget->setFocusPolicy(Qt::NoFocus);
+    connect(ui->outputTabWidget, SIGNAL(currentChanged(int)), this, SLOT(outputTabSwitched(int)));
     if (dockWidgetArea(ui->outputDockWidget) == Qt::RightDockWidgetArea) {
         ui->outputTabWidget->setTabPosition(QTabWidget::East);
     } else if (dockWidgetArea(ui->outputDockWidget) == Qt::LeftDockWidgetArea) {
@@ -1056,7 +1057,18 @@ void MainWindow::on_actionShowHideOutput_triggered()
         ui->outputDockWidget->hide();
     } else {
         ui->outputDockWidget->show();
-        ui->outputTabWidget->setFocus();
+        if (terminal != nullptr && ui->outputTabWidget->currentIndex() == terminalTabIndex) {
+            terminal->getWidget()->setFocus();
+        } else {
+            ui->outputTabWidget->setFocus();
+        }
+    }
+}
+
+void MainWindow::outputTabSwitched(int index)
+{
+    if (terminal != nullptr && index == terminalTabIndex) {
+        terminal->getWidget()->setFocus();
     }
 }
 
