@@ -277,6 +277,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(disableWorker()), parserWorker, SLOT(disable()));
     connect(this, SIGNAL(parseLint(int,QString)), parserWorker, SLOT(lint(int,QString)));
     connect(this, SIGNAL(execPHP(int,QString)), parserWorker, SLOT(execPHP(int,QString)));
+    connect(this, SIGNAL(execSelection(int,QString)), parserWorker, SLOT(execSelection(int,QString)));
     connect(this, SIGNAL(parsePHPCS(int,QString)), parserWorker, SLOT(phpcs(int,QString)));
     connect(this, SIGNAL(parseMixed(int,QString)), parserWorker, SLOT(parseMixed(int,QString)));
     connect(this, SIGNAL(parseJS(int,QString)), parserWorker, SLOT(parseJS(int,QString)));
@@ -574,6 +575,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut * shortcutExecute = new QShortcut(QKeySequence(shortcutExecuteStr), this);
     connect(shortcutExecute, SIGNAL(activated()), this, SLOT(on_actionExecuteFile_triggered()));
 
+    QString shortcutExecuteSelectionStr = QString::fromStdString(settings->get("shortcut_execute_selection"));
+    QShortcut * shortcutExecuteSelection = new QShortcut(QKeySequence(shortcutExecuteSelectionStr), this);
+    connect(shortcutExecuteSelection, SIGNAL(activated()), this, SLOT(on_actionExecuteSelection_triggered()));
+
     // make sure that window is maximized in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
@@ -663,6 +668,11 @@ void MainWindow::menuToolsOnShow()
         if (action->objectName() == "actionCompileSass") {
             action->setEnabled(sassEnabled);
         } else if (action->objectName() == "actionExecuteFile") {
+            action->setEnabled(execEnabled);
+        } else if (action->objectName() == "actionExecuteSelection") {
+            if (execEnabled && textEditor->textCursor().selectedText().size() == 0) {
+                execEnabled = false;
+            }
             action->setEnabled(execEnabled);
         }
     }
@@ -1202,14 +1212,39 @@ void MainWindow::on_actionExecuteFile_triggered()
     emit execPHP(textEditor->getTabIndex(), fileName);
 }
 
+void MainWindow::on_actionExecuteSelection_triggered()
+{
+    Editor * textEditor = editorTabs->getActiveEditor();
+    if (textEditor == nullptr) return;
+    QString ext = textEditor->getFileExtension().toLower();
+    if (ext != "php") return;
+    QTextCursor cursor = textEditor->textCursor();
+    QString text = cursor.selectedText();
+    if (text.size() == 0) return;
+    QString code = QString(text);
+    text.replace("'","'\"'\"'").replace("<","&lt;").replace(">","&gt;").replace("\t","    ").replace(" ","&nbsp;");
+    code.replace(QString::fromWCharArray(L"\u2029"),"\n");
+
+    hideQAPanel();
+    if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
+    ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
+    ui->outputEdit->clear();
+    QString cmdStr = "php -n -d max_execution_time=30 -r '"+text+"'";
+    ui->outputEdit->setHtml(Servers::highlightServersCommand(cmdStr, settings));
+
+    emit execSelection(textEditor->getTabIndex(), code);
+}
+
 void MainWindow::execPHPFinished(int tabIndex, QString output)
 {
     Editor * textEditor = editorTabs->getActiveEditor();
     if (textEditor == nullptr) return;
     if (tabIndex != textEditor->getTabIndex()) return;
 
+    int maxSize = 1046576;
     if (output.size() == 0) output = tr("Finished.");
-    ui->outputEdit->append(git->highlightOutput(output));
+    else if (output.size() > maxSize) output = output.mid(0, maxSize) + "\n" + tr("Too many results. Breaking...");
+    ui->outputEdit->append(Servers::highlightServersCommandOutput(output, settings));
     QTextCursor cursor = ui->outputEdit->textCursor();
     cursor.movePosition(QTextCursor::Start);
     ui->outputEdit->setTextCursor(cursor);

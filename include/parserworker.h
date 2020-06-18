@@ -69,6 +69,7 @@ public slots:
     void disable();
     void lint(int tabIndex, QString path);
     void execPHP(int tabIndex, QString path);
+    void execSelection(int tabIndex, QString text);
     void phpcs(int tabIndex, QString path);
     void parseMixed(int tabIndex, QString text);
     void parseJS(int tabIndex, QString text);

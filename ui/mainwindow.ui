@@ -180,6 +180,7 @@
     <addaction name="actionCompileSass"/>
     <addaction name="separator"/>
     <addaction name="actionExecuteFile"/>
+    <addaction name="actionExecuteSelection"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -1148,6 +1149,11 @@
   <action name="actionHelpFAQ">
    <property name="text">
     <string>FAQ</string>
+   </property>
+  </action>
+  <action name="actionExecuteSelection">
+   <property name="text">
+    <string>Execute selection</string>
    </property>
   </action>
  </widget>

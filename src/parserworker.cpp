@@ -145,6 +145,21 @@ void ParserWorker::execPHP(int tabIndex, QString path)
     emit execPHPFinished(tabIndex, output);
 }
 
+void ParserWorker::execSelection(int tabIndex, QString text)
+{
+    if (phpPath.size() == 0)  {
+        emit message(tr("PHP executable not found."));
+        return;
+    }
+    QProcess process(this);
+    process.start(phpPath, QStringList() << "-n" << "-d" << "max_execution_time=30" << "-r" << text);
+    if (!process.waitForFinished(60000)) return;
+    QString result = QString(process.readAllStandardOutput());
+    if (result.size() == 0) result = QString(process.readAllStandardError());
+    QString output = QString(result).trimmed();
+    emit execPHPFinished(tabIndex, output);
+}
+
 void ParserWorker::phpcs(int tabIndex, QString path)
 {
     if (phpcsPath.size() == 0) return; //silence

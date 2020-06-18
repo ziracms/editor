@@ -150,6 +150,7 @@ private slots:
     void on_actionHelpFAQ_triggered();
     void on_actionCompileSass_triggered();
     void on_actionExecuteFile_triggered();
+    void on_actionExecuteSelection_triggered();
     void focusTreeTriggered();
     void previousTabTriggered();
     void nextTabTriggered();
@@ -287,6 +288,7 @@ signals:
     void disableWorker();
     void parseLint(int tabIndex, QString path);
     void execPHP(int tabIndex, QString path);
+    void execSelection(int tabIndex, QString text);
     void parsePHPCS(int tabIndex, QString path);
     void parseMixed(int tabIndex, QString content);
     void parseJS(int tabIndex, QString content);
