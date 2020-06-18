@@ -16,13 +16,16 @@ Welcome::Welcome(bool light, QWidget *parent) : QWidget(parent),
 
     ui->welcomeBottomLabel->setText("ver."+APPLICATION_VERSION);
 
-    connect(ui->welcomeOpenProjectButton, SIGNAL(pressed()), parent, SLOT(on_actionOpenProject_triggered()));
-    connect(ui->welcomeCreateProjectButton, SIGNAL(pressed()), parent, SLOT(on_actionNewProject_triggered()));
-
     hide();
 }
 
 Welcome::~Welcome()
 {
     delete ui;
+}
+
+void Welcome::connectButtons(QWidget *mainWnd)
+{
+    connect(ui->welcomeOpenProjectButton, SIGNAL(pressed()), mainWnd, SLOT(on_actionOpenProject_triggered()));
+    connect(ui->welcomeCreateProjectButton, SIGNAL(pressed()), mainWnd, SLOT(on_actionNewProject_triggered()));
 }

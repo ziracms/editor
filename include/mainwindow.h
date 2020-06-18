@@ -85,7 +85,6 @@ protected:
     void applyThemeColors(QString pluginsDir, bool light, bool applyFont);
     void updateTabsListButton();
     void resetLastSearchParams();
-    void updateWelcomeScreen();
     void showWelcomeScreen();
     void hideWelcomeScreen();
 public slots:
@@ -225,7 +224,7 @@ private slots:
     void updateProgressInfo(QString text);
     void deactivateProgressInfo();
     void editorTabsResize();
-    void editorPaneResize();
+    //void editorPaneResize();
     void tabsListTriggered();
     void tabsListSelected(int index);
     void terminalCopy();

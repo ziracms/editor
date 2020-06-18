@@ -149,7 +149,9 @@ MainWindow::MainWindow(QWidget *parent) :
     spellWords = new SpellWords();
 
     // welcome screen
-    welcomeScreen = new Welcome(schemeType == COLOR_SCHEME_LIGHT, this);
+    welcomeScreen = new Welcome(schemeType == COLOR_SCHEME_LIGHT);
+    if (ui->centralWidget->layout() != nullptr) ui->centralWidget->layout()->addWidget(welcomeScreen);
+    welcomeScreen->connectButtons(this);
 
     // editor tabs
     editorTabs = new EditorTabs(spellChecker, ui->tabWidget, settings, highlightWords, completeWords, helpWords, spellWords);
@@ -176,7 +178,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(editorTabs, SIGNAL(editorShowPopupErrorRequested(QString)), this, SLOT(showPopupError(QString)));
     connect(editorTabs, SIGNAL(gitTabRefreshRequested()), this, SLOT(gitTabRefreshRequested()));
     connect(editorTabs, SIGNAL(editorTabsResize()), this, SLOT(editorTabsResize()));
-    connect(editorTabs, SIGNAL(editorPaneResize()), this, SLOT(editorPaneResize()));
+    //connect(editorTabs, SIGNAL(editorPaneResize()), this, SLOT(editorPaneResize()));
 
     ui->tabWidget->tabBar()->setExpanding(false);
     ui->sidebarTabWidget->tabBar()->setExpanding(false);
@@ -1667,30 +1669,24 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     hideQAPanel();
     progressLine->updateGeometry(ui->menuBar->geometry().x(), ui->menuBar->geometry().y() + ui->menuBar->geometry().height(), ui->menuBar->geometry().width());
     progressInfo->updateGeometry(ui->statusBar->geometry().x(), ui->statusBar->geometry().y(), ui->statusBar->width(), ui->statusBar->height());
-    updateTabsListButton();
-    updateWelcomeScreen();
     QMainWindow::resizeEvent(event);
 }
 
 void MainWindow::showWelcomeScreen()
 {
-    QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
-    if (editorTabsRectM.width() < welcomeScreen->minimumWidth()) return;
-    if (editorTabsRectM.height() < welcomeScreen->minimumHeight()) return;
+    //QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
+    //if (editorTabsRectM.width() < welcomeScreen->minimumWidth()) return;
+    //if (editorTabsRectM.height() < welcomeScreen->minimumHeight()) return;
+    ui->tabWidget->hide();
     welcomeScreen->show();
     welcomeScreen->raise();
-    updateWelcomeScreen();
-}
-
-void MainWindow::updateWelcomeScreen()
-{
-    QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
-    welcomeScreen->setGeometry(editorTabsRectM.x(), editorTabsRectM.y(), editorTabsRectM.width(), editorTabsRectM.height());
 }
 
 void MainWindow::hideWelcomeScreen()
 {
     welcomeScreen->hide();
+    ui->tabWidget->show();
+    ui->tabWidget->raise();
 }
 
 void MainWindow::editorFocused()
@@ -2458,12 +2454,6 @@ void MainWindow::editorTabsResize()
 {
     updateTabsListButton();
 }
-
-void MainWindow::editorPaneResize()
-{
-    updateWelcomeScreen();
-}
-
 
 void MainWindow::tabsListTriggered()
 {

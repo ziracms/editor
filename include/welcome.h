@@ -10,6 +10,7 @@ class Welcome : public QWidget
 public:
     explicit Welcome(bool light, QWidget *parent = nullptr);
     ~Welcome();
+    void connectButtons(QWidget * mainWnd);
 private:
     Ui::WelcomeScreen * ui;
 signals:
