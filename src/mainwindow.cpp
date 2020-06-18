@@ -1184,7 +1184,7 @@ void MainWindow::on_actionExecuteFile_triggered()
     if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
     ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
     ui->outputEdit->clear();
-    QString cmdStr = "php -n -f "+fileName;
+    QString cmdStr = "php -n -d max_execution_time=30 -f "+fileName;
     ui->outputEdit->setHtml(Servers::highlightServersCommand(cmdStr, settings));
 
     emit execPHP(textEditor->getTabIndex(), fileName);

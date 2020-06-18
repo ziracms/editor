@@ -136,10 +136,9 @@ void ParserWorker::execPHP(int tabIndex, QString path)
         emit message(tr("PHP executable not found."));
         return;
     }
-    QStringList errorTexts, errorLines;
     QProcess process(this);
-    process.start(phpPath, QStringList() << "-n" << "-f" << path);
-    if (!process.waitForFinished()) return;
+    process.start(phpPath, QStringList() << "-n" << "-d" << "max_execution_time=30" << "-f" << path);
+    if (!process.waitForFinished(60000)) return;
     QString result = QString(process.readAllStandardOutput());
     if (result.size() == 0) result = QString(process.readAllStandardError());
     QString output = QString(result).trimmed();
