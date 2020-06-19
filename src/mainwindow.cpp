@@ -1706,17 +1706,17 @@ void MainWindow::showQAPanel()
 
 void MainWindow::showPopupText(QString text)
 {
-    QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
-    int px = editorTabsRectM.x();
-    int py = editorTabsRectM.y();
+    QRect rect = ui->centralWidget->geometry();
+    int px = rect.x();
+    int py = rect.y();
     popup->displayText(px, py, text);
 }
 
 void MainWindow::showPopupError(QString text)
 {
-    QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
-    int px = editorTabsRectM.x();
-    int py = editorTabsRectM.y();
+    QRect rect = ui->centralWidget->geometry();
+    int px = rect.x();
+    int py = rect.y();
     popup->displayError(px, py, text);
 }
 
