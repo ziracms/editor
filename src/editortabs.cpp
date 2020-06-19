@@ -32,15 +32,6 @@ EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget
     connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(switchTab(int)));
     connect(tabWidget->tabBar(), SIGNAL(tabMoved(int,int)), SLOT(movedTab(int,int)));
 
-    // shortcuts
-    QString shortcutSaveAllStr = QString::fromStdString(settings->get("shortcut_save_all"));
-    QShortcut * shortcutSaveAll = new QShortcut(QKeySequence(shortcutSaveAllStr), tabWidget);
-    connect(shortcutSaveAll, SIGNAL(activated()), this, SLOT(saveAll()));
-
-    QString shortcutSearchInFilesStr = QString::fromStdString(settings->get("shortcut_search_in_files"));
-    QShortcut * shortcutSearchInFIles = new QShortcut(QKeySequence(shortcutSearchInFilesStr), tabWidget);
-    connect(shortcutSearchInFIles, SIGNAL(activated()), this, SLOT(searchInFilesRequested()));
-
     tabWidget->setCursor(Qt::ArrowCursor);
 
     tabWidget->tabBar()->installEventFilter(this);
@@ -595,9 +586,8 @@ void EditorTabs::searchInFilesRequested()
     searchInFiles(text);
 }
 
-void EditorTabs::focusIn(int index)
+void EditorTabs::focusIn(int /*index*/)
 {
-    if (editor == nullptr || editor->getTabIndex() != index) return;
     emit editorFocused();
 }
 

@@ -194,11 +194,41 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(tabsListButton, SIGNAL(clicked()), this, SLOT(tabsListTriggered()));
     connect(tabsList, SIGNAL(itemClicked(int)), this, SLOT(tabsListSelected(int)));
 
+    // split tabs
+    tabWidgetSplit = new QTabWidget(this);
+    tabWidgetSplit->setTabsClosable(true);
+    tabWidgetSplit->setMovable(true);
+    if (ui->centralWidget->layout() != nullptr) ui->centralWidget->layout()->addWidget(tabWidgetSplit);
+    editorTabsSplit = new EditorTabs(spellChecker, tabWidgetSplit, settings, highlightWords, completeWords, helpWords, spellWords);
+    tabWidgetSplit->hide();
+    isSplitActive = false;
+
+    connect(editorTabsSplit, SIGNAL(statusBarText(QString)), this, SLOT(setStatusBarText(QString)));
+    connect(editorTabsSplit, SIGNAL(editorFilenameChanged(QString)), this, SLOT(editorFilenameChanged(QString)));
+    connect(editorTabsSplit, SIGNAL(tabOpened(int)), this, SLOT(editorTabSplitOpened(int)));
+    connect(editorTabsSplit, SIGNAL(tabSwitched(int)), this, SLOT(editorTabSplitSwitched(int)));
+    connect(editorTabsSplit, SIGNAL(tabClosed(int)), this, SLOT(editorTabSplitClosed(int)));
+    connect(editorTabsSplit, SIGNAL(modifiedStateChanged(bool)), this, SLOT(editorModifiedStateChanged(bool)));
+    connect(editorTabsSplit, SIGNAL(editorSaved(int)), this, SLOT(editorSplitSaved(int)));
+    connect(editorTabsSplit, SIGNAL(editorReady(int)), this, SLOT(editorSplitReady(int)));
+    connect(editorTabsSplit, SIGNAL(editorShowDeclaration(QString)), this, SLOT(editorShowDeclaration(QString)));
+    connect(editorTabsSplit, SIGNAL(editorShowHelp(QString)), this, SLOT(editorShowHelp(QString)));
+    connect(editorTabsSplit, SIGNAL(editorUndoRedoChanged()), this, SLOT(editorUndoRedoChanged()));
+    connect(editorTabsSplit, SIGNAL(editorBackForwardChanged()), this, SLOT(editorBackForwardChanged()));
+    connect(editorTabsSplit, SIGNAL(editorSearchInFilesRequested(QString)), this, SLOT(editorSearchInFilesRequested(QString)));
+    connect(editorTabsSplit, SIGNAL(updateProject()), this, SLOT(on_actionUpdateProject_triggered()));
+    connect(editorTabsSplit, SIGNAL(editorFocused()), this, SLOT(editorSplitFocused()));
+    connect(editorTabsSplit, SIGNAL(editorBreadcrumbsClick()), this, SLOT(on_actionQuickAccess_triggered()));
+    connect(editorTabsSplit, SIGNAL(editorShowPopupTextRequested(QString)), this, SLOT(showPopupText(QString)));
+    connect(editorTabsSplit, SIGNAL(editorShowPopupErrorRequested(QString)), this, SLOT(showPopupError(QString)));
+    connect(editorTabsSplit, SIGNAL(gitTabRefreshRequested()), this, SLOT(gitTabRefreshRequested()));
+
     // filebrowser
     filebrowser = new FileBrowser(ui->fileBrowserTreeWidget, ui->fileBrowserPathLine, settings);
     connect(filebrowser, SIGNAL(openFile(QString)), editorTabs, SLOT(openFile(QString)));
     connect(filebrowser, SIGNAL(fileCreated(QString)), editorTabs, SLOT(fileBrowserCreated(QString)));
     connect(filebrowser, SIGNAL(fileOrFolderRenamed(QString, QString)), editorTabs, SLOT(fileBrowserRenamed(QString, QString)));
+    connect(filebrowser, SIGNAL(fileOrFolderRenamed(QString, QString)), editorTabsSplit, SLOT(fileBrowserRenamed(QString, QString)));
     connect(filebrowser, SIGNAL(fileDeleted(QString)), editorTabs, SLOT(fileBrowserDeleted(QString)));
     connect(filebrowser, SIGNAL(projectCreateRequested(QString,QString, bool, bool)), this, SLOT(projectCreateRequested(QString, QString, bool, bool)));
     connect(filebrowser, SIGNAL(projectEditRequested(QString,QString, bool, bool)), this, SLOT(projectEditRequested(QString, QString, bool, bool)));
@@ -561,6 +591,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut * shortcutTabsList = new QShortcut(QKeySequence(shortcutTabsListStr), this);
     connect(shortcutTabsList, SIGNAL(activated()), this, SLOT(tabsListTriggered()));
 
+    QString shortcutSplitTabStr = QString::fromStdString(settings->get("shortcut_split_tab"));
+    QShortcut * shortcutSplitTab = new QShortcut(QKeySequence(shortcutSplitTabStr), this);
+    connect(shortcutSplitTab, SIGNAL(activated()), this, SLOT(on_actionSplitTab_triggered()));
+
     QString shortcutCloseTabStr = QString::fromStdString(settings->get("shortcut_close_tab"));
     QShortcut * shortcutCloseTab = new QShortcut(QKeySequence(shortcutCloseTabStr), this);
     connect(shortcutCloseTab, SIGNAL(activated()), this, SLOT(on_actionClose_triggered()));
@@ -568,6 +602,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QString shortcutCloseProjectStr = QString::fromStdString(settings->get("shortcut_close_project"));
     QShortcut * shortcutCloseProject = new QShortcut(QKeySequence(shortcutCloseProjectStr), this);
     connect(shortcutCloseProject, SIGNAL(activated()), this, SLOT(on_actionCloseProject_triggered()));
+
+    QString shortcutSaveAllStr = QString::fromStdString(settings->get("shortcut_save_all"));
+    QShortcut * shortcutSaveAll = new QShortcut(QKeySequence(shortcutSaveAllStr), this);
+    connect(shortcutSaveAll, SIGNAL(activated()), this, SLOT(on_actionSaveAll_triggered()));
+
+    QString shortcutSearchInFilesStr = QString::fromStdString(settings->get("shortcut_search_in_files"));
+    QShortcut * shortcutSearchInFIles = new QShortcut(QKeySequence(shortcutSearchInFilesStr), this);
+    connect(shortcutSearchInFIles, SIGNAL(activated()), this, SLOT(on_actionSearchInFiles_triggered()));
 
     QString shortcutCloseAppStr = QString::fromStdString(settings->get("shortcut_close_app"));
     QShortcut * shortcutCloseApp = new QShortcut(QKeySequence(shortcutCloseAppStr), this);
@@ -594,6 +636,7 @@ MainWindow::~MainWindow()
     delete filebrowser;
     delete navigator;
     delete editorTabs;
+    delete editorTabsSplit;
     delete project;
     delete git;
     delete gitBrowser;
@@ -608,7 +651,7 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     // check modified
-    if (!editorTabs->closeWindowAllowed()) {
+    if (!editorTabs->closeWindowAllowed() || !editorTabsSplit->closeWindowAllowed()) {
         event->ignore();
         return;
     }
@@ -656,7 +699,7 @@ void MainWindow::menuToolsOnShow()
 {
     bool sassEnabled = false;
     bool execEnabled = false;
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor != nullptr && !textEditor->isModified()) {
         QString ext = textEditor->getFileExtension().toLower();
         if (ext == "scss" || ext == "sass") {
@@ -680,6 +723,24 @@ void MainWindow::menuToolsOnShow()
     }
 }
 
+Editor * MainWindow::getActiveEditor()
+{
+    Editor * textEditorSplit = editorTabsSplit->getActiveEditor();
+    if (textEditorSplit != nullptr && isSplitActive) {
+        return textEditorSplit;
+    }
+    return editorTabs->getActiveEditor();
+}
+
+QString MainWindow::getCurrentTabFilename()
+{
+    Editor * textEditorSplit = editorTabsSplit->getActiveEditor();
+    if (textEditorSplit != nullptr && isSplitActive) {
+        return editorTabsSplit->getCurrentTabFilename();
+    }
+    return editorTabs->getCurrentTabFilename();
+}
+
 void MainWindow::editorUndoRedoChanged()
 {
     editorActionsChanged();
@@ -693,7 +754,7 @@ void MainWindow::editorBackForwardChanged()
 void MainWindow::editorActionsChanged()
 {
     bool undo = false, redo = false, back = false, forward = false;
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor != nullptr) {
         undo = textEditor->isUndoable();
         redo = textEditor->isRedoable();
@@ -737,6 +798,13 @@ void MainWindow::disableActionsForEmptyTabs()
             action->setEnabled(false);
         }
     }
+    QList<QAction *> toolsActions = ui->menuTools->actions();
+    foreach (QAction * action, toolsActions) {
+        if (action->objectName() == "actionSplitTab"
+        ) {
+            action->setEnabled(false);
+        }
+    }
     if (gitCommandsEnabled) {
         QList<QAction *> gitActions = ui->menuGit->actions();
         foreach (QAction * action, gitActions) {
@@ -766,6 +834,13 @@ void MainWindow::enableActionsForOpenTabs()
     QList<QAction *> editActions = ui->menuEdit->actions();
     foreach (QAction * action, editActions) {
         if (action->objectName() == "actionFindReplace") {
+            action->setEnabled(true);
+        }
+    }
+    QList<QAction *> toolsActions = ui->menuTools->actions();
+    foreach (QAction * action, toolsActions) {
+        if (action->objectName() == "actionSplitTab"
+        ) {
             action->setEnabled(true);
         }
     }
@@ -837,7 +912,11 @@ void MainWindow::openFromArgs() {
 
 void MainWindow::previousTabTriggered()
 {
-    if (ui->tabWidget->count() < 2) return;
+    if (ui->tabWidget->count() < 2) {
+        Editor * textEditor = editorTabs->getActiveEditor();
+        if (textEditor != nullptr) textEditor->setFocus();
+        return;
+    }
     int index = ui->tabWidget->currentIndex();
     index--;
     if (index < 0) index = ui->tabWidget->count()-1;
@@ -846,7 +925,11 @@ void MainWindow::previousTabTriggered()
 
 void MainWindow::nextTabTriggered()
 {
-    if (ui->tabWidget->count() < 2) return;
+    if (ui->tabWidget->count() < 2) {
+        Editor * textEditor = editorTabs->getActiveEditor();
+        if (textEditor != nullptr) textEditor->setFocus();
+        return;
+    }
     int index = ui->tabWidget->currentIndex();
     index++;
     if (index >= ui->tabWidget->count()) index = 0;
@@ -865,6 +948,18 @@ void MainWindow::focusTreeTriggered()
     } else if (!gitBrowser->isFocused() && !filebrowser->isFocused()) {
         ui->sidebarTabWidget->setCurrentIndex(SIDEBAR_TAB_GIT_BROWSER_INDEX);
         gitBrowser->focus();
+    }
+}
+
+void MainWindow::on_actionSplitTab_triggered()
+{
+    Editor * textEditor = editorTabs->getActiveEditor();
+    if (textEditor != nullptr) {
+        QString fileName = textEditor->getFileName();
+        if (fileName.size() > 0 && Helper::fileExists(fileName)) {
+            if (!tabWidgetSplit->isVisible()) tabWidgetSplit->show();
+            editorTabsSplit->openFile(fileName);
+        }
     }
 }
 
@@ -933,22 +1028,38 @@ void MainWindow::on_actionCloseProject_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    editorTabs->save();
+    Editor * textEditorSplit = editorTabsSplit->getActiveEditor();
+    if (textEditorSplit != nullptr && isSplitActive) {
+        editorTabsSplit->save();
+    } else {
+        editorTabs->save();
+    }
 }
 
 void MainWindow::on_actionSaveAll_triggered()
 {
     editorTabs->saveAll();
+    editorTabsSplit->saveAll();
 }
 
 void MainWindow::on_actionSaveAs_triggered()
 {
-    editorTabs->saveAs();
+    Editor * textEditorSplit = editorTabsSplit->getActiveEditor();
+    if (textEditorSplit != nullptr && isSplitActive) {
+        editorTabsSplit->saveAs();
+    } else {
+        editorTabs->saveAs();
+    }
 }
 
 void MainWindow::on_actionClose_triggered()
 {
-    editorTabs->close();
+    Editor * textEditorSplit = editorTabsSplit->getActiveEditor();
+    if (textEditorSplit != nullptr && isSplitActive) {
+        editorTabsSplit->close();
+    } else {
+        editorTabs->close();
+    }
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -958,42 +1069,42 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_actionUndo_triggered()
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr) return;
     textEditor->undo();
 }
 
 void MainWindow::on_actionRedo_triggered()
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr) return;
     textEditor->redo();
 }
 
 void MainWindow::on_actionBack_triggered()
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr) return;
     textEditor->back();
 }
 
 void MainWindow::on_actionForward_triggered()
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr) return;
     textEditor->forward();
 }
 
 void MainWindow::on_actionFindReplace_triggered()
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr) return;
     textEditor->findToggle();
 }
 
 void MainWindow::on_actionColorPicker_triggered()
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     QColor initColor = Qt::white;
     bool withHash = true;
     if (textEditor != nullptr) {
@@ -1033,7 +1144,7 @@ void MainWindow::on_actionColorPicker_triggered()
 void MainWindow::on_actionSearchInFiles_triggered()
 {
     QString text = "";
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor != nullptr) {
         QTextCursor curs = textEditor->textCursor();
         text = curs.selectedText();
@@ -1161,7 +1272,7 @@ void MainWindow::serversCommandFinished(QString output)
 
 void MainWindow::on_actionCompileSass_triggered()
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr || textEditor->isModified()) return;
     QString ext = textEditor->getFileExtension().toLower();
     if (ext != "scss" && ext != "sass") return;
@@ -1198,7 +1309,7 @@ void MainWindow::sassCommandFinished(QString output)
 
 void MainWindow::on_actionExecuteFile_triggered()
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr || textEditor->isModified()) return;
     QString ext = textEditor->getFileExtension().toLower();
     if (ext != "php") return;
@@ -1216,7 +1327,7 @@ void MainWindow::on_actionExecuteFile_triggered()
 
 void MainWindow::on_actionExecuteSelection_triggered()
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr) return;
     QString ext = textEditor->getFileExtension().toLower();
     if (ext != "php") return;
@@ -1239,7 +1350,7 @@ void MainWindow::on_actionExecuteSelection_triggered()
 
 void MainWindow::execPHPFinished(int tabIndex, QString output)
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr) return;
     if (tabIndex != textEditor->getTabIndex()) return;
 
@@ -1286,7 +1397,7 @@ void MainWindow::on_actionGitDiffAll_triggered()
 
 void MainWindow::on_actionGitDiffCurrent_triggered()
 {
-    QString fileName = editorTabs->getCurrentTabFilename();
+    QString fileName = getCurrentTabFilename();
     if (fileName.size() == 0 || !Helper::fileExists(fileName)) return;
     git->showUncommittedDiffCurrent(getGitWorkingDir(), fileName);
 }
@@ -1298,7 +1409,7 @@ void MainWindow::on_actionGitDiffAllCommit_triggered()
 
 void MainWindow::on_actionGitDiffCurrentCommit_triggered()
 {
-    QString fileName = editorTabs->getCurrentTabFilename();
+    QString fileName = getCurrentTabFilename();
     if (fileName.size() == 0 || !Helper::fileExists(fileName)) return;
     git->showLastCommitDiffCurrent(getGitWorkingDir(), fileName);
 }
@@ -1330,7 +1441,7 @@ void MainWindow::on_actionGitResetAll_triggered()
 
 void MainWindow::on_actionGitResetCurrent_triggered()
 {
-    QString fileName = editorTabs->getCurrentTabFilename();
+    QString fileName = getCurrentTabFilename();
     if (fileName.size() == 0 || !Helper::fileExists(fileName)) return;
     git->resetCurrent(getGitWorkingDir(), fileName);
 }
@@ -1342,7 +1453,7 @@ void MainWindow::on_actionGitAddAll_triggered()
 
 void MainWindow::on_actionGitAddCurrent_triggered()
 {
-    QString fileName = editorTabs->getCurrentTabFilename();
+    QString fileName = getCurrentTabFilename();
     if (fileName.size() == 0 || !Helper::fileExists(fileName)) return;
     git->addCurrent(getGitWorkingDir(), fileName);
 }
@@ -1404,12 +1515,20 @@ void MainWindow::gitCommandFinished(QString command, QString output, bool output
             if (textEditor != nullptr && annotations.size() > 0 && annotations.contains(1) && textEditor->getFileName() == getGitWorkingDir() + "/" + annotations.value(1).file) {
                 textEditor->setGitAnnotations(annotations);
             }
+            Editor * textEditorSplit = editorTabsSplit->getActiveEditor();
+            if (textEditorSplit != nullptr && annotations.size() > 0 && annotations.contains(1) && textEditorSplit->getFileName() == getGitWorkingDir() + "/" + annotations.value(1).file) {
+                textEditorSplit->setGitAnnotations(annotations);
+            }
         } else if (command == GIT_DIFF_COMMAND) {
             QString file = "";
             QHash<int,Git::DiffLine> mLines = git->parseDiffUnifiedOutput(output, file);
             Editor * textEditor = editorTabs->getActiveEditor();
             if (textEditor != nullptr && (textEditor->getFileName() == getGitWorkingDir() + "/" + file || mLines.size() == 0)) {
                 textEditor->setGitDiffLines(mLines);
+            }
+            Editor * textEditorSplit = editorTabsSplit->getActiveEditor();
+            if (textEditorSplit != nullptr && (textEditorSplit->getFileName() == getGitWorkingDir() + "/" + file || mLines.size() == 0)) {
+                textEditorSplit->setGitDiffLines(mLines);
             }
         }
         return;
@@ -1422,7 +1541,7 @@ void MainWindow::gitCommandFinished(QString command, QString output, bool output
     ui->outputEdit->setFocus();
     gitTabRefreshRequested();
     if (command == GIT_COMMIT_COMMAND) {
-        Editor * textEditor = editorTabs->getActiveEditor();
+        Editor * textEditor = getActiveEditor();
         if (textEditor != nullptr && textEditor->isReady()) {
             gitAnnotationRequested(textEditor->getFileName());
             gitDiffUnifiedRequested(textEditor->getFileName());
@@ -1691,7 +1810,34 @@ void MainWindow::hideWelcomeScreen()
 
 void MainWindow::editorFocused()
 {
+    isSplitActive = false;
     hideQAPanel();
+    setStatusBarText(""); // update status bar
+    Editor * editor = editorTabs->getActiveEditor();
+    if (editor != nullptr) {
+        setWindowModified(editor->isModified());
+        setWindowTitleText(editor->getFileName());
+        editorActionsChanged();
+    } else {
+        setWindowModified(false);
+        setWindowTitleText(""); // update window title
+    }
+}
+
+void MainWindow::editorSplitFocused()
+{
+    isSplitActive = true;
+    hideQAPanel();
+    setStatusBarText(""); // update status bar
+    Editor * editor = editorTabsSplit->getActiveEditor();
+    if (editor != nullptr) {
+        setWindowModified(editor->isModified());
+        setWindowTitleText(editor->getFileName());
+        editorActionsChanged();
+    } else {
+        setWindowModified(false);
+        setWindowTitleText(""); // update window title
+    }
 }
 
 void MainWindow::showQAPanel()
@@ -1779,6 +1925,17 @@ void MainWindow::editorTabOpened(int)
     updateTabsListButton();
 }
 
+void MainWindow::editorTabSplitOpened(int)
+{
+    hideWelcomeScreen();
+    enableActionsForOpenTabs();
+    Editor * editor = editorTabsSplit->getActiveEditor();
+    if (editor != nullptr) {
+        setWindowTitleText(editor->getFileName());
+        editorActionsChanged();
+    }
+}
+
 void MainWindow::editorTabSwitched(int)
 {
     navigator->clear();
@@ -1786,6 +1943,7 @@ void MainWindow::editorTabSwitched(int)
     setStatusBarText(""); // update status bar
     Editor * editor = editorTabs->getActiveEditor();
     if (editor != nullptr) {
+        editor->setFocus();
         setWindowModified(editor->isModified());
         setWindowTitleText(editor->getFileName());
         parseTab();
@@ -1796,14 +1954,40 @@ void MainWindow::editorTabSwitched(int)
     }
 }
 
+void MainWindow::editorTabSplitSwitched(int)
+{
+    setStatusBarText(""); // update status bar
+    Editor * editor = editorTabsSplit->getActiveEditor();
+    if (editor != nullptr) {
+        editor->setFocus();
+        setWindowModified(editor->isModified());
+        setWindowTitleText(editor->getFileName());
+        parseTabSplit();
+        editorActionsChanged();
+    } else {
+        setWindowModified(false);
+        setWindowTitleText(""); // update window title
+    }
+}
+
 void MainWindow::editorTabClosed(int)
 {
     Editor * editor = editorTabs->getActiveEditor();
-    if (editor == nullptr) {
+    Editor * editorSplit = editorTabsSplit->getActiveEditor();
+    if (editor == nullptr && editorSplit == nullptr) {
         disableActionsForEmptyTabs();
         showWelcomeScreen();
     }
     updateTabsListButton();
+}
+
+void MainWindow::editorTabSplitClosed(int index)
+{
+    Editor * editor = editorTabsSplit->getActiveEditor();
+    if (editor == nullptr) {
+        tabWidgetSplit->hide();
+    }
+    editorTabClosed(index);
 }
 
 void MainWindow::editorModifiedStateChanged(bool m)
@@ -1819,11 +2003,26 @@ void MainWindow::editorSaved(int index)
     gitTabRefreshRequested();
 }
 
+void MainWindow::editorSplitSaved(int index)
+{
+    Editor * textEditor = editorTabsSplit->getActiveEditor();
+    if (textEditor == nullptr || textEditor->getTabIndex() != index) return;
+    parseTabSplit();
+    gitTabRefreshRequested();
+}
+
 void MainWindow::editorReady(int index)
 {
     Editor * textEditor = editorTabs->getActiveEditor();
     if (textEditor == nullptr || textEditor->getTabIndex() != index) return;
     parseTab();
+}
+
+void MainWindow::editorSplitReady(int index)
+{
+    Editor * textEditor = editorTabsSplit->getActiveEditor();
+    if (textEditor == nullptr || textEditor->getTabIndex() != index) return;
+    parseTabSplit();
 }
 
 QString MainWindow::getTmpDirPath()
@@ -1854,9 +2053,28 @@ void MainWindow::parseTab()
     }
 }
 
+void MainWindow::parseTabSplit()
+{
+    if (tmpDisableParser) return;
+    Editor * textEditor = editorTabsSplit->getActiveEditor();
+    if (textEditor == nullptr) return;
+    int tabIndex = textEditor->getTabIndex();
+    QString path = textEditor->getFileName();
+    std::string modeType = textEditor->getModeType();
+    //if (modeType == MODE_UNKNOWN) return;
+    if (modeType == MODE_MIXED) {
+        if ((!project->isOpen() && parsePHPLintEnabled) || (project->isOpen() && project->isPHPLintEnabled())) emit parseLint(tabIndex, path);
+    }
+    if ((!project->isOpen() && parsePHPCSEnabled) || (project->isOpen() && project->isPHPCSEnabled())) emit parsePHPCS(tabIndex, path);
+    if (gitCommandsEnabled && textEditor->isReady()) {
+        gitAnnotationRequested(textEditor->getFileName());
+        gitDiffUnifiedRequested(textEditor->getFileName());
+    }
+}
+
 void MainWindow::parseLintFinished(int tabIndex, QStringList errorTexts, QStringList errorLines, QString output)
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr) return;
     if (tabIndex != textEditor->getTabIndex()) return;
     textEditor->clearErrors();
@@ -1865,7 +2083,7 @@ void MainWindow::parseLintFinished(int tabIndex, QStringList errorTexts, QString
             QString lineStr = errorLines.at(i);
             QString errorStr = errorTexts.at(i);
             textEditor->setError(lineStr.toInt(), errorStr);
-            addMessagesTabText(outputMsgErrorTpl.arg(lineStr).arg(errorStr));
+            if (editorTabs->getActiveEditor() == textEditor) addMessagesTabText(outputMsgErrorTpl.arg(lineStr).arg(errorStr));
         }
         textEditor->setParseError(true);
         textEditor->gotoLine(errorLines.at(0).toInt());
@@ -1876,11 +2094,11 @@ void MainWindow::parseLintFinished(int tabIndex, QStringList errorTexts, QString
     textEditor->updateMarksAndMapArea();
     if (errorTexts.size() > 0 && errorTexts.size() == errorLines.size()) {
         setStatusBarText(tr("PARSE ERROR"));
-        scrollMessagesTabToTop();
+        if (editorTabs->getActiveEditor() == textEditor) scrollMessagesTabToTop();
     } else if (output.size() > 0 && (errorTexts.size() == 0 || errorTexts.size() != errorLines.size())) {
         setStatusBarText(tr("PARSE ERROR"));
-        addMessagesTabText(outputMsgErrorTpl.arg("unknown").arg(output));
-        scrollMessagesTabToTop();
+        if (editorTabs->getActiveEditor() == textEditor) addMessagesTabText(outputMsgErrorTpl.arg("unknown").arg(output));
+        if (editorTabs->getActiveEditor() == textEditor) scrollMessagesTabToTop();
     } else {
         setStatusBarText(tr("PARSE OK"));
     }
@@ -1891,7 +2109,7 @@ void MainWindow::parseLintFinished(int tabIndex, QStringList errorTexts, QString
 
 void MainWindow::parsePHPCSFinished(int tabIndex, QStringList errorTexts, QStringList errorLines)
 {
-    Editor * textEditor = editorTabs->getActiveEditor();
+    Editor * textEditor = getActiveEditor();
     if (textEditor == nullptr) return;
     if (tabIndex != textEditor->getTabIndex()) return;
     textEditor->clearWarnings();
@@ -1900,11 +2118,11 @@ void MainWindow::parsePHPCSFinished(int tabIndex, QStringList errorTexts, QStrin
             QString lineStr = errorLines.at(i);
             QString errorStr = errorTexts.at(i);
             textEditor->setWarning(lineStr.toInt(), errorStr);
-            addMessagesTabText(outputMsgWarningTpl.arg(lineStr).arg(errorStr));
+            if (editorTabs->getActiveEditor() == textEditor) addMessagesTabText(outputMsgWarningTpl.arg(lineStr).arg(errorStr));
         }
     }
     textEditor->updateMarksAndMapArea();
-    scrollMessagesTabToTop();
+    if (editorTabs->getActiveEditor() == textEditor) scrollMessagesTabToTop();
 }
 
 void MainWindow::parseMixedFinished(int tabIndex, ParsePHP::ParseResult result)
@@ -2241,7 +2459,7 @@ void MainWindow::setWindowTitleText(QString text)
 
 void MainWindow::setStatusBarText(QString text)
 {
-    Editor * editor = editorTabs->getActiveEditor();
+    Editor * editor = getActiveEditor();
     if (editor == nullptr) {
         statusBar()->showMessage("");
         return;

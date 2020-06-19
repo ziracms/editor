@@ -181,6 +181,8 @@
     <addaction name="separator"/>
     <addaction name="actionExecuteFile"/>
     <addaction name="actionExecuteSelection"/>
+    <addaction name="separator"/>
+    <addaction name="actionSplitTab"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -250,6 +252,8 @@
    <addaction name="actionForward"/>
    <addaction name="separator"/>
    <addaction name="actionColorPicker"/>
+   <addaction name="separator"/>
+   <addaction name="actionSplitTab"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="contextMenuPolicy">
@@ -1154,6 +1158,15 @@
   <action name="actionExecuteSelection">
    <property name="text">
     <string>Execute selection</string>
+   </property>
+  </action>
+  <action name="actionSplitTab">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/split.png</normaloff>:/icons/split.png</iconset>
+   </property>
+   <property name="text">
+    <string>Split tab</string>
    </property>
   </action>
  </widget>

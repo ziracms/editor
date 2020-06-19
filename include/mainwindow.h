@@ -12,6 +12,7 @@
 #include <QTreeWidgetItem>
 #include <QThread>
 #include <QToolButton>
+#include <QTabWidget>
 #include "settings.h"
 #include "highlightwords.h"
 #include "completewords.h"
@@ -78,6 +79,7 @@ protected:
     void setHelpTabSource(QString path);
     void scrollMessagesTabToTop();
     void parseTab();
+    void parseTabSplit();
     void reloadWords();
     QString getGitWorkingDir();
     void runServersCommand(QString command, QString pwd, QString description);
@@ -87,6 +89,8 @@ protected:
     void resetLastSearchParams();
     void showWelcomeScreen();
     void hideWelcomeScreen();
+    Editor * getActiveEditor();
+    QString getCurrentTabFilename();
 public slots:
     void setStatusBarText(QString text);
     void editorShowLine(int line);
@@ -150,6 +154,7 @@ private slots:
     void on_actionCompileSass_triggered();
     void on_actionExecuteFile_triggered();
     void on_actionExecuteSelection_triggered();
+    void on_actionSplitTab_triggered();
     void focusTreeTriggered();
     void previousTabTriggered();
     void nextTabTriggered();
@@ -160,11 +165,16 @@ private slots:
     void sidebarProgressChanged(int v);
     void editorFilenameChanged(QString name);
     void editorTabOpened(int index);
+    void editorTabSplitOpened(int index);
     void editorTabSwitched(int index);
+    void editorTabSplitSwitched(int index);
     void editorTabClosed(int index);
+    void editorTabSplitClosed(int index);
     void editorModifiedStateChanged(bool m);
     void editorSaved(int index);
+    void editorSplitSaved(int index);
     void editorReady(int index);
+    void editorSplitReady(int index);
     void parseLintFinished(int tabIndex, QStringList errorTexts, QStringList errorLines, QString output);
     void execPHPFinished(int tabIndex, QString output);
     void parsePHPCSFinished(int tabIndex, QStringList errorTexts, QStringList errorLines);
@@ -204,6 +214,7 @@ private slots:
     void serversCommandFinished(QString output);
     void sassCommandFinished(QString output);
     void editorFocused();
+    void editorSplitFocused();
     void showQAPanel();
     void hideQAPanel();
     void quickAccessRequested(QString file, int line);
@@ -283,6 +294,9 @@ private:
     bool tmpDisableParser;
     Welcome * welcomeScreen;
     int terminalTabIndex;
+    QTabWidget * tabWidgetSplit;
+    EditorTabs * editorTabsSplit;
+    bool isSplitActive;
 signals:
     void disableWorker();
     void parseLint(int tabIndex, QString path);

@@ -51,5 +51,6 @@
         <file alias="stop.png">resources/images/icons/stop.png</file>
         <file alias="mail.png">resources/images/icons/mail.png</file>
         <file alias="list.png">resources/images/icons/list.png</file>
+        <file alias="split.png">resources/images/icons/split.png</file>
     </qresource>
 </RCC>

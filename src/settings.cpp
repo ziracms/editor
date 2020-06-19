@@ -101,6 +101,7 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"shortcut_previous_tab", "Alt+Left"},
         {"shortcut_next_tab", "Alt+Right"},
         {"shortcut_tabs_list", "Alt+Up"},
+        {"shortcut_split_tab", "Ctrl+\\"},
         {"shortcut_terminal", "Ctrl+T"},
         {"shortcut_close_tab", "Ctrl+Q"},
         {"shortcut_close_project", "Ctrl+Shift+Q"},
