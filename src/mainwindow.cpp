@@ -1696,14 +1696,12 @@ void MainWindow::editorFocused()
 
 void MainWindow::showQAPanel()
 {
-    QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
-    int px = editorTabsRectM.x();
-    int py = editorTabsRectM.y();
-    int w = editorTabsRectM.width() / 2;
-    int h = editorTabsRectM.height();
-    int offsetX = editorTabsRectM.width() - w - 1;
-    int offsetY = editorTabsRectM.height() - h + 1;
-    qa->slideIn(px + offsetX, py + offsetY, w, h - 2);
+    QRect rect = ui->centralWidget->geometry();
+    int px = rect.x();
+    int py = rect.y();
+    int w = rect.width();
+    int h = rect.height();
+    qa->slideIn(px + w / 2, py + 1, w / 2, h - 2);
 }
 
 void MainWindow::showPopupText(QString text)
