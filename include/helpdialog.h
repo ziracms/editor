@@ -20,8 +20,11 @@ public:
     void shortcutsContent();
     void faqContent();
     void aboutContent();
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
 private:
     Ui::HelpDialog *ui;
+    int pressed;
 };
 
 #endif // HELPDIALOG_H
