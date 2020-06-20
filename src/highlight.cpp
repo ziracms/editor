@@ -2360,28 +2360,30 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
     }
 
     // "and / or" operators check
-    if (expectAndSignJS && c == "&") {
-        operatorsJSIterator = operatorsJS.find(parensJS);
-        if (operatorsJSIterator != operatorsJS.end() && operatorsJSIterator->second == "|") {
-            highlightError(pos - 1, 2);
-        } else {
-            operatorsJS[parensJS] = "&";
+    if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0) {
+        if (expectAndSignJS && c == "&") {
+            operatorsJSIterator = operatorsJS.find(parensJS);
+            if (operatorsJSIterator != operatorsJS.end() && operatorsJSIterator->second == "|") {
+                highlightError(pos - 1, 2);
+            } else {
+                operatorsJS[parensJS] = "&";
+            }
+            operatorsChainJS += "&";
         }
-        operatorsChainJS += "&";
-    }
-    if (expectOrSignJS && c == "|") {
-        operatorsJSIterator = operatorsJS.find(parensJS);
-        if (operatorsJSIterator != operatorsJS.end() && operatorsJSIterator->second == "&") {
-            highlightError(pos - 1, 2);
-        } else {
-            operatorsJS[parensJS] = "|";
+        if (expectOrSignJS && c == "|") {
+            operatorsJSIterator = operatorsJS.find(parensJS);
+            if (operatorsJSIterator != operatorsJS.end() && operatorsJSIterator->second == "&") {
+                highlightError(pos - 1, 2);
+            } else {
+                operatorsJS[parensJS] = "|";
+            }
+            operatorsChainJS += "|";
         }
-        operatorsChainJS += "|";
+        if (c == "&") expectAndSignJS = true;
+        else expectAndSignJS = false;
+        if (c == "|") expectOrSignJS = true;
+        else expectOrSignJS = false;
     }
-    if (c == "&") expectAndSignJS = true;
-    else expectAndSignJS = false;
-    if (c == "|") expectOrSignJS = true;
-    else expectOrSignJS = false;
 }
 
 void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordPHPStartPrev, int & keywordPHPLengthPrev)
@@ -3002,28 +3004,30 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
     }
 
     // "and / or" operators check
-    if (expectAndSignPHP && c == "&") {
-        operatorsPHPIterator = operatorsPHP.find(parensPHP);
-        if (operatorsPHPIterator != operatorsPHP.end() && operatorsPHPIterator->second == "|") {
-            highlightError(pos - 1, 2);
-        } else {
-            operatorsPHP[parensPHP] = "&";
+    if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0) {
+        if (expectAndSignPHP && c == "&") {
+            operatorsPHPIterator = operatorsPHP.find(parensPHP);
+            if (operatorsPHPIterator != operatorsPHP.end() && operatorsPHPIterator->second == "|") {
+                highlightError(pos - 1, 2);
+            } else {
+                operatorsPHP[parensPHP] = "&";
+            }
+            operatorsChainPHP += "&";
         }
-        operatorsChainPHP += "&";
-    }
-    if (expectOrSignPHP && c == "|") {
-        operatorsPHPIterator = operatorsPHP.find(parensPHP);
-        if (operatorsPHPIterator != operatorsPHP.end() && operatorsPHPIterator->second == "&") {
-            highlightError(pos - 1, 2);
-        } else {
-            operatorsPHP[parensPHP] = "|";
+        if (expectOrSignPHP && c == "|") {
+            operatorsPHPIterator = operatorsPHP.find(parensPHP);
+            if (operatorsPHPIterator != operatorsPHP.end() && operatorsPHPIterator->second == "&") {
+                highlightError(pos - 1, 2);
+            } else {
+                operatorsPHP[parensPHP] = "|";
+            }
+            operatorsChainPHP += "|";
         }
-        operatorsChainPHP += "|";
+        if (c == "&") expectAndSignPHP = true;
+        else expectAndSignPHP = false;
+        if (c == "|") expectOrSignPHP = true;
+        else expectOrSignPHP = false;
     }
-    if (c == "&") expectAndSignPHP = true;
-    else expectAndSignPHP = false;
-    if (c == "|") expectOrSignPHP = true;
-    else expectOrSignPHP = false;
 }
 
 void Highlight::parseUnknown(const QChar &c, int pos)
