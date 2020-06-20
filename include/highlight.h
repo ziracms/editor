@@ -122,6 +122,7 @@ protected:
     void openBlockDataLists();
     void closeBlockDataLists(int textSize);
     void highlightSpell();
+    void highlightError(int pos, int length);
 private:
     QTextDocument * doc;
     QVector<QTextCharFormat> formatChanges;
@@ -155,12 +156,18 @@ private:
     std::unordered_map<std::string, std::string> cssNames;
     std::unordered_map<std::string, std::string>::iterator cssNamesIterator;
 
+    std::unordered_map<int, std::string> operatorsPHP;
+    std::unordered_map<int, std::string>::iterator operatorsPHPIterator;
+    std::unordered_map<int, std::string> operatorsJS;
+    std::unordered_map<int, std::string>::iterator operatorsJSIterator;
+
     QVector<QChar> specialChars;
     QVector<int> specialCharsPos;
     QVector<QString> specialWords;
     QVector<int> specialWordsPos;
 
     QColor spellColor;
+    QColor errorColor;
 
     bool enabled;
     QTextBlock cBlock;
@@ -338,6 +345,12 @@ private:
     int lastVisibleBlockNumber;
     bool isBigFile;
     QStringList foundModes;
+    bool expectAndSignPHP;
+    bool expectOrSignPHP;
+    QString operatorsChainPHP;
+    bool expectAndSignJS;
+    bool expectOrSignJS;
+    QString operatorsChainJS;
 signals:
     void progressChanged(int percent);
 };

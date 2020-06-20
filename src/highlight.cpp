@@ -81,6 +81,9 @@ Highlight::Highlight(Settings * settings, HighlightWords * hWords, QTextDocument
     std::string spellColorStr = settings->get("editor_line_warning_color");
     spellColor = QColor(QString::fromStdString(spellColorStr));
 
+    std::string errorColorStr = settings->get("editor_line_error_color");
+    errorColor = QColor(QString::fromStdString(errorColorStr));
+
     enabled = false;
     modeType = MODE_UNKNOWN;
     block_state = 0;
@@ -315,6 +318,14 @@ void Highlight::reset()
     clsProps.clear();
     jsNames.clear();
     cssNames.clear();
+    expectAndSignPHP = false;
+    expectOrSignPHP = false;
+    operatorsChainPHP = "";
+    operatorsPHP.clear();
+    expectAndSignJS = false;
+    expectOrSignJS = false;
+    operatorsChainJS = "";
+    operatorsJS.clear();
 }
 
 void Highlight::addSpecialChar(QChar c, int pos)
@@ -1534,6 +1545,10 @@ void Highlight::restoreState() {
             keywordJSprevString = prevBlockData->keywordJSprevString;
             keywordJSprevStringPrevChar = prevBlockData->keywordJSprevStringPrevChar;
             cssNamesChain = prevBlockData->cssNamesChain;
+            operatorsChainPHP = prevBlockData->operatorsChainPHP;
+            operatorsPHP = prevBlockData->operatorsPHP;
+            operatorsChainJS = prevBlockData->operatorsChainJS;
+            operatorsJS = prevBlockData->operatorsJS;
         }
     }
 
@@ -1619,6 +1634,15 @@ void Highlight::highlightSpell()
             highlightString(start, length, uFormat);
         }
     }
+}
+
+void Highlight::highlightError(int pos, int length)
+{
+    if (pos < 0 || length < 1) return;
+    QTextCharFormat uFormat = format(pos);
+    uFormat.setUnderlineStyle(QTextCharFormat::WaveUnderline);
+    uFormat.setUnderlineColor(errorColor);
+    highlightString(pos, length, uFormat);
 }
 
 bool Highlight::parseMode(const QChar & c, int pos, bool isWSpace, bool isLast, std::string & pMode, int & pState)
@@ -2311,7 +2335,9 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
     // js parentheses
     if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c == "(") {
         parensJS++;
+        operatorsJS[parensJS] = "";
     } else if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c == ")") {
+        operatorsJS[parensJS] = "";
         parensJS--;
         if (parensJS < 0) parensJS = 0;
     }
@@ -2332,6 +2358,30 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             highlightChar(pos, HW->punctuationFormat);
         }
     }
+
+    // "and / or" operators check
+    if (expectAndSignJS && c == "&") {
+        operatorsJSIterator = operatorsJS.find(parensJS);
+        if (operatorsJSIterator != operatorsJS.end() && operatorsJSIterator->second == "|") {
+            highlightError(pos - 1, 2);
+        } else {
+            operatorsJS[parensJS] = "&";
+        }
+        operatorsChainJS += "&";
+    }
+    if (expectOrSignJS && c == "|") {
+        operatorsJSIterator = operatorsJS.find(parensJS);
+        if (operatorsJSIterator != operatorsJS.end() && operatorsJSIterator->second == "&") {
+            highlightError(pos - 1, 2);
+        } else {
+            operatorsJS[parensJS] = "|";
+        }
+        operatorsChainJS += "|";
+    }
+    if (c == "&") expectAndSignJS = true;
+    else expectAndSignJS = false;
+    if (c == "|") expectOrSignJS = true;
+    else expectOrSignJS = false;
 }
 
 void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordPHPStartPrev, int & keywordPHPLengthPrev)
@@ -2927,7 +2977,9 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
     // php parentheses
     if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && c == "(") {
         parensPHP++;
+        operatorsPHP[parensPHP] = "";
     } else if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && c == ")") {
+        operatorsPHP[parensPHP] = "";
         parensPHP--;
         if (parensPHP < 0) parensPHP = 0;
     }
@@ -2948,6 +3000,30 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
             highlightChar(pos, HW->punctuationFormat);
         }
     }
+
+    // "and / or" operators check
+    if (expectAndSignPHP && c == "&") {
+        operatorsPHPIterator = operatorsPHP.find(parensPHP);
+        if (operatorsPHPIterator != operatorsPHP.end() && operatorsPHPIterator->second == "|") {
+            highlightError(pos - 1, 2);
+        } else {
+            operatorsPHP[parensPHP] = "&";
+        }
+        operatorsChainPHP += "&";
+    }
+    if (expectOrSignPHP && c == "|") {
+        operatorsPHPIterator = operatorsPHP.find(parensPHP);
+        if (operatorsPHPIterator != operatorsPHP.end() && operatorsPHPIterator->second == "&") {
+            highlightError(pos - 1, 2);
+        } else {
+            operatorsPHP[parensPHP] = "|";
+        }
+        operatorsChainPHP += "|";
+    }
+    if (c == "&") expectAndSignPHP = true;
+    else expectAndSignPHP = false;
+    if (c == "|") expectOrSignPHP = true;
+    else expectOrSignPHP = false;
 }
 
 void Highlight::parseUnknown(const QChar &c, int pos)
@@ -3230,6 +3306,8 @@ bool Highlight::parseBlock(const QString & text)
     QString _mediaNameCSS = mediaNameCSS;
     QString _tagChainHTML = tagChainHTML;
     QString _cssNamesChain = cssNamesChain;
+    QString _operatorsChainPHP = operatorsChainPHP;
+    QString _operatorsChainJS = operatorsChainJS;
 
     // load current block data
     if (blockData == nullptr) {
@@ -3286,6 +3364,8 @@ bool Highlight::parseBlock(const QString & text)
         _mediaNameCSS = blockData->mediaNameCSS;
         _tagChainHTML = blockData->tagChainHTML;
         _cssNamesChain = blockData->cssNamesChain;
+        _operatorsChainPHP = blockData->operatorsChainPHP;
+        _operatorsChainJS = blockData->operatorsChainJS;
     }
 
     if (!highlightVarsMode && !firstRunMode && !rehighlightBlockMode && lastVisibleBlockNumber >= 0 && cBlock.blockNumber() > lastVisibleBlockNumber + EXTRA_HIGHLIGHT_BLOCKS_COUNT) {
@@ -3389,7 +3469,9 @@ bool Highlight::parseBlock(const QString & text)
         _funcChainJS != funcChainJS ||
         _mediaNameCSS != mediaNameCSS ||
         _tagChainHTML != tagChainHTML ||
-        _cssNamesChain != cssNamesChain
+        _cssNamesChain != cssNamesChain ||
+        _operatorsChainPHP != operatorsChainPHP ||
+        _operatorsChainJS != operatorsChainJS
     ) {
         changeBlockState();
     }
@@ -3505,6 +3587,10 @@ bool Highlight::parseBlock(const QString & text)
     blockData->keywordJSprevString = keywordJSprevString;
     blockData->keywordJSprevStringPrevChar = keywordJSprevStringPrevChar;
     blockData->cssNamesChain = cssNamesChain;
+    blockData->operatorsChainPHP = operatorsChainPHP;
+    blockData->operatorsPHP = operatorsPHP;
+    blockData->operatorsChainJS = operatorsChainJS;
+    blockData->operatorsJS = operatorsJS;
     cBlock.setUserData(blockData);
 
     return true;

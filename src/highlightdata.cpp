@@ -123,5 +123,9 @@ void HighlightData::reset()
     keywordPHPprevStringPrevChar = "";
     keywordJSprevString = "";
     keywordJSprevStringPrevChar = "";
+    operatorsChainPHP = "";
+    operatorsPHP.clear();
+    operatorsChainJS = "";
+    operatorsJS.clear();
     wantUpdate = false;
 }

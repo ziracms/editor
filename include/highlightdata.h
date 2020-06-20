@@ -8,6 +8,7 @@
 #define HIGHLIGHTDATA_H
 
 #include <QTextBlockUserData>
+#include <unordered_map>
 
 class HighlightData : public QTextBlockUserData
 {
@@ -126,6 +127,10 @@ public:
     QString keywordJSprevStringPrevChar;
     QVector<int> spellStarts;
     QVector<int> spellLengths;
+    QString operatorsChainPHP;
+    std::unordered_map<int, std::string> operatorsPHP;
+    QString operatorsChainJS;
+    std::unordered_map<int, std::string> operatorsJS;
     bool wantUpdate;
 };
 
