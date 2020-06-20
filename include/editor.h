@@ -103,6 +103,8 @@ public:
     void highlightError(int pos, int length);
     void highlightErrorLine(int line);
     void setIsBigFile(bool isBig);
+    void setFileIsDeleted();
+    void setFileIsOutdated();
 protected:
     void focusInEvent(QFocusEvent *e) override;
     void focusOutEvent(QFocusEvent *e) override;

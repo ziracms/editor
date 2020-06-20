@@ -1,8 +1,8 @@
 scheme = dark
 editor_line_number_bg_color = #323235
 editor_line_number_color = #606366
-editor_line_number_modified_bg_color = #0b463a
-editor_line_number_modified_color = #999999
+editor_line_number_modified_bg_color = #075a4b
+editor_line_number_modified_color = #aaaaaa
 editor_line_number_deleted_border_color = #ba1205
 editor_line_mark_bg_color = #323235
 editor_line_map_bg_color = #323235

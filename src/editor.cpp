@@ -730,6 +730,7 @@ void Editor::setParseResult(ParseCSS::ParseResult result)
 
 void Editor::setGitAnnotations(QHash<int, Git::Annotation> annotations)
 {
+    if (warningDisplayed) return;
     gitAnnotations = annotations;
     gitAnnotationLastLineNumber = -1;
     showLineAnnotation();
@@ -737,6 +738,7 @@ void Editor::setGitAnnotations(QHash<int, Git::Annotation> annotations)
 
 void Editor::setGitDiffLines(QHash<int, Git::DiffLine> mLines)
 {
+    if (warningDisplayed) return;
     gitDiffLines = mLines;
     updateLineWidgetsArea();
 }
@@ -1653,20 +1655,12 @@ void Editor::focusInEvent(QFocusEvent *e)
 {
     focused = true;
     if (fileName.size() > 0 && !Helper::fileExists(fileName) && !warningDisplayed) {
-        warningDisplayed = true;
-        if (modified) emit modifiedStateChanged(tabIndex, false);
-        modified = true;
-        emit warning(tabIndex, "deleted", QObject::tr("File \"%1\" not found.").arg(fileName));
-        emit modifiedStateChanged(tabIndex, modified);
+        setFileIsDeleted();
     } else if (fileName.size() > 0 && Helper::fileExists(fileName) && lastModifiedMsec > 0 && !warningDisplayed) {
         QFileInfo fInfo(fileName);
         QDateTime dtModified = fInfo.lastModified();
         if (dtModified.time().msec() != lastModifiedMsec) {
-            warningDisplayed = true;
-            if (modified) emit modifiedStateChanged(tabIndex, false);
-            modified = true;
-            emit warning(tabIndex, "outdated", QObject::tr("File \"%1\" was modified externally.").arg(fileName));
-            emit modifiedStateChanged(tabIndex, modified);
+            setFileIsOutdated();
         }
     }
     if (static_cast<Search *>(search)->isVisible()) {
@@ -1681,6 +1675,26 @@ void Editor::focusOutEvent(QFocusEvent *e)
     focused = false;
     hidePopups();
     QTextEdit::focusOutEvent(e);
+}
+
+void Editor::setFileIsDeleted()
+{
+    if (warningDisplayed) return;
+    warningDisplayed = true;
+    if (modified) emit modifiedStateChanged(tabIndex, false);
+    modified = true;
+    emit warning(tabIndex, "deleted", QObject::tr("File \"%1\" not found.").arg(fileName));
+    emit modifiedStateChanged(tabIndex, modified);
+}
+
+void Editor::setFileIsOutdated()
+{
+    if (warningDisplayed) return;
+    warningDisplayed = true;
+    if (modified) emit modifiedStateChanged(tabIndex, false);
+    modified = true;
+    emit warning(tabIndex, "outdated", QObject::tr("File \"%1\" was modified externally.").arg(fileName));
+    emit modifiedStateChanged(tabIndex, modified);
 }
 
 void Editor::keyPressEvent(QKeyEvent *e)

@@ -957,8 +957,13 @@ void MainWindow::on_actionSplitTab_triggered()
     if (textEditor != nullptr) {
         QString fileName = textEditor->getFileName();
         if (fileName.size() > 0 && Helper::fileExists(fileName)) {
-            if (!tabWidgetSplit->isVisible()) tabWidgetSplit->show();
-            editorTabsSplit->openFile(fileName);
+            Editor * textEditorSplit = editorTabsSplit->getActiveEditor();
+            if (textEditorSplit != nullptr && textEditorSplit->getFileName() == fileName) {
+                editorTabsSplit->closeTab(textEditorSplit->getTabIndex());
+            } else {
+                if (!tabWidgetSplit->isVisible()) tabWidgetSplit->show();
+                editorTabsSplit->openFile(fileName);
+            }
         }
     }
 }
@@ -1999,14 +2004,26 @@ void MainWindow::editorSaved(int index)
 {
     Editor * textEditor = editorTabs->getActiveEditor();
     if (textEditor == nullptr || textEditor->getTabIndex() != index) return;
+
+    Editor * textEditorSplit = editorTabsSplit->getActiveEditor();
+    if (textEditorSplit != nullptr && textEditorSplit->getFileName() == textEditor->getFileName()) {
+        textEditorSplit->setFileIsOutdated();
+    }
+
     parseTab();
     gitTabRefreshRequested();
 }
 
 void MainWindow::editorSplitSaved(int index)
 {
-    Editor * textEditor = editorTabsSplit->getActiveEditor();
-    if (textEditor == nullptr || textEditor->getTabIndex() != index) return;
+    Editor * textEditorSplit = editorTabsSplit->getActiveEditor();
+    if (textEditorSplit == nullptr || textEditorSplit->getTabIndex() != index) return;
+
+    Editor * textEditor = editorTabs->getActiveEditor();
+    if (textEditor != nullptr && textEditor->getFileName() == textEditorSplit->getFileName()) {
+        textEditor->setFileIsOutdated();
+    }
+
     parseTabSplit();
     gitTabRefreshRequested();
 }

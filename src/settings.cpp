@@ -199,8 +199,8 @@ void Settings::applyDarkColors()
     data[COLOR_SCHEME_TYPE.toStdString()] = COLOR_SCHEME_DARK.toStdString();
     data["editor_line_number_bg_color"] = "#232627";
     data["editor_line_number_color"] = "#555555";
-    data["editor_line_number_modified_bg_color"] = "#093833";
-    data["editor_line_number_modified_color"] = "#999999";
+    data["editor_line_number_modified_bg_color"] = "#075a4b";
+    data["editor_line_number_modified_color"] = "#aaaaaa";
     data["editor_line_number_deleted_border_color"] = "#ba1205";
     data["editor_line_mark_bg_color"] = "#232627";
     data["editor_line_map_bg_color"] = "#232627";
@@ -239,7 +239,7 @@ void Settings::applyDarkColors()
     data["highlight_function_color"] = "#00b7ae";
     data["highlight_known_function_color"] = "#1071ff";
     data["highlight_variable_color"] = "#05aeff";
-    data["highlight_known_variable_color"] = "#ffcd56";
+    data["highlight_known_variable_color"] = "#ffb58c";
     data["highlight_unused_variable_color"] = "#858871";
     data["highlight_single_line_comment_color"] = "#5d5d5d";
     data["highlight_multi_line_comment_color"] = "#6c7556";
