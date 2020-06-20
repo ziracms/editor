@@ -155,6 +155,7 @@ private slots:
     void on_actionExecuteFile_triggered();
     void on_actionExecuteSelection_triggered();
     void on_actionSplitTab_triggered();
+    void fileBrowserOpen(QString file);
     void focusTreeTriggered();
     void previousTabTriggered();
     void nextTabTriggered();
@@ -297,6 +298,7 @@ private:
     QTabWidget * tabWidgetSplit;
     EditorTabs * editorTabsSplit;
     bool isSplitActive;
+    QHash<QString,int> filesHistory;
 signals:
     void disableWorker();
     void parseLint(int tabIndex, QString path);

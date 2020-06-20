@@ -225,7 +225,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // filebrowser
     filebrowser = new FileBrowser(ui->fileBrowserTreeWidget, ui->fileBrowserPathLine, settings);
-    connect(filebrowser, SIGNAL(openFile(QString)), editorTabs, SLOT(openFile(QString)));
+    connect(filebrowser, SIGNAL(openFile(QString)), this, SLOT(fileBrowserOpen(QString)));
     connect(filebrowser, SIGNAL(fileCreated(QString)), editorTabs, SLOT(fileBrowserCreated(QString)));
     connect(filebrowser, SIGNAL(fileOrFolderRenamed(QString, QString)), editorTabs, SLOT(fileBrowserRenamed(QString, QString)));
     connect(filebrowser, SIGNAL(fileOrFolderRenamed(QString, QString)), editorTabsSplit, SLOT(fileBrowserRenamed(QString, QString)));
@@ -951,6 +951,14 @@ void MainWindow::focusTreeTriggered()
     }
 }
 
+void MainWindow::fileBrowserOpen(QString file)
+{
+    editorTabs->openFile(file);
+    if (filesHistory.contains(file)) {
+        editorShowLine(filesHistory[file]);
+    }
+}
+
 void MainWindow::on_actionSplitTab_triggered()
 {
     Editor * textEditor = editorTabs->getActiveEditor();
@@ -963,6 +971,10 @@ void MainWindow::on_actionSplitTab_triggered()
             } else {
                 if (!tabWidgetSplit->isVisible()) tabWidgetSplit->show();
                 editorTabsSplit->openFile(fileName);
+                textEditorSplit = editorTabsSplit->getActiveEditor();
+                if (textEditorSplit != nullptr && textEditorSplit->getFileName() == fileName) {
+                    textEditorSplit->gotoLine(textEditor->getCursorLine());
+                }
             }
         }
     }
@@ -972,6 +984,10 @@ void MainWindow::on_actionOpenFile_triggered()
 {
     setStatusBarText("");
     editorTabs->open(filebrowser->getRootPath());
+    Editor * textEditor = editorTabs->getActiveEditor();
+    if (textEditor != nullptr && filesHistory.contains(textEditor->getFileName())) {
+        editorShowLine(filesHistory[textEditor->getFileName()]);
+    }
 }
 
 void MainWindow::on_actionNewFile_triggered()
@@ -2008,6 +2024,7 @@ void MainWindow::editorSaved(int index)
 
     parseTab();
     gitTabRefreshRequested();
+    filesHistory[textEditor->getFileName()] = textEditor->getCursorLine();
 }
 
 void MainWindow::editorSplitSaved(int index)
@@ -2022,6 +2039,7 @@ void MainWindow::editorSplitSaved(int index)
 
     parseTabSplit();
     gitTabRefreshRequested();
+    filesHistory[textEditorSplit->getFileName()] = textEditorSplit->getCursorLine();
 }
 
 void MainWindow::editorReady(int index)
