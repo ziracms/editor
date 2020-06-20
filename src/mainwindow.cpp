@@ -1129,10 +1129,6 @@ void MainWindow::on_actionColorPicker_triggered()
     dialog.setCurrentColor(initColor);
     dialog.setWindowTitle(tr("Pick a color"));
     //dialog.setOption(QColorDialog::ShowAlphaChannel); // no effect
-    // maximize dialog in Android
-    #if defined(Q_OS_ANDROID)
-    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
-    #endif
     if (!dialog.exec()) return;
     QColor color = dialog.selectedColor();
     if (!color.isValid()) return;
