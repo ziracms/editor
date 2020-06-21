@@ -149,9 +149,9 @@ protected:
     void detectCompleteText(QString text, QChar cursorTextPrevChar, int cursorTextPos, std::string mode, int state);
     void detectCompleteTextHTML(QString text, QChar cursorTextPrevChar, int state);
     void detectCompleteTextCSS(QString text, QChar cursorTextPrevChar);
-    void detectCompleteTextJS(QString text, int cursorTextPos);
-    void detectCompleteTextPHP(QString text, int cursorTextPos);
-    void detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos, QChar prevChar, QChar prevPrevChar, QString prevWord, QTextCursor curs);
+    void detectCompleteTextJS(QString text, int cursorTextPos, QChar cursorTextPrevChar);
+    void detectCompleteTextPHP(QString text, int cursorTextPos, QChar cursorTextPrevChar);
+    void detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos, QChar prevChar, QChar prevPrevChar, QString prevWord, QTextCursor curs, QChar cursorTextPrevChar);
     void detectCompleteTextPHPObjectContext(QString text, int cursorTextPos, QChar prevChar, QChar prevPrevChar, QString prevWord, QTextCursor curs);
     void detectCompleteTextPHPNotFoundContext(QString text, QChar prevChar, QChar prevPrevChar);
     void detectCompleteTextRequest(QString text, int cursorTextPos, QChar prevChar, QChar prevPrevChar, std::string mode);
@@ -381,6 +381,11 @@ private:
     bool wrapLines;
     int firstVisibleBlockIndex;
     int lastVisibleBlockIndex;
+
+    QHash<QString, QString> phpSnippets;
+    QHash<QString, QString> jsSnippets;
+    QHash<QString, QString> cssSnippets;
+    QHash<QString, QString> htmlSnippets;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

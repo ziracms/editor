@@ -112,7 +112,8 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"color_scheme", COLOR_SCHEME_DARK.toStdString()},
         {"theme", THEME_DARK.toStdString()},
         {"custom_themes_path", ""},
-        {"plugins_path", ""}
+        {"plugins_path", ""},
+        {"snippets", getDefaultSnippets().toStdString()}
     };
 }
 
@@ -288,6 +289,24 @@ void Settings::applyCustomColors(QString path)
         data[k.toStdString()] = v.toStdString();
     }
     f.close();
+}
+
+QString Settings::getDefaultSnippets()
+{
+    QStringList snippets;
+    snippets
+        << "// @doc"
+        << "[{html:@doc}] = [[<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n\\t<meta charset=\"UTF-8\" />\\n\\t<title></title>\\n</head>\\n<body>\\n\\t{$cursor}\\n</body>\\n</html>]]"
+        << "// @font"
+        << "[{css:@font}] = [[@font-face {\\n\\tfont-family: Roboto;\\n\\tsrc: url({$cursor});\\n}]]"
+        << "// @media"
+        << "[{css:@media}] = [[@media only screen and (max-width: 767px){\\n\\t{$cursor}\\n}]]"
+        << "// @for"
+        << "[{js:@for}] = [[for (var i=0; i<{$cursor}; i++){\\n\\t\\n}]]"
+        << "// @for"
+        << "[{php:@for}] = [[for ($i=0; $i<{$cursor}; $i++){\\n\\t\\n}]]"
+    ;
+    return snippets.join("\n\n");
 }
 
 void Settings::set(std::string k, std::string v)

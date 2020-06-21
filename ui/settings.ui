@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>520</height>
+    <width>800</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>700</width>
-    <height>520</height>
+    <width>800</width>
+    <height>560</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -311,7 +311,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QFontComboBox" name="appFontComboBox"/>
+          <widget class="QFontComboBox" name="appFontComboBox">
+           <property name="minimumSize">
+            <size>
+             <width>350</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QSpinBox" name="appFontSpinBox">
@@ -358,6 +365,12 @@
          </item>
          <item>
           <widget class="QFontComboBox" name="editorFontComboBox">
+           <property name="minimumSize">
+            <size>
+             <width>350</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="fontFilters">
             <set>QFontComboBox::MonospacedFonts</set>
            </property>
@@ -1096,6 +1109,66 @@
           </size>
          </property>
         </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="snippetsSettingsTab">
+      <attribute name="title">
+       <string>Snippets</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="snippetsTextEditLayout_10">
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QPlainTextEdit" name="snippetsTextEdit"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="snippetsLabelLayout">
+         <property name="topMargin">
+          <number>10</number>
+         </property>
+         <property name="bottomMargin">
+          <number>10</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="snippetsLabel">
+           <property name="text">
+            <string>Format: [{mode:@name}] = [[text \n\t {$cursor} \n text]]</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="snippetsLabelLayout2">
+         <property name="topMargin">
+          <number>6</number>
+         </property>
+         <property name="bottomMargin">
+          <number>6</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="snippetsLabel2">
+           <property name="text">
+            <string>[mode: php,js,css,html;  name: [a-zA-Z0-9]{2,};  {$cursor} - position; \n -new line; \t - indent]</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>

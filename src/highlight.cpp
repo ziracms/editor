@@ -2178,7 +2178,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         int keywordJSLength = pos-keywordJSStart;
         if (isLast && isAlnum) keywordJSLength += 1;
         bool known = false;
-        if (keywordJSprevChar != "$" && (keywordJSprevChar != "." || keywordStringJS == "prototype") && keywordStringJS.size()>1) {
+        if (keywordJSprevChar != "$" && (keywordJSprevChar != "." || keywordStringJS == "prototype") && keywordStringJS.size()>0) {
             // js keywords
             HW->jswordsCSIterator = HW->jswordsCS.find(keywordStringJS.toStdString());
             if (HW->jswordsCSIterator != HW->jswordsCS.end()) {
@@ -2199,6 +2199,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             if ((keywordJSprevString == "var" || keywordJSprevString == "let" || keywordJSprevString == "const") && keywordJSprevStringPrevChar != ".") {
                 if (varsChainJS.size() > 0) varsChainJS += ",";
                 varsChainJS += keywordStringJS;
+                jsNames[keywordStringJS.toStdString()] = keywordStringJS.toStdString();
                 highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
             } else if (keywordJSprevChar != "." && c == ".") {
                 highlightString(keywordJSStart, keywordJSLength, HW->classFormat);

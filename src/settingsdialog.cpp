@@ -107,6 +107,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->sasscPathLineEdit->setText(QString::fromStdString(settings->get("parser_sassc_path")));
     ui->phpmanualLineEdit->setText(QString::fromStdString(settings->get("php_manual_path")));
     ui->pluginsFolderLineEdit->setText(QString::fromStdString(settings->get("plugins_path")));
+    ui->snippetsTextEdit->setPlainText(QString::fromStdString(settings->get("snippets")));
 
     QString customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
     ui->customThemesFolderLineEdit->setText(customThemesPath);
@@ -431,6 +432,8 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     } else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + colorSchemeStr + "/" + CUSTOM_THEME_SCHEME_FILE) && Helper::fileExists(customThemesPath + "/" + colorSchemeStr + "/" + CUSTOM_THEME_COLORS_FILE)) {
         dataMap["color_scheme"] = colorSchemeStr.toStdString();
     }
+
+    dataMap["snippets"] = ui->snippetsTextEdit->toPlainText().toStdString();
 
     return dataMap;
 }

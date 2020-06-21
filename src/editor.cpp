@@ -74,6 +74,8 @@ const int BIG_FILE_SIZE = 512000;
 const int LONG_LINE_CHARS_COUNT = 72;
 const int FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE = 300;
 
+const QString SNIPPET_PREFIX = "Snippet: @";
+
 Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent) : QTextEdit(parent), spellChecker(spellChecker), tooltipLabel(settings)
 {
     setMinimumSize(0, 0);
@@ -453,6 +455,33 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     drawLongLineMarker = false;
     std::string drawLongLineMarkerStr = settings->get("editor_long_line_marker_enabled");
     if (drawLongLineMarkerStr == "yes") drawLongLineMarker = true;
+
+    // snippets
+    QString snippets = QString::fromStdString(settings->get("snippets")).trimmed();
+    if (snippets.size() > 0) {
+        QRegularExpression snippetsExpr("[[][{]([a-zA-Z]+)[:][@]([a-zA-Z0-9]{2,})[}][]][\\s]*[=][\\s]*[[][[]([^]]+)[]][]]");
+        QRegularExpressionMatch snippetMatch;
+        QStringList snippetsList = snippets.split("\n");
+        for (QString snippet : snippetsList) {
+            if (snippet.indexOf("//")==0) continue;
+            snippetMatch = snippetsExpr.match(snippet);
+            if (snippetMatch.capturedStart() >= 0) {
+                std::string mode = snippetMatch.captured(1).toLower().toStdString();
+                QString snippetCode = snippetMatch.captured(2).trimmed();
+                QString snippetText = snippetMatch.captured(3).trimmed();
+                if (snippetCode.size() == 0 || snippetText.size() == 0) continue;
+                if (mode == MODE_PHP) {
+                    phpSnippets[snippetCode] = snippetText;
+                } else if (mode == MODE_JS) {
+                    jsSnippets[snippetCode] = snippetText;
+                } else if (mode == MODE_CSS) {
+                    cssSnippets[snippetCode] = snippetText;
+                } else if (mode == MODE_HTML) {
+                    htmlSnippets[snippetCode] = snippetText;
+                }
+            }
+        }
+    }
 
     // cursor is not set to default sometimes
     horizontalScrollBar()->setCursor(Qt::ArrowCursor);
@@ -2409,7 +2438,7 @@ void Editor::textChangedDelayed()
     std::string mode = highlight->findModeAtCursor(&block, pos);
     int state = highlight->findStateAtCursor(&block, pos);
     if (mode != MODE_HTML && state != STATE_NONE) return;
-    if (mode == MODE_HTML && state != STATE_TAG) return;
+    //if (mode == MODE_HTML && state != STATE_TAG) return; // snippets won't work
     if (mode == MODE_UNKNOWN) return;
     QChar prevChar = '\0', nextChar = '\0';
     if (pos > 0 && curs.selectedText().size()==0) prevChar = blockText[pos - 1];
@@ -2788,7 +2817,12 @@ void Editor::hideCompletePopup()
 
 void Editor::detectCompleteTextHTML(QString text, QChar cursorTextPrevChar, int state)
 {
-    if (cursorTextPrevChar == "<" || cursorTextPrevChar == "/") {
+    // snippets
+    if (cursorTextPrevChar == "@" && htmlSnippets.contains(text)) {
+        completePopup->addItem(SNIPPET_PREFIX+text, htmlSnippets[text]);
+    }
+    if (state != STATE_TAG) return;
+    if ((cursorTextPrevChar == "<" || cursorTextPrevChar == "/")  && completePopup->count() < completePopup->limit()) {
         // html tags
         for (auto & it : CW->htmlAllTagsComplete) {
             QString k = QString::fromStdString(it.first);
@@ -2832,7 +2866,11 @@ void Editor::detectCompleteTextCSS(QString text, QChar cursorTextPrevChar)
     int propOffset = blockTextTillCursos.lastIndexOf(";");
     if (propOffset < 0) propOffset = 0;
     int colIndex = blockTextTillCursos.indexOf(":", propOffset);
-    if (((braces > 0 && !cssMediaScope) || (braces > 1 && cssMediaScope)) && colIndex < 0) {
+    // snippets
+    if (cursorTextPrevChar == "@" && cssSnippets.contains(text)) {
+        completePopup->addItem(SNIPPET_PREFIX+text, cssSnippets[text]);
+    }
+    if (((braces > 0 && !cssMediaScope) || (braces > 1 && cssMediaScope)) && colIndex < 0 && completePopup->count() < completePopup->limit()) {
         // css props
         for (auto & it : CW->cssPropertiesComplete) {
             QString k = QString::fromStdString(it.first);
@@ -2889,7 +2927,7 @@ void Editor::detectCompleteTextCSS(QString text, QChar cursorTextPrevChar)
     }
 }
 
-void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
+void Editor::detectCompleteTextJS(QString text, int cursorTextPos, QChar cursorTextPrevChar)
 {
     QTextCursor curs = textCursor();
     curs.movePosition(QTextCursor::StartOfBlock);
@@ -2898,13 +2936,19 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
     QString prevWord = findPrevWordNonSpaceAtCursor(curs, MODE_JS);
     // global context
     if (prevChar != "." && prevWord != "function") {
+        // snippets
+        if (cursorTextPrevChar == "@" && jsSnippets.contains(text)) {
+            completePopup->addItem(SNIPPET_PREFIX+text, jsSnippets[text]);
+        }
         // js specials
-        for (auto & it : CW->jsSpecialsComplete) {
-            QString k = QString::fromStdString(it.first);
-            //if (k == text) continue;
-            if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-                if (completePopup->count() >= completePopup->limit()) break;
+        if (completePopup->count() < completePopup->limit()) {
+            for (auto & it : CW->jsSpecialsComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
             }
         }
         // js objects
@@ -3062,7 +3106,7 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos)
     }
 }
 
-void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos, QChar prevChar, QChar prevPrevChar, QString prevWord, QTextCursor curs)
+void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos, QChar prevChar, QChar prevPrevChar, QString prevWord, QTextCursor curs, QChar cursorTextPrevChar)
 {
     bool completeDetectedPHP = false;
     QTextCursor cursor = textCursor();
@@ -3072,8 +3116,12 @@ void Editor::detectCompleteTextPHPGlobalContext(QString text, int cursorTextPos,
     QString funcName = highlight->findFuncPHPAtCursor(& block, cursorTextPos);
     if (text[0] != "$" && prevWord != "function"  && prevWord != "class" && prevWord != "interface" && prevWord != "trait" && prevWord != "namespace" && prevWord != "use") {
         if (prevWord != "new" && (prevChar != "?" || text != "php") && (prevChar != ":" || prevPrevChar != ":")) {
+            // snippets
+            if (cursorTextPrevChar == "@" && phpSnippets.contains(text)) {
+                completePopup->addItem(SNIPPET_PREFIX+text, phpSnippets[text]);
+            }
             // php specials
-            if (prevChar != "\\") {
+            if (prevChar != "\\" && completePopup->count() < completePopup->limit()) {
                 for (auto & it : CW->phpSpecialsComplete) {
                     QString k = QString::fromStdString(it.first);
                     //if (k == text) continue;
@@ -4015,7 +4063,7 @@ void Editor::detectCompleteTextPHPNotFoundContext(QString text, QChar prevChar, 
     }
 }
 
-void Editor::detectCompleteTextPHP(QString text, int cursorTextPos)
+void Editor::detectCompleteTextPHP(QString text, int cursorTextPos, QChar cursorTextPrevChar)
 {
     QTextCursor curs = textCursor();
     curs.movePosition(QTextCursor::StartOfBlock);
@@ -4024,7 +4072,7 @@ void Editor::detectCompleteTextPHP(QString text, int cursorTextPos)
     QChar prevPrevChar = findPrevCharNonSpaceAtCursos(curs);
     QString prevWord = findPrevWordNonSpaceAtCursor(curs, MODE_PHP);
     if (prevChar != ">" || prevPrevChar != "-") {
-        detectCompleteTextPHPGlobalContext(text, cursorTextPos, prevChar, prevPrevChar, prevWord, curs);
+        detectCompleteTextPHPGlobalContext(text, cursorTextPos, prevChar, prevPrevChar, prevWord, curs, cursorTextPrevChar);
     } else if (prevChar == ">" && prevPrevChar == "-" && text[0] != "$") {
         detectCompleteTextPHPObjectContext(text, cursorTextPos, prevChar, prevPrevChar, prevWord, curs);
     }
@@ -4042,9 +4090,9 @@ void Editor::detectCompleteText(QString text, QChar cursorTextPrevChar, int curs
     } else if (mode == MODE_CSS) {
         detectCompleteTextCSS(text, cursorTextPrevChar);
     } else if (mode == MODE_JS) {
-        detectCompleteTextJS(text, cursorTextPos);
+        detectCompleteTextJS(text, cursorTextPos, cursorTextPrevChar);
     } else if (mode == MODE_PHP) {
-        detectCompleteTextPHP(text, cursorTextPos);
+        detectCompleteTextPHP(text, cursorTextPos, cursorTextPrevChar);
     }
 
     if (completePopup->count()>0) {
@@ -4077,13 +4125,41 @@ void Editor::completePopupSelected(QString text, QString data)
     int pos = curs.positionInBlock();
     QString blockText = block.text();
     int total = blockText.size();
+    int startPos = curs.position();
     std::string mode = highlight->findModeAtCursor(& block, pos);
     int state = highlight->findStateAtCursor(& block, pos);
     QChar nextChar = '\0';
     if (pos < total) nextChar = blockText[pos];
     int moveCursorBack = 0;
+    bool isSnippet = false;
     if (cursorTextPos >= 0 && cursorTextPos <= pos) {
-        if (mode == MODE_PHP) {
+        if (text.indexOf(SNIPPET_PREFIX) == 0) {
+            // indent
+            QString prefix = "";
+            QTextCursor cursor = textCursor();
+            QString blockText = cursor.block().text();
+            cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+            int pos = cursor.positionInBlock();
+            int total = blockText.size();
+            while(pos < total) {
+                if (!cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor)) break;
+                pos = cursor.positionInBlock();
+                QChar prevChar = blockText[pos-1];
+                if ((prevChar == " " || prevChar == "\t")) {
+                    prefix += prevChar;
+                } else {
+                    break;
+                }
+            }
+            QString indent = (tabType == "spaces") ? QString(" ").repeated(tabWidth) : "\t";
+            text = data.replace("\\n","\n"+prefix).replace("\\t", indent);
+            int cp = text.indexOf("{$cursor}");
+            if (cp >= 0) {
+                text.replace("{$cursor}","");
+                moveCursorBack = text.size() - cp;
+            }
+            isSnippet = true;
+        } else if (mode == MODE_PHP) {
             QTextCursor cursor = textCursor();
             if (cursorTextPos < pos) {
                 cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor, pos - cursorTextPos);
@@ -4180,6 +4256,7 @@ void Editor::completePopupSelected(QString text, QString data)
             }
         }
         if (cursorTextPos < pos) {
+            if (isSnippet && cursorTextPos > 0) cursorTextPos--;
             curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, pos - cursorTextPos);
         }
         bool blockS = true;
@@ -4200,7 +4277,7 @@ void Editor::completePopupSelected(QString text, QString data)
                 data = param.trimmed() + TOOLTIP_PAGER_TPL.arg(1).arg(tooltipList.size());
             }
         }
-        if (data.size() > 0 && data[0] == "(") {
+        if (data.size() > 0 && data[0] == "(" && !isSnippet) {
             if (nextChar == '\0' || (nextChar == ')' && blockText.count("(") == blockText.count(")"))) {
                 curs.insertText("()");
                 curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor);
@@ -4230,6 +4307,18 @@ void Editor::completePopupSelected(QString text, QString data)
             tooltipSavedPageOffset = 0;
             tooltipSavedOrigName = origText;
             tooltipSavedBlockNumber = curs.block().blockNumber();
+        }
+        if (isSnippet) {
+            int co = text.count("\n");
+            QTextCursor cursor = textCursor();
+            cursor.setPosition(startPos);
+            int b = 0;
+            do {
+                b++;
+                QTextBlock block = cursor.block();
+                highlight->rehighlightBlock(block);
+                if (b > co) break;
+            } while(cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor));
         }
     }
     hideCompletePopup();

@@ -41,6 +41,7 @@ public:
     void reset();
     void change(std::unordered_map<std::string, std::string> map);
     void save();
+    QString getDefaultSnippets();
 private:
     std::unordered_map<std::string, std::string> data;
     std::unordered_map<std::string, std::string>::iterator iterator;
