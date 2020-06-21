@@ -2384,6 +2384,13 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         else expectAndSignJS = false;
         if (c == "|") expectOrSignJS = true;
         else expectOrSignJS = false;
+        if (c == ";" || c == ",") {
+            operatorsJSIterator = operatorsJS.find(parensJS);
+            if (operatorsJSIterator != operatorsJS.end() && operatorsJSIterator->second != "") {
+                operatorsJS[parensJS] = "";
+                operatorsChainJS += ";";
+            }
+        }
     }
 }
 
@@ -3028,6 +3035,13 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
         else expectAndSignPHP = false;
         if (c == "|") expectOrSignPHP = true;
         else expectOrSignPHP = false;
+        if (c == ";" || c == ",") {
+            operatorsPHPIterator = operatorsPHP.find(parensPHP);
+            if (operatorsPHPIterator != operatorsPHP.end() && operatorsPHPIterator->second != "") {
+                operatorsPHP[parensPHP] = "";
+                operatorsChainPHP += ";";
+            }
+        }
     }
 }
 
