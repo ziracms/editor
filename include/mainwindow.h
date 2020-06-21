@@ -66,6 +66,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent* event) override;
     void mousePressEvent(QMouseEvent *e) override;
+    void keyPressEvent(QKeyEvent *e) override;
     void resizeEvent(QResizeEvent *event) override;
     void setWindowTitleText(QString text);
     void disableActionsForEmptyTabs();

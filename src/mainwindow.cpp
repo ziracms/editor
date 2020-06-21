@@ -1794,6 +1794,13 @@ void MainWindow::dropEvent(QDropEvent * event)
     }
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *e)
+{
+    if (tabsList->isVisible()) tabsList->hide();
+    hideQAPanel();
+    QMainWindow::keyPressEvent(e);
+}
+
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     hideQAPanel();
