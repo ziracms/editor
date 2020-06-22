@@ -150,7 +150,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // welcome screen
     welcomeScreen = new Welcome(schemeType == COLOR_SCHEME_LIGHT);
-    if (ui->centralWidget->layout() != nullptr) ui->centralWidget->layout()->addWidget(welcomeScreen);
+    ui->centralWidget->layout()->addWidget(welcomeScreen);
     welcomeScreen->connectButtons(this);
 
     // editor tabs
@@ -198,7 +198,12 @@ MainWindow::MainWindow(QWidget *parent) :
     tabWidgetSplit = new QTabWidget(this);
     tabWidgetSplit->setTabsClosable(true);
     tabWidgetSplit->setMovable(true);
-    if (ui->centralWidget->layout() != nullptr) ui->centralWidget->layout()->addWidget(tabWidgetSplit);
+
+    editorsSplitter = new QSplitter(this);
+    ui->centralWidget->layout()->addWidget(editorsSplitter);
+    editorsSplitter->addWidget(ui->tabWidget);
+    editorsSplitter->addWidget(tabWidgetSplit);
+
     editorTabsSplit = new EditorTabs(spellChecker, tabWidgetSplit, settings, highlightWords, completeWords, helpWords, spellWords);
     tabWidgetSplit->hide();
     isSplitActive = false;
@@ -969,7 +974,11 @@ void MainWindow::on_actionSplitTab_triggered()
             if (textEditorSplit != nullptr && textEditorSplit->getFileName() == fileName) {
                 editorTabsSplit->closeTab(textEditorSplit->getTabIndex());
             } else {
-                if (!tabWidgetSplit->isVisible()) tabWidgetSplit->show();
+                if (!tabWidgetSplit->isVisible()) {
+                    tabWidgetSplit->show();
+                    int w = ui->centralWidget->geometry().width() / 2;
+                    editorsSplitter->setSizes(QList<int>() << w << w);
+                }
                 editorTabsSplit->openFile(fileName);
                 textEditorSplit = editorTabsSplit->getActiveEditor();
                 if (textEditorSplit != nullptr && textEditorSplit->getFileName() == fileName) {
@@ -1817,10 +1826,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::showWelcomeScreen()
 {
-    //QRect editorTabsRectM = editorTabs->getGeometryMappedTo(this);
-    //if (editorTabsRectM.width() < welcomeScreen->minimumWidth()) return;
-    //if (editorTabsRectM.height() < welcomeScreen->minimumHeight()) return;
-    ui->tabWidget->hide();
+    editorsSplitter->hide();
     welcomeScreen->show();
     welcomeScreen->raise();
 }
@@ -1828,8 +1834,8 @@ void MainWindow::showWelcomeScreen()
 void MainWindow::hideWelcomeScreen()
 {
     welcomeScreen->hide();
-    ui->tabWidget->show();
-    ui->tabWidget->raise();
+    editorsSplitter->show();
+    editorsSplitter->raise();
 }
 
 void MainWindow::editorFocused()

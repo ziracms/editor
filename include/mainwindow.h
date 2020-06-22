@@ -13,6 +13,7 @@
 #include <QThread>
 #include <QToolButton>
 #include <QTabWidget>
+#include <QSplitter>
 #include "settings.h"
 #include "highlightwords.h"
 #include "completewords.h"
@@ -263,6 +264,7 @@ private:
     SpellCheckerInterface * spellChecker;
     TerminalInterface * terminal;
     QToolButton * tabsListButton;
+    QSplitter * editorsSplitter;
     QString outputMsgErrorTpl;
     QString outputMsgWarningTpl;
     int outputMsgCount;

@@ -1129,7 +1129,11 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPlainTextEdit" name="snippetsTextEdit"/>
+          <widget class="QPlainTextEdit" name="snippetsTextEdit">
+           <property name="lineWrapMode">
+            <enum>QPlainTextEdit::NoWrap</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

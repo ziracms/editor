@@ -63,7 +63,7 @@ QMenu
 QMenu::item
 {
     background: #f1f1f1;
-    padding: 5px 80px 5px 20px;
+    padding: 5px 80px 5px 25px;
 }
 
 QMenu::item:selected
