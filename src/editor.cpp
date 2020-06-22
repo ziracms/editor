@@ -486,6 +486,10 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     // cursor is not set to default sometimes
     horizontalScrollBar()->setCursor(Qt::ArrowCursor);
     verticalScrollBar()->setCursor(Qt::ArrowCursor);
+
+    // for Android
+    keyPressCalled = false;
+    setInputMethodHints(Qt::ImhNoPredictiveText);
 }
 
 Editor::~Editor()
@@ -1728,6 +1732,7 @@ void Editor::setFileIsOutdated()
 
 void Editor::keyPressEvent(QKeyEvent *e)
 {
+    keyPressCalled = true;
     bool shift = false, ctrl = false;
     if (e->modifiers() & Qt::ShiftModifier) shift = true;
     if (e->modifiers() & Qt::ControlModifier) ctrl = true;
@@ -2354,6 +2359,14 @@ void Editor::textChanged()
     if (!is_ready || isReadOnly()) return;
     Qt::KeyboardModifiers modifiers  = QApplication::queryKeyboardModifiers();
     bool ctrl = modifiers & Qt::ControlModifier;
+    // workaround for keyPressEvent not being called in Android
+    #if defined(Q_OS_ANDROID)
+    if (!keyPressCalled && QApplication::inputMethod()->isVisible()) {
+        lastKeyPressed = -1;
+        lastKeyPressedBlockNumber = textCursor().blockNumber();
+    }
+    #endif
+    keyPressCalled = false;
     if (!textChangeLocked && lastKeyPressed != Qt::Key_Backspace && lastKeyPressed != Qt::Key_Delete && lastKeyPressed != Qt::Key_Return && lastKeyPressed != Qt::Key_Tab && lastKeyPressed != Qt::Key_Space && !ctrl) {
         textChangeLocked = true;
         QTimer::singleShot(INTERVAL_TEXT_CHANGED_MILLISECONDS, this, SLOT(textChangedDelayed()));

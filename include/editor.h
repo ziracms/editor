@@ -386,6 +386,8 @@ private:
     QHash<QString, QString> jsSnippets;
     QHash<QString, QString> cssSnippets;
     QHash<QString, QString> htmlSnippets;
+
+    bool keyPressCalled; // workaround for Android
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);
