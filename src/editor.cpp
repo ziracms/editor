@@ -488,7 +488,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     verticalScrollBar()->setCursor(Qt::ArrowCursor);
 
     // for Android
-    keyPressCalled = false;
+    inputEventKey = -1;
     setInputMethodHints(Qt::ImhNoPredictiveText);
 }
 
@@ -1730,9 +1730,8 @@ void Editor::setFileIsOutdated()
     emit modifiedStateChanged(tabIndex, modified);
 }
 
-void Editor::keyPressEvent(QKeyEvent *e)
+bool Editor::onKeyPress(QKeyEvent *e)
 {
-    keyPressCalled = true;
     bool shift = false, ctrl = false;
     if (e->modifiers() & Qt::ShiftModifier) shift = true;
     if (e->modifiers() & Qt::ControlModifier) ctrl = true;
@@ -1771,7 +1770,7 @@ void Editor::keyPressEvent(QKeyEvent *e)
                 curs.insertText(insert);
                 curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor);
                 setTextCursor(curs);
-                return;
+                return false;
             }
         }
     }
@@ -1792,7 +1791,7 @@ void Editor::keyPressEvent(QKeyEvent *e)
         ) {
             curs.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor);
             setTextCursor(curs);
-            return;
+            return false;
         }
     }
     // indent
@@ -1801,7 +1800,7 @@ void Editor::keyPressEvent(QKeyEvent *e)
         if (curs.selectedText().size()==0 && tabType == "spaces") {
             QString insert = " ";
             curs.insertText(insert.repeated(tabWidth));
-            return;
+            return false;
         }
         if (curs.selectedText().size()>0) {
             QString indent = (tabType == "spaces") ? QString(" ").repeated(tabWidth) : "\t";
@@ -1817,7 +1816,7 @@ void Editor::keyPressEvent(QKeyEvent *e)
                 if (curs.block().blockNumber()>=endBlockNumber) break;
             } while(curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor));
             curs.endEditBlock();
-            return;
+            return false;
         }
     }
     // remove spaces, quotes, brackets
@@ -1857,19 +1856,19 @@ void Editor::keyPressEvent(QKeyEvent *e)
             }
             if (count>0) {
                 curs.deleteChar();
-                return;
+                return false;
             }
         }
     }
     // complete, indent and comment on enter
     if (code == Qt::Key_Return && !shift && !ctrl) {
         if (search->isVisible() && static_cast<Search *>(search)->isFocused()) {
-            return;
+            return false;
         }
         // complete
         if (completePopup->isVisible() && completePopup->count()>0) {
             completePopup->chooseCurrentItem();
-            return;
+            return false;
         }
         QTextCursor curs = textCursor();
         QTextBlock block = curs.block();
@@ -1989,7 +1988,7 @@ void Editor::keyPressEvent(QKeyEvent *e)
                     cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
                     setTextCursor(cursor); // fix scroll
                 }
-                return;
+                return false;
             }
         }
         // remove indent in emply line (disabled)
@@ -2052,7 +2051,7 @@ void Editor::keyPressEvent(QKeyEvent *e)
                 cursor.endEditBlock();
                 setTextCursor(cursor); // fix scroll
             }
-            return;
+            return false;
         }
     }
     // saving mode for keyrelease event
@@ -2066,12 +2065,12 @@ void Editor::keyPressEvent(QKeyEvent *e)
     if ((code == Qt::Key_Down || code == Qt::Key_Up) && completePopup->isVisible() && completePopup->count()>0) {
         if (code == Qt::Key_Down) completePopup->selectNextItem();
         if (code == Qt::Key_Up) completePopup->selectPreviousItem();
-        return;
+        return false;
     }
     // hide popup
     if (code == Qt::Key_Escape && completePopup->isVisible()) {
         hideCompletePopup();
-        return;
+        return false;
     }
     // switch tooltip page
     if ((code == Qt::Key_Down || code == Qt::Key_Up) && tooltipLabel.isVisible() && tooltipSavedList.size()>1 && tooltipSavedPageOffset >= 0 && tooltipSavedPageOffset < tooltipSavedList.size()) {
@@ -2090,12 +2089,18 @@ void Editor::keyPressEvent(QKeyEvent *e)
         QTextCursor cursor = textCursor();
         showTooltip(& cursor, toolTipText);
         followTooltip();
-        return;
+        return false;
     }
+    return true;
+}
+
+void Editor::keyPressEvent(QKeyEvent *e)
+{
+    if (!onKeyPress(e)) return;
     QTextEdit::keyPressEvent(e);
 }
 
-void Editor::keyReleaseEvent(QKeyEvent *e)
+bool Editor::onKeyRelease(QKeyEvent *e)
 {
     bool ctrl = false;
     if (e->modifiers() & Qt::ControlModifier) ctrl = true;
@@ -2161,8 +2166,29 @@ void Editor::keyReleaseEvent(QKeyEvent *e)
             curs.endEditBlock();
         }
     }
+    return true;
+}
 
+void Editor::keyReleaseEvent(QKeyEvent *e)
+{
+    if (!onKeyRelease(e)) return;
     QTextEdit::keyReleaseEvent(e);
+}
+
+void Editor::inputMethodEvent(QInputMethodEvent *e)
+{
+    QString c = e->commitString();
+    if (c.size() == 1) {
+        inputEventKey = QKeySequence::fromString(c)[0];
+        Qt::KeyboardModifiers modifiers  = QApplication::queryKeyboardModifiers();
+        QKeyEvent * event = new QKeyEvent(QEvent::KeyPress, inputEventKey, modifiers);
+        if (!onKeyPress(event)) e->setCommitString("");
+        delete event;
+    } else {
+        lastKeyPressed = -1;
+        lastKeyPressedBlockNumber = textCursor().blockNumber();
+    }
+    QTextEdit::inputMethodEvent(e);
 }
 
 void Editor::contextMenu()
@@ -2359,14 +2385,6 @@ void Editor::textChanged()
     if (!is_ready || isReadOnly()) return;
     Qt::KeyboardModifiers modifiers  = QApplication::queryKeyboardModifiers();
     bool ctrl = modifiers & Qt::ControlModifier;
-    // workaround for keyPressEvent not being called in Android
-    #if defined(Q_OS_ANDROID)
-    if (!keyPressCalled && QApplication::inputMethod()->isVisible()) {
-        lastKeyPressed = -1;
-        lastKeyPressedBlockNumber = textCursor().blockNumber();
-    }
-    #endif
-    keyPressCalled = false;
     if (!textChangeLocked && lastKeyPressed != Qt::Key_Backspace && lastKeyPressed != Qt::Key_Delete && lastKeyPressed != Qt::Key_Return && lastKeyPressed != Qt::Key_Tab && lastKeyPressed != Qt::Key_Space && !ctrl) {
         textChangeLocked = true;
         QTimer::singleShot(INTERVAL_TEXT_CHANGED_MILLISECONDS, this, SLOT(textChangedDelayed()));
@@ -2431,6 +2449,14 @@ void Editor::textChanged()
                 lineNumber->update();
             }
         }
+    }
+    // workaround for Android
+    if (inputEventKey >= 0) {
+        Qt::KeyboardModifiers modifiers  = QApplication::queryKeyboardModifiers();
+        QKeyEvent * event = new QKeyEvent(QEvent::KeyRelease, inputEventKey, modifiers);
+        onKeyRelease(event);
+        delete event;
+        inputEventKey = -1;
     }
 }
 

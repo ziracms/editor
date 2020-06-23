@@ -110,11 +110,14 @@ protected:
     void focusOutEvent(QFocusEvent *e) override;
     void keyPressEvent(QKeyEvent *e) override;
     void keyReleaseEvent(QKeyEvent *e) override;
+    void inputMethodEvent(QInputMethodEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
     bool event(QEvent *e) override;
     void paintEvent(QPaintEvent *e) override;
+    bool onKeyPress(QKeyEvent *e);
+    bool onKeyRelease(QKeyEvent * e);
     void clearTextHoverFormat();
     void clearErrorsFormat();
     void insertFromMimeData(const QMimeData *source) override;
@@ -387,7 +390,7 @@ private:
     QHash<QString, QString> cssSnippets;
     QHash<QString, QString> htmlSnippets;
 
-    bool keyPressCalled; // workaround for Android
+    int inputEventKey; // workaround for Android
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);
