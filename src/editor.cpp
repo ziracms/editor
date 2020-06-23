@@ -489,7 +489,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
 
     // for Android
     inputEventKey = -1;
-    setInputMethodHints(Qt::ImhNoPredictiveText);
+    setInputMethodHints(Qt::ImhNoPredictiveText | Qt::ImhMultiLine);
 }
 
 Editor::~Editor()

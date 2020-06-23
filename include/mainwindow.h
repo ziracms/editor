@@ -246,6 +246,7 @@ private slots:
     void showTerminal();
     void startTerminal();
     void outputTabSwitched(int index);
+    void inputMethodVisibleChanged();
 private:
     Ui::MainWindow *ui;
     Settings * settings;

@@ -628,6 +628,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut * shortcutExecuteSelection = new QShortcut(QKeySequence(shortcutExecuteSelectionStr), this);
     connect(shortcutExecuteSelection, SIGNAL(activated()), this, SLOT(on_actionExecuteSelection_triggered()));
 
+    connect(QApplication::inputMethod(), SIGNAL(visibleChanged()), this, SLOT(inputMethodVisibleChanged()));
+
     // make sure that window is maximized in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
@@ -2780,4 +2782,21 @@ void MainWindow::startTerminal()
 {
     if (terminal == nullptr) return;
     terminal->startShell();
+}
+
+void MainWindow::inputMethodVisibleChanged()
+{
+    if (QApplication::inputMethod()->isVisible()) {
+        ui->menuBar->setVisible(false);
+        //ui->statusBar->setVisible(false);
+        ui->tabWidget->tabBar()->setVisible(false);
+        tabWidgetSplit->tabBar()->setVisible(false);
+        tabsListButton->hide();
+    } else {
+        ui->menuBar->setVisible(true);
+        //ui->statusBar->setVisible(true);
+        ui->tabWidget->tabBar()->setVisible(true);
+        tabWidgetSplit->tabBar()->setVisible(true);
+        updateTabsListButton();
+    }
 }

@@ -98,7 +98,8 @@ void CompletePopup::showPopup(int cursLeft, int cursTop, int viewLeft, int viewT
         height = co * sizeHintForRow(0) + frameWidth() * 2;
         if (width < viewWidth) setMaximumWidth(width);
         else setMaximumWidth(viewWidth);
-        setMaximumHeight(height);
+        if (height < viewHeight) setMaximumHeight(height);
+        else setMaximumHeight(viewHeight);
     }
     int x = viewLeft + cursLeft;
     if (x + width > viewLeft + viewWidth) {
@@ -109,8 +110,10 @@ void CompletePopup::showPopup(int cursLeft, int cursTop, int viewLeft, int viewT
     }
     int  y = viewTop + cursTop + blockHeight;
     if (y + height > viewTop + viewHeight) {
-        int _y = viewTop + cursTop - height;
-        if (_y >= 0) y = _y;
+        y = viewTop + cursTop - height;
+    }
+    if (y < 0) {
+        y = 0;
     }
     if (width > 0 && height > 0) {
         setGeometry(x, y , width, height);
