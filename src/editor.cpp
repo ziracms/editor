@@ -1738,8 +1738,19 @@ bool Editor::onKeyPress(QKeyEvent *e)
     int code = e->key();
     lastKeyPressed = code;
     lastKeyPressedBlockNumber = textCursor().block().blockNumber();
+    bool ignoreKey = false; // workaround for wrong key code, android emulator bug ?
+    #if defined(Q_OS_ANDROID)
+    if (code == Qt::Key_BracketLeft && e->text() != "[") ignoreKey = true;
+    if (code == Qt::Key_ParenLeft && e->text() != "(") ignoreKey = true;
+    if (code == Qt::Key_BraceLeft && e->text() != "{") ignoreKey = true;
+    if (code == Qt::Key_BracketRight && e->text() != "]") ignoreKey = true;
+    if (code == Qt::Key_ParenRight && e->text() != ")") ignoreKey = true;
+    if (code == Qt::Key_BraceRight && e->text() != "}") ignoreKey = true;
+    if (code == Qt::Key_Apostrophe && e->text() != "'") ignoreKey = true;
+    if (code == Qt::Key_QuoteDbl && e->text() != "\"") ignoreKey = true;
+    #endif
     // insert quotes & brackets pair
-    if ((code == Qt::Key_QuoteDbl || code == Qt::Key_Apostrophe || code == Qt::Key_BraceLeft || code == Qt::Key_BracketLeft || code == Qt::Key_ParenLeft) && !ctrl) {
+    if ((code == Qt::Key_QuoteDbl || code == Qt::Key_Apostrophe || code == Qt::Key_BraceLeft || code == Qt::Key_BracketLeft || code == Qt::Key_ParenLeft) && !ctrl && !ignoreKey) {
         QTextCursor curs = textCursor();
         QTextBlock block = curs.block();
         QString blockText = block.text();
@@ -1775,7 +1786,7 @@ bool Editor::onKeyPress(QKeyEvent *e)
         }
     }
     // skip & move cursor to next char
-    if ((code == Qt::Key_QuoteDbl || code == Qt::Key_Apostrophe || code == Qt::Key_BraceRight || code == Qt::Key_BracketRight || code == Qt::Key_ParenRight) && !ctrl) {
+    if ((code == Qt::Key_QuoteDbl || code == Qt::Key_Apostrophe || code == Qt::Key_BraceRight || code == Qt::Key_BracketRight || code == Qt::Key_ParenRight) && !ctrl && !ignoreKey) {
         QTextCursor curs = textCursor();
         QTextBlock block = curs.block();
         QString blockText = block.text();
@@ -2181,7 +2192,7 @@ void Editor::inputMethodEvent(QInputMethodEvent *e)
     if (c.size() == 1) {
         inputEventKey = QKeySequence::fromString(c)[0];
         Qt::KeyboardModifiers modifiers  = QApplication::queryKeyboardModifiers();
-        QKeyEvent * event = new QKeyEvent(QEvent::KeyPress, inputEventKey, modifiers);
+        QKeyEvent * event = new QKeyEvent(QEvent::KeyPress, inputEventKey, modifiers, c);
         if (!onKeyPress(event)) e->setCommitString("");
         delete event;
     } else {

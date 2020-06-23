@@ -163,7 +163,14 @@ DISTFILES += \
     android64/gradle/wrapper/gradle-wrapper.properties \
     android64/gradlew \
     android64/gradlew.bat \
-    android64/res/values/libs.xml
+    android64/res/values/libs.xml \
+    androidx86/AndroidManifest.xml \
+    androidx86/build.gradle \
+    androidx86/gradle/wrapper/gradle-wrapper.jar \
+    androidx86/gradle/wrapper/gradle-wrapper.properties \
+    androidx86/gradlew \
+    androidx86/gradlew.bat \
+    androidx86/res/values/libs.xml
 
 contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
     ANDROID_PACKAGE_SOURCE_DIR = \
@@ -173,4 +180,9 @@ contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
 contains(ANDROID_TARGET_ARCH,arm64-v8a) {
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android64
+}
+
+contains(ANDROID_TARGET_ARCH,x86) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/androidx86
 }
