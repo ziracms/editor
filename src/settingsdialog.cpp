@@ -177,7 +177,11 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
+    #else
+    ui->contextMenuButton->hide();
     #endif
+
+    connect(ui->contextMenuButton, SIGNAL(pressed()), this, SLOT(contextMenuRequested()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -484,4 +488,12 @@ void SettingsDialog::resetButtonPressed()
     settings->reset();
     done(QDialog::Rejected);
     emit settings->restartApp();
+}
+
+void SettingsDialog::contextMenuRequested()
+{
+    QWidget * widget = QApplication::focusWidget();
+    if (widget == nullptr) return;
+    QContextMenuEvent * contextEvent = new QContextMenuEvent(QContextMenuEvent::Keyboard, widget->mapFromGlobal(QCursor::pos()));
+    QCoreApplication::postEvent(widget, contextEvent);
 }

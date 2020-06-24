@@ -65,6 +65,7 @@ QMenu::item
     /*background: #2a363b;*/
     background: #232f3d;
     padding: 5px 80px 5px 25px;
+    min-width: 100px;
 }
 
 QMenu::item:selected

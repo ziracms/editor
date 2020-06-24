@@ -995,11 +995,8 @@ void MainWindow::on_actionOpenContextMenu_triggered()
 {
     QWidget * widget = QApplication::focusWidget();
     if (widget == nullptr) return;
-    int key = QKeySequence::fromString(QString::fromStdString(settings->get("shortcut_context_menu")))[0];
-    QKeyEvent * pressEvent = new QKeyEvent(QEvent::KeyPress, key, Qt::NoModifier);
-    QCoreApplication::postEvent(widget, pressEvent);
-    QKeyEvent * releaseEvent = new QKeyEvent(QEvent::KeyRelease, key, Qt::NoModifier);
-    QCoreApplication::postEvent(widget, releaseEvent);
+    QContextMenuEvent * contextEvent = new QContextMenuEvent(QContextMenuEvent::Keyboard, widget->mapFromGlobal(QCursor::pos()));
+    QCoreApplication::postEvent(widget, contextEvent);
 }
 
 void MainWindow::on_actionOpenFile_triggered()

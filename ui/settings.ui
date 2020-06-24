@@ -34,7 +34,30 @@
      <item>
       <widget class="QLabel" name="saveNoteLabel">
        <property name="text">
-        <string>Some changes will take effect after restart.</string>
+        <string>Changes will take effect after restart.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_6">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="contextMenuButton">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="text">
+        <string>Context menu</string>
        </property>
       </widget>
      </item>

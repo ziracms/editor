@@ -194,9 +194,10 @@ void FileBrowser::upActionTriggered(bool)
     }
 }
 
-void FileBrowser::fileBrowserContextMenuRequested(QPoint p)
+void FileBrowser::fileBrowserContextMenuRequested(QPoint /*p*/)
 {
-    QTreeWidgetItem * item = treeWidget->itemAt(p);
+    //QTreeWidgetItem * item = treeWidget->itemAt(p);
+    QTreeWidgetItem * item = treeWidget->currentItem();
     fileBrowserContextMenuRequested(item);
 }
 
@@ -707,6 +708,7 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
             fileBrowserDoubleClicked(item, 0);
         } else if (keyEvent->key() == Qt::Key_Return && editMode) {
             editMode = false;
+            treeWidget->setFocus(); // workaround for Android
         } else if (keyEvent->key() == Qt::Key_Up) {
             if (treeWidget->topLevelItemCount() == 0 || treeWidget->currentItem() == treeWidget->topLevelItem(0)) {
                 pathLine->setFocus();

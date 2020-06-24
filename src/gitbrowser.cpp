@@ -87,9 +87,10 @@ void GitBrowser::build(QString output)
     treeWidget->resizeColumnToContents(1);
 }
 
-void GitBrowser::gitBrowserContextMenuRequested(QPoint p)
+void GitBrowser::gitBrowserContextMenuRequested(QPoint /*p*/)
 {
-    QTreeWidgetItem * item = treeWidget->itemAt(p);
+    //QTreeWidgetItem * item = treeWidget->itemAt(p);
+    QTreeWidgetItem * item = treeWidget->currentItem();
     gitBrowserContextMenuRequested(item);
 }
 

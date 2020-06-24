@@ -34,6 +34,7 @@ private slots:
     void editorNewLineCRToggled(bool checked);
     void editorNewLineCRLFToggled(bool checked);
     void resetButtonPressed();
+    void contextMenuRequested();
 };
 
 #endif // SETTINGSDIALOG_H
