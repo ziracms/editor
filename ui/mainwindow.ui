@@ -183,6 +183,8 @@
     <addaction name="actionExecuteSelection"/>
     <addaction name="separator"/>
     <addaction name="actionSplitTab"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenContextMenu"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -1167,6 +1169,11 @@
    </property>
    <property name="text">
     <string>Split tab</string>
+   </property>
+  </action>
+  <action name="actionOpenContextMenu">
+   <property name="text">
+    <string>Context menu</string>
    </property>
   </action>
  </widget>

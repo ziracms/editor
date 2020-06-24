@@ -157,6 +157,7 @@ private slots:
     void on_actionExecuteFile_triggered();
     void on_actionExecuteSelection_triggered();
     void on_actionSplitTab_triggered();
+    void on_actionOpenContextMenu_triggered();
     void fileBrowserOpen(QString file);
     void focusTreeTriggered();
     void previousTabTriggered();
