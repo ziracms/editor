@@ -237,11 +237,14 @@ void EditorTabs::open(QString dir)
     urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first());
     urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first());
     urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first());
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first());
+    //urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first());
     urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DownloadLocation).first());
     if (settings->get("file_dialog_path").size() > 0) {
         urls << QUrl::fromLocalFile(QString::fromStdString(settings->get("file_dialog_path")));
     }
+    #if defined(Q_OS_ANDROID)
+    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first());
+    #endif
     dialog.setSidebarUrls(urls);
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
