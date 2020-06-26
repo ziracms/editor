@@ -113,7 +113,8 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"theme", THEME_DARK.toStdString()},
         {"custom_themes_path", ""},
         {"plugins_path", ""},
-        {"snippets", getDefaultSnippets().toStdString()}
+        {"snippets", getDefaultSnippets().toStdString()},
+        {"custom_snippets_file", ""}
     };
 }
 

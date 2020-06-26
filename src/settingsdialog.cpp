@@ -108,6 +108,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->phpmanualLineEdit->setText(QString::fromStdString(settings->get("php_manual_path")));
     ui->pluginsFolderLineEdit->setText(QString::fromStdString(settings->get("plugins_path")));
     ui->snippetsTextEdit->setPlainText(QString::fromStdString(settings->get("snippets")));
+    ui->customSnippetsFileLineEdit->setText(QString::fromStdString(settings->get("custom_snippets_file")));
 
     QString customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
     ui->customThemesFolderLineEdit->setText(customThemesPath);
@@ -171,6 +172,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     connect(ui->phpManualPathButton, SIGNAL(pressed()), this, SLOT(phpManualButtonPressed()));
     connect(ui->customThemesButton, SIGNAL(pressed()), this, SLOT(customThemesButtonPressed()));
     connect(ui->pluginsFolderButton, SIGNAL(pressed()), this, SLOT(pluginsFolderButtonPressed()));
+    connect(ui->customSnippetsFileButton, SIGNAL(pressed()), this, SLOT(customSnippetsFileButtonPressed()));
 
     ui->generalThemeCombobox->setItemDelegate(new QStyledItemDelegate());
     ui->generalColorSchemeCombobox->setItemDelegate(new QStyledItemDelegate());
@@ -391,6 +393,7 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     QString phpmanualPathStr = ui->phpmanualLineEdit->text();
     QString pluginsPathStr = ui->pluginsFolderLineEdit->text();
     QString customThemesPathStr = ui->customThemesFolderLineEdit->text();
+    QString customSnippetsPathStr = ui->customSnippetsFileLineEdit->text();
     QString customThemesPath("");
     if (phpPathStr.size() > 1 && phpPathStr.at(phpPathStr.size()-1) == "/") phpPathStr = phpPathStr.mid(0, phpPathStr.size()-1);
     if (phpcsPathStr.size() > 1 && phpcsPathStr.at(phpcsPathStr.size()-1) == "/") phpcsPathStr = phpcsPathStr.mid(0, phpcsPathStr.size()-1);
@@ -411,6 +414,7 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
         dataMap["custom_themes_path"] = customThemesPathStr.toStdString();
         customThemesPath = customThemesPathStr;
     }
+    if (Helper::fileExists(customSnippetsPathStr) || customSnippetsPathStr.size() == 0) dataMap["custom_snippets_file"] = customSnippetsPathStr.toStdString();
 
     if (customThemesPath.size() == 0) {
         QDir customThemesPathDir = QDir("./"+CUSTOM_THEMES_FALLBACK_FOLDER);
@@ -509,6 +513,16 @@ void SettingsDialog::pluginsFolderButtonPressed()
     QString dir = Helper::getExistingDirectory(this, tr("Select directory"), path);
     if (dir.size() > 0) {
         ui->pluginsFolderLineEdit->setText(dir);
+    }
+}
+
+void SettingsDialog::customSnippetsFileButtonPressed()
+{
+    QString file = ui->customSnippetsFileLineEdit->text();
+    QFileInfo fInfo(file);
+    QString fileName = Helper::getExistingFile(this, tr("Select file"), fInfo.absolutePath());
+    if (fileName.size() > 0) {
+        ui->customSnippetsFileLineEdit->setText(fileName);
     }
 }
 

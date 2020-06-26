@@ -31,6 +31,7 @@ private slots:
     void phpManualButtonPressed();
     void customThemesButtonPressed();
     void pluginsFolderButtonPressed();
+    void customSnippetsFileButtonPressed();
     void editorTabTypeTabsToggled(bool checked);
     void editorTabTypeSpacesToggled(bool checked);
     void editorNewLineLFToggled(bool checked);

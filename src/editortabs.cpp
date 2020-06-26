@@ -220,44 +220,12 @@ void EditorTabs::openFile(QString filepath, bool initHighlight)
 void EditorTabs::open(QString dir)
 {
     if (editor != nullptr) editor->hidePopups();
-    QFileDialog dialog(tabWidget);
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    std::string filter = settings->get("file_dialog_filter");
-    dialog.setNameFilter(tr(filter.c_str()));
-    dialog.setViewMode(QFileDialog::Detail);
     if (dir.size() == 0) dir = QString::fromStdString(settings->get("file_dialog_path"));
-    if (dir.size() == 0) {
-        QStringList stddirs = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
-        if (stddirs.size()>0) dir = stddirs.at(0);
-    }
-    if (dir.size() > 0) dialog.setDirectory(dir);
-    FileIconProvider * iconProvider = new FileIconProvider();
-    dialog.setIconProvider(iconProvider);
-    QList<QUrl> urls;
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first());
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first());
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first());
-    //urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first());
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DownloadLocation).first());
-    if (settings->get("file_dialog_path").size() > 0) {
-        urls << QUrl::fromLocalFile(QString::fromStdString(settings->get("file_dialog_path")));
-    }
-    #if defined(Q_OS_ANDROID)
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first());
-    #endif
-    dialog.setSidebarUrls(urls);
-    // maximize dialog in Android
-    #if defined(Q_OS_ANDROID)
-    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
-    #endif
-    QStringList fileNames;
-    if (dialog.exec()) {
-        fileNames = dialog.selectedFiles();
-        if (fileNames.count()==0) return;
-        QString fileName = fileNames.first();
+    QString filter = tr(settings->get("file_dialog_filter").c_str());
+    QString fileName = Helper::getExistingFile(tabWidget, tr("Select file"), dir, filter);
+    if (fileName.size() > 0) {
         openFile(fileName);
     }
-    delete iconProvider;
 }
 
 void EditorTabs::save()

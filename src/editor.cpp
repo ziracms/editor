@@ -458,6 +458,11 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
 
     // snippets
     QString snippets = QString::fromStdString(settings->get("snippets")).trimmed();
+    QString customSnippetsFile = QString::fromStdString(settings->get("custom_snippets_file"));
+    if (Helper::fileExists(customSnippetsFile)) {
+        QString customSnippets = Helper::loadFile(customSnippetsFile, getEncoding(), getFallbackEncoding()).trimmed();
+        if (customSnippets.size() > 0) snippets += "\n"+customSnippets;
+    }
     if (snippets.size() > 0) {
         QRegularExpression snippetsExpr("[[][{]([a-zA-Z]+)[:][@]([a-zA-Z0-9]{2,})[}][]][\\s]*[=][\\s]*[[][[]([^]]+)[]][]]");
         QRegularExpressionMatch snippetMatch;

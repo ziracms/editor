@@ -1145,12 +1145,52 @@
        </property>
        <item>
         <layout class="QVBoxLayout" name="snippetsTextEditLayout_10">
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <property name="topMargin">
           <number>0</number>
          </property>
          <property name="bottomMargin">
           <number>0</number>
          </property>
+         <item>
+          <layout class="QHBoxLayout" name="snippetsLabelLayout">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="snippetsLabel">
+             <property name="text">
+              <string>Format: [{mode:@name}] = [[text \n\t {$cursor} \n text]]</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::PlainText</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="snippetsLabelLayout2">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>10</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="snippetsLabel2">
+             <property name="text">
+              <string>[mode: php,js,css,html;  name: [a-zA-Z0-9]{2,};  {$cursor} - position; \n -new line; \t - indent]</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
          <item>
           <widget class="QPlainTextEdit" name="snippetsTextEdit">
            <property name="lineWrapMode">
@@ -1161,7 +1201,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="snippetsLabelLayout">
+        <layout class="QHBoxLayout" name="customSnippetsFileLayout">
          <property name="topMargin">
           <number>10</number>
          </property>
@@ -1169,29 +1209,25 @@
           <number>10</number>
          </property>
          <item>
-          <widget class="QLabel" name="snippetsLabel">
-           <property name="text">
-            <string>Format: [{mode:@name}] = [[text \n\t {$cursor} \n text]]</string>
+          <widget class="QLabel" name="customSnippetsFileLabel">
+           <property name="minimumSize">
+            <size>
+             <width>180</width>
+             <height>0</height>
+            </size>
            </property>
-           <property name="textFormat">
-            <enum>Qt::PlainText</enum>
+           <property name="text">
+            <string>Custom snippets file</string>
            </property>
           </widget>
          </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="snippetsLabelLayout2">
-         <property name="topMargin">
-          <number>6</number>
-         </property>
-         <property name="bottomMargin">
-          <number>6</number>
-         </property>
          <item>
-          <widget class="QLabel" name="snippetsLabel2">
+          <widget class="QLineEdit" name="customSnippetsFileLineEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="customSnippetsFileButton">
            <property name="text">
-            <string>[mode: php,js,css,html;  name: [a-zA-Z0-9]{2,};  {$cursor} - position; \n -new line; \t - indent]</string>
+            <string>Choose</string>
            </property>
           </widget>
          </item>
