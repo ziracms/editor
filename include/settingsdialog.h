@@ -28,6 +28,9 @@ private:
     std::string newLineMode;
 private slots:
     void projectHomeButtonPressed();
+    void phpManualButtonPressed();
+    void customThemesButtonPressed();
+    void pluginsFolderButtonPressed();
     void editorTabTypeTabsToggled(bool checked);
     void editorTabTypeSpacesToggled(bool checked);
     void editorNewLineLFToggled(bool checked);

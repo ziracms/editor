@@ -168,6 +168,9 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     connect(ui->filesNewLineCRRadio, SIGNAL(toggled(bool)), this, SLOT(editorNewLineCRToggled(bool)));
     connect(ui->filesNewLineCRLFRadio, SIGNAL(toggled(bool)), this, SLOT(editorNewLineCRLFToggled(bool)));
     connect(ui->buttonBox->button(QDialogButtonBox::Reset), SIGNAL(pressed()), this, SLOT(resetButtonPressed()));
+    connect(ui->phpManualPathButton, SIGNAL(pressed()), this, SLOT(phpManualButtonPressed()));
+    connect(ui->customThemesButton, SIGNAL(pressed()), this, SLOT(customThemesButtonPressed()));
+    connect(ui->pluginsFolderButton, SIGNAL(pressed()), this, SLOT(pluginsFolderButtonPressed()));
 
     ui->generalThemeCombobox->setItemDelegate(new QStyledItemDelegate());
     ui->generalColorSchemeCombobox->setItemDelegate(new QStyledItemDelegate());
@@ -482,6 +485,32 @@ void SettingsDialog::projectHomeButtonPressed()
     }
 }
 
+void SettingsDialog::phpManualButtonPressed()
+{
+    QString path = ui->phpmanualLineEdit->text();
+    QString dir = Helper::getExistingDirectory(this, tr("Select directory"), path);
+    if (dir.size() > 0) {
+        ui->phpmanualLineEdit->setText(dir);
+    }
+}
+
+void SettingsDialog::customThemesButtonPressed()
+{
+    QString path = ui->customThemesFolderLineEdit->text();
+    QString dir = Helper::getExistingDirectory(this, tr("Select directory"), path);
+    if (dir.size() > 0) {
+        ui->customThemesFolderLineEdit->setText(dir);
+    }
+}
+
+void SettingsDialog::pluginsFolderButtonPressed()
+{
+    QString path = ui->pluginsFolderLineEdit->text();
+    QString dir = Helper::getExistingDirectory(this, tr("Select directory"), path);
+    if (dir.size() > 0) {
+        ui->pluginsFolderLineEdit->setText(dir);
+    }
+}
 
 void SettingsDialog::resetButtonPressed()
 {

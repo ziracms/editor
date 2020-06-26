@@ -337,7 +337,7 @@
           <widget class="QFontComboBox" name="appFontComboBox">
            <property name="minimumSize">
             <size>
-             <width>350</width>
+             <width>0</width>
              <height>0</height>
             </size>
            </property>
@@ -390,7 +390,7 @@
           <widget class="QFontComboBox" name="editorFontComboBox">
            <property name="minimumSize">
             <size>
-             <width>350</width>
+             <width>0</width>
              <height>0</height>
             </size>
            </property>
@@ -1446,6 +1446,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="phpManualPathButton">
+           <property name="text">
+            <string>Choose</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -1475,6 +1482,13 @@
          <item>
           <widget class="QLineEdit" name="customThemesFolderLineEdit"/>
          </item>
+         <item>
+          <widget class="QPushButton" name="customThemesButton">
+           <property name="text">
+            <string>Choose</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -1500,6 +1514,13 @@
          </item>
          <item>
           <widget class="QLineEdit" name="pluginsFolderLineEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pluginsFolderButton">
+           <property name="text">
+            <string>Choose</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
