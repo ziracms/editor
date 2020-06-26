@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/fonts">
+        <file alias="SourceCodePro-Regular.ttf">resources/fonts/SourceCodePro-Regular.ttf</file>
+        <file alias="SourceCodePro-Bold.ttf">resources/fonts/SourceCodePro-Bold.ttf</file>
+        <file alias="RobotoMono-Bold.ttf">resources/fonts/RobotoMono-Bold.ttf</file>
+        <file alias="RobotoMono-Regular.ttf">resources/fonts/RobotoMono-Regular.ttf</file>
+        <file alias="UbuntuMono-Bold.ttf">resources/fonts/UbuntuMono-Bold.ttf</file>
+        <file alias="UbuntuMono-Regular.ttf">resources/fonts/UbuntuMono-Regular.ttf</file>
+    </qresource>
+</RCC>

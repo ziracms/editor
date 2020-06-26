@@ -62,6 +62,14 @@ MainWindow::MainWindow(QWidget *parent) :
     settings->load();
     connect(settings, SIGNAL(restartApp()), this, SLOT(restartApp()));
 
+    // loading built-in fonts
+    QFontDatabase::addApplicationFont(":/fonts/SourceCodePro-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceCodePro-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/RobotoMono-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/RobotoMono-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/UbuntuMono-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/UbuntuMono-Bold.ttf");
+
     // app font
     QFont appFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     std::string appFontFamily = settings->get("app_font_family");

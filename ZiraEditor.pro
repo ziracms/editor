@@ -142,6 +142,7 @@ FORMS += \
     ui/welcome.ui
 
 RESOURCES += \
+    qrc/fonts.qrc \
     qrc/highlight.qrc \
     qrc/syntax.qrc \
     qrc/image.qrc \
