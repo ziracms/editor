@@ -162,6 +162,11 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
         ui->generalColorSchemeCombobox->setCurrentText(colorScheme);
     }
 
+    // using custom help button for context menu in Android
+    ui->buttonBox->button(QDialogButtonBox::Help)->setText(tr("Menu"));
+    ui->buttonBox->button(QDialogButtonBox::Help)->setToolTip(tr("Context menu"));
+    ui->buttonBox->button(QDialogButtonBox::Help)->setFocusPolicy(Qt::NoFocus);
+
     connect(ui->projectsHomeButton, SIGNAL(pressed()), this, SLOT(projectHomeButtonPressed()));
     connect(ui->editorTabTypeTabsRadio, SIGNAL(toggled(bool)), this, SLOT(editorTabTypeTabsToggled(bool)));
     connect(ui->editorTabTypeSpacesRadio, SIGNAL(toggled(bool)), this, SLOT(editorTabTypeSpacesToggled(bool)));
@@ -169,6 +174,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     connect(ui->filesNewLineCRRadio, SIGNAL(toggled(bool)), this, SLOT(editorNewLineCRToggled(bool)));
     connect(ui->filesNewLineCRLFRadio, SIGNAL(toggled(bool)), this, SLOT(editorNewLineCRLFToggled(bool)));
     connect(ui->buttonBox->button(QDialogButtonBox::Reset), SIGNAL(pressed()), this, SLOT(resetButtonPressed()));
+    connect(ui->buttonBox->button(QDialogButtonBox::Help), SIGNAL(pressed()), this, SLOT(contextMenuRequested()));
     connect(ui->phpManualPathButton, SIGNAL(pressed()), this, SLOT(phpManualButtonPressed()));
     connect(ui->customThemesButton, SIGNAL(pressed()), this, SLOT(customThemesButtonPressed()));
     connect(ui->pluginsFolderButton, SIGNAL(pressed()), this, SLOT(pluginsFolderButtonPressed()));
@@ -183,10 +189,8 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
     #else
-    ui->contextMenuButton->hide();
+    ui->buttonBox->button(QDialogButtonBox::Help)->hide();
     #endif
-
-    connect(ui->contextMenuButton, SIGNAL(pressed()), this, SLOT(contextMenuRequested()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -528,6 +532,7 @@ void SettingsDialog::customSnippetsFileButtonPressed()
 
 void SettingsDialog::resetButtonPressed()
 {
+    if (!Helper::showQuestion(tr("Confirmation"), tr("Reset settings to default ?"))) return;
     settings->reset();
     done(QDialog::Rejected);
     emit settings->restartApp();
