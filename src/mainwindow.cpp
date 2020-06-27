@@ -264,7 +264,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // git
     git = new Git(settings);
-    connect(git, SIGNAL(runGitCommand(QString,QString,QStringList,bool)), this, SLOT(runGitCommand(QString,QString,QStringList,bool)));
+    connect(git, SIGNAL(runGitCommand(QString,QString,QStringList,bool,bool)), this, SLOT(runGitCommand(QString,QString,QStringList,bool,bool)));
 
     gitBrowser = new GitBrowser(ui->gitTabTreeWidget, settings);
     connect(ui->gitTabPullButton, SIGNAL(pressed()), this, SLOT(on_actionGitPull_triggered()));
@@ -329,7 +329,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(parseCSS(int,QString)), parserWorker, SLOT(parseCSS(int,QString)));
     connect(this, SIGNAL(parseProject(QString)), parserWorker, SLOT(parseProject(QString)));
     connect(this, SIGNAL(searchInFiles(QString,QString,QString,bool,bool,bool,QStringList)), parserWorker, SLOT(searchInFiles(QString,QString,QString,bool,bool,bool,QStringList)));
-    connect(this, SIGNAL(gitCommand(QString, QString, QStringList, bool)), parserWorker, SLOT(gitCommand(QString, QString, QStringList, bool)));
+    connect(this, SIGNAL(gitCommand(QString, QString, QStringList, bool, bool)), parserWorker, SLOT(gitCommand(QString, QString, QStringList, bool, bool)));
     connect(this, SIGNAL(serversCommand(QString, QString)), parserWorker, SLOT(serversCommand(QString,QString)));
     connect(this, SIGNAL(sassCommand(QString, QString)), parserWorker, SLOT(sassCommand(QString,QString)));
     connect(this, SIGNAL(quickFind(QString, QString, WordsMapList, QStringList)), parserWorker, SLOT(quickFind(QString, QString, WordsMapList, QStringList)));
@@ -1521,7 +1521,7 @@ void MainWindow::on_actionGitPull_triggered()
     git->pullOriginMaster(getGitWorkingDir());
 }
 
-void MainWindow::runGitCommand(QString path, QString command, QStringList attrs, bool outputResult)
+void MainWindow::runGitCommand(QString path, QString command, QStringList attrs, bool outputResult, bool silent)
 {
     if (!gitCommandsEnabled) return;
     if (!git->isCommandSafe(command) &&
@@ -1545,7 +1545,7 @@ void MainWindow::runGitCommand(QString path, QString command, QStringList attrs,
         QString cmdStr = path+"> git "+command+" "+attrStr;
         ui->outputEdit->setHtml(git->highlightCommand(cmdStr));
     }
-    emit gitCommand(path, command, attrs, outputResult);
+    emit gitCommand(path, command, attrs, outputResult, silent);
 }
 
 void MainWindow::gitCommandFinished(QString command, QString output, bool outputResult)
@@ -1598,7 +1598,7 @@ void MainWindow::gitTabRefreshRequested()
     gitBrowser->clear();
     QString dir = getGitWorkingDir();
     if (!Helper::folderExists(dir+"/"+GIT_DIRECTORY)) return;
-    git->showStatusShort(getGitWorkingDir(), false);
+    git->showStatusShort(getGitWorkingDir(), false, true);
 }
 
 void MainWindow::gitTabAddAndCommitRequested()
@@ -1626,14 +1626,14 @@ void MainWindow::gitAnnotationRequested(QString path)
 {
     QString dir = getGitWorkingDir();
     if (!Helper::folderExists(dir+"/"+GIT_DIRECTORY)) return;
-    git->showAnnotation(getGitWorkingDir(), path, false);
+    git->showAnnotation(getGitWorkingDir(), path, false, true);
 }
 
 void MainWindow::gitDiffUnifiedRequested(QString path)
 {
     QString dir = getGitWorkingDir();
     if (!Helper::folderExists(dir+"/"+GIT_DIRECTORY)) return;
-    git->showUncommittedDiffCurrentUnified(getGitWorkingDir(), path, false);
+    git->showUncommittedDiffCurrentUnified(getGitWorkingDir(), path, false, true);
 }
 
 void MainWindow::on_actionSettings_triggered()

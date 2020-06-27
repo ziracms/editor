@@ -26,12 +26,12 @@ public:
     explicit Git(Settings * settings, QObject *parent = nullptr);
     bool isCommandSafe(QString command);
     void showStatus(QString path);
-    void showStatusShort(QString path, bool outputResult = true);
+    void showStatusShort(QString path, bool outputResult = true, bool silent = false);
     void showLog(QString path);
     void showLastCommitDiffTree(QString path);
     void showUncommittedDiffAll(QString path);
     void showUncommittedDiffCurrent(QString path, QString fileName);
-    void showUncommittedDiffCurrentUnified(QString path, QString fileName, bool outputResult = true);
+    void showUncommittedDiffCurrentUnified(QString path, QString fileName, bool outputResult = true, bool silent = false);
     void showLastCommitDiffAll(QString path);
     void showLastCommitDiffCurrent(QString path, QString fileName);
     void resetAll(QString path);
@@ -46,7 +46,7 @@ public:
     void addAndCommit(QString path, QString msg);
     void pushOriginMaster(QString path);
     void pullOriginMaster(QString path);
-    void showAnnotation(QString path, QString fileName, bool outputResult = true);
+    void showAnnotation(QString path, QString fileName, bool outputResult = true, bool silent = false);
     QString highlightCommand(QString & text);
     QString highlightOutput(QString & output);
     struct Annotation {
@@ -74,7 +74,7 @@ protected:
     QString msgTpl;
     QString infoTpl;
 signals:
-    void runGitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
+    void runGitCommand(QString path, QString command, QStringList attrs, bool outputResult = true, bool silent = false);
 public slots:
 };
 

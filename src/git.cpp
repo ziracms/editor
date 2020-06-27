@@ -37,9 +37,9 @@ void Git::showStatus(QString path)
     emit runGitCommand(path, "status", QStringList());
 }
 
-void Git::showStatusShort(QString path, bool outputResult)
+void Git::showStatusShort(QString path, bool outputResult, bool silent)
 {
-    emit runGitCommand(path, "status", QStringList() << "--short" << "--porcelain", outputResult);
+    emit runGitCommand(path, "status", QStringList() << "--short" << "--porcelain", outputResult, silent);
 }
 
 void Git::showLog(QString path)
@@ -62,9 +62,9 @@ void Git::showUncommittedDiffCurrent(QString path, QString fileName)
     emit runGitCommand(path, "diff", QStringList() << fileName);
 }
 
-void Git::showUncommittedDiffCurrentUnified(QString path, QString fileName, bool outputResult)
+void Git::showUncommittedDiffCurrentUnified(QString path, QString fileName, bool outputResult, bool silent)
 {
-    emit runGitCommand(path, "diff", QStringList() << "--unified=0" << "--no-color" << fileName, outputResult);
+    emit runGitCommand(path, "diff", QStringList() << "--unified=0" << "--no-color" << fileName, outputResult, silent);
 }
 
 void Git::showLastCommitDiffAll(QString path)
@@ -138,9 +138,9 @@ void Git::pullOriginMaster(QString path)
     emit runGitCommand(path, "pull", QStringList() << "origin" << "master");
 }
 
-void Git::showAnnotation(QString path, QString fileName, bool outputResult)
+void Git::showAnnotation(QString path, QString fileName, bool outputResult, bool silent)
 {
-    emit runGitCommand(path, "blame", QStringList() <<  "--line-porcelain" << fileName, outputResult);
+    emit runGitCommand(path, "blame", QStringList() <<  "--line-porcelain" << fileName, outputResult, silent);
 }
 
 QString Git::highlightCommand(QString & text)

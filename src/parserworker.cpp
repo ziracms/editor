@@ -425,10 +425,10 @@ void ParserWorker::searchInFilesResultFound(QString file, QString lineText, int 
     }
 }
 
-void ParserWorker::gitCommand(QString path, QString command, QStringList attrs, bool outputResult)
+void ParserWorker::gitCommand(QString path, QString command, QStringList attrs, bool outputResult, bool silent)
 {
     if (gitPath.size() == 0) {
-        emit message(tr("Git not found."));
+        if (!silent) emit message(tr("Git not found."));
         return;
     }
     if (path.size() == 0 || !Helper::folderExists(path)) return;

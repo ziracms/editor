@@ -213,7 +213,7 @@ private slots:
     void sidebarDockLocationChanged(Qt::DockWidgetArea area);
     void toolbarOrientationChanged(Qt::Orientation orientation);
     void workerMessage(QString text);
-    void runGitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
+    void runGitCommand(QString path, QString command, QStringList attrs, bool outputResult = true, bool silent = false);
     void gitCommandFinished(QString command, QString output, bool outputResult = true);
     void serversCommandFinished(QString output);
     void sassCommandFinished(QString output);
@@ -315,7 +315,7 @@ signals:
     void parseCSS(int tabIndex, QString content);
     void parseProject(QString path);
     void searchInFiles(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp, QStringList excludeDirs);
-    void gitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
+    void gitCommand(QString path, QString command, QStringList attrs, bool outputResult = true, bool silent = false);
     void serversCommand(QString command, QString pwd);
     void sassCommand(QString src, QString dst);
     void quickFind(QString dir, QString text, WordsMapList words, QStringList wordPrefixes);

@@ -76,7 +76,7 @@ public slots:
     void parseCSS(int tabIndex, QString text);
     void parseProject(QString path);
     void searchInFiles(QString searchDirectory, QString searchText, QString searchExtensions, bool searchOptionCase, bool searchOptionWord, bool searchOptionRegexp, QStringList excludeDirs);
-    void gitCommand(QString path, QString command, QStringList attrs, bool outputResult = true);
+    void gitCommand(QString path, QString command, QStringList attrs, bool outputResult = true, bool silent = false);
     void serversCommand(QString command, QString pwd);
     void sassCommand(QString src, QString dst);
     void quickFind(QString dir, QString text, WordsMapList words, QStringList wordPrefixes);
