@@ -800,6 +800,11 @@ QTabBar QToolButton::left-arrow {
     image: url(:/icons/go-previous.png);
 }
 
+QTabBar::scroller
+{
+    width: 40px;
+}
+
 QTabBar::close-button
 {
     image: url(:/styles/dark/close.png);
