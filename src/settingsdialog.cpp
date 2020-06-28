@@ -541,7 +541,23 @@ void SettingsDialog::resetButtonPressed()
 void SettingsDialog::contextMenuRequested()
 {
     QWidget * widget = QApplication::focusWidget();
-    if (widget == nullptr) return;
+    bool isTextField = false;
+    if (widget != nullptr) {
+        QLineEdit * lineEdit = qobject_cast<QLineEdit*>(widget);
+        if (lineEdit != nullptr) isTextField = true;
+        if (!isTextField) {
+            QTextEdit * textEdit = qobject_cast<QTextEdit*>(widget);
+            if (textEdit != nullptr) isTextField = true;
+        }
+        if (!isTextField) {
+            QPlainTextEdit * pTextEdit = qobject_cast<QPlainTextEdit*>(widget);
+            if (pTextEdit != nullptr) isTextField = true;
+        }
+    }
+    if (widget == nullptr || !isTextField) {
+        Helper::showMessage(tr("Please select text field to open context menu"));
+        return;
+    }
     QContextMenuEvent * contextEvent = new QContextMenuEvent(QContextMenuEvent::Keyboard, widget->mapFromGlobal(QCursor::pos()));
     QCoreApplication::postEvent(widget, contextEvent);
 }

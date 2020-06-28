@@ -4,6 +4,7 @@
  * (C)2019 https://github.com/ziracms/editor
  *******************************************/
 
+#include <QKeyEvent>
 #include "navigator.h"
 #include "helper.h"
 
