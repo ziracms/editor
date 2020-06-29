@@ -22,6 +22,7 @@
 #include <QDirIterator>
 #include "mainwindow.h"
 #include "fileiconprovider.h"
+#include "filedialog.h"
 #if defined(Q_OS_ANDROID)
 #include <QtAndroidExtras/QtAndroid>
 #endif
@@ -360,39 +361,20 @@ QString Helper::getExistingDirectory(QWidget * parent, QString title, QString di
     requestAndroidPermissions();
     #endif
     QString dir = "";
-    QFileDialog dialog(parent);
-    // maximize dialog in Android
-    #if defined(Q_OS_ANDROID)
-    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
-    dialog.setOption(QFileDialog::DontUseNativeDialog);
-    #endif
-    //dialog.setOption(QFileDialog::ReadOnly);
+    FileDialog dialog(parent);
     dialog.setWindowTitle(title);
     dialog.setFileMode(QFileDialog::Directory);
-    dialog.setViewMode(QFileDialog::Detail);
     dialog.setOptions(QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (directory.size() == 0) {
         QStringList stddirs = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
         if (stddirs.size()>0) directory = stddirs.at(0);
     }
     if (directory.size() > 0) dialog.setDirectory(directory);
-    FileIconProvider * iconProvider = new FileIconProvider();
-    dialog.setIconProvider(iconProvider);
-    QList<QUrl> urls;
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first());
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first());
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first());
-    //urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first());
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DownloadLocation).first());
-    #if defined(Q_OS_ANDROID)
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first());
-    #endif
-    dialog.setSidebarUrls(urls);
+    dialog.setReadOnly(true);
     if (dialog.exec()) {
         QStringList dirs = dialog.selectedFiles();
         if (dirs.size() > 0 && folderExists(dirs.at(0))) dir = dirs.at(0);
     }
-    delete iconProvider;
     return dir;
 }
 
@@ -402,39 +384,44 @@ QString Helper::getExistingFile(QWidget * parent, QString title, QString directo
     requestAndroidPermissions();
     #endif
     QString file = "";
-    QFileDialog dialog(parent);
-    // maximize dialog in Android
-    #if defined(Q_OS_ANDROID)
-    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
-    dialog.setOption(QFileDialog::DontUseNativeDialog);
-    #endif
-    //dialog.setOption(QFileDialog::ReadOnly);
+    FileDialog dialog(parent);
     dialog.setWindowTitle(title);
     dialog.setFileMode(QFileDialog::ExistingFile);
     if (filter.size() > 0) dialog.setNameFilter(filter);
-    dialog.setViewMode(QFileDialog::Detail);
     if (directory.size() == 0) {
         QStringList stddirs = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
         if (stddirs.size()>0) directory = stddirs.at(0);
     }
     if (directory.size() > 0) dialog.setDirectory(directory);
-    FileIconProvider * iconProvider = new FileIconProvider();
-    dialog.setIconProvider(iconProvider);
-    QList<QUrl> urls;
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first());
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first());
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first());
-    //urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first());
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::DownloadLocation).first());
-    #if defined(Q_OS_ANDROID)
-    urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first());
-    #endif
-    dialog.setSidebarUrls(urls);
+    dialog.setReadOnly(true);
     if (dialog.exec()) {
         QStringList fileNames = dialog.selectedFiles();
         if (fileNames.size() > 0 && fileExists(fileNames.at(0))) file = fileNames.at(0);
     }
-    delete iconProvider;
+    return file;
+}
+
+QString Helper::getSaveFileName(QWidget * parent, QString title, QString directory, QString filter)
+{
+    #if defined(Q_OS_ANDROID)
+    requestAndroidPermissions();
+    #endif
+    QString file = "";
+    FileDialog dialog(parent);
+    dialog.setWindowTitle(title);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    if (filter.size() > 0) dialog.setNameFilter(filter);
+    if (directory.size() == 0) {
+        QStringList stddirs = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
+        if (stddirs.size()>0) directory = stddirs.at(0);
+    }
+    if (directory.size() > 0) dialog.setDirectory(directory);
+    dialog.setReadOnly(true);
+    if (dialog.exec()) {
+        QStringList fileNames = dialog.selectedFiles();
+        if (fileNames.size() > 0) file = fileNames.at(0);
+    }
     return file;
 }
 

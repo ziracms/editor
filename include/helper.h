@@ -59,6 +59,7 @@ public:
     static QStringList getInstalledStylePlugins(QString path);
     static QString getExistingDirectory(QWidget * parent, QString title, QString directory = "");
     static QString getExistingFile(QWidget * parent, QString title, QString directory = "", QString filter= "");
+    static QString getSaveFileName(QWidget * parent, QString title, QString directory = "", QString filter= "");
     static QWidget * getWindowWidget();
     static void showMessage(QString text);
     static bool showQuestion(QString title, QString msg);

@@ -263,7 +263,8 @@ void EditorTabs::saveAs()
     std::string filter = settings->get("file_dialog_filter");
     QString ext = editor->getFileExtension();
     if (ext.size() > 0) filter = "File (*."+ext.toStdString()+");;All files (*)";
-    QString newName = QFileDialog::getSaveFileName(tabWidget, tr("Save as"), dir, tr(filter.c_str()));
+    //QString newName = QFileDialog::getSaveFileName(tabWidget, tr("Save as"), dir, tr(filter.c_str()));
+    QString newName = Helper::getSaveFileName(tabWidget, tr("Save as"), dir, tr(filter.c_str()));
     if (newName.size() > 0) {
         editor->save(newName);
     }
