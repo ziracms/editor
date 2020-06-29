@@ -22,6 +22,9 @@
 #include <QDirIterator>
 #include "mainwindow.h"
 #include "fileiconprovider.h"
+#if defined(Q_OS_ANDROID)
+#include <QtAndroidExtras/QtAndroid>
+#endif
 
 const QString APPLICATION_NAME = "Zira Editor";
 const QString APPLICATION_VERSION = "1.8.3";
@@ -353,9 +356,17 @@ bool Helper::isPluginExists(QString name, QString path)
 
 QString Helper::getExistingDirectory(QWidget * parent, QString title, QString directory)
 {
-    //QString dir = QFileDialog::getExistingDirectory(parent, title, directory, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    #if defined(Q_OS_ANDROID)
+    requestAndroidPermissions();
+    #endif
     QString dir = "";
     QFileDialog dialog(parent);
+    // maximize dialog in Android
+    #if defined(Q_OS_ANDROID)
+    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
+    dialog.setOption(QFileDialog::DontUseNativeDialog);
+    #endif
+    //dialog.setOption(QFileDialog::ReadOnly);
     dialog.setWindowTitle(title);
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setViewMode(QFileDialog::Detail);
@@ -377,10 +388,6 @@ QString Helper::getExistingDirectory(QWidget * parent, QString title, QString di
     urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first());
     #endif
     dialog.setSidebarUrls(urls);
-    // maximize dialog in Android
-    #if defined(Q_OS_ANDROID)
-    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
-    #endif
     if (dialog.exec()) {
         QStringList dirs = dialog.selectedFiles();
         if (dirs.size() > 0 && folderExists(dirs.at(0))) dir = dirs.at(0);
@@ -391,8 +398,17 @@ QString Helper::getExistingDirectory(QWidget * parent, QString title, QString di
 
 QString Helper::getExistingFile(QWidget * parent, QString title, QString directory, QString filter)
 {
+    #if defined(Q_OS_ANDROID)
+    requestAndroidPermissions();
+    #endif
     QString file = "";
     QFileDialog dialog(parent);
+    // maximize dialog in Android
+    #if defined(Q_OS_ANDROID)
+    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
+    dialog.setOption(QFileDialog::DontUseNativeDialog);
+    #endif
+    //dialog.setOption(QFileDialog::ReadOnly);
     dialog.setWindowTitle(title);
     dialog.setFileMode(QFileDialog::ExistingFile);
     if (filter.size() > 0) dialog.setNameFilter(filter);
@@ -414,10 +430,6 @@ QString Helper::getExistingFile(QWidget * parent, QString title, QString directo
     urls << QUrl::fromLocalFile(QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first());
     #endif
     dialog.setSidebarUrls(urls);
-    // maximize dialog in Android
-    #if defined(Q_OS_ANDROID)
-    dialog.setWindowState( dialog.windowState() | Qt::WindowMaximized);
-    #endif
     if (dialog.exec()) {
         QStringList fileNames = dialog.selectedFiles();
         if (fileNames.size() > 0 && fileExists(fileNames.at(0))) file = fileNames.at(0);
@@ -454,3 +466,16 @@ bool Helper::showQuestion(QString title, QString msg)
 {
     return QMessageBox::question(getWindowWidget(), title, msg, QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok;
 }
+
+#if defined(Q_OS_ANDROID)
+void Helper::requestAndroidPermissions()
+{
+    if(QtAndroid::androidSdkVersion() >= 23) {
+        const QString readPermissionID("android.permission.READ_EXTERNAL_STORAGE");
+        const QString writePermissionID("android.permission.WRITE_EXTERNAL_STORAGE");
+        if(QtAndroid::checkPermission(readPermissionID) != QtAndroid::PermissionResult::Granted || QtAndroid::checkPermission(writePermissionID) != QtAndroid::PermissionResult::Granted) {
+            QtAndroid::requestPermissionsSync(QStringList() << readPermissionID << writePermissionID);
+        }
+    }
+}
+#endif

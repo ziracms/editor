@@ -140,7 +140,11 @@ void Popup::display(int x, int y, QString text)
 
     QFontMetrics fm(textLabel->font());
     int w = geometry().width() - IMAGE_WIDTH - 2*PADDING;
+    /* QFontMetrics::width is deprecated */
+    /*
     int tw = fm.width(text);
+    */
+    int tw = fm.horizontalAdvance(text);
     if (tw > w) {
         int l = static_cast<int>(ceil(static_cast<double>(tw) / static_cast<double>(w)));
         setFixedHeight(fm.height()*l+2*PADDING+2*BORDER);

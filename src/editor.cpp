@@ -526,7 +526,11 @@ void Editor::setTabsSettings()
     /*
     setTabStopWidth(tabWidth * fm.width(' '));
     */
+    /* QFontMetrics::width is deprecated */
+    /*
     setTabStopDistance(tabWidth * fm.width(' '));
+    */
+    setTabStopDistance(tabWidth * fm.horizontalAdvance(" "));
     tabType = tabTypeStr;
     if (detectTabTypeStr == "yes") detectTabType = true;
     else detectTabType = false;
@@ -735,7 +739,11 @@ void Editor::paintEvent(QPaintEvent *e)
 
     if (drawLongLineMarker) {
         QFontMetrics fm(font());
+        /* QFontMetrics::width is deprecated */
+        /*
         int longMarkerX = fm.width(QString("w").repeated(LONG_LINE_CHARS_COUNT));
+        */
+        int longMarkerX = fm.horizontalAdvance(QString("w").repeated(LONG_LINE_CHARS_COUNT));
         int scrollX = horizontalScrollBar()->value();
 
         QPainter painter(viewport());
@@ -791,7 +799,11 @@ int Editor::lineNumberAreaWidth()
     }
 
     QFontMetrics fm(editorFont);
+    /* QFontMetrics::width is deprecated */
+    /*
     int w = fm.width("0");
+    */
+    int w = fm.horizontalAdvance("0");
     int space = LINE_NUMBER_WIDGET_PADDING + w * digits;
     return space;
 }
@@ -867,7 +879,6 @@ void Editor::updateLineAnnotationView()
             int x = static_cast<int>(document()->documentLayout()->blockBoundingRect(block).width());
             int h = bottom - top;
             if (wrapLines && block.layout() != nullptr) {
-                QFontMetrics fm(font());
                 x = static_cast<int>(block.layout()->lineAt(block.layout()->lineCount()-1).naturalTextWidth());
                 if (block.layout()->lineCount() > 1) {
                     y += h;
@@ -878,7 +889,11 @@ void Editor::updateLineAnnotationView()
             x += lineNumber->geometry().width() + lineMark->geometry().width();
             x += ANNOTATION_LEFT_MARGIN;
             QFontMetrics fm(font());
+            /* QFontMetrics::width is deprecated */
+            /*
             int tw = fm.width(static_cast<Annotation *>(lineAnnotation)->getText());
+            */
+            int tw = fm.horizontalAdvance(static_cast<Annotation *>(lineAnnotation)->getText());
             tw += h; // icon
             int bw = geometry().width() - lineMap->geometry().width();
             bw -= ANNOTATION_RIGHT_MARGIN;
@@ -1063,7 +1078,11 @@ void Editor::showTooltip(int x, int y, QString text, bool richText, int fixedWid
     QStringList strippedList;
     strippedList = strippedText.split("\n");
     for (int i=0; i<strippedList.size(); i++) {
+        /* QFontMetrics::width is deprecated */
+        /*
         int textLineW = fm.width(strippedList.at(i));
+        */
+        int textLineW = fm.horizontalAdvance(strippedList.at(i));
         if (textLineW > textLineWidth) textLineWidth = textLineW;
     }
     int tooltipWidth = textLineWidth + mm.left() + mm.right() + 1;
@@ -1085,7 +1104,11 @@ void Editor::showTooltip(int x, int y, QString text, bool richText, int fixedWid
     tooltipLabel.setFixedWidth(tooltipWidth);
     int extraLinesCo = 0;
     for (int i=0; i<strippedList.size(); i++) {
+        /* QFontMetrics::width is deprecated */
+        /*
         int textLineW = fm.width(strippedList.at(i)) + mm.left() + mm.right() + 1;
+        */
+        int textLineW = fm.horizontalAdvance(strippedList.at(i)) + mm.left() + mm.right() + 1;
         if (textLineW > tooltipWidth) extraLinesCo += static_cast<int>(std::ceil(static_cast<double>(textLineW) / tooltipWidth))-1;
     }
     tooltipLabel.setFixedHeight(fm.height()*(strippedList.size()+extraLinesCo) + mm.top() + mm.bottom());
@@ -4929,7 +4952,11 @@ void Editor::breadcrumbsPaintEvent(QPaintEvent *event)
             QString _text = textList.at(i);
             _text = _text.trimmed();
             if (_text.size() == 0) continue;
+            /* QFontMetrics::width is deprecated */
+            /*
             int width = fm.width(_text);
+            */
+            int width = fm.horizontalAdvance(_text);
             painter.drawText(lineW+markW+listOffset, offset, width, fm.height(), Qt::AlignLeft, _text);
             /*
             listOffset += width+listMargin-listMargin/4;
@@ -5227,7 +5254,11 @@ void Editor::highlightCloseCharPair(QChar openChar, QChar closeChar, QList<QText
                                     int tabs = indent.count("\t");
                                     int cursOffset = spaces + tabs * tabWidth;
                                     QFontMetrics fm(editorFont);
+                                    /* QFontMetrics::width is deprecated */
+                                    /*
                                     xOffset = fm.width(" ") * cursOffset - horizontalScrollBar()->sliderPosition();
+                                    */
+                                    xOffset = fm.horizontalAdvance(" ") * cursOffset - horizontalScrollBar()->sliderPosition();
                                     if (xOffset < 0) xOffset = 0;
                                 }
                             }
@@ -6112,7 +6143,11 @@ void Editor::gotoLine(int line, bool focus) {
     if (line > 1) cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, line-1);
     QString blockText = cursor.block().text();
     QFontMetrics fm(font());
+    /* QFontMetrics::width is deprecated */
+    /*
     if (fm.width(blockText) > viewport()->width()) {
+    */
+    if (fm.horizontalAdvance(blockText) > viewport()->width()) {
         do {
             int pos = cursor.positionInBlock();
             if (pos >= blockText.size()) break;
@@ -6214,7 +6249,11 @@ void Editor::showLineMap(int y)
     QString blocksCountStr = Helper::intToStr(blocksCount);
     maxChars += blocksCountStr.size()+2;
     QFontMetrics fm(editorTooltipFont);
+    /* QFontMetrics::width is deprecated */
+    /*
     int tooltipWidth = fm.width(QString(" ").repeated(maxChars+3)) + tooltipLabel.contentsMargins().left() + tooltipLabel.contentsMargins().right() + 1;
+    */
+    int tooltipWidth = fm.horizontalAdvance(QString(" ").repeated(maxChars+3)) + tooltipLabel.contentsMargins().left() + tooltipLabel.contentsMargins().right() + 1;
     int linesCo = 0;
     do {
         QTextBlock block = curs.block();
@@ -6514,7 +6553,11 @@ void Editor::switchOverwrite()
     if (!overwrite) {
         overwrite = true;
         QFontMetrics fm(editorFont);
+        /* QFontMetrics::width is deprecated */
+        /*
         setCursorWidth(fm.width(' '));
+        */
+        setCursorWidth(fm.horizontalAdvance(" "));
     } else {
         overwrite = false;
         setCursorWidth(1);

@@ -8,6 +8,10 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+android {
+    QT += androidextras
+}
+
 TARGET = ZiraEditor
 TEMPLATE = app
 
@@ -150,40 +154,36 @@ RESOURCES += \
     qrc/style.qrc \
     qrc/spell.qrc
 
-DISTFILES += \
-    android/AndroidManifest.xml \
-    android/build.gradle \
-    android/gradle/wrapper/gradle-wrapper.jar \
-    android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew \
-    android/gradlew.bat \
-    android/res/values/libs.xml \
-    android64/AndroidManifest.xml \
-    android64/build.gradle \
-    android64/gradle/wrapper/gradle-wrapper.jar \
-    android64/gradle/wrapper/gradle-wrapper.properties \
-    android64/gradlew \
-    android64/gradlew.bat \
-    android64/res/values/libs.xml \
-    androidx86/AndroidManifest.xml \
-    androidx86/build.gradle \
-    androidx86/gradle/wrapper/gradle-wrapper.jar \
-    androidx86/gradle/wrapper/gradle-wrapper.properties \
-    androidx86/gradlew \
-    androidx86/gradlew.bat \
-    androidx86/res/values/libs.xml
+equals(QT_MAJOR_VERSION, 5): lessThan(QT_MINOR_VERSION, 13) {
+    DISTFILES += \
+        android/Qt5_12/AndroidManifest.xml \
+        android/Qt5_12/build.gradle \
+        android/Qt5_12/gradle/wrapper/gradle-wrapper.jar \
+        android/Qt5_12/gradle/wrapper/gradle-wrapper.properties \
+        android/Qt5_12/gradlew \
+        android/Qt5_12/gradlew.bat \
+        android/Qt5_12/res/values/libs.xml
 
-contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
-    ANDROID_PACKAGE_SOURCE_DIR = \
-        $$PWD/android
+    contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+        ANDROID_PACKAGE_SOURCE_DIR = \
+            $$PWD/android/Qt5_12
+    }
+
+    contains(ANDROID_TARGET_ARCH,arm64-v8a) {
+        ANDROID_PACKAGE_SOURCE_DIR = \
+            $$PWD/android/Qt5_12
+    }
 }
 
-contains(ANDROID_TARGET_ARCH,arm64-v8a) {
-    ANDROID_PACKAGE_SOURCE_DIR = \
-        $$PWD/android64
-}
+equals(QT_MAJOR_VERSION, 5): greaterThan(QT_MINOR_VERSION, 12) {
+    DISTFILES += \
+        android/Qt5_14/AndroidManifest.xml \
+        android/Qt5_14/build.gradle \
+        android/Qt5_14/gradle/wrapper/gradle-wrapper.jar \
+        android/Qt5_14/gradle/wrapper/gradle-wrapper.properties \
+        android/Qt5_14/gradlew \
+        android/Qt5_14/gradlew.bat \
+        android/Qt5_14/res/values/libs.xml
 
-contains(ANDROID_TARGET_ARCH,x86) {
-    ANDROID_PACKAGE_SOURCE_DIR = \
-        $$PWD/androidx86
+    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android/Qt5_14
 }

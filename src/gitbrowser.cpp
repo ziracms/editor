@@ -78,8 +78,13 @@ void GitBrowser::build(QString output)
         QTreeWidgetItem * item = new QTreeWidgetItem();
         item->setText(0, name);
         item->setText(1, status);
+        /* QTreeWidgetItem::setTextColor is deprecated */
+        /*
         if (!staged) item->setTextColor(1, errorColor);
         else item->setTextColor(1, msgColor);
+        */
+        if (!staged) item->setForeground(1, errorColor);
+        else item->setForeground(1, msgColor);
         item->setToolTip(0, path);
         item->setData(0, Qt::UserRole, QVariant(path));
         treeWidget->addTopLevelItem(item);
