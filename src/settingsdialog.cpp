@@ -63,6 +63,9 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->settingsTabWidget->setFocusPolicy(Qt::NoFocus);
     ui->projectsHomeLineEdit->setText(QString::fromStdString(settings->get("file_browser_home")));
     if (settings->get("experimental_mode_enabled") == CHECKED_YES) ui->experimentalModeCheckbox->setChecked(true);
+    if (settings->get("scale_auto") == CHECKED_YES) ui->scaleFactorCheckBox->setChecked(true);
+    initScaleFactor = std::stoi(settings->get("scale_factor"));
+    ui->scaleFactorSpinBox->setValue(initScaleFactor);
     ui->appFontComboBox->setCurrentFont(appFont);
     ui->appFontSpinBox->setValue(appFont.pointSize());
     ui->editorFontComboBox->setCurrentFont(editorFont);
@@ -210,6 +213,18 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
 
     if (ui->experimentalModeCheckbox->isChecked()) dataMap["experimental_mode_enabled"] = CHECKED_YES;
     else dataMap["experimental_mode_enabled"] = CHECKED_NO;
+
+    if (ui->scaleFactorCheckBox->isChecked()) dataMap["scale_auto"] = CHECKED_YES;
+    else dataMap["scale_auto"] = CHECKED_NO;
+
+    if (ui->scaleFactorSpinBox->value() >= 100 && ui->scaleFactorSpinBox->value() <= 400) {
+        dataMap["scale_factor"] = Helper::intToStr(ui->scaleFactorSpinBox->value()).toStdString();
+    } else {
+        dataMap["scale_factor"] = "100";
+    }
+    if (initScaleFactor != std::stoi(dataMap["scale_factor"])) {
+        dataMap["scale_factor_unchecked"] = "yes";
+    }
 
     if (ui->appFontComboBox->currentFont().family().size() > 0 && ui->appFontSpinBox->value() > 0) {
         dataMap["app_font_family"] = ui->appFontComboBox->currentFont().family().toStdString();

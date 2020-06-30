@@ -45,6 +45,7 @@ const int SIDEBAR_TAB_GIT_BROWSER_INDEX = 2;
 
 int const MainWindow::EXIT_CODE_RESTART = -123456789;
 int const TERMINAL_START_DELAY = 250; // should not be less then PROJECT_LOAD_DELAY
+int const CHECK_SCALE_FACTOR_DELAY = 2000;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -54,10 +55,6 @@ MainWindow::MainWindow(QWidget *parent) :
     qRegisterMetaType<ParseJS::ParseResult>();
     qRegisterMetaType<ParseCSS::ParseResult>();
     qRegisterMetaType<WordsMapList>();
-
-    QCoreApplication::setApplicationName(APPLICATION_NAME);
-    QCoreApplication::setApplicationVersion(APPLICATION_VERSION);
-    QCoreApplication::setOrganizationName(ORGANIZATION_NAME);
 
     settings = new Settings();
     settings->load();
@@ -115,6 +112,9 @@ MainWindow::MainWindow(QWidget *parent) :
             applyWidgetsFont = true;
         }
     }
+    #if defined(Q_OS_ANDROID)
+    applyWidgetsFont = true;
+    #endif
 
     // styles
     applyThemeColors(pluginsDir, schemeType == COLOR_SCHEME_LIGHT, applyWidgetsFont && theme != THEME_SYSTEM && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) < 0);
@@ -639,6 +639,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(QApplication::inputMethod(), SIGNAL(visibleChanged()), this, SLOT(inputMethodVisibleChanged()));
 
+    if (settings->get("scale_factor_unchecked") == "yes" && settings->get("scale_auto") == "no") {
+        QTimer::singleShot(CHECK_SCALE_FACTOR_DELAY, this, SLOT(checkScaleFactor()));
+    }
+
     // make sure that window is maximized in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
@@ -688,6 +692,27 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::menuEditOnShow()
 {
     editorActionsChanged();
+}
+
+void MainWindow::checkScaleFactor()
+{
+    bool ok = true;
+    std::unordered_map<std::string, std::string> settingsChanged;
+    if (!Helper::showQuestion(tr("Scale factor"), tr("Do you want to keep specified scale factor ?"))) {
+        settingsChanged["scale_auto"] = "yes";
+        settingsChanged["scale_factor"] = "100";
+        ok = false;
+    }
+    settingsChanged["scale_factor_unchecked"] = "no";
+    settings->change(settingsChanged);
+    if (!ok) {
+        close();
+        #if defined(Q_OS_ANDROID)
+        qApp->exit();
+        #else
+        qApp->exit(MainWindow::EXIT_CODE_RESTART);
+        #endif
+    }
 }
 
 void MainWindow::menuViewOnShow()
@@ -2646,7 +2671,7 @@ void MainWindow::applyThemeColors(QString pluginsDir, bool light, bool applyFont
     // setting widgets font
     if (applyFont) {
         QFont font = QApplication::font();
-        style += "QMenu, QTreeWidget, QTabBar::tab, QLineEdit, QPushButton, QLabel, QCheckBox, QRadioButton, QComboBox, QDockWidget::title {font: "+Helper::intToStr(font.pointSize())+"pt \""+font.family()+"\";}" + "\n";
+        style += "QMenu, QTreeWidget, QTabBar::tab, QLineEdit, QPushButton, QLabel, QCheckBox, QRadioButton, QComboBox, QDockWidget::title, QListWidget, QTreeView, QListView, QSidebar {font: "+Helper::intToStr(font.pointSize())+"pt \""+font.family()+"\";}" + "\n";
     }
 
     if (theme == THEME_DARK) {

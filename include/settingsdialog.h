@@ -26,6 +26,7 @@ private:
     QFont editorFont;
     std::string tabsType;
     std::string newLineMode;
+    int initScaleFactor;
 private slots:
     void projectHomeButtonPressed();
     void phpManualButtonPressed();

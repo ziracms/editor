@@ -248,6 +248,7 @@ private slots:
     void startTerminal();
     void outputTabSwitched(int index);
     void inputMethodVisibleChanged();
+    void checkScaleFactor();
 private:
     Ui::MainWindow *ui;
     Settings * settings;

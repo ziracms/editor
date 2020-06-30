@@ -114,7 +114,10 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"custom_themes_path", ""},
         {"plugins_path", ""},
         {"snippets", getDefaultSnippets().toStdString()},
-        {"custom_snippets_file", ""}
+        {"custom_snippets_file", ""},
+        {"scale_auto", "yes"},
+        {"scale_factor", "100"},
+        {"scale_factor_unchecked", "no"}
     };
 }
 

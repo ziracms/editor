@@ -363,6 +363,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     qaBtn->setIcon(QIcon(":/icons/separator-double.png"));
     //qaBtn->setIconSize(QSize(breadcrumbs->height(), breadcrumbs->height()));
     qaBtn->setToolTip(tr("Quick Access"));
+    qaBtn->setProperty("BreadcrumbsButton", "QuickAccess");
     if (theme == THEME_SYSTEM || theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) > 0) {
         qaBtn->setStyleSheet("border:none");
         qaBtn->setCursor(Qt::PointingHandCursor);

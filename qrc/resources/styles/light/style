@@ -279,7 +279,7 @@ QSpinBox
     background-color: #f1f1f1;
     border: 1px solid #c5cfd6;
     border-radius: 3;
-    padding: 5px;
+    padding: 5px 40px 5px 5px;
 }
 
 /*QComboBox:hover,*/ /* use built-in style */
@@ -342,21 +342,27 @@ QComboBox QListView::item:selected
 QSpinBox::up-button,
 QSpinBox::down-button
 { 
-    width: 16px;
+    width: 12px;
+    height: 12px;
     background: #c5cfd6;
-    padding: 2px;
+    padding: 4px;
+    border-radius: 3px;
 }
 
 QSpinBox::up-button
 {
+    subcontrol-origin: margin;
+    subcontrol-position: center right;
+    right: 28px;
     image: url(:/styles/light/up.png);
-    border-top-right-radius: 3px;
 }
 
 QSpinBox::down-button
 {
+    subcontrol-origin: margin;
+    subcontrol-position: center right;
+    right: 6px;
     image: url(:/styles/light/down.png);
-    border-bottom-right-radius: 3px;
 }
 
 QSpinBox::up-button:hover,
@@ -373,7 +379,7 @@ QGroupBox:focus
 QScrollBar:horizontal {
     border: none;
     background: #e7e7e7;
-    height: 14px;
+    height: 18px;
     margin: 0px 1px;
     padding: 2px 0px;
 }
@@ -381,8 +387,8 @@ QScrollBar:horizontal {
 QScrollBar::handle:horizontal
 {
     background-color: #a0b3bb;
-    min-width: 14px;
-    border-radius: 5px;
+    min-width: 18px;
+    border-radius: 0px;
 }
 
 QScrollBar::handle:horizontal:hover
@@ -417,7 +423,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
 QScrollBar:vertical
 {
     background: #e7e7e7;
-    width: 14px;
+    width: 18px;
     margin: 1px 0px;
     border: none;
     padding: 0px 2px;
@@ -426,8 +432,8 @@ QScrollBar:vertical
 QScrollBar::handle:vertical
 {
     background: #a0b3bb;
-    min-height: 14px;
-    border-radius: 5px;
+    min-height: 18px;
+    border-radius: 0px;
 }
 
 QScrollBar::handle:vertical:hover 
@@ -639,6 +645,11 @@ QTabWidget QToolButton:pressed,
 Breadcrumbs QToolButton:pressed
 {
     background: none;
+}
+
+Breadcrumbs QToolButton[BreadcrumbsButton=QuickAccess]
+{
+    qproperty-icon: url(:/styles/light/separator-double.png);
 }
 
 QProgressBar
@@ -1000,6 +1011,7 @@ QDialogButtonBox
     dialog-ok-icon: url(:/styles/light/ok.png);
     dialog-cancel-icon: url(:/styles/light/cancel.png);
     dialog-reset-icon: url(:/styles/light/reset.png);
+    dialog-help-icon: url(:/styles/light/list.png);
 }
 
 QuickAccess,
