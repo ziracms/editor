@@ -25,6 +25,7 @@
 #include <QStyleFactory>
 #include <QStylePlugin>
 #include <QVersionNumber>
+#include <QScreen>
 #include "editortab.h"
 #include "searchdialog.h"
 #include "servers.h"
@@ -1971,6 +1972,12 @@ void MainWindow::editorTabOpened(int)
         editorActionsChanged();
     }
     updateTabsListButton();
+
+    #if defined(Q_OS_ANDROID)
+    if (QGuiApplication::primaryScreen()->primaryOrientation() == Qt::PortraitOrientation) {
+        ui->sidebarDockWidget->hide();
+    }
+    #endif
 }
 
 void MainWindow::editorTabSplitOpened(int)
