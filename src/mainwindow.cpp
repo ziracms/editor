@@ -705,8 +705,7 @@ void MainWindow::checkScaleFactor()
     }
     settingsChanged["scale_factor_unchecked"] = "no";
     settings->change(settingsChanged);
-    if (!ok) {
-        close();
+    if (!ok && close()) {
         #if defined(Q_OS_ANDROID)
         qApp->exit();
         #else
