@@ -1,6 +1,8 @@
 #include "filedialog.h"
 #include <QStandardPaths>
 #include <QToolButton>
+#include <QListView>
+#include <QTreeView>
 
 FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
 {
@@ -25,6 +27,11 @@ FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
 
     QToolButton * newFolderButton = findChild<QToolButton *>("newFolderButton");
     if (newFolderButton != nullptr) newFolderButton->hide();
+
+    QTreeView * treeView = findChild<QTreeView *>("treeView");
+    if (treeView != nullptr) treeView->setDragEnabled(false);
+    QListView * listView = findChild<QListView *>("listView");
+    if (listView != nullptr) listView->setDragEnabled(false);
 }
 
 FileDialog::~FileDialog()
