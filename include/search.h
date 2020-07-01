@@ -14,6 +14,7 @@
 #include <QVBoxLayout>
 #include <QCheckBox>
 #include <QScrollBar>
+#include <QScrollArea>
 #include "editor.h"
 
 class Search : public QWidget
@@ -31,6 +32,7 @@ public:
     bool isFocused();
     void updateScrollBar();
     QScrollBar * horizontalScrollBar();
+    QScrollBar * scrollAreaHorizontalScrollBar();
 protected:
     void paintEvent(QPaintEvent *event) override;
     QLineEdit * findEdit;
@@ -47,6 +49,9 @@ protected:
     QHBoxLayout * hLayoutReplace;
     QScrollBar * scrollBar;
     QVBoxLayout * vLayout;
+    QHBoxLayout * hLayout;
+    QScrollArea * scrollArea;
+    QWidget * scrollWidget;
 private:
     Editor * editor;
     bool CaSe;
@@ -68,6 +73,8 @@ private slots:
     void replaceEnterPressed();
     void findTextChanged(QString);
     void scrollBarValueChanged(int value);
+    void scrollAreaScrollBarRangeChanged(int min, int max);
+    void updateSizes();
 };
 
 #endif // SEARCH_H

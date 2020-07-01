@@ -821,7 +821,15 @@ int Editor::lineMapAreaWidth()
 
 int Editor::searchWidgetHeight()
 {
-    return SEARCH_WIDGET_HEIGHT;
+    int scrollH = 0;
+    int scrollHE = 0;
+    if (static_cast<Search *>(search)->scrollAreaHorizontalScrollBar()->maximum() > static_cast<Search *>(search)->scrollAreaHorizontalScrollBar()->minimum()) {
+        scrollH = static_cast<Search *>(search)->scrollAreaHorizontalScrollBar()->height();
+    }
+    if (static_cast<Search *>(search)->horizontalScrollBar()->maximum() > static_cast<Search *>(search)->horizontalScrollBar()->minimum()) {
+        scrollHE = static_cast<Search *>(search)->horizontalScrollBar()->height();
+    }
+    return SEARCH_WIDGET_HEIGHT + scrollH + scrollHE;
 }
 
 int Editor::breadcrumbsHeight()
@@ -1380,10 +1388,10 @@ void Editor::suggestWords(QStringList words, int cursorTextPos)
     }
 }
 
-void Editor::updateSizes()
+void Editor::updateSizes(bool updateGeometry)
 {
     updateViewportMargins();
-    updateWidgetsGeometry();
+    if (updateGeometry) updateWidgetsGeometry();
 }
 
 void Editor::resizeEvent(QResizeEvent * e)
@@ -1414,15 +1422,15 @@ void Editor::updateWidgetsGeometry()
     if (verticalScrollBar()->maximum() <= verticalScrollBar()->minimum()) vScrollW = 0;
     if (horizontalScrollBar()->maximum() <= horizontalScrollBar()->minimum() || searchH == 0) hScrollH = 0;
 
-    search->setGeometry(QRect(cr.left(), cr.bottom()-searchH-hScrollH+1, cr.width()-mapW-vScrollW, searchH+hScrollH));
-    QMargins searchMargins = search->contentsMargins();
-    searchMargins.setBottom(hScrollH);
-    search->setContentsMargins(searchMargins);
     lineNumber->setGeometry(QRect(cr.left(), cr.top()+breadcrumbsH, lineW, cr.height()-breadcrumbsH-searchH-hScrollH));
     lineMark->setGeometry(QRect(cr.left()+lineW, cr.top()+breadcrumbsH, markW, cr.height()-breadcrumbsH-searchH-hScrollH));
     lineMap->setGeometry(QRect(cr.right()-mapW-vScrollW+1, cr.top(), mapW+vScrollW, cr.height()));
     breadcrumbs->setGeometry(QRect(cr.left(), cr.top(), cr.width()-mapW-vScrollW, breadcrumbsH));
     qaBtn->setGeometry(0, 0, lineW, breadcrumbsH-1);
+    search->setGeometry(QRect(cr.left(), cr.bottom()-searchH-hScrollH+1, cr.width()-mapW-vScrollW, searchH+hScrollH));
+    QMargins searchMargins = search->contentsMargins();
+    searchMargins.setBottom(hScrollH);
+    search->setContentsMargins(searchMargins);
 }
 
 void Editor::backtab()

@@ -8,14 +8,30 @@
 #include "helper.h"
 #include <QPainter>
 #include <QAction>
+#include <QTimer>
 
-const int INPUT_WIDTH_MIN = 50;
+const int INPUT_WIDTH_MIN = 100;
 const int INPUT_WIDTH_MAX = 300;
 
 Search::Search(Editor * codeEditor) : QWidget(codeEditor)
 {
     editor = codeEditor;
-    vLayout = new QVBoxLayout(this);
+
+    hLayout = new QHBoxLayout();
+    hLayout->setContentsMargins(0, 0, 0, 0);
+    setLayout(hLayout);
+
+    vLayout = new QVBoxLayout();
+    scrollArea = new QScrollArea();
+
+    scrollWidget = new QWidget();
+    scrollWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    scrollWidget->setLayout(vLayout);
+
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(scrollWidget);
+
+    hLayout->addWidget(scrollArea);
 
     scrollBar = new QScrollBar(Qt::Horizontal, this);
     scrollBar->setVisible(false);
@@ -95,6 +111,7 @@ Search::Search(Editor * codeEditor) : QWidget(codeEditor)
     connect(replaceEdit, SIGNAL(returnPressed()), this, SLOT(replaceEnterPressed()));
     connect(findEdit, SIGNAL(textChanged(QString)), this, SLOT(findTextChanged(QString)));
     connect(scrollBar, SIGNAL(valueChanged(int)), this, SLOT(scrollBarValueChanged(int)));
+    connect(scrollArea->horizontalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(scrollAreaScrollBarRangeChanged(int, int)));
 
     CaSe = false;
     Word = false;
@@ -268,4 +285,22 @@ void Search::scrollBarValueChanged(int value)
 QScrollBar * Search::horizontalScrollBar()
 {
     return scrollBar;
+}
+
+QScrollBar * Search::scrollAreaHorizontalScrollBar()
+{
+    return scrollArea->horizontalScrollBar();
+}
+
+void Search::scrollAreaScrollBarRangeChanged(int /*min*/, int /*max*/)
+{
+    // calling with delay to avoid recursion
+    QTimer::singleShot(50, this, SLOT(updateSizes()));
+}
+
+void Search::updateSizes()
+{
+    if (isVisible()) {
+        editor->updateSizes(false);
+    }
 }

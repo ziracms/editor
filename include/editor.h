@@ -79,7 +79,7 @@ public:
     int getTabIndex();
     bool isModified();
     void setModified(bool m);
-    void updateSizes();
+    void updateSizes(bool updateGeometry = true);
     QString getContent();
     void updateMarksAndMapArea();
     std::string getModeType();
