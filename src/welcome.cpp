@@ -16,6 +16,10 @@ Welcome::Welcome(bool light, QWidget *parent) : QWidget(parent),
 
     ui->welcomeBottomLabel->setText("ver."+APPLICATION_VERSION);
 
+    #if defined(Q_OS_ANDROID)
+    ui->welcomeLabelLayout->setContentsMargins(0, 0, 0, 10);
+    #endif
+
     hide();
 }
 
