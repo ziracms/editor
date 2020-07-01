@@ -3,6 +3,9 @@
 #include <QToolButton>
 #include <QListView>
 #include <QTreeView>
+#include <QDialogButtonBox>
+#include <QHBoxLayout>
+#include <QGridLayout>
 
 FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
 {
@@ -32,6 +35,17 @@ FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
     if (treeView != nullptr) treeView->setDragEnabled(false);
     QListView * listView = findChild<QListView *>("listView");
     if (listView != nullptr) listView->setDragEnabled(false);
+
+    QDialogButtonBox * buttonBox = findChild<QDialogButtonBox *>("buttonBox");
+    if (buttonBox != nullptr && layout() != nullptr) {
+        QGridLayout * gridLayout = qobject_cast<QGridLayout *>(layout());
+        if (gridLayout != nullptr) {
+            buttonBox->setOrientation(Qt::Horizontal);
+            QHBoxLayout * childLayout = new QHBoxLayout();
+            childLayout->addWidget(buttonBox);
+            gridLayout->addLayout(childLayout, gridLayout->rowCount(), 1);
+        }
+    }
 }
 
 FileDialog::~FileDialog()

@@ -5992,7 +5992,7 @@ void Editor::findToggle()
 
 void Editor::showSearch()
 {
-    search->show();
+    if (!search->isVisible()) search->show();
     static_cast<Search *>(search)->setFindEditFocus();
     static_cast<Search *>(search)->updateScrollBar();
     updateViewportMargins();
@@ -6000,6 +6000,7 @@ void Editor::showSearch()
 
 void Editor::closeSearch()
 {
+    if (!search->isVisible()) return;
     search->hide();
     static_cast<Search *>(search)->updateScrollBar();
     updateViewportMargins();

@@ -670,6 +670,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    #if defined(Q_OS_ANDROID)
+    if (!Helper::showQuestion(tr("Confirmation"), tr("Do you want to exit ?"))) {
+        event->ignore();
+        return;
+    }
+    #endif
     // check modified
     if (!editorTabs->closeWindowAllowed() || !editorTabsSplit->closeWindowAllowed()) {
         event->ignore();
@@ -2839,6 +2845,9 @@ void MainWindow::inputMethodVisibleChanged()
         ui->tabWidget->tabBar()->setVisible(false);
         tabWidgetSplit->tabBar()->setVisible(false);
         tabsListButton->hide();
+
+        Editor * textEditor = getActiveEditor();
+        if (textEditor != nullptr) textEditor->closeSearch();
     } else {
         ui->menuBar->setVisible(true);
         //ui->statusBar->setVisible(true);

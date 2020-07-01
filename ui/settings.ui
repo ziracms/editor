@@ -190,7 +190,7 @@
           <widget class="QComboBox" name="generalThemeCombobox">
            <property name="minimumSize">
             <size>
-             <width>200</width>
+             <width>150</width>
              <height>0</height>
             </size>
            </property>
@@ -251,7 +251,7 @@
           <widget class="QComboBox" name="generalColorSchemeCombobox">
            <property name="minimumSize">
             <size>
-             <width>200</width>
+             <width>150</width>
              <height>0</height>
             </size>
            </property>
