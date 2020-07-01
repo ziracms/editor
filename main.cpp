@@ -49,6 +49,6 @@ int main(int argc, char *argv[])
         MainWindow w;
         w.show();
         exitCode = a.exec();
-    } while(exitCode == MainWindow::EXIT_CODE_RESTART);
+    } while(MainWindow::WANT_RESTART);
     return exitCode;
 }

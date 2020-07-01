@@ -43,7 +43,8 @@ const int SIDEBAR_TAB_FILE_BROWSER_INDEX = 0;
 const int SIDEBAR_TAB_NAVIGATOR_INDEX = 1;
 const int SIDEBAR_TAB_GIT_BROWSER_INDEX = 2;
 
-int const MainWindow::EXIT_CODE_RESTART = -123456789;
+bool MainWindow::WANT_RESTART = false;
+
 int const TERMINAL_START_DELAY = 250; // should not be less then PROJECT_LOAD_DELAY
 int const CHECK_SCALE_FACTOR_DELAY = 2000;
 
@@ -647,6 +648,8 @@ MainWindow::MainWindow(QWidget *parent) :
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
     #endif
+
+    MainWindow::WANT_RESTART = false;
 }
 
 MainWindow::~MainWindow()
@@ -671,10 +674,12 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     #if defined(Q_OS_ANDROID)
-    if (!Helper::showQuestion(tr("Confirmation"), tr("Do you want to exit ?"))) {
+    if (!MainWindow::WANT_RESTART && !Helper::showQuestion(tr("Confirmation"), tr("Do you want to exit ?"))) {
+        MainWindow::WANT_RESTART = false;
         event->ignore();
         return;
     }
+    MainWindow::WANT_RESTART = false;
     #endif
     // check modified
     if (!editorTabs->closeWindowAllowed() || !editorTabsSplit->closeWindowAllowed()) {
@@ -711,12 +716,13 @@ void MainWindow::checkScaleFactor()
     }
     settingsChanged["scale_factor_unchecked"] = "no";
     settings->change(settingsChanged);
-    if (!ok && close()) {
-        #if defined(Q_OS_ANDROID)
-        qApp->exit();
-        #else
-        qApp->exit(MainWindow::EXIT_CODE_RESTART);
-        #endif
+    if (!ok) {
+        MainWindow::WANT_RESTART = true;
+        if (close()) {
+            QApplication::exit();
+        } else {
+            MainWindow::WANT_RESTART = false;
+        }
     }
 }
 
@@ -2659,13 +2665,13 @@ void MainWindow::restartApp()
 {
     if (Helper::showQuestion(tr("Restart required"), tr("Some changes will take effect after restart. Restart now ?"))
         //QMessageBox::question(this, tr("Restart required"), tr("Some changes will take effect after restart. Restart now ?"), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok
-        && close()
     ) {
-        #if defined(Q_OS_ANDROID)
-        qApp->exit();
-        #else
-        qApp->exit(MainWindow::EXIT_CODE_RESTART);
-        #endif
+        MainWindow::WANT_RESTART = true;
+        if (close()) {
+            QApplication::exit();
+        } else {
+            MainWindow::WANT_RESTART = false;
+        }
     }
 }
 
