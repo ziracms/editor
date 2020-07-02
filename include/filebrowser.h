@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include <QEvent>
 #include <QMenu>
+#include <QTimer>
 
 class FileBrowser : public QObject
 {
@@ -54,6 +55,7 @@ private:
     QString fileBrowserHomeDir;
     bool acceptEnter;
     bool editMode;
+    QTimer mousePressTimer;
 public slots:
     void contextMenu();
 private slots:

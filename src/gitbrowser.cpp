@@ -9,7 +9,7 @@ const QString GB_ACTION_NAME_RESET = "reset";
 const QString GB_ACTION_NAME_COMMIT = "commit";
 
 GitBrowser::GitBrowser(QTreeWidget * widget, Settings * settings):
-    treeWidget(widget)
+    treeWidget(widget), mousePressTimer(this)
 {
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(gitBrowserContextMenuRequested(QPoint)));
@@ -20,11 +20,18 @@ GitBrowser::GitBrowser(QTreeWidget * widget, Settings * settings):
     msgColor = QColor(msgColorStr);
 
     treeWidget->installEventFilter(this);
+    #if defined(Q_OS_ANDROID)
+    treeWidget->viewport()->installEventFilter(this); // for context menu
+    #endif
 
     QString shortcutContextMenuStr = QString::fromStdString(settings->get("shortcut_context_menu"));
     QShortcut * shortcutContextMenu = new QShortcut(QKeySequence(shortcutContextMenuStr), treeWidget);
     shortcutContextMenu->setContext(Qt::WidgetShortcut);
     connect(shortcutContextMenu, SIGNAL(activated()), this, SLOT(contextMenu()));
+
+    mousePressTimer.setInterval(1000);
+    mousePressTimer.setSingleShot(true);
+    connect(&mousePressTimer, SIGNAL(timeout()), this, SLOT(contextMenu()));
 }
 
 void GitBrowser::clear()
@@ -165,6 +172,16 @@ bool GitBrowser::eventFilter(QObject *watched, QEvent *event)
             QTreeWidgetItem * item = treeWidget->currentItem();
             gbAddRequested(item);
         }
+    }
+    // context menu for Android
+    if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent *>(event);
+        if (mouseEvent != nullptr && mouseEvent->buttons() == Qt::LeftButton) {
+            mousePressTimer.start();
+        }
+    }
+    if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonRelease) {
+        if (mousePressTimer.isActive()) mousePressTimer.stop();
     }
     return false;
 }

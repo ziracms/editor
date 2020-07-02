@@ -26,7 +26,6 @@
 #include <QTextLayout>
 #include <QDesktopWidget>
 #include <QTextDocumentFragment>
-#include <QTimer>
 #include <QFileInfo>
 #include <QDateTime>
 #include <QMenu>
@@ -76,7 +75,8 @@ const int FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE = 300;
 
 const QString SNIPPET_PREFIX = "Snippet: @";
 
-Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent) : QTextEdit(parent), spellChecker(spellChecker), tooltipLabel(settings)
+Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent):
+    QTextEdit(parent), spellChecker(spellChecker), tooltipLabel(settings), mousePressTimer(this)
 {
     setMinimumSize(0, 0);
     setMaximumSize(16777215, 16777215);
@@ -496,6 +496,9 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     // for Android
     inputEventKey = -1;
     setInputMethodHints(Qt::ImhNoPredictiveText | Qt::ImhMultiLine);
+    mousePressTimer.setInterval(1000);
+    mousePressTimer.setSingleShot(true);
+    connect(&mousePressTimer, SIGNAL(timeout()), this, SLOT(contextMenu()));
 }
 
 Editor::~Editor()
@@ -2388,6 +2391,9 @@ void Editor::verticalScrollbarValueChangedDelayed()
 void Editor::mousePressEvent(QMouseEvent *e)
 {
     hideCompletePopup();
+    #if defined(Q_OS_ANDROID)
+    mousePressTimer.start();
+    #endif
     QTextEdit::mousePressEvent(e);
 }
 
@@ -2398,6 +2404,9 @@ void Editor::mouseReleaseEvent(QMouseEvent *e)
     } else {
         hideTooltip();
     }
+    #if defined(Q_OS_ANDROID)
+    if (mousePressTimer.isActive()) mousePressTimer.stop();
+    #endif
     QTextEdit::mouseReleaseEvent(e);
 }
 

@@ -12,6 +12,7 @@
 #include <QLabel>
 #include <QHash>
 #include <QToolButton>
+#include <QTimer>
 #include "spellcheckerinterface.h"
 #include "settings.h"
 #include "highlight.h"
@@ -391,6 +392,7 @@ private:
     QHash<QString, QString> htmlSnippets;
 
     int inputEventKey; // workaround for Android
+    QTimer mousePressTimer;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

@@ -31,7 +31,7 @@ const QString FB_ACTION_NAME_CUT = "fb_cut";
 const QString FB_ACTION_NAME_PASTE = "fb_paste";
 
 FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * settings):
-    treeWidget(widget), pathLine(line), menu(widget)
+    treeWidget(widget), pathLine(line), menu(widget), mousePressTimer(this)
 {
     fbpath = ""; fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
@@ -45,6 +45,10 @@ FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * sett
     QShortcut * shortcutContextMenu = new QShortcut(QKeySequence(shortcutContextMenuStr), treeWidget);
     shortcutContextMenu->setContext(Qt::WidgetShortcut);
     connect(shortcutContextMenu, SIGNAL(activated()), this, SLOT(contextMenu()));
+
+    mousePressTimer.setInterval(1000);
+    mousePressTimer.setSingleShot(true);
+    connect(&mousePressTimer, SIGNAL(timeout()), this, SLOT(contextMenu()));
 }
 
 void FileBrowser::initFileBrowser(QString homeDir)
@@ -66,6 +70,9 @@ void FileBrowser::initFileBrowser(QString homeDir)
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(fileBrowserContextMenuRequested(QPoint)));
     treeWidget->installEventFilter(this);
+    #if defined(Q_OS_ANDROID)
+    treeWidget->viewport()->installEventFilter(this); // for context menu
+    #endif
     pathLine->installEventFilter(this);
 }
 
@@ -714,6 +721,16 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
                 pathLine->setFocus();
             }
         }
+    }
+    // context menu for Android
+    if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent *>(event);
+        if (mouseEvent != nullptr && mouseEvent->buttons() == Qt::LeftButton) {
+            mousePressTimer.start();
+        }
+    }
+    if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonRelease) {
+        if (mousePressTimer.isActive()) mousePressTimer.stop();
     }
     // focus
     if(watched == pathLine && event->type() == QEvent::KeyPress) {

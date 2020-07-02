@@ -4,6 +4,7 @@
 #include "settings.h"
 #include <QTreeWidget>
 #include <QPushButton>
+#include <QTimer>
 
 class GitBrowser : public QObject
 {
@@ -24,6 +25,7 @@ private:
     QTreeWidget * treeWidget;
     QColor errorColor;
     QColor msgColor;
+    QTimer mousePressTimer;
 public slots:
     void contextMenu();
 private slots:
