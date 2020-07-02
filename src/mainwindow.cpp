@@ -1211,7 +1211,7 @@ void MainWindow::on_actionColorPicker_triggered()
     //dialog.setOption(QColorDialog::ShowAlphaChannel); // no effect
     #if defined(Q_OS_ANDROID)
     dialog.open(); // workaround for setMaxHeight
-    if (dialog.geometry().height() > geometry().height()) {
+    if (dialog.geometry().width() > geometry().width() || dialog.geometry().height() > geometry().height()) {
         dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
     }
     dialog.close();

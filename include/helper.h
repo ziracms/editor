@@ -15,6 +15,7 @@
 extern const QString APPLICATION_NAME;
 extern const QString APPLICATION_VERSION;
 extern const QString ORGANIZATION_NAME;
+extern const QString PROJECT_NAME;
 extern const QString AUTHOR_EMAIL_USERNAME;
 extern const QString AUTHOR_EMAIL_DOMAIN;
 extern const QString AUTHOR_CARD_URL;

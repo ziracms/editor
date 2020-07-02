@@ -76,7 +76,7 @@ void HelpDialog::aboutContent()
     f.close();
 
     text += TPL_BLANK;
-    text += TPL_ORGANIZATION.arg(ORGANIZATION_NAME).arg(GITHUB_EDITOR_URL);
+    text += TPL_ORGANIZATION.arg(PROJECT_NAME).arg(GITHUB_EDITOR_URL);
     text += TPL_BLANK;
     text += TPL_QT_VERSION.arg(qVersion());
 

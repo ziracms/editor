@@ -1,5 +1,7 @@
-<div><b>Optional dependencies:</b></div>
-<div>
+<div><center>
+<table cellspacing="0" cellpadding="5">
+<tr><td><b>Optional dependencies:</b></td></tr>
+<tr><td>
 <ul>
 <li>libhunspell (spell checker plugin)</li>
 <li>libqtermwidget5 (terminal plugin)</li>
@@ -11,8 +13,10 @@
 <li>mariadb</li>
 <li>bash (start/stop servers)</li>
 </ul>
-</div>
-<div>&nbsp;</div>
-<div>Syntax check performed by php executable.</div>
-<div>Context help (F1) requires php manual.</div>
-<div>You can download it from php.net (many html files archive).</div>
+</td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>Syntax check performed by php executable.</td></tr>
+<tr><td>Context help (F1) requires php manual.</td></tr>
+<tr><td>You can download it from php.net (many html files archive).</td></tr>
+</table>
+</center></div>
