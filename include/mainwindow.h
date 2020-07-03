@@ -79,6 +79,7 @@ protected:
     void addMessagesTabText(QString text);
     void clearHelpTabSource();
     void setHelpTabSource(QString path);
+    void setHelpTabContents(QString html);
     void scrollMessagesTabToTop();
     void parseTab();
     void parseTabSplit();

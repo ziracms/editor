@@ -2431,10 +2431,15 @@ void MainWindow::editorShowHelp(QString name)
         php_manual_path = phpManDir.absolutePath();
         if (!Helper::folderExists(php_manual_path)) php_manual_path = "";
     }
-    if (php_manual_path.size() == 0 || !Helper::folderExists(php_manual_path)) return;
+    bool phpManualIsInstalled = false;
+    if (php_manual_path.size() > 0 && Helper::folderExists(php_manual_path)) phpManualIsInstalled = true;
     QString file = helpWords->findHelpFile(name);
-    if (file.size() > 0 && Helper::fileExists(php_manual_path + "/" + file)) {
+    if (phpManualIsInstalled && file.size() > 0 && Helper::fileExists(php_manual_path + "/" + file)) {
         setHelpTabSource(php_manual_path + "/" + file);
+    } else if (!phpManualIsInstalled && file.size() > 0) {
+        QString phpURL = "https://www.php.net/manual/" + file.replace(QRegularExpression(".html$"), ".php");
+        QString helpStr = tr("PHP Manual is not installed. Go to %1").arg("<a href=\""+phpURL+"\">"+phpURL+"</a>");
+        setHelpTabContents(helpStr);
     } else {
         clearHelpTabSource();
         QString text = "";
@@ -2518,15 +2523,28 @@ void MainWindow::setHelpTabSource(QString path)
     ui->helpBrowser->setHtml(source);
 }
 
+void MainWindow::setHelpTabContents(QString html)
+{
+    if (html.size() == 0) return;
+    hideQAPanel();
+    if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
+    ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_HELP_INDEX);
+    ui->helpBrowser->setHtml(html);
+}
+
 void MainWindow::helpBrowserAnchorClicked(QUrl url)
 {
     QString file = url.toString();
     if (file.indexOf("#") >= 0) file = file.mid(0, file.indexOf("#"));
     if (file.size() == 0) return;
-    QString php_manual_path = QString::fromStdString(settings->get("php_manual_path"));
-    if (php_manual_path.size() == 0 || !Helper::folderExists(php_manual_path)) return;
-    if (!Helper::fileExists(php_manual_path + "/" + file)) return;
-    setHelpTabSource(php_manual_path + "/" + file);
+    if (file.indexOf("https://") == 0 || file.indexOf("http://") == 0) {
+        QDesktopServices::openUrl(url);
+    } else {
+        QString php_manual_path = QString::fromStdString(settings->get("php_manual_path"));
+        if (php_manual_path.size() == 0 || !Helper::folderExists(php_manual_path)) return;
+        if (!Helper::fileExists(php_manual_path + "/" + file)) return;
+        setHelpTabSource(php_manual_path + "/" + file);
+    }
 }
 
 void MainWindow::messagesBrowserAnchorClicked(QUrl url)
