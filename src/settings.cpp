@@ -21,6 +21,7 @@ const QString THEME_DARK = "dark";
 const QString CUSTOM_THEME_CSS_FILE = "theme.css";
 const QString CUSTOM_THEME_SCHEME_FILE = "scheme.css";
 const QString CUSTOM_THEME_COLORS_FILE = "colors";
+const QString CUSTOM_THEME_ICONS_FOLDER = "icons";
 
 const QString CUSTOM_THEMES_FALLBACK_FOLDER = "themes";
 const QString PHP_MANUAL_FALLBACK_FOLDER = "php-chunked-xhtml";

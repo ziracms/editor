@@ -88,6 +88,7 @@ protected:
     void runServersCommand(QString command, QString pwd, QString description);
     void compileSass(QString src, QString dst);
     void applyThemeColors(QString pluginsDir, bool light, bool applyFont);
+    void applyThemeIcons();
     void updateTabsListButton();
     void resetLastSearchParams();
     void showWelcomeScreen();

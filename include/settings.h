@@ -21,6 +21,7 @@ extern const QString THEME_DARK;
 extern const QString CUSTOM_THEME_CSS_FILE;
 extern const QString CUSTOM_THEME_SCHEME_FILE;
 extern const QString CUSTOM_THEME_COLORS_FILE;
+extern const QString CUSTOM_THEME_ICONS_FOLDER;
 
 extern const QString CUSTOM_THEMES_FALLBACK_FOLDER;
 extern const QString PHP_MANUAL_FALLBACK_FOLDER;

@@ -3,6 +3,7 @@
 #include <QMenu>
 #include <QShortcut>
 #include <QKeyEvent>
+#include "icon.h"
 
 const QString GB_ACTION_NAME_ADD = "add";
 const QString GB_ACTION_NAME_RESET = "reset";
@@ -113,17 +114,17 @@ void GitBrowser::gitBrowserContextMenuRequested(QTreeWidgetItem * item)
 
     QMenu menu(treeWidget);
 
-    QAction * addAction = menu.addAction(QIcon(":icons/plus.png"), tr("Add"));
+    QAction * addAction = menu.addAction(Icon::get("actionGitAdd", QIcon(":icons/plus.png")), tr("Add"));
     addAction->setData(QVariant(GB_ACTION_NAME_ADD));
     if (item == nullptr) addAction->setEnabled(false);
 
-    QAction * resetAction = menu.addAction(QIcon(":icons/minus.png"), tr("Reset"));
+    QAction * resetAction = menu.addAction(Icon::get("actionGitReset", QIcon(":icons/minus.png")), tr("Reset"));
     resetAction->setData(QVariant(GB_ACTION_NAME_RESET));
     if (item == nullptr) resetAction->setEnabled(false);
 
     menu.addSeparator();
 
-    QAction * commitAction = menu.addAction(QIcon(":icons/ok.png"), tr("Commit"));
+    QAction * commitAction = menu.addAction(Icon::get("actionGitCommit", QIcon(":icons/ok.png")), tr("Commit"));
     commitAction->setData(QVariant(GB_ACTION_NAME_COMMIT));
 
     //QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));

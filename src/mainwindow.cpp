@@ -32,6 +32,7 @@
 #include "settingsdialog.h"
 #include "helpdialog.h"
 #include "docktitlebar.h"
+#include "icon.h"
 
 const int OUTPUT_TAB_MESSAGES_INDEX = 0;
 const int OUTPUT_TAB_HELP_INDEX = 1;
@@ -122,6 +123,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
     setAcceptDrops(true);
+
+    applyThemeIcons();
 
     if (applyWidgetsFont && theme != THEME_SYSTEM && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) > 0) {
         ui->tabWidget->setFont(appFont);
@@ -402,8 +405,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget* spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui->mainToolBar->addWidget(spacer);
-    QAction * sidebarAction = ui->mainToolBar->addAction(QIcon(":icons/sidebar.png"), tr("Sidebar"));
-    QAction * outputAction = ui->mainToolBar->addAction(QIcon(":icons/output.png"), tr("Output"));
+    QAction * sidebarAction = ui->mainToolBar->addAction(Icon::get("actionSidebar", QIcon(":icons/sidebar.png")), tr("Sidebar"));
+    QAction * outputAction = ui->mainToolBar->addAction(Icon::get("actionOutput", QIcon(":icons/output.png")), tr("Output"));
     connect(sidebarAction, SIGNAL(triggered(bool)), this, SLOT(sidebarActionTriggered(bool)));
     connect(outputAction, SIGNAL(triggered(bool)), this, SLOT(outputActionTriggered(bool)));
 
@@ -2758,6 +2761,18 @@ void MainWindow::applyThemeColors(QString pluginsDir, bool light, bool applyFont
     }
 
     if (style.trimmed().size() > 0) setStyleSheet(style);
+}
+
+void MainWindow::applyThemeIcons()
+{
+    Icon::reset();
+    if (theme == THEME_DARK) {
+        Icon::applyActionIcons(ui->menuBar, ":/styles/dark/icons");
+    } else if (theme == THEME_LIGHT) {
+        Icon::applyActionIcons(ui->menuBar, ":/styles/light/icons");
+    } else if (customThemesPath.size() > 0 && Helper::folderExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_ICONS_FOLDER) && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) < 0) {
+        Icon::applyActionIcons(ui->menuBar, customThemesPath + "/" + theme + "/" + CUSTOM_THEME_ICONS_FOLDER);
+    }
 }
 
 void MainWindow::activateProgressLine()

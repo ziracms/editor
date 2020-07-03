@@ -33,6 +33,7 @@ SOURCES += \
     src/docktitlebar.cpp \
     src/filedialog.cpp \
     src/fileiconprovider.cpp \
+    src/icon.cpp \
     src/mainwindow.cpp \
     src/helper.cpp \
     src/progressinfo.cpp \
@@ -86,6 +87,7 @@ HEADERS += \
     include/docktitlebar.h \
     include/filedialog.h \
     include/fileiconprovider.h \
+    include/icon.h \
     include/mainwindow.h \
     include/helper.h \
     include/progressinfo.h \

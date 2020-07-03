@@ -19,6 +19,7 @@
 #include "createprojectdialog.h"
 #include "editprojectdialog.h"
 #include "project.h"
+#include "icon.h"
 
 const QString FB_ACTION_NAME_CREATE_FILE = "fb_new_file";
 const QString FB_ACTION_NAME_CREATE_FOLDER = "fb_new_folder";
@@ -224,29 +225,29 @@ void FileBrowser::fileBrowserContextMenuRequested(QTreeWidgetItem * item)
     menu.setFont(QApplication::font());
 
     //QAction * openAction = menu.addAction(treeWidget->style()->standardIcon(QStyle::SP_DialogOpenButton), tr("Open"));
-    QAction * openAction = menu.addAction(QIcon(":icons/document-open.png"), tr("Open"));
+    QAction * openAction = menu.addAction(Icon::get("actionOpenFile", QIcon(":icons/document-open.png")), tr("Open"));
     openAction->setData(QVariant(FB_ACTION_NAME_OPEN));
     if (disabled || item == nullptr) openAction->setDisabled(true);
 
     //QAction * reloadAction = menu.addAction(treeWidget->style()->standardIcon(QStyle::SP_BrowserReload), tr("Refresh"));
-    QAction * reloadAction = menu.addAction(QIcon(":icons/view-refresh.png"), tr("Refresh"));
+    QAction * reloadAction = menu.addAction(Icon::get("actionRefresh", QIcon(":icons/view-refresh.png")), tr("Refresh"));
     reloadAction->setData(QVariant(FB_ACTION_NAME_RELOAD));
     if (disabled || !isFolder || item == nullptr) reloadAction->setDisabled(true);
 
     menu.addSeparator();
 
     //QAction * newFileAction = menu.addAction(treeWidget->style()->standardIcon(QStyle::SP_FileIcon), tr("Create new file"));
-    QAction * newFileAction = menu.addAction(QIcon(":icons/document-new.png"), tr("Create new file"));
+    QAction * newFileAction = menu.addAction(Icon::get("actionNewFile", QIcon(":icons/document-new.png")), tr("Create new file"));
     newFileAction->setData(QVariant(FB_ACTION_NAME_CREATE_FILE));
     if (disabled || !isFolder) newFileAction->setDisabled(true);
 
     //QAction * newFolderAction = menu.addAction(treeWidget->style()->standardIcon(QStyle::SP_FileDialogNewFolder), tr("Create new folder"));
-    QAction * newFolderAction = menu.addAction(QIcon(":icons/folder-new.png"), tr("Create new folder"));
+    QAction * newFolderAction = menu.addAction(Icon::get("actionNewFolder", QIcon(":icons/folder-new.png")), tr("Create new folder"));
     newFolderAction->setData(QVariant(FB_ACTION_NAME_CREATE_FOLDER));
     if (disabled || !isFolder) newFolderAction->setDisabled(true);
 
     //QAction * renameAction = menu.addAction(treeWidget->style()->standardIcon(QStyle::SP_CommandLink), tr("Rename"));
-    QAction * renameAction = menu.addAction(QIcon(":icons/edit.png"), tr("Rename"));
+    QAction * renameAction = menu.addAction(Icon::get("actionEdit", QIcon(":icons/edit.png")), tr("Rename"));
     renameAction->setData(QVariant(FB_ACTION_NAME_RENAME));
     if (disabled || item == nullptr) renameAction->setDisabled(true);
 
@@ -267,7 +268,7 @@ void FileBrowser::fileBrowserContextMenuRequested(QTreeWidgetItem * item)
     menu.addSeparator();
 
     //QAction * deleteAction = menu.addAction(treeWidget->style()->standardIcon(QStyle::SP_TrashIcon), tr("Delete"));
-    QAction * deleteAction = menu.addAction(QIcon(":icons/edit-delete.png"), tr("Delete"));
+    QAction * deleteAction = menu.addAction(Icon::get("actionDelete", QIcon(":icons/edit-delete.png")), tr("Delete"));
     deleteAction->setData(QVariant(FB_ACTION_NAME_DELETE));
     if (disabled || item == nullptr) deleteAction->setDisabled(true);
 

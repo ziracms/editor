@@ -98,7 +98,7 @@ QMenu::indicator:checked
         stop: 0.3 transparent
     );
     */
-    image: url(:/icons/ok.png);
+    image: url(:/styles/light/ok.png);
 }
 
 QMenu::indicator:unchecked
@@ -127,7 +127,7 @@ QMenu::right-arrow
     border-image: none;
     width: 16px;
     height: 16px;
-    image: url(":/icons/item.png");
+    image: url(":/styles/light/item.png");
 }
 
 QWidget:disabled
