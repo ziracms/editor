@@ -19,7 +19,6 @@ protected:
     void mousePressEvent(QMouseEvent *e) override;
     void display(int x, int y, QString text);
     QHBoxLayout * hLayout;
-    QLabel * imgLabel;
     QLabel * textLabel;
     std::string bgColorStr;
     std::string errorBgColorStr;

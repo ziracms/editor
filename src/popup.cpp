@@ -4,16 +4,16 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include "math.h"
+#include "helper.h"
 
 const int WIDGET_MIN_WIDTH = 600;
 const int WIDGET_MIN_HEIGHT = 60;
-const int IMAGE_WIDTH = 150;
 const int PADDING = 10;
 const int BORDER = 1;
 
 const int ANIMATION_DURATION = 200;
 const int ANIMATION_OFFSET = 150;
-const int HIDE_DELAY = 3000;
+const int HIDE_DELAY = 4000;
 
 Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
 {
@@ -40,19 +40,12 @@ Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
     hLayout->setMargin(0);
     hLayout->setSpacing(0);
 
-    imgLabel = new QLabel();
-    QPixmap pm(":/image/zira.png");
-    imgLabel->setPixmap(pm);
-    imgLabel->setScaledContents(false);
-    imgLabel->setFixedWidth(IMAGE_WIDTH);
-    imgLabel->setAlignment(Qt::AlignVCenter);
-    hLayout->addWidget(imgLabel);
-
     textLabel = new QLabel();
     textLabel->setTextFormat(Qt::RichText);
     textLabel->setWordWrap(true);
     textLabel->setAlignment(Qt::AlignTop);
-    textLabel->setMinimumWidth(WIDGET_MIN_WIDTH - IMAGE_WIDTH);
+    textLabel->setMinimumWidth(WIDGET_MIN_WIDTH);
+    textLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     textLabel->setFont(popupFont);
     textLabel->setContentsMargins(0, 0, 0, 0);
     textLabel->setMargin(PADDING);
@@ -132,6 +125,26 @@ void Popup::display(int x, int y, QString text)
 {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
+
+    setMaximumWidth(16777215);
+    setMinimumWidth(WIDGET_MIN_WIDTH);
+    textLabel->setMaximumWidth(16777215);
+    textLabel->setMinimumWidth(WIDGET_MIN_WIDTH);
+    int width = geometry().width();
+    QWidget * wnd = Helper::getWindowWidget();
+    if (wnd != nullptr) {
+        int sw = wnd->geometry().width();
+        if (x + width > sw && x > 0) {
+            x = 0;
+        }
+        if (x + width > sw && x == 0) {
+            setMaximumWidth(sw);
+            setMinimumWidth(sw);
+            textLabel->setMinimumWidth(sw);
+            textLabel->setMaximumWidth(sw);
+        }
+    }
+
     QRect rect = geometry();
     rect.setTop(y);
     rect.setLeft(x);
@@ -139,7 +152,7 @@ void Popup::display(int x, int y, QString text)
     textLabel->setText(text);
 
     QFontMetrics fm(textLabel->font());
-    int w = geometry().width() - IMAGE_WIDTH - 2*PADDING;
+    int w = textLabel->geometry().width() - 2*PADDING;
     /* QFontMetrics::width is deprecated */
     /*
     int tw = fm.width(text);
