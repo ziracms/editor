@@ -52,5 +52,10 @@
         <file alias="mail.png">resources/images/icons/mail.png</file>
         <file alias="list.png">resources/images/icons/list.png</file>
         <file alias="split.png">resources/images/icons/split.png</file>
+        <file alias="edit-copy.png">resources/images/icons/edit-copy.png</file>
+        <file alias="edit-cut.png">resources/images/icons/edit-cut.png</file>
+        <file alias="edit-paste.png">resources/images/icons/edit-paste.png</file>
+        <file alias="branch-close.png">resources/images/icons/branch-close.png</file>
+        <file alias="branch-open.png">resources/images/icons/branch-open.png</file>
     </qresource>
 </RCC>

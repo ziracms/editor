@@ -34,6 +34,7 @@
 #include <QScreen>
 #include "math.h"
 #include "helper.h"
+#include "icon.h"
 
 const std::string CRLF = "crlf";
 const std::string CR = "cr";
@@ -4959,7 +4960,7 @@ void Editor::breadcrumbsPaintEvent(QPaintEvent *event)
     QString text = static_cast<Breadcrumbs *>(breadcrumbs)->getText();
     if (pretty) {
         painter.setRenderHint(QPainter::SmoothPixmapTransform);
-        QPixmap delimiter(":/icons/separator.png");
+        QIcon delimiter = Icon::get("separator", QIcon(":/icons/separator.png"));
         int listOffset = 0;
         /*
         int listMargin = 10;
@@ -4986,7 +4987,7 @@ void Editor::breadcrumbsPaintEvent(QPaintEvent *event)
             listOffset += listMargin+listMargin/4+lineSize;
             */
             listOffset += width;
-            painter.drawPixmap(lineW+markW+listOffset, 0, breadcrumbs->height(), breadcrumbs->height(), delimiter);
+            painter.drawPixmap(lineW+markW+listOffset, 0, breadcrumbs->height(), breadcrumbs->height(), delimiter.pixmap(64, 64));
             listOffset += breadcrumbs->height();
         }
     } else {
@@ -6589,19 +6590,36 @@ void Editor::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu * menu = createStandardContextMenu();
     menu->setFont(QApplication::font());
-    menu->addAction(tr("Reload"), this, SLOT(reloadRequested()));
+    QList<QAction *> actions = menu->actions();
+    for (QAction * action : actions) {
+        if (action->isSeparator()) continue;
+        QString actionName = action->objectName();
+        if (actionName.size() == 0) continue;
+        QString newActionName = actionName;
+        if (actionName == "edit-redo") newActionName = "actionRedo";
+        else if (actionName == "edit-undo") newActionName = "actionUndo";
+        else if (actionName == "edit-cut") newActionName = "actionCut";
+        else if (actionName == "edit-copy") newActionName = "actionCopy";
+        else if (actionName == "edit-paste") newActionName = "actionPaste";
+        else if (actionName == "edit-delete") newActionName = "actionDelete";
+        else continue;
+        QIcon icon = Icon::get(newActionName, QIcon(":/icons/"+actionName+".png"));
+        if (!icon.isNull()) action->setIcon(icon);
+
+    }
+    menu->addAction(Icon::get("actionRefresh", QIcon(":/icons/view-refresh.png")), tr("Reload"), this, SLOT(reloadRequested()));
     menu->addSeparator();
-    menu->addAction(tr("Find \\ Replace"), this, SLOT(showSearchRequested()));
-    menu->addAction(tr("Open declaration"), this, SLOT(showDeclarationRequested()));
-    menu->addAction(tr("Search in files"), this, SLOT(searchInFilesRequested()));
+    menu->addAction(Icon::get("actionFindReplace"), tr("Find \\ Replace"), this, SLOT(showSearchRequested()));
+    menu->addAction(Icon::get("actionOpenDeclaration"), tr("Open declaration"), this, SLOT(showDeclarationRequested()));
+    menu->addAction(Icon::get("actionSearchInFiles"), tr("Search in files"), this, SLOT(searchInFilesRequested()));
     menu->addSeparator();
-    menu->addAction(tr("Save"), this, SLOT(save()));
+    menu->addAction(Icon::get("actionSave", QIcon(":/icons/document-save.png")), tr("Save"), this, SLOT(save()));
     menu->addSeparator();
-    QAction * backAction = menu->addAction(tr("Back"), this, SLOT(back()));
-    QAction * forwardAction = menu->addAction(tr("Forward"), this, SLOT(forward()));
-    menu->addAction(tr("Go to ..."), this, SLOT(gotoLineRequest()));
+    QAction * backAction = menu->addAction(Icon::get("actionBack", QIcon(":/icons/go-previous.png")), tr("Back"), this, SLOT(back()));
+    QAction * forwardAction = menu->addAction(Icon::get("actionForward", QIcon(":/icons/go-next.png")), tr("Forward"), this, SLOT(forward()));
+    menu->addAction(Icon::get("actionGoto"), tr("Go to ..."), this, SLOT(gotoLineRequest()));
     menu->addSeparator();
-    menu->addAction(tr("Help"), this, SLOT(showHelpRequested()));
+    menu->addAction(Icon::get("actionHelp"), tr("Help"), this, SLOT(showHelpRequested()));
 
     if (!isBackable()) backAction->setEnabled(false);
     if (!isForwadable()) forwardAction->setEnabled(false);

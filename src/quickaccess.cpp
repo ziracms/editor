@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QScrollBar>
 #include <QFontDatabase>
+#include "icon.h"
 
 const int WIDGET_MIN_WIDTH = 200;
 const int WIDGET_MIN_HEIGHT = 100;
@@ -47,7 +48,7 @@ QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
 
     vLayout->addStretch();
 
-    clearAction = findEdit->addAction(QIcon(":icons/clear.png"), QLineEdit::TrailingPosition);
+    clearAction = findEdit->addAction(Icon::get("clear", QIcon(":icons/clear.png")), QLineEdit::TrailingPosition);
     clearAction->setVisible(false);
     connect(clearAction, SIGNAL(triggered(bool)), this, SLOT(clearActionTriggered(bool)));
 

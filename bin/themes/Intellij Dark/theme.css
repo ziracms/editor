@@ -173,14 +173,14 @@ QTreeView::branch:closed:has-children:has-siblings,
 QTreeView::branch:closed:has-children:!has-siblings
 {
     border-image: none;
-    image: url(:/icons/plus.png);
+    image: url($theme_dir/images/branch-open.png);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings
 {
     border-image: none;
-    image: url(:/icons/minus.png);
+    image: url($theme_dir/images/branch-close.png);
 }
 
 QSizeGrip
@@ -197,26 +197,26 @@ QHeaderView::section
 }
 
 QHeaderView::down-arrow {
-    image: url(:/icons/desc.png);
+    image: url($theme_dir/images/desc.png);
 }
 
 QHeaderView::up-arrow {
-    image: url(:/icons/asc.png);
+    image: url($theme_dir/images/asc.png);
 }
 
 QFileDialog
 {
-    filedialog-new-directory-icon: url(:/icons/folder-new.png);
-    filedialog-parent-directory-icon: url(:/icons/up.png);
-    filedialog-listview-icon: url(:/icons/sidebar.png);
-    filedialog-detailedview-icon: url(:/icons/output.png);
-    backward-icon: url(:/icons/go-previous.png);
-    forward-icon: url(:/icons/go-next.png);
+    filedialog-new-directory-icon: url($theme_dir/icons/folder.png);
+    filedialog-parent-directory-icon: url($theme_dir/icons/up.png);
+    filedialog-listview-icon: url($theme_dir/icons/actionSidebar.png);
+    filedialog-detailedview-icon: url($theme_dir/icons/actionOutput.png);
+    backward-icon: url($theme_dir/icons/left.png);
+    forward-icon: url($theme_dir/icons/right.png);
 }
 
 QDialog
 {
-    messagebox-question-icon: url(:/icons/help-info.png);
+    messagebox-question-icon: url($theme_dir/images/question.png);
 }
 
 QDialog QLineEdit
@@ -803,11 +803,11 @@ QTabBar QToolButton:hover
 }
 
 QTabBar QToolButton::right-arrow {
-    image: url(:/icons/go-next.png);
+    image: url($theme_dir/icons/right.png);
 }
 
 QTabBar QToolButton::left-arrow {
-    image: url(:/icons/go-previous.png);
+    image: url($theme_dir/icons/left.png);
 }
 
 QTabBar::scroller
@@ -817,13 +817,13 @@ QTabBar::scroller
 
 QTabBar::close-button
 {
-    image: url(:/styles/dark/close.png);
+    image: url($theme_dir/images/close.png);
     subcontrol-position: right;
 }
 
 QTabBar::close-button:hover
 {
-    image: url(:/styles/dark/close-hover.png);
+    image: url($theme_dir/images/close-hover.png);
 }
 
 QTabWidget::pane 
@@ -1010,6 +1010,8 @@ QDialogButtonBox
     dialog-cancel-icon: url(:/styles/dark/cancel.png);
     dialog-reset-icon: url(:/styles/dark/reset.png);
     dialog-help-icon: url(:/styles/dark/list.png);
+    dialog-open-icon: url(:/styles/dark/icons/actionOpenFile.png);
+    dialog-save-icon: url(:/styles/dark/icons/actionSave.png);
 }
 
 QuickAccess,

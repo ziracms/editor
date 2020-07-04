@@ -72,6 +72,21 @@ Other names:
     actionEdit
     actionDelete
     actionRefresh
+    actionCopy
+    actionPaste
+    actionCut
+    actionOpenDeclaration
+    actionGoto
+    actionHelp
+    actionTabsList
+    file
+    folder
+    left
+    right
+    up
+    down
+    clear
+    separator
 */
 
 QString Icon::prefix = "";

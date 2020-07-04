@@ -19,6 +19,11 @@
         <file alias="list.png">resources/styles/dark/images/list.png</file>
         <file alias="separator-double.png">resources/styles/dark/images/separator-double.png</file>
         <file alias="item.png">resources/styles/dark/images/item.png</file>
+        <file alias="branch-close.png">resources/styles/dark/images/branch-close.png</file>
+        <file alias="branch-open.png">resources/styles/dark/images/branch-open.png</file>
+        <file alias="question.png">resources/styles/dark/images/question.png</file>
+        <file alias="asc.png">resources/styles/dark/images/asc.png</file>
+        <file alias="desc.png">resources/styles/dark/images/desc.png</file>
     </qresource>
     <qresource prefix="/styles/light">
         <file alias="style">resources/styles/light/style</file>
@@ -40,6 +45,11 @@
         <file alias="list.png">resources/styles/light/images/list.png</file>
         <file alias="separator-double.png">resources/styles/light/images/separator-double.png</file>
         <file alias="item.png">resources/styles/light/images/item.png</file>
+        <file alias="branch-close.png">resources/styles/light/images/branch-close.png</file>
+        <file alias="branch-open.png">resources/styles/light/images/branch-open.png</file>
+        <file alias="question.png">resources/styles/light/images/question.png</file>
+        <file alias="asc.png">resources/styles/light/images/asc.png</file>
+        <file alias="desc.png">resources/styles/light/images/desc.png</file>
     </qresource>
     <qresource prefix="/styles/dark/icons">
         <file alias="actionOpenFile.png">resources/styles/dark/icons/actionOpenFile.png</file>
@@ -75,6 +85,19 @@
         <file alias="actionDelete.png">resources/styles/dark/icons/actionDelete.png</file>
         <file alias="actionEdit.png">resources/styles/dark/icons/actionEdit.png</file>
         <file alias="actionRefresh.png">resources/styles/dark/icons/actionRefresh.png</file>
+        <file alias="actionCopy.png">resources/styles/dark/icons/actionCopy.png</file>
+        <file alias="actionCut.png">resources/styles/dark/icons/actionCut.png</file>
+        <file alias="actionPaste.png">resources/styles/dark/icons/actionPaste.png</file>
+        <file alias="file.png">resources/styles/dark/icons/file.png</file>
+        <file alias="folder.png">resources/styles/dark/icons/folder.png</file>
+        <file alias="left.png">resources/styles/dark/icons/left.png</file>
+        <file alias="right.png">resources/styles/dark/icons/right.png</file>
+        <file alias="up.png">resources/styles/dark/icons/up.png</file>
+        <file alias="down.png">resources/styles/dark/icons/down.png</file>
+        <file alias="actionTabsList.png">resources/styles/dark/icons/actionTabsList.png</file>
+        <file alias="clear.png">resources/styles/dark/icons/clear.png</file>
+        <file alias="separator.png">resources/styles/dark/icons/separator.png</file>
+        <file alias="close.png">resources/styles/dark/icons/close.png</file>
     </qresource>
     <qresource prefix="/styles/light/icons">
         <file alias="actionOpenFile.png">resources/styles/light/icons/actionOpenFile.png</file>
@@ -110,5 +133,18 @@
         <file alias="actionDelete.png">resources/styles/light/icons/actionDelete.png</file>
         <file alias="actionEdit.png">resources/styles/light/icons/actionEdit.png</file>
         <file alias="actionRefresh.png">resources/styles/light/icons/actionRefresh.png</file>
+        <file alias="actionCopy.png">resources/styles/light/icons/actionCopy.png</file>
+        <file alias="actionCut.png">resources/styles/light/icons/actionCut.png</file>
+        <file alias="actionPaste.png">resources/styles/light/icons/actionPaste.png</file>
+        <file alias="file.png">resources/styles/light/icons/file.png</file>
+        <file alias="folder.png">resources/styles/light/icons/folder.png</file>
+        <file alias="down.png">resources/styles/light/icons/down.png</file>
+        <file alias="left.png">resources/styles/light/icons/left.png</file>
+        <file alias="right.png">resources/styles/light/icons/right.png</file>
+        <file alias="up.png">resources/styles/light/icons/up.png</file>
+        <file alias="actionTabsList.png">resources/styles/light/icons/actionTabsList.png</file>
+        <file alias="clear.png">resources/styles/light/icons/clear.png</file>
+        <file alias="separator.png">resources/styles/light/icons/separator.png</file>
+        <file alias="close.png">resources/styles/light/icons/close.png</file>
     </qresource>
 </RCC>

@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QAction>
 #include <QTimer>
+#include "icon.h"
 
 const int INPUT_WIDTH_MIN = 100;
 const int INPUT_WIDTH_MAX = 300;
@@ -42,11 +43,11 @@ Search::Search(Editor * codeEditor) : QWidget(codeEditor)
 
     findButton = new QPushButton();
     findButton->setText(tr("Find"));
-    findButton->setIcon(QIcon(":/icons/go-next.png"));
+    findButton->setIcon(Icon::get("right", QIcon(":/icons/go-next.png")));
 
     findPrevButton = new QPushButton();
     findPrevButton->setText(tr("Prev."));
-    findPrevButton->setIcon(QIcon(":/icons/go-previous.png"));
+    findPrevButton->setIcon(Icon::get("left", QIcon(":/icons/go-previous.png")));
 
     findCaseSensitive = new QCheckBox();
     findCaseSensitive->setText("CaSe");
@@ -86,7 +87,7 @@ Search::Search(Editor * codeEditor) : QWidget(codeEditor)
 
     closeButton = new QPushButton();
     closeButton->setText(tr("Close"));
-    closeButton->setIcon(QIcon(":/icons/close.png"));
+    closeButton->setIcon(Icon::get("close", QIcon(":/icons/close.png")));
 
     hLayoutReplace = new QHBoxLayout();
     hLayoutReplace->addWidget(replaceEdit);

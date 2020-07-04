@@ -59,7 +59,7 @@ void FileBrowser::initFileBrowser(QString homeDir)
         if (stddirs.size()>0) homeDir = stddirs.at(0);
     }
     if (homeDir.size()==0) homeDir = ".";
-    QAction * upAction = pathLine->addAction(QIcon(":icons/levelup.png"), QLineEdit::TrailingPosition);
+    QAction * upAction = pathLine->addAction(Icon::get("up", QIcon(":icons/levelup.png")), QLineEdit::TrailingPosition);
     connect(upAction, SIGNAL(triggered(bool)), this, SLOT(upActionTriggered(bool)));
     buildFileBrowserTree(homeDir);
     connect(treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(fileBrowserExpanded(QTreeWidgetItem*)));
@@ -102,7 +102,7 @@ void FileBrowser::buildFileBrowserTree(QString startDir, QTreeWidgetItem * paren
         QFileInfo fInfo(path);
         item->setText(0, fInfo.fileName());
         //item->setIcon(0, treeWidget->style()->standardIcon(QStyle::SP_DirIcon));
-        item->setIcon(0, QIcon(":icons/folder.png"));
+        item->setIcon(0, Icon::get("folder", QIcon(":icons/folder.png")));
         item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
         item->setToolTip(0, path);
         item->setData(0, Qt::UserRole, QVariant(path));
@@ -119,7 +119,7 @@ void FileBrowser::buildFileBrowserTree(QString startDir, QTreeWidgetItem * paren
         QFileInfo fInfo(path);
         item->setText(0, fInfo.fileName());
         //item->setIcon(0, treeWidget->style()->standardIcon(QStyle::SP_FileIcon));
-        item->setIcon(0, QIcon(":icons/file.png"));
+        item->setIcon(0, Icon::get("file", QIcon(":icons/file.png")));
         item->setToolTip(0, path);
         item->setData(0, Qt::UserRole, QVariant(path));
         if (parent == nullptr) {
@@ -253,15 +253,15 @@ void FileBrowser::fileBrowserContextMenuRequested(QTreeWidgetItem * item)
 
     menu.addSeparator();
 
-    QAction * copyAction = menu.addAction(tr("Copy"));
+    QAction * copyAction = menu.addAction(Icon::get("actionCopy", QIcon(":icons/edit-copy.png")), tr("Copy"));
     copyAction->setData(QVariant(FB_ACTION_NAME_COPY));
     if (disabled || isFolder || item == nullptr) copyAction->setDisabled(true);
 
-    QAction * cutAction = menu.addAction(tr("Cut"));
+    QAction * cutAction = menu.addAction(Icon::get("actionCut", QIcon(":icons/edit-cut.png")), tr("Cut"));
     cutAction->setData(QVariant(FB_ACTION_NAME_CUT));
     if (disabled || isFolder || item == nullptr) cutAction->setDisabled(true);
 
-    QAction * pasteAction = menu.addAction(tr("Paste"));
+    QAction * pasteAction = menu.addAction(Icon::get("actionPaste", QIcon(":icons/edit-paste.png")), tr("Paste"));
     pasteAction->setData(QVariant(FB_ACTION_NAME_PASTE));
     if (disabled || !isFolder || (fbcopypath.size() == 0 && fbcutpath.size() == 0) || item == nullptr) pasteAction->setDisabled(true);
 
@@ -325,12 +325,12 @@ void FileBrowser::fbCreateNewItemRequested(QTreeWidgetItem * item, QString actio
     if (actionName == FB_ACTION_NAME_CREATE_FILE) {
         tmpitem->setText(0, "");
         //tmpitem->setIcon(0, treeWidget->style()->standardIcon(QStyle::SP_FileIcon));
-        tmpitem->setIcon(0, QIcon(":icons/file.png"));
+        tmpitem->setIcon(0, Icon::get("file", QIcon(":icons/file.png")));
         item->addChild(tmpitem);
     } else if (actionName == FB_ACTION_NAME_CREATE_FOLDER) {
         tmpitem->setText(0, "");
         //tmpitem->setIcon(0, treeWidget->style()->standardIcon(QStyle::SP_DirIcon));
-        tmpitem->setIcon(0, QIcon(":icons/folder.png"));
+        tmpitem->setIcon(0, Icon::get("folder", QIcon(":icons/folder.png")));
         item->insertChild(0, tmpitem);
     }
     treeWidget->editItem(tmpitem, 0);

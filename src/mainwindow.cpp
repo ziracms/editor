@@ -199,7 +199,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // tab list
     tabsListButton = new QToolButton(ui->tabWidget);
-    tabsListButton->setIcon(QIcon(":/icons/leveldown.png"));
+    tabsListButton->setIcon(Icon::get("actionTabsList", QIcon(":/icons/leveldown.png")));
     tabsListButton->setToolTip(tr("Tabs list"));
     tabsListButton->hide();
 
@@ -2729,7 +2729,7 @@ void MainWindow::applyThemeColors(QString pluginsDir, bool light, bool applyFont
         QFile f(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_CSS_FILE);
         f.open(QIODevice::ReadOnly);
         QTextStream in(&f);
-        style += in.readAll() + "\n";
+        style += in.readAll().replace("$theme_dir", customThemesPath + "/" + theme) + "\n";
         f.close();
     } else if (theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) > 0) {
         QStringList stylePlugins = Helper::getInstalledStylePlugins(pluginsDir);
@@ -2773,6 +2773,15 @@ void MainWindow::applyThemeIcons()
     } else if (customThemesPath.size() > 0 && Helper::folderExists(customThemesPath + "/" + theme + "/" + CUSTOM_THEME_ICONS_FOLDER) && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) < 0) {
         Icon::applyActionIcons(ui->menuBar, customThemesPath + "/" + theme + "/" + CUSTOM_THEME_ICONS_FOLDER);
     }
+
+    QIcon gitPullIcon = Icon::get("actionGitPull");
+    if (!gitPullIcon.isNull()) ui->gitTabPullButton->setIcon(gitPullIcon);
+    QIcon gitPushIcon = Icon::get("actionGitPush");
+    if (!gitPushIcon.isNull()) ui->gitTabPushButton->setIcon(gitPushIcon);
+    QIcon gitCommitIcon = Icon::get("actionGitCommit");
+    if (!gitCommitIcon.isNull()) ui->gitTabCommitButton->setIcon(gitCommitIcon);
+    QIcon gitRefreshIcon = Icon::get("actionRefresh");
+    if (!gitRefreshIcon.isNull()) ui->gitTabRefreshButton->setIcon(gitRefreshIcon);
 }
 
 void MainWindow::activateProgressLine()

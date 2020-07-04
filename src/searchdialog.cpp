@@ -7,6 +7,7 @@
 #include "searchdialog.h"
 #include <QFileDialog>
 #include "helper.h"
+#include "icon.h"
 
 SearchDialog::SearchDialog(QWidget * parent) :
     QDialog(parent),
@@ -189,7 +190,7 @@ void SearchDialog::addExcludeDirButton(QString dir)
     if (dirName.indexOf("/") >= 0) dirName = dirName.mid(dirName.lastIndexOf("/")+1);
     QPushButton * btn = new QPushButton();
     btn->setText(dirName);
-    btn->setIcon(QIcon(":/icons/close.png"));
+    btn->setIcon(Icon::get("close", QIcon(":/icons/close.png")));
     btn->setToolTip(dir);
     ui->searchDialogExcludeFrame->layout()->addWidget(btn);
     connect(btn, SIGNAL(pressed()), this, SLOT(removeExcludeDirButton()));

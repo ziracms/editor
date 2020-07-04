@@ -1,5 +1,6 @@
 #include "tabslist.h"
 #include <QKeyEvent>
+#include "icon.h"
 
 TabsList::TabsList(QWidget * parent) : QListWidget(parent)
 {
@@ -33,7 +34,7 @@ void TabsList::addItem(QString text, QString tooltip, int index)
     QVariant itemData(index);
     newItem->setData(Qt::UserRole, itemData);
     newItem->setText(text);
-    newItem->setIcon(QIcon(":/icons/item.png"));
+    newItem->setIcon(Icon::get("right", QIcon(":/icons/item.png")));
     newItem->setToolTip(tooltip);
     insertItem(count(), newItem);
 }

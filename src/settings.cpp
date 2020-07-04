@@ -138,7 +138,7 @@ void Settings::applyLightColors()
     data["editor_breadcrumbs_bg_color"] = "#daecf5";
     data["editor_breadcrumbs_warning_bg_color"] = "#fff083";
     data["editor_breadcrumbs_error_bg_color"] = "#ff83ab";
-    data["editor_breadcrumbs_color"] = "#335667";
+    data["editor_breadcrumbs_color"] = "#333333";
     data["editor_widget_border_color"] = "#98c6ff";
     data["editor_selected_line_bg_color"] = "#fef8ff";
     data["editor_selected_word_bg_color"] = "#fffac7";
@@ -216,7 +216,7 @@ void Settings::applyDarkColors()
     data["editor_breadcrumbs_bg_color"] = "#314661";
     data["editor_breadcrumbs_warning_bg_color"] = "#3f3533";
     data["editor_breadcrumbs_error_bg_color"] = "#1d181a";
-    data["editor_breadcrumbs_color"] = "#9fc4d6";
+    data["editor_breadcrumbs_color"] = "#cccccc";
     data["editor_widget_border_color"] = "#15365f";
     data["editor_selected_line_bg_color"] = "#1f1d23";
     data["editor_selected_word_bg_color"] = "#422a58";

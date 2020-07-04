@@ -6,6 +6,7 @@
 
 #include "completepopup.h"
 #include <QScrollBar>
+#include "icon.h"
 
 //const int COMPLETE_POPUP_MIN_WIDTH = 150;
 //const int COMPLETE_POPUP_MAX_WIDTH = 400;
@@ -57,7 +58,7 @@ void CompletePopup::addItem(QString str, QString data, QString delimiter)
     QVariant itemData(data);
     newItem->setData(Qt::UserRole, itemData);
     newItem->setText(str);
-    newItem->setIcon(QIcon(":/icons/item.png"));
+    newItem->setIcon(Icon::get("right", QIcon(":/icons/item.png")));
     if (data.size()>0 && data[0]=="(") {
         if (delimiter.size() > 0 && data.indexOf(delimiter) >= 0) {
             data.replace(delimiter, "\n"+str);

@@ -174,14 +174,14 @@ QTreeView::branch:closed:has-children:has-siblings,
 QTreeView::branch:closed:has-children:!has-siblings
 {
     border-image: none;
-    image: url(:/icons/plus.png);
+    image: url(:/styles/dark/branch-open.png);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings
 {
     border-image: none;
-    image: url(:/icons/minus.png);
+    image: url(:/styles/dark/branch-close.png);
 }
 
 QSizeGrip
@@ -198,26 +198,26 @@ QHeaderView::section
 }
 
 QHeaderView::down-arrow {
-    image: url(:/icons/desc.png);
+    image: url(:/styles/dark/desc.png);
 }
 
 QHeaderView::up-arrow {
-    image: url(:/icons/asc.png);
+    image: url(:/styles/dark/asc.png);
 }
 
 QFileDialog
 {
-    filedialog-new-directory-icon: url(:/icons/folder-new.png);
-    filedialog-parent-directory-icon: url(:/icons/up.png);
-    filedialog-listview-icon: url(:/icons/sidebar.png);
-    filedialog-detailedview-icon: url(:/icons/output.png);
-    backward-icon: url(:/icons/go-previous.png);
-    forward-icon: url(:/icons/go-next.png);
+    filedialog-new-directory-icon: url(:/styles/dark/icons/folder.png);
+    filedialog-parent-directory-icon: url(:/styles/dark/icons/up.png);
+    filedialog-listview-icon: url(:/styles/dark/icons/actionSidebar.png);
+    filedialog-detailedview-icon: url(:/styles/dark/icons/actionOutput.png);
+    backward-icon: url(:/styles/dark/icons/left.png);
+    forward-icon: url(:/styles/dark/icons/right.png);
 }
 
 QDialog
 {
-    messagebox-question-icon: url(:/icons/help-info.png);
+    messagebox-question-icon: url(:/styles/dark/question.png);
 }
 
 QDialog QLineEdit
@@ -804,11 +804,11 @@ QTabBar QToolButton:hover
 }
 
 QTabBar QToolButton::right-arrow {
-    image: url(:/icons/go-next.png);
+    image: url(:/styles/dark/icons/right.png);
 }
 
 QTabBar QToolButton::left-arrow {
-    image: url(:/icons/go-previous.png);
+    image: url(:/styles/dark/icons/left.png);
 }
 
 QTabBar::scroller
@@ -1011,6 +1011,8 @@ QDialogButtonBox
     dialog-cancel-icon: url(:/styles/dark/cancel.png);
     dialog-reset-icon: url(:/styles/dark/reset.png);
     dialog-help-icon: url(:/styles/dark/list.png);
+    dialog-open-icon: url(:/styles/dark/icons/actionOpenFile.png);
+    dialog-save-icon: url(:/styles/dark/icons/actionSave.png);
 }
 
 QuickAccess,
