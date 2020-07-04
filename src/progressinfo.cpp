@@ -1,5 +1,6 @@
 #include "progressinfo.h"
 #include <QFontDatabase>
+#include "icon.h"
 
 const int BORDER = 1;
 const int PADDING = 5;
@@ -43,7 +44,7 @@ ProgressInfo::ProgressInfo(Settings * settings, QWidget *parent) : QWidget(paren
     layout->addWidget(label);
 
     btn = new QToolButton();
-    btn->setIcon(QIcon(":/icons/close.png"));
+    btn->setIcon(Icon::get("close", QIcon(":/icons/close.png")));
     btn->setMinimumWidth(height);
     btn->setMinimumHeight(height);
     btn->setToolTip(tr("Cancel"));
