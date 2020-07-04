@@ -99,7 +99,6 @@ void HelpDialog::mousePressEvent(QMouseEvent */*event*/)
     pressed++;
     if (pressed == 10) {
         QString text = ui->helpLabel->text();
-        int width = ui->helpLabel->geometry().width();
         QString ah = "3c6469763e3c63656e7465723e417574686f723a2042616b68616469722052616b68696d626165762e3c2f63656e7465723e3c2f6469763e";
         QString lh = "3c6469763e3c63656e7465723e546173686b656e742c20557a62656b697374616e2e3c2f63656e7465723e3c2f6469763e";
         QString gh = "3c6469763e3c63656e7465723e4772656574696e677320746f20616c6c2074686f736520626f726e20696e207468652055535352213c2f63656e7465723e3c2f6469763e";
@@ -108,6 +107,5 @@ void HelpDialog::mousePressEvent(QMouseEvent */*event*/)
         text += QByteArray::fromHex(ah.toLocal8Bit());
         text += QByteArray::fromHex(lh.toLocal8Bit());
         ui->helpLabel->setText(text);
-        ui->helpLabel->setFixedWidth(width);
     }
 }
