@@ -15,7 +15,6 @@ const QString TPL_APPLICATION_NAME = "<div><center><big><b>%1</b></big></center>
 const QString TPL_APPLICATION_VERSION = "<div><center>%1</center></div>";
 const QString TPL_ORGANIZATION = "<div><center>(C) 2019 %1 (%2)</center></div>";
 const QString TPL_BLANK = "<div>&nbsp;</div>";
-const QString TPL_LOGO_IMAGE = "<div><center><img src=\":/image/zira.png\" width=\"150\" height=\"150\" /></center></div>";
 
 HelpDialog::HelpDialog(QWidget *parent) :
     QDialog(parent),
@@ -23,6 +22,11 @@ HelpDialog::HelpDialog(QWidget *parent) :
     pressed(0)
 {
     ui->setupUi(this);
+
+    ui->helpDialogIconLayout->setContentsMargins(0, 0, 0, 0);
+    ui->helpDialogIconLayout->setMargin(0);
+    ui->helpDialogIconLayout->setSpacing(0);
+
 
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
@@ -44,6 +48,7 @@ void HelpDialog::shortcutsContent()
     f.close();
 
     setWindowTitle(tr("Shortcuts"));
+    ui->helpDialogIconLabel->hide();
     ui->helpLabel->setText(text);
 
     pressed = 10;
@@ -58,6 +63,7 @@ void HelpDialog::faqContent()
     f.close();
 
     setWindowTitle(tr("FAQ"));
+    ui->helpDialogIconLabel->hide();
     ui->helpLabel->setText(text);
 
     pressed = 10;
@@ -65,7 +71,7 @@ void HelpDialog::faqContent()
 
 void HelpDialog::aboutContent()
 {
-    QString text = TPL_LOGO_IMAGE+TPL_APPLICATION_NAME.arg(APPLICATION_NAME);
+    QString text = TPL_APPLICATION_NAME.arg(APPLICATION_NAME);
     text += TPL_APPLICATION_VERSION.arg(APPLICATION_VERSION);
     text += TPL_BLANK;
 
@@ -81,6 +87,7 @@ void HelpDialog::aboutContent()
     text += TPL_QT_VERSION.arg(qVersion());
 
     setWindowTitle(tr("About"));
+    ui->helpDialogIconLabel->show();
     ui->helpLabel->setText(text);
 
     pressed = 0;

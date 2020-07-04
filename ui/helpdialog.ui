@@ -53,6 +53,9 @@
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -66,6 +69,35 @@
         <number>0</number>
        </property>
        <item>
+        <layout class="QHBoxLayout" name="helpDialogIconLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="helpDialogIconLabel">
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../qrc/image.qrc">:/image/zira.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QLabel" name="helpLabel">
          <property name="text">
           <string/>
@@ -77,7 +109,7 @@
           <bool>false</bool>
          </property>
          <property name="alignment">
-          <set>Qt::AlignJustify|Qt::AlignTop</set>
+          <set>Qt::AlignJustify|Qt::AlignVCenter</set>
          </property>
          <property name="wordWrap">
           <bool>false</bool>
@@ -103,7 +135,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../qrc/image.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
