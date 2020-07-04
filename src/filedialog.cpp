@@ -12,8 +12,8 @@ FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
     setWindowState(windowState() | Qt::WindowMaximized);
-    setOption(QFileDialog::DontUseNativeDialog);
     #endif
+    setOption(QFileDialog::DontUseNativeDialog);
     setViewMode(QFileDialog::Detail);
     iconProvider = new FileIconProvider();
     setIconProvider(iconProvider);

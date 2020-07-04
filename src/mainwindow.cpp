@@ -1209,6 +1209,7 @@ void MainWindow::on_actionColorPicker_triggered()
     }
     //QColor color = QColorDialog::getColor(initColor, this, tr("Pick a color"));
     QColorDialog dialog(this);
+    dialog.setOption(QColorDialog::DontUseNativeDialog);
     dialog.setCurrentColor(initColor);
     dialog.setWindowTitle(tr("Pick a color"));
     //dialog.setOption(QColorDialog::ShowAlphaChannel); // no effect
