@@ -1037,3 +1037,8 @@ QColorDialog
     border: 1px solid #555459;
     padding: 3px;
 }
+
+#helpBrowser
+{
+    background: #000000;
+}
