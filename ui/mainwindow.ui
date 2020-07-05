@@ -272,7 +272,7 @@
    <property name="minimumSize">
     <size>
      <width>192</width>
-     <height>300</height>
+     <height>153</height>
     </size>
    </property>
    <property name="baseSize">
@@ -569,7 +569,7 @@
    <property name="minimumSize">
     <size>
      <width>200</width>
-     <height>166</height>
+     <height>106</height>
     </size>
    </property>
    <property name="contextMenuPolicy">
