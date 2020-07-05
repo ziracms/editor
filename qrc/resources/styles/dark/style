@@ -811,6 +811,14 @@ QTabBar QToolButton::left-arrow {
     image: url(:/styles/dark/icons/left.png);
 }
 
+QTabBar QToolButton::up-arrow {
+    image: url(:/styles/dark/icons/up.png);
+}
+
+QTabBar QToolButton::down-arrow {
+    image: url(:/styles/dark/icons/down.png);
+}
+
 QTabBar::scroller
 {
     width: 40px;

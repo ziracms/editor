@@ -810,6 +810,14 @@ QTabBar QToolButton::left-arrow {
     image: url($theme_dir/icons/left.png);
 }
 
+QTabBar QToolButton::up-arrow {
+    image: url($theme_dir/icons/up.png);
+}
+
+QTabBar QToolButton::down-arrow {
+    image: url($theme_dir/icons/down.png);
+}
+
 QTabBar::scroller
 {
     width: 40px;
