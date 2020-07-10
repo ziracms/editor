@@ -57,7 +57,7 @@ Tested in:
       Raspbian Buster
       
 Requirements:
-      Qt 5.10+ (5.12.6 is recommended)
+      Qt 5.11+ (5.12.6 is recommended)
       hunspell library (optional)
       qtermwidget5 library (optional)
 
