@@ -774,6 +774,8 @@ bool ParserWorker::installAndroidPackFiles()
     QFileInfo androidHomeDirInfo(androidHomePath);
     if (!androidHomeDirInfo.isWritable() || !androidHomeDirInfo.isExecutable()) return false;
 
+    setAndroidFilePermissions(androidHomePath);
+
     if (!createAndroidDirectory(androidHomeDir, androidHomePath + "/" + ANDROID_PACK_SUBDIR)) return false;
     QString androidPackInstallPath = androidHomePath + "/" + ANDROID_PACK_SUBDIR;
 
