@@ -1043,7 +1043,8 @@ QuickAccess QListView:focus
     border: none;
 }
 
-QColorDialog
+QColorDialog,
+QInputDialog
 {
     border: 1px solid #8dbae8;
     padding: 3px;

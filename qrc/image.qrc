@@ -57,5 +57,6 @@
         <file alias="edit-paste.png">resources/images/icons/edit-paste.png</file>
         <file alias="branch-close.png">resources/images/icons/branch-close.png</file>
         <file alias="branch-open.png">resources/images/icons/branch-open.png</file>
+        <file alias="home.png">resources/images/icons/home.png</file>
     </qresource>
 </RCC>

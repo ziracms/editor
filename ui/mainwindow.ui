@@ -139,6 +139,19 @@
     <property name="title">
      <string>&amp;Git</string>
     </property>
+    <widget class="QMenu" name="menuRepository">
+     <property name="title">
+      <string>Repository</string>
+     </property>
+     <addaction name="actionGitInitializeRepository"/>
+     <addaction name="separator"/>
+     <addaction name="actionGitAddRemoteURL"/>
+     <addaction name="actionGitChangeRemoteURL"/>
+     <addaction name="separator"/>
+     <addaction name="actionGitCloneRepository"/>
+    </widget>
+    <addaction name="menuRepository"/>
+    <addaction name="separator"/>
     <addaction name="actionGitStatus"/>
     <addaction name="actionGitLog"/>
     <addaction name="actionGitDiffTree"/>
@@ -175,6 +188,9 @@
     <addaction name="actionStartServers"/>
     <addaction name="actionStopServers"/>
     <addaction name="separator"/>
+    <addaction name="actionStartPHPWebServer"/>
+    <addaction name="actionStopPHPWebServer"/>
+    <addaction name="separator"/>
     <addaction name="actionColorPicker"/>
     <addaction name="separator"/>
     <addaction name="actionCompileSass"/>
@@ -206,6 +222,7 @@
     <addaction name="actionHelpDonate"/>
     <addaction name="separator"/>
     <addaction name="actionHelpZiraCMS"/>
+    <addaction name="actionHelpZiraDevPack"/>
     <addaction name="separator"/>
     <addaction name="actionHelpShortcuts"/>
     <addaction name="actionHelpFAQ"/>
@@ -1174,6 +1191,41 @@
   <action name="actionOpenContextMenu">
    <property name="text">
     <string>Context menu</string>
+   </property>
+  </action>
+  <action name="actionGitInitializeRepository">
+   <property name="text">
+    <string>Initialize</string>
+   </property>
+  </action>
+  <action name="actionGitAddRemoteURL">
+   <property name="text">
+    <string>Add remote URL</string>
+   </property>
+  </action>
+  <action name="actionGitChangeRemoteURL">
+   <property name="text">
+    <string>Change remote URL</string>
+   </property>
+  </action>
+  <action name="actionGitCloneRepository">
+   <property name="text">
+    <string>Clone</string>
+   </property>
+  </action>
+  <action name="actionStartPHPWebServer">
+   <property name="text">
+    <string>Start PHP web-server</string>
+   </property>
+  </action>
+  <action name="actionStopPHPWebServer">
+   <property name="text">
+    <string>Stop PHP web-server</string>
+   </property>
+  </action>
+  <action name="actionHelpZiraDevPack">
+   <property name="text">
+    <string>Zira DevPack</string>
    </property>
   </action>
  </widget>

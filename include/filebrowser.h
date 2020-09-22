@@ -67,6 +67,7 @@ private slots:
     void fileBrowserItemChanged(QTreeWidgetItem * item, int col);
     void fileBrowserItemSelectionChanged();
     void upActionTriggered(bool checked);
+    void homeActionTriggered(bool checked);
 signals:
     void openFile(QString);
     void fileCreated(QString);

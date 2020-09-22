@@ -18,6 +18,7 @@ extern const QString GIT_DIFF_COMMAND;
 extern const QString GIT_COMMIT_COMMAND;
 extern const QString GIT_PUSH_COMMAND;
 extern const QString GIT_PULL_COMMAND;
+extern const QString GIT_CLONE_COMMAND;
 
 class Git : public QObject
 {
@@ -46,6 +47,10 @@ public:
     void addAndCommit(QString path, QString msg);
     void pushOriginMaster(QString path);
     void pullOriginMaster(QString path);
+    void initialize(QString path);
+    void addRemoteURL(QString path, QString url);
+    void changeRemoteURL(QString path, QString url);
+    void clone(QString path, QString url);
     void showAnnotation(QString path, QString fileName, bool outputResult = true, bool silent = false);
     QString highlightCommand(QString & text);
     QString highlightOutput(QString & output);

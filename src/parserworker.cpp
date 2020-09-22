@@ -10,78 +10,27 @@
 #include <QDirIterator>
 #include <QDateTime>
 #include <QCoreApplication>
+#include <QStandardPaths>
 #include "helper.h"
 #include "project.h"
 #include "servers.h"
 #include "git.h"
 
+const QString ANDROID_PACK_SUBDIR = "packages";
+const QString ANDROID_BIN_DIR = "bin";
+const QString ANDROID_GIT_CORE_DIR = "git-core";
+const QString ANDROID_GIT_TEMPLATES_DIR = "templates";
+const QString ANDROID_PHP_TMP_DIR = "tmp";
+const QString ANDROID_INSTALL_RESULT_LINE_TEMPLATE = "<p>%1</p>";
+const QString PHP_WEBSERVER_URI = "127.0.0.1:8000";
+
 ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(parent)
-{
-    // php path
+{   
     phpPath = "";
-    QString phpPathStr = QString::fromStdString(settings->get("parser_php_path"));
-    if (phpPathStr.size() == 0) {
-        QProcess process(this);
-        process.start("which", QStringList() << "php");
-        if (!process.waitForFinished()) return;
-        QByteArray result = process.readAllStandardOutput();
-        phpPathStr = QString(result).trimmed();
-    }
-    if (phpPathStr.size() > 0 && Helper::fileOrFolderExists(phpPathStr)) {
-        phpPath = phpPathStr;
-    }
-    // git path
     gitPath = "";
-    QString gitPathStr = QString::fromStdString(settings->get("parser_git_path"));
-    if (gitPathStr.size() == 0) {
-        QProcess process(this);
-        process.start("which", QStringList() << "git");
-        if (!process.waitForFinished()) return;
-        QByteArray result = process.readAllStandardOutput();
-        gitPathStr = QString(result).trimmed();
-    }
-    if (gitPathStr.size() > 0 && Helper::fileOrFolderExists(gitPathStr)) {
-        gitPath = gitPathStr;
-    }
-    // bash path
     bashPath = "";
-    QString bashPathStr = QString::fromStdString(settings->get("parser_bash_path"));
-    if (bashPathStr.size() == 0) {
-        QProcess process(this);
-        process.start("which", QStringList() << "bash");
-        if (!process.waitForFinished()) return;
-        QByteArray result = process.readAllStandardOutput();
-        bashPathStr = QString(result).trimmed();
-    }
-    if (bashPathStr.size() > 0 && Helper::fileOrFolderExists(bashPathStr)) {
-        bashPath = bashPathStr;
-    }
-    // sassc path
     sasscPath = "";
-    QString sasscPathStr = QString::fromStdString(settings->get("parser_sassc_path"));
-    if (sasscPathStr.size() == 0) {
-        QProcess process(this);
-        process.start("which", QStringList() << "sassc");
-        if (!process.waitForFinished()) return;
-        QByteArray result = process.readAllStandardOutput();
-        sasscPathStr = QString(result).trimmed();
-    }
-    if (sasscPathStr.size() > 0 && Helper::fileOrFolderExists(sasscPathStr)) {
-        sasscPath = sasscPathStr;
-    }
-    // phpcs path
     phpcsPath = "";
-    QString phpcsPathStr = QString::fromStdString(settings->get("parser_phpcs_path"));
-    if (phpcsPathStr.size() == 0) {
-        QProcess process(this);
-        process.start("which", QStringList() << "phpcs");
-        if (!process.waitForFinished()) return;
-        QByteArray result = process.readAllStandardOutput();
-        phpcsPathStr = QString(result).trimmed();
-    }
-    if (phpcsPathStr.size() > 0 && Helper::fileOrFolderExists(phpcsPathStr)) {
-        phpcsPath = phpcsPathStr;
-    }
     phpcsStandard = QString::fromStdString(settings->get("parser_phpcs_standard"));
     if (phpcsStandard.size() == 0) phpcsStandard = "PEAR";
     phpcsErrorSeverity = std::stoi(settings->get("parser_phpcs_error_severity"));
@@ -97,6 +46,95 @@ ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(paren
     quickResultsCount = 0;
     quickBreaked = false;
     wantStop = false;
+    phpWebServerPid = 0;
+
+    // android pack
+    androidHomePath="";
+    androidBinFiles << "php" << "git" << "git-receive-pack" << "git-upload-archive" << "git-upload-pack" << "sassc" << "termux-elf-cleaner";
+    androidGitFiles << "git" << "git-remote" << "git-remote-http" << "git-remote-https" << "git-receive-pack" << "git-upload-archive" << "git-upload-pack";
+    androidOtherFiles << "php.ini" << "gitconfig" << "cacert.pem";
+    #if defined(Q_OS_ANDROID)
+    QStringList stddirs = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
+    if (stddirs.size()>0) androidHomePath = stddirs.at(0);
+    #endif
+
+    // php path
+    QString phpPathStr = QString::fromStdString(settings->get("parser_php_path"));
+    if (phpPathStr.size() == 0) {
+        QProcess process(this);
+        process.start("which", QStringList() << "php");
+        if (process.waitForFinished()) {
+            QByteArray result = process.readAllStandardOutput();
+            phpPathStr = QString(result).trimmed();
+        }
+    }
+    if (phpPathStr.size() > 0 && Helper::fileOrFolderExists(phpPathStr)) {
+        phpPath = phpPathStr;
+    }
+
+    // git path
+    QString gitPathStr = QString::fromStdString(settings->get("parser_git_path"));
+    if (gitPathStr.size() == 0) {
+        QProcess process(this);
+        process.start("which", QStringList() << "git");
+        if (process.waitForFinished()) {
+            QByteArray result = process.readAllStandardOutput();
+            gitPathStr = QString(result).trimmed();
+        }
+    }
+    if (gitPathStr.size() > 0 && Helper::fileOrFolderExists(gitPathStr)) {
+        gitPath = gitPathStr;
+    }
+
+    // bash path
+    QString bashPathStr = QString::fromStdString(settings->get("parser_bash_path"));
+    if (bashPathStr.size() == 0) {
+        QProcess process(this);
+        process.start("which", QStringList() << "bash");
+        if (process.waitForFinished()) {
+            QByteArray result = process.readAllStandardOutput();
+            bashPathStr = QString(result).trimmed();
+        }
+    }
+    if (bashPathStr.size() > 0 && Helper::fileOrFolderExists(bashPathStr)) {
+        bashPath = bashPathStr;
+    }
+
+    // sassc path
+    QString sasscPathStr = QString::fromStdString(settings->get("parser_sassc_path"));
+    if (sasscPathStr.size() == 0) {
+        QProcess process(this);
+        process.start("which", QStringList() << "sassc");
+        if (process.waitForFinished()) {
+            QByteArray result = process.readAllStandardOutput();
+            sasscPathStr = QString(result).trimmed();
+        }
+    }
+    if (sasscPathStr.size() > 0 && Helper::fileOrFolderExists(sasscPathStr)) {
+        sasscPath = sasscPathStr;
+    }
+
+    // phpcs path
+    QString phpcsPathStr = QString::fromStdString(settings->get("parser_phpcs_path"));
+    if (phpcsPathStr.size() == 0) {
+        QProcess process(this);
+        process.start("which", QStringList() << "phpcs");
+        if (process.waitForFinished()) {
+            QByteArray result = process.readAllStandardOutput();
+            phpcsPathStr = QString(result).trimmed();
+        }
+    }
+    if (phpcsPathStr.size() > 0 && Helper::fileOrFolderExists(phpcsPathStr)) {
+        phpcsPath = phpcsPathStr;
+    }
+}
+
+ParserWorker::~ParserWorker()
+{
+    disable();
+    if (phpWebServerPid != 0) {
+        stopPHPWebServer();
+    }
 }
 
 void ParserWorker::disable()
@@ -137,7 +175,7 @@ void ParserWorker::execPHP(int tabIndex, QString path)
         return;
     }
     QProcess process(this);
-    process.start(phpPath, QStringList() << "-n" << "-d" << "max_execution_time=30" << "-f" << path);
+    process.start(phpPath, QStringList() << "-d" << "max_execution_time=30" << "-f" << path);
     if (!process.waitForFinished(60000)) return;
     QString result = QString(process.readAllStandardOutput());
     if (result.size() == 0) result = QString(process.readAllStandardError());
@@ -152,12 +190,45 @@ void ParserWorker::execSelection(int tabIndex, QString text)
         return;
     }
     QProcess process(this);
-    process.start(phpPath, QStringList() << "-n" << "-d" << "max_execution_time=30" << "-r" << text);
+    process.start(phpPath, QStringList() << "-d" << "max_execution_time=30" << "-r" << text);
     if (!process.waitForFinished(60000)) return;
     QString result = QString(process.readAllStandardOutput());
     if (result.size() == 0) result = QString(process.readAllStandardError());
     QString output = QString(result).trimmed();
     emit execPHPFinished(tabIndex, output);
+}
+
+void ParserWorker::startPHPWebServer(QString path)
+{
+    if (phpPath.size() == 0)  {
+        emit message(tr("PHP executable not found."));
+        return;
+    }
+    if (path.size() == 0 || !Helper::folderExists(path)) return;
+    if (phpWebServerPid != 0) return;
+    QProcess process(this);
+    process.setWorkingDirectory(path);
+    process.setProgram(phpPath);
+    process.setArguments(QStringList() << "-S" << PHP_WEBSERVER_URI);
+    process.setStandardOutputFile(QProcess::nullDevice());
+    process.setStandardErrorFile(QProcess::nullDevice());
+    if (process.startDetached(&phpWebServerPid)) {
+        emit execPHPWebServerFinished(true, tr("PHP web-server started."));
+    } else {
+        emit execPHPWebServerFinished(false, tr("Could not start PHP web-server."));
+    }
+}
+
+void ParserWorker::stopPHPWebServer()
+{
+    if (phpWebServerPid == 0) return;
+    if (QProcess::startDetached("kill", {QString::number(phpWebServerPid)})) {
+        phpWebServerPid = 0;
+        // success = false (do not want browser to be opened)
+        emit execPHPWebServerFinished(false, tr("PHP web-server stopped."));
+    } else {
+        emit execPHPWebServerFinished(false, tr("Could not stop PHP web-server."));
+    }
 }
 
 void ParserWorker::phpcs(int tabIndex, QString path)
@@ -433,7 +504,7 @@ void ParserWorker::gitCommand(QString path, QString command, QStringList attrs, 
     }
     if (path.size() == 0 || !Helper::folderExists(path)) return;
     bool useProgress = false;
-    if (command == GIT_PUSH_COMMAND || command == GIT_PULL_COMMAND) useProgress = true;
+    if (command == GIT_PUSH_COMMAND || command == GIT_PULL_COMMAND || command == GIT_CLONE_COMMAND) useProgress = true;
     if (useProgress && !isBusy) emit activateProgress();
     QProcess process(this);
     process.setWorkingDirectory(path);
@@ -609,4 +680,183 @@ void ParserWorker::quickFindInDir(QString startDir, QString dir, QString text)
 void ParserWorker::cancelRequested()
 {
     wantStop = true;
+}
+
+bool ParserWorker::createAndroidDirectory(QDir rootDir, QString path)
+{
+    if (!rootDir.mkpath(path)) return false;
+    if (!setAndroidFilePermissions(path)) return false;
+    return true;
+}
+
+bool ParserWorker::setAndroidFilePermissions(QFile &f)
+{
+    return f.setPermissions(
+        QFileDevice::ReadOwner |
+        QFileDevice::ReadGroup |
+        QFileDevice::ReadOther |
+        QFileDevice::WriteOwner |
+        QFileDevice::WriteGroup |
+        QFileDevice::WriteOther |
+        QFileDevice::ExeOwner |
+        QFileDevice::ExeGroup |
+        QFileDevice::ExeOther
+        );
+}
+
+bool ParserWorker::setAndroidFilePermissions(QString path)
+{
+    QFile f(path);
+    return setAndroidFilePermissions(f);
+}
+
+bool ParserWorker::installAndroidFile(QString fileName, QString installDir)
+{
+    QFile f("assets:/"+fileName);
+    if (!f.exists()) return false;
+
+    QFile fi(installDir+"/"+fileName);
+    if (fi.exists()) fi.remove();
+
+    if (!f.copy(installDir+"/"+fileName)) return false;
+
+    QFile pf(installDir+"/"+fileName);
+    if (!setAndroidFilePermissions(pf)) return false;
+
+    return true;
+}
+
+void ParserWorker::installAndroidPack()
+{
+    if (androidHomePath.size() == 0) return;
+    if (isAndroidPackInstalled()) {
+        setAndroidBinPaths();
+        return;
+    }
+
+    emit installAndroidPackFinished(ANDROID_INSTALL_RESULT_LINE_TEMPLATE.arg(tr("Installing development pack...")));
+
+    if (installAndroidPackFiles()) {
+        QString androidPackInstallPath = androidHomePath + "/" + ANDROID_PACK_SUBDIR;
+        QString result = "";
+        QProcess phpProcess(this);
+        phpProcess.start(androidPackInstallPath+"/"+ANDROID_BIN_DIR+"/php", QStringList() << "-v");
+        if (phpProcess.waitForFinished()) {
+            QByteArray phpResult = phpProcess.readAllStandardError();
+            phpResult += phpProcess.readAllStandardOutput();
+            result += ANDROID_INSTALL_RESULT_LINE_TEMPLATE.arg(QString(phpResult).trimmed().split("\n").at(0));
+        }
+        QProcess gitProcess(this);
+        gitProcess.start(androidPackInstallPath+"/"+ANDROID_BIN_DIR+"/git", QStringList() << "--version");
+        if (gitProcess.waitForFinished()) {
+            QByteArray gitResult = gitProcess.readAllStandardError();
+            gitResult += gitProcess.readAllStandardOutput();
+            result += ANDROID_INSTALL_RESULT_LINE_TEMPLATE.arg(QString(gitResult).trimmed().split("\n").at(0));
+        }
+        QProcess sasscProcess(this);
+        sasscProcess.start(androidPackInstallPath+"/"+ANDROID_BIN_DIR+"/sassc", QStringList() << "--version");
+        if (sasscProcess.waitForFinished()) {
+            QByteArray sasscResult = sasscProcess.readAllStandardError();
+            sasscResult += sasscProcess.readAllStandardOutput();
+            result += ANDROID_INSTALL_RESULT_LINE_TEMPLATE.arg(QString(sasscResult).trimmed().split("\n").at(0));
+        }
+        setAndroidBinPaths();
+        emit installAndroidPackFinished(ANDROID_INSTALL_RESULT_LINE_TEMPLATE.arg(tr("Development pack successfully installed."))+result);
+    } else {
+        emit installAndroidPackFinished(ANDROID_INSTALL_RESULT_LINE_TEMPLATE.arg(tr("Installation failed :(")));
+    }
+}
+
+bool ParserWorker::installAndroidPackFiles()
+{
+    // creating directories
+    QDir androidHomeDir(androidHomePath);
+    QFileInfo androidHomeDirInfo(androidHomePath);
+    if (!androidHomeDirInfo.isWritable() || !androidHomeDirInfo.isExecutable()) return false;
+
+    if (!createAndroidDirectory(androidHomeDir, androidHomePath + "/" + ANDROID_PACK_SUBDIR)) return false;
+    QString androidPackInstallPath = androidHomePath + "/" + ANDROID_PACK_SUBDIR;
+
+    QDir d(androidPackInstallPath);
+    if (!createAndroidDirectory(d, androidPackInstallPath+"/"+ANDROID_BIN_DIR)) return false;
+    if (!createAndroidDirectory(d, androidPackInstallPath+"/"+ANDROID_BIN_DIR+"/"+ANDROID_GIT_CORE_DIR)) return false;
+    if (!createAndroidDirectory(d, androidPackInstallPath+"/"+ANDROID_GIT_TEMPLATES_DIR)) return false;
+    if (!createAndroidDirectory(d, androidPackInstallPath+"/"+ANDROID_PHP_TMP_DIR)) return false;
+
+    // copying files
+    for (QString fileName : androidBinFiles) {
+        if (!installAndroidFile(fileName, androidPackInstallPath+"/"+ANDROID_BIN_DIR)) return false;
+    }
+
+    for (QString fileName : androidGitFiles) {
+        if (!installAndroidFile(fileName, androidPackInstallPath+"/"+ANDROID_BIN_DIR+"/"+ANDROID_GIT_CORE_DIR)) return false;
+    }
+
+    for (QString fileName : androidOtherFiles) {
+        if (!installAndroidFile(fileName, androidPackInstallPath)) return false;
+    }
+
+    // .gitconfig
+    QFile gitConfigHidden(androidPackInstallPath+"/.gitconfig");
+    if (gitConfigHidden.exists()) gitConfigHidden.remove();
+
+    QFile gitConfig(androidPackInstallPath+"/gitconfig");
+    if (gitConfig.exists()) gitConfig.rename(androidPackInstallPath+"/.gitconfig");
+
+    // run termux-elf-cleaner
+    QStringList cleanFiles;
+    for (QString fileName : androidBinFiles) {
+        if (fileName == "termux-elf-cleaner") continue;
+        cleanFiles << androidPackInstallPath+"/"+ANDROID_BIN_DIR+"/"+fileName;
+    }
+
+    for (QString fileName : androidGitFiles) {
+        cleanFiles << androidPackInstallPath+"/"+ANDROID_BIN_DIR+"/"+ANDROID_GIT_CORE_DIR+"/"+fileName;
+    }
+
+    QProcess cleanProcess(this);
+    cleanProcess.start(androidPackInstallPath+"/"+ANDROID_BIN_DIR+"/termux-elf-cleaner", cleanFiles);
+    if (!cleanProcess.waitForFinished()) return false;
+
+    return true;
+}
+
+bool ParserWorker::isAndroidPackInstalled()
+{
+    if (androidHomePath.size() == 0) return false;
+
+    for (QString fileName : androidBinFiles) {
+        QFileInfo fileInfo(androidHomePath+"/"+ANDROID_PACK_SUBDIR+"/"+ANDROID_BIN_DIR+"/"+fileName);
+        if (!fileInfo.exists() || !fileInfo.isExecutable()) return false;
+    }
+
+    for (QString fileName : androidGitFiles) {
+        QFileInfo fileInfo(androidHomePath+"/"+ANDROID_PACK_SUBDIR+"/"+ANDROID_BIN_DIR+"/"+ANDROID_GIT_CORE_DIR+"/"+fileName);
+        if (!fileInfo.exists() || !fileInfo.isExecutable()) return false;
+    }
+
+    for (QString fileName : androidOtherFiles) {
+        if (fileName == "gitconfig") fileName = ".gitconfig";
+        QFileInfo fileInfo(androidHomePath+"/"+ANDROID_PACK_SUBDIR+"/"+fileName);
+        if (!fileInfo.exists() || !fileInfo.isReadable()) return false;
+    }
+
+    return true;
+}
+
+void ParserWorker::setAndroidBinPaths()
+{
+    if (androidHomePath.size() == 0) return;
+    if (phpPath.size() == 0) {
+        QString phpPathStr = androidHomePath+"/"+ANDROID_PACK_SUBDIR+"/"+ANDROID_BIN_DIR+"/php";
+        if (Helper::fileOrFolderExists(phpPathStr)) phpPath = phpPathStr;
+    }
+    if (gitPath.size() == 0) {
+        QString gitPathStr = androidHomePath+"/"+ANDROID_PACK_SUBDIR+"/"+ANDROID_BIN_DIR+"/git";
+        if (Helper::fileOrFolderExists(gitPathStr)) gitPath = gitPathStr;
+    }
+    if (sasscPath.size() == 0) {
+        QString sasscPathStr = androidHomePath+"/"+ANDROID_PACK_SUBDIR+"/"+ANDROID_BIN_DIR+"/sassc";
+        if (Helper::fileOrFolderExists(sasscPathStr)) sasscPath = sasscPathStr;
+    }
 }

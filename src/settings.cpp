@@ -118,7 +118,8 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"custom_snippets_file", ""},
         {"scale_auto", "yes"},
         {"scale_factor", "100"},
-        {"scale_factor_unchecked", "no"}
+        {"scale_factor_unchecked", "no"},
+        {"devpack_install_silent", "no"}
     };
 }
 

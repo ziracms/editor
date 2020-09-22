@@ -16,6 +16,7 @@ const QString GIT_DIFF_COMMAND = "diff";
 const QString GIT_COMMIT_COMMAND = "commit";
 const QString GIT_PUSH_COMMAND = "push";
 const QString GIT_PULL_COMMAND = "pull";
+const QString GIT_CLONE_COMMAND = "clone";
 
 Git::Git(Settings * settings, QObject *parent) : QObject(parent)
 {
@@ -136,6 +137,26 @@ void Git::pushOriginMaster(QString path)
 void Git::pullOriginMaster(QString path)
 {
     emit runGitCommand(path, "pull", QStringList() << "origin" << "master");
+}
+
+void Git::initialize(QString path)
+{
+    emit runGitCommand(path, "init", QStringList());
+}
+
+void Git::addRemoteURL(QString path, QString url)
+{
+    emit runGitCommand(path, "remote", QStringList() << "add" << "origin" << url);
+}
+
+void Git::changeRemoteURL(QString path, QString url)
+{
+    emit runGitCommand(path, "remote", QStringList() << "set-url" << "origin" << url);
+}
+
+void Git::clone(QString path, QString url)
+{
+    emit runGitCommand(path, "clone", QStringList() << url);
 }
 
 void Git::showAnnotation(QString path, QString fileName, bool outputResult, bool silent)

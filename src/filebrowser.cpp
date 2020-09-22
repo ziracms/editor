@@ -61,6 +61,8 @@ void FileBrowser::initFileBrowser(QString homeDir)
     if (homeDir.size()==0) homeDir = ".";
     QAction * upAction = pathLine->addAction(Icon::get("up", QIcon(":icons/levelup.png")), QLineEdit::TrailingPosition);
     connect(upAction, SIGNAL(triggered(bool)), this, SLOT(upActionTriggered(bool)));
+    QAction * homeAction = pathLine->addAction(Icon::get("home", QIcon(":icons/home.png")), QLineEdit::LeadingPosition);
+    connect(homeAction, SIGNAL(triggered(bool)), this, SLOT(homeActionTriggered(bool)));
     buildFileBrowserTree(homeDir);
     connect(treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(fileBrowserExpanded(QTreeWidgetItem*)));
     connect(treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(fileBrowserCollapsed(QTreeWidgetItem*)));
@@ -198,6 +200,15 @@ void FileBrowser::upActionTriggered(bool)
         path = path.mid(0, p);
         if (path.size() == 0) path = "/";
         pathLine->setText(path);
+        fileBrowserPathReturnPressed();
+    }
+}
+
+void FileBrowser::homeActionTriggered(bool)
+{
+    QStringList stddirs = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
+    if (stddirs.size()>0) {
+        pathLine->setText(stddirs.at(0));
         fileBrowserPathReturnPressed();
     }
 }

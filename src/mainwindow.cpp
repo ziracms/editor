@@ -328,6 +328,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(parseLint(int,QString)), parserWorker, SLOT(lint(int,QString)));
     connect(this, SIGNAL(execPHP(int,QString)), parserWorker, SLOT(execPHP(int,QString)));
     connect(this, SIGNAL(execSelection(int,QString)), parserWorker, SLOT(execSelection(int,QString)));
+    connect(this, SIGNAL(startPHPWebServer(QString)), parserWorker, SLOT(startPHPWebServer(QString)));
+    connect(this, SIGNAL(stopPHPWebServer()), parserWorker, SLOT(stopPHPWebServer()));
     connect(this, SIGNAL(parsePHPCS(int,QString)), parserWorker, SLOT(phpcs(int,QString)));
     connect(this, SIGNAL(parseMixed(int,QString)), parserWorker, SLOT(parseMixed(int,QString)));
     connect(this, SIGNAL(parseJS(int,QString)), parserWorker, SLOT(parseJS(int,QString)));
@@ -338,9 +340,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(serversCommand(QString, QString)), parserWorker, SLOT(serversCommand(QString,QString)));
     connect(this, SIGNAL(sassCommand(QString, QString)), parserWorker, SLOT(sassCommand(QString,QString)));
     connect(this, SIGNAL(quickFind(QString, QString, WordsMapList, QStringList)), parserWorker, SLOT(quickFind(QString, QString, WordsMapList, QStringList)));
+    connect(this, SIGNAL(installAndroidPack()), parserWorker, SLOT(installAndroidPack()));
     connect(progressInfo, SIGNAL(cancelTriggered()), parserWorker, SLOT(cancelRequested()));
     connect(parserWorker, SIGNAL(lintFinished(int,QStringList,QStringList,QString)), this, SLOT(parseLintFinished(int,QStringList,QStringList,QString)));
     connect(parserWorker, SIGNAL(execPHPFinished(int,QString)), this, SLOT(execPHPFinished(int,QString)));
+    connect(parserWorker, SIGNAL(execPHPWebServerFinished(bool,QString)), this, SLOT(execPHPWebServerFinished(bool,QString)));
     connect(parserWorker, SIGNAL(phpcsFinished(int,QStringList,QStringList)), this, SLOT(parsePHPCSFinished(int,QStringList,QStringList)));
     connect(parserWorker, SIGNAL(parseMixedFinished(int,ParsePHP::ParseResult)), this, SLOT(parseMixedFinished(int,ParsePHP::ParseResult)));
     connect(parserWorker, SIGNAL(parseJSFinished(int,ParseJS::ParseResult)), this, SLOT(parseJSFinished(int,ParseJS::ParseResult)));
@@ -359,6 +363,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(parserWorker, SIGNAL(activateProgressInfo(QString)), this, SLOT(activateProgressInfo(QString)));
     connect(parserWorker, SIGNAL(deactivateProgressInfo()), this, SLOT(deactivateProgressInfo()));
     connect(parserWorker, SIGNAL(updateProgressInfo(QString)), this, SLOT(updateProgressInfo(QString)));
+    connect(parserWorker, SIGNAL(installAndroidPackFinished(QString)), this, SLOT(installAndroidPackFinished(QString)));
     parserThread.start();
 
     tmpDisableParser = false;
@@ -692,6 +697,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
     emit disableWorker();
     // save project
     project->save(editorTabs->getOpenTabFiles(), editorTabs->getOpenTabLines(), editorTabs->getCurrentTabIndex(), ui->todoEdit->toPlainText());
+    if (settings->get("devpack_install_silent") == "no") {
+        std::unordered_map<std::string,std::string> sMap;
+        sMap["devpack_install_silent"] = "yes";
+        settings->change(sMap);
+    }
     settings->save();
     // save wnd geometry & state
     QSettings windowSettings;
@@ -754,13 +764,17 @@ void MainWindow::menuToolsOnShow()
 {
     bool sassEnabled = false;
     bool execEnabled = false;
+    bool execSelectionEnabled = false;
     Editor * textEditor = getActiveEditor();
-    if (textEditor != nullptr && !textEditor->isModified()) {
+    if (textEditor != nullptr) {
         QString ext = textEditor->getFileExtension().toLower();
-        if (ext == "scss" || ext == "sass") {
+        if (!textEditor->isModified() && (ext == "scss" || ext == "sass")) {
             sassEnabled = true;
         } else if (ext == "php") {
-            execEnabled = true;
+            if (!textEditor->isModified()) execEnabled = true;
+            if (textEditor->textCursor().selectedText().size() > 0) {
+                execSelectionEnabled = true;
+            }
         }
     }
     QList<QAction *> toolsActions = ui->menuTools->actions();
@@ -770,10 +784,7 @@ void MainWindow::menuToolsOnShow()
         } else if (action->objectName() == "actionExecuteFile") {
             action->setEnabled(execEnabled);
         } else if (action->objectName() == "actionExecuteSelection") {
-            if (execEnabled && textEditor->textCursor().selectedText().size() == 0) {
-                execEnabled = false;
-            }
-            action->setEnabled(execEnabled);
+            action->setEnabled(execSelectionEnabled);
         }
     }
 }
@@ -946,6 +957,9 @@ void MainWindow::enableActionsForOpenProject()
 void MainWindow::projectLoadOnStart()
 {
     showWelcomeScreen();
+    #if defined(Q_OS_ANDROID)
+    emit installAndroidPack();
+    #endif
     QSettings windowSettings;
     QString projectPath = windowSettings.value("project_path").toString();
     if (projectPath.size() > 0 && Helper::folderExists(projectPath) && project->exists(projectPath)) {
@@ -954,6 +968,9 @@ void MainWindow::projectLoadOnStart()
 }
 
 void MainWindow::openFromArgs() {
+    #if defined(Q_OS_ANDROID)
+    emit installAndroidPack();
+    #endif
     if (args.length() <= 1) return;
     QStringList files;
     for (int i=1; i<args.length(); i++) {
@@ -1411,7 +1428,7 @@ void MainWindow::on_actionExecuteFile_triggered()
     if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
     ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
     ui->outputEdit->clear();
-    QString cmdStr = "php -n -d max_execution_time=30 -f "+fileName;
+    QString cmdStr = "php -d max_execution_time=30 -f "+fileName;
     ui->outputEdit->setHtml(Servers::highlightServersCommand(cmdStr, settings));
 
     emit execPHP(textEditor->getTabIndex(), fileName);
@@ -1434,10 +1451,32 @@ void MainWindow::on_actionExecuteSelection_triggered()
     if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
     ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
     ui->outputEdit->clear();
-    QString cmdStr = "php -n -d max_execution_time=30 -r '"+text+"'";
+    QString cmdStr = "php -d max_execution_time=30 -r '"+text+"'";
     ui->outputEdit->setHtml(Servers::highlightServersCommand(cmdStr, settings));
 
     emit execSelection(textEditor->getTabIndex(), code);
+}
+
+void MainWindow::on_actionStartPHPWebServer_triggered()
+{
+    emit startPHPWebServer(filebrowser->getRootPath());
+}
+
+void MainWindow::on_actionStopPHPWebServer_triggered()
+{
+    emit stopPHPWebServer();
+}
+
+void MainWindow::execPHPWebServerFinished(bool success, QString output)
+{
+    hideQAPanel();
+    if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
+    ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
+    ui->outputEdit->clear();
+    ui->outputEdit->setHtml(Servers::highlightServersCommand(output, settings));
+    if (success) {
+        QDesktopServices::openUrl(QUrl("http://" + PHP_WEBSERVER_URI));
+    }
 }
 
 void MainWindow::execPHPFinished(int tabIndex, QString output)
@@ -1569,6 +1608,35 @@ void MainWindow::on_actionGitPull_triggered()
     git->pullOriginMaster(getGitWorkingDir());
 }
 
+void MainWindow::on_actionGitInitializeRepository_triggered()
+{
+    git->initialize(getGitWorkingDir());
+}
+
+void MainWindow::on_actionGitAddRemoteURL_triggered()
+{
+    bool ok;
+    QString url = QInputDialog::getText(this, tr("Enter URL"), tr("Enter remote URL.\nNote: you might want to add a username and password to repository URI\n(https://username:password@github.com/username/repository.git)"), QLineEdit::Normal, "", &ok);
+    if (!ok || url.size() == 0) return;
+    git->addRemoteURL(getGitWorkingDir(), url);
+}
+
+void MainWindow::on_actionGitChangeRemoteURL_triggered()
+{
+    bool ok;
+    QString url = QInputDialog::getText(this, tr("Enter URL"), tr("Enter remote URL.\nNote: you might want to add a username and password to repository URI\n(https://username:password@github.com/username/repository.git)"), QLineEdit::Normal, "", &ok);
+    if (!ok || url.size() == 0) return;
+    git->changeRemoteURL(getGitWorkingDir(), url);
+}
+
+void MainWindow::on_actionGitCloneRepository_triggered()
+{
+    bool ok;
+    QString url = QInputDialog::getText(this, tr("Enter URL"), tr("Enter repository URL.\nNote: you might want to add a username and password to repository URI\n(https://username:password@github.com/username/repository.git)"), QLineEdit::Normal, "", &ok);
+    if (!ok || url.size() == 0) return;
+    git->clone(getGitWorkingDir(), url);
+}
+
 void MainWindow::runGitCommand(QString path, QString command, QStringList attrs, bool outputResult, bool silent)
 {
     if (!gitCommandsEnabled) return;
@@ -1638,6 +1706,8 @@ void MainWindow::gitCommandFinished(QString command, QString output, bool output
             gitAnnotationRequested(textEditor->getFileName());
             gitDiffUnifiedRequested(textEditor->getFileName());
         }
+    } else if (command == GIT_PULL_COMMAND || command == GIT_CLONE_COMMAND) {
+        filebrowser->refreshFileBrowserDirectory(filebrowser->getRootPath());
     }
 }
 
@@ -1684,6 +1754,18 @@ void MainWindow::gitDiffUnifiedRequested(QString path)
     git->showUncommittedDiffCurrentUnified(getGitWorkingDir(), path, false, true);
 }
 
+void MainWindow::installAndroidPackFinished(QString result)
+{
+    if (settings->get("devpack_install_silent") == "yes") return;
+    hideQAPanel();
+    if (result.size() > 0) {
+        if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
+        ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
+        ui->outputEdit->clear();
+        ui->outputEdit->setHtml(result);
+    }
+}
+
 void MainWindow::on_actionSettings_triggered()
 {
     SettingsDialog dialog(settings, this);
@@ -1727,6 +1809,11 @@ void MainWindow::on_actionHelpDonate_triggered()
 void MainWindow::on_actionHelpZiraCMS_triggered()
 {
     QDesktopServices::openUrl(QUrl(AUTHOR_CMS_URL));
+}
+
+void MainWindow::on_actionHelpZiraDevPack_triggered()
+{
+    QDesktopServices::openUrl(QUrl(AUTHOR_DEVPACK_URL));
 }
 
 void MainWindow::resetLastSearchParams()

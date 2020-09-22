@@ -140,6 +140,10 @@ private slots:
     void on_actionGitCommit_triggered(bool add = false);
     void on_actionGitPush_triggered();
     void on_actionGitPull_triggered();
+    void on_actionGitInitializeRepository_triggered();
+    void on_actionGitAddRemoteURL_triggered();
+    void on_actionGitChangeRemoteURL_triggered();
+    void on_actionGitCloneRepository_triggered();
     void on_actionStartServers_triggered();
     void on_actionStopServers_triggered();
     void on_actionServersStatus_triggered();
@@ -154,10 +158,13 @@ private slots:
     void on_actionHelpContact_triggered();
     void on_actionHelpDonate_triggered();
     void on_actionHelpZiraCMS_triggered();
+    void on_actionHelpZiraDevPack_triggered();
     void on_actionHelpFAQ_triggered();
     void on_actionCompileSass_triggered();
     void on_actionExecuteFile_triggered();
     void on_actionExecuteSelection_triggered();
+    void on_actionStartPHPWebServer_triggered();
+    void on_actionStopPHPWebServer_triggered();
     void on_actionSplitTab_triggered();
     void on_actionOpenContextMenu_triggered();
     void fileBrowserOpen(QString file);
@@ -183,6 +190,7 @@ private slots:
     void editorSplitReady(int index);
     void parseLintFinished(int tabIndex, QStringList errorTexts, QStringList errorLines, QString output);
     void execPHPFinished(int tabIndex, QString output);
+    void execPHPWebServerFinished(bool success, QString output);
     void parsePHPCSFinished(int tabIndex, QStringList errorTexts, QStringList errorLines);
     void parseMixedFinished(int tabIndex, ParsePHP::ParseResult result);
     void parseJSFinished(int tabIndex, ParseJS::ParseResult result);
@@ -251,6 +259,7 @@ private slots:
     void outputTabSwitched(int index);
     void inputMethodVisibleChanged();
     void checkScaleFactor();
+    void installAndroidPackFinished(QString result);
 private:
     Ui::MainWindow *ui;
     Settings * settings;
@@ -312,6 +321,8 @@ signals:
     void parseLint(int tabIndex, QString path);
     void execPHP(int tabIndex, QString path);
     void execSelection(int tabIndex, QString text);
+    void startPHPWebServer(QString path);
+    void stopPHPWebServer();
     void parsePHPCS(int tabIndex, QString path);
     void parseMixed(int tabIndex, QString content);
     void parseJS(int tabIndex, QString content);
@@ -322,6 +333,7 @@ signals:
     void serversCommand(QString command, QString pwd);
     void sassCommand(QString src, QString dst);
     void quickFind(QString dir, QString text, WordsMapList words, QStringList wordPrefixes);
+    void installAndroidPack();
 };
 
 #endif // MAINWINDOW_H
