@@ -377,7 +377,16 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
         //QMessageBox::question(treeWidget, tr("Delete"), tr("Do you really want to delete folder \"%1\" ?").arg(fInfo.fileName()), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok
     ) {
         if (!Helper::deleteFolder(path)) {
-            Helper::showMessage(QObject::tr("Could not delete folder. Is it empty ?"));
+            // folder is not empty ?
+            if (Helper::showQuestion(tr("Delete"), tr("Folder is not empty. Delete all files in \"%1\" ?").arg(fInfo.fileName()))) {
+                if (!Helper::deleteFolderRecursivly(path)) {
+                    Helper::showMessage(QObject::tr("Could not delete folder."));
+                } else {
+                    // reload
+                    if (parent != nullptr) fbReloadItem(parent);
+                    else rebuildFileBrowserTree(fbpath);
+                }
+            }
         } else {
             // reload
             if (parent != nullptr) fbReloadItem(parent);

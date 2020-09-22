@@ -127,6 +127,24 @@ bool Helper::deleteFolder(QString path)
     return dir.rmdir(path);
 }
 
+bool Helper::deleteFolderRecursivly(QString startDir)
+{
+    QFileInfo startDirInfo(startDir);
+    if (!startDirInfo.exists() || !startDirInfo.isReadable() || !startDirInfo.isDir()) return false;
+    QDirIterator it(startDir, QDir::AllEntries | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
+    while (it.hasNext()) {
+        QString path = it.next();
+        QFileInfo fInfo(path);
+        if (!fInfo.exists() || !fInfo.isReadable()) continue;
+        if (fInfo.isDir()) {
+            if (!deleteFolderRecursivly(path)) return false;
+        } else {
+            if (!deleteFile(path)) return false;
+        }
+    }
+    return deleteFolder(startDir);
+}
+
 bool Helper::renameFile(QString path, QString newpath)
 {
     QFile f(path);

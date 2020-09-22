@@ -38,6 +38,7 @@ public:
     static bool createDir(QString path);
     static bool deleteFile(QString path);
     static bool deleteFolder(QString path);
+    static bool deleteFolderRecursivly(QString startDir);
     static bool renameFile(QString path, QString newpath);
     static bool renameDir(QString path, QString newpath);
     static bool renameFileOrFolder(QString path, QString newpath);
