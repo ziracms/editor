@@ -1615,25 +1615,52 @@ void MainWindow::on_actionGitInitializeRepository_triggered()
 
 void MainWindow::on_actionGitAddRemoteURL_triggered()
 {
-    bool ok;
-    QString url = QInputDialog::getText(this, tr("Enter URL"), tr("Enter remote URL.\nNote: you might want to add a username and password to repository URI\n(https://username:password@github.com/username/repository.git)"), QLineEdit::Normal, "", &ok);
-    if (!ok || url.size() == 0) return;
+    QInputDialog dialog(this);
+    dialog.setWindowTitle(tr("Enter URL"));
+    dialog.setLabelText(tr("Add remote URL.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"));
+    dialog.setTextEchoMode(QLineEdit::Normal);
+    #if defined(Q_OS_ANDROID)
+    int offset = 20;
+    dialog.setGeometry(offset, ui->centralWidget->geometry().top(), geometry().width() - 2*offset, geometry().height() / 2);
+    //dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
+    #endif
+    if (!dialog.exec()) return;
+    QString url = dialog.textValue();
+    if (url.size() == 0) return;
     git->addRemoteURL(getGitWorkingDir(), url);
 }
 
 void MainWindow::on_actionGitChangeRemoteURL_triggered()
 {
-    bool ok;
-    QString url = QInputDialog::getText(this, tr("Enter URL"), tr("Enter remote URL.\nNote: you might want to add a username and password to repository URI\n(https://username:password@github.com/username/repository.git)"), QLineEdit::Normal, "", &ok);
-    if (!ok || url.size() == 0) return;
+    QInputDialog dialog(this);
+    dialog.setWindowTitle(tr("Enter URL"));
+    dialog.setLabelText(tr("Change remote URL.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"));
+    dialog.setTextEchoMode(QLineEdit::Normal);
+    #if defined(Q_OS_ANDROID)
+    int offset = 20;
+    dialog.setGeometry(offset, ui->centralWidget->geometry().top(), geometry().width() - 2*offset, geometry().height() / 2);
+    //dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
+    #endif
+    if (!dialog.exec()) return;
+    QString url = dialog.textValue();
+    if (url.size() == 0) return;
     git->changeRemoteURL(getGitWorkingDir(), url);
 }
 
 void MainWindow::on_actionGitCloneRepository_triggered()
 {
-    bool ok;
-    QString url = QInputDialog::getText(this, tr("Enter URL"), tr("Enter repository URL.\nNote: you might want to add a username and password to repository URI\n(https://username:password@github.com/username/repository.git)"), QLineEdit::Normal, "", &ok);
-    if (!ok || url.size() == 0) return;
+    QInputDialog dialog(this);
+    dialog.setWindowTitle(tr("Enter URL"));
+    dialog.setLabelText(tr("Clone repository.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"));
+    dialog.setTextEchoMode(QLineEdit::Normal);
+    #if defined(Q_OS_ANDROID)
+    int offset = 20;
+    dialog.setGeometry(offset, ui->centralWidget->geometry().top(), geometry().width() - 2*offset, geometry().height() / 2);
+    //dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
+    #endif
+    if (!dialog.exec()) return;
+    QString url = dialog.textValue();
+    if (url.size() == 0) return;
     git->clone(getGitWorkingDir(), url);
 }
 
