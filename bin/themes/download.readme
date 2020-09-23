@@ -1,10 +1,10 @@
 How to download additional themes for Zira PHP Editor:
 -----------------------------------------------------
 
-Option 1: clone git repository and extract bin/themes folder
---------
+Go to https://github.com/ziracms/editor/releases
+and download addon-themes.zip from the latest release.
 
-Option 2: go to releases section and download any package for Linux or Raspberry Pi
---------  (if you unzip it, you will find themes folder in it)
+This themes will work on Linux, Android and Raspberry Pi.
 
-Note: you have to update additional themes each time the new release comes out.
+Note: you have to update additional themes 
+each time the new release comes out.
