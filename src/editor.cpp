@@ -1779,6 +1779,8 @@ bool Editor::onKeyPress(QKeyEvent *e)
     int code = e->key();
     lastKeyPressed = code;
     lastKeyPressedBlockNumber = textCursor().block().blockNumber();
+    // shift + enter will add new row to existing block
+    if (code == Qt::Key_Return && shift) return false;
     bool ignoreKey = false; // workaround for wrong key code, android emulator bug ?
     #if defined(Q_OS_ANDROID)
     if (code == Qt::Key_BracketLeft && e->text() != "[") ignoreKey = true;
