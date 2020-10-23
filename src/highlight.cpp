@@ -1280,7 +1280,7 @@ bool Highlight::detectRegexpJS(const QChar c, int pos, bool isWSPace, bool isAln
     } else if (regexpOpenedJS >= 0) {
         if (c == "<") prevRegexpEscStringJS = regexpEscStringJS;
         regexpEscStringJS = "";
-    } else if (regexpOpenedJS < 0 && !isWSPace && (isAlnum || c == "$" || c == ")" || c == "]" || c == "<")) {
+    } else if (regexpOpenedJS < 0 && !isWSPace && (isAlnum || c == "$" || c == ")" || c == "]" || c == "<" || c == "~")) {
         regexpPrevCharJS = c;
     } else if (regexpOpenedJS < 0 && !isWSPace) {
         regexpPrevCharJS = "";
@@ -2183,11 +2183,15 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             HW->jswordsCSIterator = HW->jswordsCS.find(keywordStringJS.toStdString());
             if (HW->jswordsCSIterator != HW->jswordsCS.end()) {
                 QTextCharFormat format = HW->jswordsCSIterator->second;
-                highlightString(keywordJSStart, keywordJSLength, format);
+                if (keywordStringJS == "prototype" && keywordJSprevChar == ".") {
+                    highlightString(keywordJSStart, keywordJSLength, HW->keywordFormat);
+                } else {
+                    highlightString(keywordJSStart, keywordJSLength, format);
+                }
                 keywordJSStart = -1;
                 known = true;
             }
-            if (!known && !isBigFile) {
+            if (!known && c != ":" && c != "." && !isBigFile) {
                 jsNamesIterator = jsNames.find(keywordStringJS.toStdString());
                 if (jsNamesIterator != jsNames.end()) {
                     highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
@@ -2196,7 +2200,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             }
         }
         if (!known && !isBigFile) {
-            if ((keywordJSprevString == "var" || keywordJSprevString == "let" || keywordJSprevString == "const") && keywordJSprevStringPrevChar != ".") {
+            if ((keywordJSprevString == "var" || keywordJSprevString == "let" || keywordJSprevString == "const" || keywordJSprevString == "final") && keywordJSprevStringPrevChar != ".") {
                 if (varsChainJS.size() > 0) varsChainJS += ",";
                 varsChainJS += keywordStringJS;
                 jsNames[keywordStringJS.toStdString()] = keywordStringJS.toStdString();
@@ -2205,6 +2209,14 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
             } else if (keywordJSprevChar == ".") {
                 highlightString(keywordJSStart, keywordJSLength, HW->propertyFormat);
+            } else if (keywordJSprevChar != "." && c == ":") {
+                highlightString(keywordJSStart, keywordJSLength, HW->propertyFormat);
+            } else if (keywordJSprevChar == "@") {
+                highlightString(keywordJSStart, keywordJSLength, HW->punctuationFormat);
+            } else if (keywordJSprevChar == "<" && c == ">") {
+                highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
+            } else if (keywordJSprevString == "class" || keywordJSprevString == "extends") {
+                highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
             } else if (expectedFuncNameJS.size() > 0 || expectedFuncParsJS >= 0) { // add arg if var is unknown
                 expectedFuncArgsJS.append(keywordStringJS);
                 highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
@@ -2355,7 +2367,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         } else if (highlightSpaces && c == " ") {
             highlightChar(pos, HW->spaceFormat);
         }
-        if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]")) {
+        if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "@")) {
             highlightChar(pos, HW->punctuationFormat);
         }
     }

@@ -31,7 +31,7 @@ const std::string PHP_MANUAL_ENCODING = "UTF-8";
 Settings::Settings(QObject * parent) : QObject(parent)
 {
     data = {
-        {"file_dialog_filter", "Project files (*.php *.phtml *.html *.xml *.tpl *.css *.less *.scss *.sass *.js *.htaccess *.txt);;All files (*)"},
+        {"file_dialog_filter", "Project files (*.php *.phtml *.html *.xml *.tpl *.css *.less *.scss *.sass *.js *.dart *.htaccess *.txt);;All files (*)"},
         {"file_dialog_path", ""},
         {"file_browser_home", ""},
         {"php_manual_path", ""},
@@ -57,7 +57,7 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"highlight_spaces", "no"},
         {"highlight_tabs", "no"},
         {"highlight_php_extensions", "php, phtml, tpl, html"},
-        {"highlight_js_extensions", "js"},
+        {"highlight_js_extensions", "js, dart"},
         {"highlight_css_extensions", "css, less, scss, sass"},
         {"highlight_html_extensions", "xml"},
         {"parser_enable_php_lint", "yes"},

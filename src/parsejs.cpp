@@ -18,7 +18,7 @@ const int EXPECT_CLASS_ES6_EXTENDED = 5;
 ParseJS::ParseJS()
 {
     commentSLExpression = QRegularExpression("[/][/]([^\n]+?)(?:[\n]|$)", QRegularExpression::DotMatchesEverythingOption);
-    regexpExpression = QRegularExpression("(?:[^\\sa-zA-Z0-9_\\$\\)\\]<\\*\\\\][\\s]*)[/](.*?[^\\\\])[/]", QRegularExpression::DotMatchesEverythingOption);
+    regexpExpression = QRegularExpression("(?:[^\\sa-zA-Z0-9_\\$\\)\\]<\\*\\~\\\\][\\s]*)[/](.*?[^\\\\])[/]", QRegularExpression::DotMatchesEverythingOption);
     parseExpression = QRegularExpression("([a-zA-Z0-9_\\$]+|[\\(\\)\\{\\}\\[\\]\\.,=;:!@#%^&*\\-+/\\|<>\\?\\\\])", QRegularExpression::DotMatchesEverythingOption);
     nameExpression = QRegularExpression("^[a-zA-Z_\\$][a-zA-Z0-9_\\$]*$");
 }
@@ -315,10 +315,10 @@ void ParseJS::parseCode(QString & code, QString & origText)
         if (k.size() == 0) continue;
 
         // classes ES6
-        if ((prevPrevK.size() == 0 || prevPrevK == ";" || prevPrevK == "{" || prevPrevK == "}" || prevPrevK == "var" || prevPrevK == "let" || prevPrevK == "const") && prevK.size() > 0 && k == "=" && functionArgsStart < 0 && ((prevPrevK != "var" && prevPrevK != "let" && prevPrevK != "const") || (current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
+        if ((prevPrevK.size() == 0 || prevPrevK == ";" || prevPrevK == "{" || prevPrevK == "}" || prevPrevK == "var" || prevPrevK == "let" || prevPrevK == "const" || prevPrevK == "final") && prevK.size() > 0 && k == "=" && functionArgsStart < 0 && ((prevPrevK != "var" && prevPrevK != "let" && prevPrevK != "const" && prevPrevK != "final") || (current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
             expected_class_es6_name = prevK;
         }
-        if ((expect < 0 || expect == EXPECT_VARIABLE) && k.toLower() == "class" && (prevK == ";" || prevK == "{" || prevK == "}" || prevK == "=" || prevK.size() == 0) && current_function.size() == 0) {
+        if ((expect < 0 || expect == EXPECT_VARIABLE) && k.toLower() == "class" && (prevK == ";" || prevK == "{" || prevK == "}" || prevK == "=" || prevK == "final" || prevK.size() == 0) && current_function.size() == 0) {
             expect = EXPECT_CLASS_ES6;
             expectName = "";
             current_class_es6_parent = "";
@@ -365,7 +365,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
         }
 
         // functions
-        if ((prevPrevK.size() == 0 || prevPrevK == ";" || prevPrevK == "{" || prevPrevK == "}" || prevPrevK == "var" || prevPrevK == "let" || prevPrevK == "const" || (prevPrevK == "." && prevPrevPrevK == "prototype" && prevPrevPrevPrevK == ".")) && prevK.size() > 0 && k == "=" && functionArgsStart < 0 && ((prevPrevK != "var" && prevPrevK != "let" && prevPrevK != "const") || (current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
+        if ((prevPrevK.size() == 0 || prevPrevK == ";" || prevPrevK == "{" || prevPrevK == "}" || prevPrevK == "var" || prevPrevK == "let" || prevPrevK == "const" || prevPrevK == "final" || (prevPrevK == "." && prevPrevPrevK == "prototype" && prevPrevPrevPrevK == ".")) && prevK.size() > 0 && k == "=" && functionArgsStart < 0 && ((prevPrevK != "var" && prevPrevK != "let" && prevPrevK != "const" && prevPrevK != "final") || (current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
             expected_function_name = prevK;
         }
         if (current_class_es6.size() > 0 && classES6Scope == scope - 1 && k.size() > 0 && k != "(" && k != ")" && k != "{" && k != "}" && current_function.size() == 0 && functionArgPars < 0) {
@@ -512,7 +512,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
         }
 
         // variables
-        if (expect < 0 && functionArgPars < 0 && k.size() > 0 && (prevK == "var" || prevK == "let" || prevK == "const") && ((current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
+        if (expect < 0 && functionArgPars < 0 && k.size() > 0 && (prevK == "var" || prevK == "let" || prevK == "const" || prevK == "final") && ((current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
             expect = EXPECT_VARIABLE;
             expectName = k;
             current_variable = "";
@@ -605,7 +605,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
             constantValueStart = -1;
         }
 
-        if ((expect == EXPECT_VARIABLE || expect == EXPECT_CONST || expect == EXPECT_CLASS_ES6_EXTENDED || class_variable.size() > 0) && (k == "-" || k == "+" || k == "*" || k == "/" || k == "%" || k == "&" || k == "|" || k == ":" || k == ">" || k == "<" || k == "?" || k == "[" || k == "]" || k == "(" || k == ")" || k == ".")) {
+        if ((expect == EXPECT_VARIABLE || expect == EXPECT_CONST || class_variable.size() > 0) && (k == "-" || k == "+" || k == "*" || k == "/" || k == "%" || k == "&" || k == "|" || k == ":" || k == ">" || k == "<" || k == "?" || k == "[" || k == "]" || k == "(" || k == ")" || k == ".")) {
             expect = -1;
             expectName = "";
             class_variable = "";
