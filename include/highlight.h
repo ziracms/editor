@@ -351,6 +351,7 @@ private:
     bool expectAndSignJS;
     bool expectOrSignJS;
     QString operatorsChainJS;
+    bool expectJSVar;
 signals:
     void progressChanged(int percent);
 };

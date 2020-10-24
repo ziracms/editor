@@ -326,6 +326,7 @@ void Highlight::reset()
     expectOrSignJS = false;
     operatorsChainJS = "";
     operatorsJS.clear();
+    expectJSVar = false;
 }
 
 void Highlight::addSpecialChar(QChar c, int pos)
@@ -1940,7 +1941,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
             }
         }
         int keywordCSSLength = pos-keywordCSSStart;
-        if (isLast && isAlnum) keywordCSSLength += 1;
+        if (isLast && (isAlnum || c == "-")) keywordCSSLength += 1;
         if ((keywordCSSprevChar == "@" || keywordCSSprevChar == "!") && keywordCSSStart>0) {
             keywordCSSStart -= 1;
             keywordCSSLength += 1;
@@ -2174,9 +2175,10 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
 
     // keywords & functions
     int keywordJSStart = detectKeywordJS(c, pos, isAlpha, isAlnum, isLast);
+    bool isExpectJSVarChar = (c == ")" || c == "[" || c == "]" || c == "}" || c == ";" || c == "=" || c == "," || c == "+" || c == "-" || c == "*" || c == "/" || c == "~" || c == "%" || c == "&" || c == "?" || c == ":" || c == "<" || c == ">" || c == "|");
     if (keywordJSStart>=0) {
         int keywordJSLength = pos-keywordJSStart;
-        if (isLast && isAlnum) keywordJSLength += 1;
+        if (isLast && (isAlnum || c == "$")) keywordJSLength += 1;
         bool known = false;
         if (keywordJSprevChar != "$" && (keywordJSprevChar != "." || keywordStringJS == "prototype") && keywordStringJS.size()>0) {
             // js keywords
@@ -2215,12 +2217,19 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 highlightString(keywordJSStart, keywordJSLength, HW->punctuationFormat);
             } else if (keywordJSprevChar == "<" && c == ">") {
                 highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
-            } else if (keywordJSprevString == "class" || keywordJSprevString == "extends") {
+            } else if (keywordJSprevString == "class" || keywordJSprevString == "extends" || keywordJSprevString == "with") {
                 highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
             } else if (expectedFuncNameJS.size() > 0 || expectedFuncParsJS >= 0) { // add arg if var is unknown
                 expectedFuncArgsJS.append(keywordStringJS);
                 highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
+            } else if (isExpectJSVarChar || (isLast && (isAlnum || c == "$"))) {
+                highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
+            } else if (!expectJSVar && (c.isSpace() || isLast)) {
+                expectJSVar = true;
             }
+        }
+        if (keywordJSStartPrev>=0 && keywordJSLengthPrev>0) {
+            highlightString(keywordJSStartPrev, keywordJSLengthPrev, HW->classFormat);
         }
         if (keywordStringJS.size()>0 && !isBigFile) {
             // function scope
@@ -2257,14 +2266,18 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         keywordJSLengthPrev = keywordJSLength;
     }
     if (keywordJSStartPrev>=0 && keywordJSLengthPrev>0) {
-        // js functions
+        // js functions, variables, classes
         if (c == "(") {
             highlightString(keywordJSStartPrev, keywordJSLengthPrev, HW->functionFormat);
-            keywordJSStartPrev = -1;
-            keywordJSLengthPrev = -1;
-        } else if (!isWSpace) {
-            keywordJSStartPrev = -1;
-            keywordJSLengthPrev = -1;
+        } else if (expectJSVar && (isExpectJSVarChar || (isLast && isWSpace))) {
+            highlightString(keywordJSStartPrev, keywordJSLengthPrev, HW->variableFormat);
+        }
+        if (!isWSpace) {
+            if (!isAlnum && c != "$") {
+                keywordJSStartPrev = -1;
+                keywordJSLengthPrev = -1;
+            }
+            expectJSVar = false;
         }
     }
 

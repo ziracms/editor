@@ -3098,7 +3098,7 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos, QChar cursorT
             }
         }
         // parsed classes
-        if (prevWord == "var" && completePopup->count() < completePopup->limit()) {
+        if (completePopup->count() < completePopup->limit()) {
             for (int i=0; i<parseResultJS.classes.size(); i++){
                 ParseJS::ParseResultClass cls = parseResultJS.classes.at(i);
                 QString k = cls.name;
