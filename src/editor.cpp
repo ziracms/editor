@@ -2064,8 +2064,22 @@ bool Editor::onKeyPress(QKeyEvent *e)
             nextChar = blockText[pos];
             if (total > pos+1) lastChar = blockText[total-1];
         }
-        if (prevChar == "{") {
+        bool indentScope = false;
+        bool indentScopeToLast = false;
+        if (prevChar == "{" || prevChar == "(" || prevChar == "[") {
             indent = (tabType == "spaces") ? QString(" ").repeated(tabWidth) : "\t";
+            if ((prevChar == "{" && (nextChar == "}" || lastChar == "}")) ||
+                (prevChar == "(" && (nextChar == ")" || lastChar == ")")) ||
+                (prevChar == "[" && (nextChar == "]" || lastChar == "]"))
+            ) {
+                indentScope = true;
+            }
+            if ((prevChar == "{" && (nextChar != "}" && lastChar == "}")) ||
+                (prevChar == "(" && (nextChar != ")" && lastChar == ")")) ||
+                (prevChar == "[" && (nextChar != "]" && lastChar == "]"))
+            ) {
+                indentScopeToLast = true;
+            }
         }
         // fix empty indent
         if (nextChar == '\0' && prefix.size()==0 && indent.size()==0 && !isCommentClose && !isCommentLine && curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor)) {
@@ -2091,8 +2105,8 @@ bool Editor::onKeyPress(QKeyEvent *e)
             QTextCursor cursor = textCursor();
             cursor.beginEditBlock();
             cursor.insertText("\n"+prefix+indent);
-            if (prevChar == "{" && (nextChar == "}" || lastChar == "}")) {
-                if (nextChar != "}" && lastChar == "}") {
+            if (indentScope) {
+                if (indentScopeToLast) {
                     cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
                     cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor);
                 }
@@ -2292,14 +2306,14 @@ void Editor::insertFromMimeData(const QMimeData *source)
                     }
                     QChar first = line[0];
                     QChar last = line[line.size()-1];
-                    if (first == "}") {
+                    if (first == "}" || first == ")" || first == "]") {
                         count--;
                         if (count < 0) count = 0;
                     }
                     if (i>0) {
                         textF += prefix + space.repeated(count) + line + "\n";
                     }
-                    if (last == "{" && first != "/") {
+                    if ((last == "{" || last == "(" || last == "[") && first != "/") {
                         count++;
                     }
                 }
