@@ -686,6 +686,9 @@ void ParseJS::parseCode(QString & code, QString & origText)
                             continue;
                         }
                         argName = argsDefaultsList.at(0).trimmed();
+                        if (argName.indexOf(" ") >= 0) {
+                            argName = argName.mid(argName.lastIndexOf(" ")+1);
+                        }
                         if (argName.size() == 0) {
                             continue;
                         }
