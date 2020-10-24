@@ -512,7 +512,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
         }
 
         // variables
-        if (expect < 0 && functionArgPars < 0 && k.size() > 0 && (prevK == "var" || prevK == "let" || prevK == "const" || prevK == "final") && ((current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
+        if (expect < 0 && functionArgPars < 0 && k.size() > 0 && (prevK == "var" || prevK == "let" || prevK == "const" || prevK.size() > 1) && ((current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
             expect = EXPECT_VARIABLE;
             expectName = k;
             current_variable = "";

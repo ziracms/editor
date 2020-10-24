@@ -327,6 +327,8 @@ void Highlight::reset()
     operatorsChainJS = "";
     operatorsJS.clear();
     expectJSVar = false;
+    expectVarInit = false;
+    prevIsKeyword = false;
 }
 
 void Highlight::addSpecialChar(QChar c, int pos)
@@ -2202,7 +2204,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             }
         }
         if (!known && !isBigFile) {
-            if ((keywordJSprevString == "var" || keywordJSprevString == "let" || keywordJSprevString == "const" || keywordJSprevString == "final") && keywordJSprevStringPrevChar != ".") {
+            if ((keywordJSprevString == "var" || keywordJSprevString == "let" || keywordJSprevString == "const") && keywordJSprevStringPrevChar != ".") {
                 if (varsChainJS.size() > 0) varsChainJS += ",";
                 varsChainJS += keywordStringJS;
                 jsNames[keywordStringJS.toStdString()] = keywordStringJS.toStdString();
@@ -2228,8 +2230,10 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 expectJSVar = true;
             }
         }
-        if (keywordJSStartPrev>=0 && keywordJSLengthPrev>0) {
+        //if (keywordJSStartPrev>=0 && keywordJSLengthPrev>0) {
+        if (prevIsKeyword) {
             highlightString(keywordJSStartPrev, keywordJSLengthPrev, HW->classFormat);
+            expectVarInit = true;
         }
         if (keywordStringJS.size()>0 && !isBigFile) {
             // function scope
@@ -2259,6 +2263,9 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 expectedFuncVarJS = "";
             }
         }
+        if (keywordJSprevChar != "." && keywordJSprevChar != "@") {
+            prevIsKeyword = true;
+        }
         keywordJSprevString = keywordStringJS;
         keywordJSprevStringPrevChar = keywordJSprevChar;
         keywordJSprevChar = c;
@@ -2279,6 +2286,19 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             }
             expectJSVar = false;
         }
+    }
+    if (expectVarInit) {
+        if (c == "=" && keywordStringJS.size() > 0 && keywordJSprevChar != ".") {
+            if (varsChainJS.size() > 0) varsChainJS += ",";
+            varsChainJS += keywordStringJS;
+            jsNames[keywordStringJS.toStdString()] = keywordStringJS.toStdString();
+        }
+        if (!isWSpace) {
+            expectVarInit = false;
+        }
+    }
+    if (!isWSpace && !isAlnum && c != "$") {
+        prevIsKeyword = false;
     }
 
     // js curly brackets
