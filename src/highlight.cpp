@@ -2214,6 +2214,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         int keywordJSLength = pos-keywordJSStart;
         if (isLast && (isAlnum || c == "$")) keywordJSLength += 1;
         bool known = false;
+        bool isKeyword = false;
         if (keywordJSprevChar != "$" && (keywordJSprevChar != "." || keywordStringJS == "prototype") && keywordStringJS.size()>0) {
             // js keywords
             HW->jswordsCSIterator = HW->jswordsCS.find(keywordStringJS.toStdString());
@@ -2226,6 +2227,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 }
                 keywordJSStart = -1;
                 known = true;
+                isKeyword = true;
             }
             if (!known && c != ":" && c != "." && !isBigFile) {
                 jsNamesIterator = jsNames.find(keywordStringJS.toStdString());
@@ -2273,7 +2275,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 expectedClsNameJS = keywordStringJS;
             }
             // function scope
-            if (expectedFuncNameJS.size() == 0 && keywordStringJS.size() > 0 && keywordStringJS != "function") {
+            if (expectedFuncNameJS.size() == 0 && keywordStringJS.size() > 0 && keywordStringJS != "function" && !isKeyword) {
                 expectedFuncNameJS = "";
                 expectedFuncVarJS = keywordStringJS;
                 expectedFuncParsJS = -1;
@@ -2290,7 +2292,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                     expectedFuncParsJS = -1;
                 }
                 expectedFuncArgsJS.clear();
-            } else if (keywordStringJS.size() > 0 && ((keywordStringJS == "function" && expectedFuncNameJS.size() == 0) || expectedFuncNameJS == "function")) {
+            } else if (keywordStringJS.size() > 0 && (keywordStringJS == "function" || expectedFuncNameJS == "function")) {
                 expectedFuncNameJS = keywordStringJS;
                 expectedFuncVarJS = "";
                 expectedFuncParsJS = parensJS;
@@ -2468,6 +2470,11 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
 
     if (keywordJSStart < 0 && expectedFuncVarJS.size() > 0 && expectedFuncParsJS < 0 && !isWSpace && (isAlnum || c == "=")) {
         expectedFuncVarJS += c;
+    } else if (expectedFuncVarJS.size() > 0 && expectedFuncParsJS < 0 && expectedFuncVarJS.indexOf("=") < 0 && c == "(") {
+        expectedFuncNameJS = expectedFuncVarJS;
+        expectedFuncVarJS = "";
+        expectedFuncParsJS = parensJS;
+        expectedFuncArgsJS.clear();
     } else if (expectedFuncVarJS.size() > 0 && expectedFuncParsJS < 0 && !isWSpace) {
         expectedFuncVarJS = "";
     }
