@@ -368,7 +368,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
         if ((prevPrevK.size() == 0 || prevPrevK == ";" || prevPrevK == "{" || prevPrevK == "}" || prevPrevK == "var" || prevPrevK == "let" || prevPrevK == "const" || prevPrevK == "final" || (prevPrevK == "." && prevPrevPrevK == "prototype" && prevPrevPrevPrevK == ".")) && prevK.size() > 0 && k == "=" && functionArgsStart < 0 && ((prevPrevK != "var" && prevPrevK != "let" && prevPrevK != "const" && prevPrevK != "final") || (current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
             expected_function_name = prevK;
         }
-        if (current_class_es6.size() > 0 && classES6Scope == scope - 1 && k.size() > 0 && k != "(" && k != ")" && k != "{" && k != "}" && current_function.size() == 0 && functionArgPars < 0) {
+        if (expect != EXPECT_CLASS_ES6 && expect != EXPECT_CLASS_ES6_EXTENDED && current_class_es6.size() > 0 && classES6Scope == scope - 1 && k.size() > 0 && k != "(" && k != ")" && k != "{" && k != "}" && current_function.size() == 0 && functionArgPars < 0) {
             expect = EXPECT_FUNCTION;
             current_function_args = "";
             expected_function_args.clear();
@@ -512,7 +512,7 @@ void ParseJS::parseCode(QString & code, QString & origText)
         }
 
         // variables
-        if (expect < 0 && functionArgPars < 0 && k.size() > 0 && (prevK == "var" || prevK == "let" || prevK == "const" || prevK.size() > 1) && ((current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
+        if (expect < 0 && functionArgPars < 0 && k.size() > 0 && (prevK == "var" || prevK == "let" || prevK == "const" || prevK.size() > 1 || (prevK.size() == 1 && ((prevK[0]).isLetter() || prevK[0] == '$'))) && ((current_function.size() == 0 && scope == 0) || (functionScope >= 0 && functionScope == scope - 1))) {
             expect = EXPECT_VARIABLE;
             expectName = k;
             current_variable = "";

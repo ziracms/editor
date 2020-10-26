@@ -128,4 +128,14 @@ void HighlightData::reset()
     operatorsChainJS = "";
     operatorsJS.clear();
     wantUpdate = false;
+    expectedClsNameJS = "";
+    clsNameJS = "";
+    clsScopeJS = -1;
+    clsChainJS = "";
+    clsNamesJS.clear();
+    clsStartsJS.clear();
+    clsEndsJS.clear();
+    clsScopeChainJS.clear();
+    clsOpensJS.clear();
+    clsOpenJS = false;
 }

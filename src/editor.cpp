@@ -4833,7 +4833,11 @@ void Editor::cursorPositionChangedDelayed()
             if (funcName.size() > 0) scopeName += funcName;
         } else if (mode == MODE_JS) {
             followTooltip();
-            scopeName += highlight->findFuncJSAtCursor(& block, pos);
+            QString clsName = highlight->findClsJSAtCursor(& block, pos);
+            QString funcName = highlight->findFuncJSAtCursor(& block, pos);
+            if (clsName == "anonymous class" || funcName == "anonymous function") clsName = "";
+            if (clsName.size() > 0) scopeName += clsName + BREADCRUMBS_DELIMITER;
+            if (funcName.size() > 0) scopeName += funcName;
         } else if (mode == MODE_CSS) {
             QString mediaName = highlight->findMediaCSSAtCursor(& block, pos);
             if (mediaName.size() > 0) {

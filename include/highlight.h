@@ -57,6 +57,7 @@ public:
     QString findNsPHPAtCursor(QTextBlock * block, int pos);
     QString findClsPHPAtCursor(QTextBlock * block, int pos);
     QString findFuncPHPAtCursor(QTextBlock * block, int pos);
+    QString findClsJSAtCursor(QTextBlock * block, int pos);
     QString findFuncJSAtCursor(QTextBlock * block, int pos);
     QString findMediaCSSAtCursor(QTextBlock * block, int pos);
     QString findTagChainHTMLAtCursor(QTextBlock * block, int pos);
@@ -354,6 +355,16 @@ private:
     bool expectJSVar;
     bool expectVarInit;
     bool prevIsKeyword;
+    QString expectedClsNameJS;
+    QString clsNameJS;
+    int clsScopeJS;
+    QString clsChainJS;
+    QVector<QString> clsNamesJS;
+    QVector<int> clsStartsJS;
+    QVector<int> clsEndsJS;
+    QList<int> clsScopeChainJS;
+    QVector<bool> clsOpensJS;
+    bool clsOpenJS;
 signals:
     void progressChanged(int percent);
 };

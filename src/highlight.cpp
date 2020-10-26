@@ -329,6 +329,16 @@ void Highlight::reset()
     expectJSVar = false;
     expectVarInit = false;
     prevIsKeyword = false;
+    expectedClsNameJS = "";
+    clsNameJS = "";
+    clsScopeJS = -1;
+    clsChainJS = "";
+    clsNamesJS.clear();
+    clsStartsJS.clear();
+    clsEndsJS.clear();
+    clsScopeChainJS.clear();
+    clsOpensJS.clear();
+    clsOpenJS = false;
 }
 
 void Highlight::addSpecialChar(QChar c, int pos)
@@ -470,6 +480,21 @@ QString Highlight::findFuncPHPAtCursor(QTextBlock * block, int pos)
         for (int i=0; i<blockData->funcStartsPHP.size(); i++) {
             if (blockData->funcStartsPHP.at(i) <= pos && blockData->funcEndsPHP.at(i) >= pos) {
                 return blockData->funcNamesPHP.at(i);
+            }
+        }
+    }
+    return "";
+}
+
+QString Highlight::findClsJSAtCursor(QTextBlock * block, int pos)
+{
+    HighlightData * blockData = dynamic_cast<HighlightData *>(block->userData());
+    if (blockData != nullptr && blockData->clsStartsJS.size()>0 && blockData->clsEndsJS.size()>0 && blockData->clsNamesJS.size()>0 &&
+        blockData->clsStartsJS.size()==blockData->clsEndsJS.size() && blockData->clsStartsJS.size()==blockData->clsNamesJS.size()
+    ) {
+        for (int i=0; i<blockData->clsStartsJS.size(); i++) {
+            if (blockData->clsStartsJS.at(i) <= pos && blockData->clsEndsJS.at(i) >= pos) {
+                return blockData->clsNamesJS.at(i);
             }
         }
     }
@@ -1552,6 +1577,13 @@ void Highlight::restoreState() {
             operatorsPHP = prevBlockData->operatorsPHP;
             operatorsChainJS = prevBlockData->operatorsChainJS;
             operatorsJS = prevBlockData->operatorsJS;
+            expectedClsNameJS = prevBlockData->expectedClsNameJS;
+            clsNameJS = prevBlockData->clsNameJS;
+            clsScopeJS = prevBlockData->clsScopeJS;
+            clsChainJS = prevBlockData->clsChainJS;
+            clsScopeChainJS = prevBlockData->clsScopeChainJS;
+            clsOpensJS = prevBlockData->clsOpensJS;
+            clsOpenJS = prevBlockData->clsOpenJS;
         }
     }
 
@@ -2236,6 +2268,10 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             expectVarInit = true;
         }
         if (keywordStringJS.size()>0 && !isBigFile) {
+            // class scope
+            if (keywordStringJS.size() > 0 && (((keywordStringJS.toLower() == "class" || keywordStringJS.toLower() == "interface") && expectedClsNameJS.size() == 0) || expectedClsNameJS.toLower() == "class" || expectedClsNameJS.toLower() == "interface")) {
+                expectedClsNameJS = keywordStringJS;
+            }
             // function scope
             if (expectedFuncNameJS.size() == 0 && keywordStringJS.size() > 0 && keywordStringJS != "function") {
                 expectedFuncNameJS = "";
@@ -2304,6 +2340,25 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
     // js curly brackets
     if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c == "{") {
         bracesJS++;
+        // open class scope
+        if (expectedClsNameJS.size() > 0) {
+            QString cClsNameJS = clsNameJS;
+            int cClsScopeJS = clsScopeJS;
+            if (clsScopeJS < 0) cClsNameJS = "";
+            if (expectedClsNameJS == "class" || expectedClsNameJS == "implements" || expectedClsNameJS == "extends") expectedClsNameJS = "anonymous class";
+            if (clsStartsJS.size() > clsEndsJS.size()) clsEndsJS.append(pos);
+            clsNameJS = expectedClsNameJS;
+            clsScopeJS = bracesJS-1;
+            clsNamesJS.append(clsNameJS);
+            clsStartsJS.append(pos+1);
+            if (clsChainJS.size() > 0) clsChainJS += ",";
+            clsChainJS += cClsNameJS;
+            clsScopeChainJS.append(cClsScopeJS);
+            expectedClsNameJS = "";
+            expectedFuncArgsJS.clear();
+            clsOpensJS.append(clsOpenJS);
+            clsOpenJS = true;
+        }
         // open function scope
         if (expectedFuncNameJS.size() > 0 && expectedFuncParsJS == parensJS) {
             QString cFuncNameJS = funcNameJS;
@@ -2330,6 +2385,39 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
     } else if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c == "}") {
         bracesJS--;
         if (bracesJS < 0) bracesJS = 0;
+        // close class scope
+        if (clsNameJS.size() > 0 && clsScopeJS >= 0 && clsScopeJS == bracesJS) {
+            clsNameJS = "";
+            clsScopeJS = -1;
+            clsEndsJS.append(pos);
+            expectedClsNameJS = "";
+            // set parent cls
+            int parentClsScopeJS = -1;
+            QString parentClsJS = "", parentClsChainJS = "";
+            if (!clsScopeChainJS.isEmpty()) {
+                parentClsScopeJS = clsScopeChainJS.last();
+                clsScopeChainJS.removeLast();
+                QStringList clsChainListJS  = clsChainJS.split(",");
+                parentClsJS = clsChainListJS.last();
+                for (int i=0; i<clsChainListJS.size()-1; i++) {
+                    if (parentClsChainJS.size() > 0) parentClsChainJS += ",";
+                    parentClsChainJS += clsChainListJS.at(i);
+                }
+                if (parentClsScopeJS >= 0 && parentClsJS.size() > 0) {
+                    clsNameJS = parentClsJS;
+                    clsChainJS = parentClsChainJS;
+                    clsNamesJS.append(clsNameJS);
+                    clsStartsJS.append(pos+1);
+                    clsScopeJS = parentClsScopeJS;
+                }
+            }
+            if (!clsOpensJS.isEmpty()) {
+                clsOpenJS = clsOpensJS.last();
+                clsOpensJS.removeLast();
+            } else {
+                clsOpenJS = false;
+            }
+        }
         // close function scope
         if (funcNameJS.size() > 0 && funcScopeJS >= 0 && funcScopeJS == bracesJS) {
             funcNameJS = "";
@@ -2365,6 +2453,12 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         expectedFuncNameJS = "anonymous function";
     }
 
+    // unexpected class scope
+    if (expectedClsNameJS.size() > 0 && expectedClsNameJS.toLower() == "class" && c == "(") {
+        expectedClsNameJS = "anonymous class";
+    } else if (expectedClsNameJS.size() > 0 && c == ";") {
+        expectedClsNameJS = "";
+    }
     // unexpected function scope
     if (expectedFuncNameJS.size() > 0 && expectedFuncNameJS != "function" && c == ";" && expectedFuncParsJS == parensJS) {
         expectedFuncNameJS = "";
@@ -3180,6 +3274,10 @@ void Highlight::openBlockDataLists()
             clsProps[varName.toStdString()] = varName.toStdString();
         }
     }
+    if (clsNameJS.size() > 0 && clsScopeJS >= 0) {
+        clsStartsJS.append(0);
+        clsNamesJS.append(clsNameJS);
+    }
     if (funcNameJS.size() > 0 && funcScopeJS >= 0) {
         funcStartsJS.append(0);
         funcNamesJS.append(funcNameJS);
@@ -3224,6 +3322,9 @@ void Highlight::closeBlockDataLists(int textSize)
     }
     if (funcStartsPHP.size()>funcEndsPHP.size()) {
         funcEndsPHP.append(textSize);
+    }
+    if (clsStartsJS.size()>clsEndsJS.size()) {
+        clsEndsJS.append(textSize);
     }
     if (funcStartsJS.size()>funcEndsJS.size()) {
         funcEndsJS.append(textSize);
@@ -3372,6 +3473,9 @@ bool Highlight::parseBlock(const QString & text)
     QString _cssNamesChain = cssNamesChain;
     QString _operatorsChainPHP = operatorsChainPHP;
     QString _operatorsChainJS = operatorsChainJS;
+    QString _expectedClsNameJS = expectedClsNameJS;
+    QString _clsNameJS = clsNameJS;
+    QString _clsChainJS = clsChainJS;
 
     // load current block data
     if (blockData == nullptr) {
@@ -3430,6 +3534,9 @@ bool Highlight::parseBlock(const QString & text)
         _cssNamesChain = blockData->cssNamesChain;
         _operatorsChainPHP = blockData->operatorsChainPHP;
         _operatorsChainJS = blockData->operatorsChainJS;
+        _expectedClsNameJS = blockData->expectedClsNameJS;
+        _clsNameJS = blockData->clsNameJS;
+        _clsChainJS = blockData->clsChainJS;
     }
 
     if (!highlightVarsMode && !firstRunMode && !rehighlightBlockMode && lastVisibleBlockNumber >= 0 && cBlock.blockNumber() > lastVisibleBlockNumber + EXTRA_HIGHLIGHT_BLOCKS_COUNT) {
@@ -3535,7 +3642,10 @@ bool Highlight::parseBlock(const QString & text)
         _tagChainHTML != tagChainHTML ||
         _cssNamesChain != cssNamesChain ||
         _operatorsChainPHP != operatorsChainPHP ||
-        _operatorsChainJS != operatorsChainJS
+        _operatorsChainJS != operatorsChainJS ||
+        _expectedClsNameJS != expectedClsNameJS ||
+        _clsNameJS != clsNameJS ||
+        _clsChainJS != clsChainJS
     ) {
         changeBlockState();
     }
@@ -3655,6 +3765,16 @@ bool Highlight::parseBlock(const QString & text)
     blockData->operatorsPHP = operatorsPHP;
     blockData->operatorsChainJS = operatorsChainJS;
     blockData->operatorsJS = operatorsJS;
+    blockData->expectedClsNameJS = expectedClsNameJS;
+    blockData->clsNameJS = clsNameJS;
+    blockData->clsScopeJS = clsScopeJS;
+    blockData->clsChainJS = clsChainJS;
+    blockData->clsNamesJS = clsNamesJS;
+    blockData->clsStartsJS = clsStartsJS;
+    blockData->clsEndsJS = clsEndsJS;
+    blockData->clsScopeChainJS = clsScopeChainJS;
+    blockData->clsOpensJS = clsOpensJS;
+    blockData->clsOpenJS = clsOpenJS;
     cBlock.setUserData(blockData);
 
     return true;

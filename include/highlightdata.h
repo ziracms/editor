@@ -132,6 +132,16 @@ public:
     QString operatorsChainJS;
     std::unordered_map<int, std::string> operatorsJS;
     bool wantUpdate;
+    QString expectedClsNameJS;
+    QString clsNameJS;
+    int clsScopeJS;
+    QString clsChainJS;
+    QVector<QString> clsNamesJS;
+    QVector<int> clsStartsJS;
+    QVector<int> clsEndsJS;
+    QList<int> clsScopeChainJS;
+    QVector<bool> clsOpensJS;
+    bool clsOpenJS;
 };
 
 #endif // HIGHLIGHTDATA_H
