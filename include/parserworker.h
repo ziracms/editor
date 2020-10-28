@@ -75,7 +75,7 @@ signals:
     void message(QString text);
     void gitCommandFinished(QString command, QString output, bool outputResult = true);
     void serversCommandFinished(QString output);
-    void sassCommandFinished(QString output);
+    void sassCommandFinished(QString output, QString directory);
     void quickFound(QString text, QString info, QString file, int line);
     void activateProgress();
     void deactivateProgress();

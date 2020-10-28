@@ -226,7 +226,7 @@ private slots:
     void runGitCommand(QString path, QString command, QStringList attrs, bool outputResult = true, bool silent = false);
     void gitCommandFinished(QString command, QString output, bool outputResult = true);
     void serversCommandFinished(QString output);
-    void sassCommandFinished(QString output);
+    void sassCommandFinished(QString output, QString directory);
     void editorFocused();
     void editorSplitFocused();
     void showQAPanel();

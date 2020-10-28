@@ -609,7 +609,10 @@ void ParserWorker::sassCommand(QString src, QString dst)
     }
     QString error = QString(process.readAllStandardError());
 
-    emit sassCommandFinished(error);
+    QFileInfo qfi(src);
+    QString directory = qfi.absolutePath();
+
+    emit sassCommandFinished(error, directory);
     if (!isBusy) emit deactivateProgress();
 }
 

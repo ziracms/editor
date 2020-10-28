@@ -356,7 +356,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(parserWorker, SIGNAL(message(QString)), this, SLOT(workerMessage(QString)));
     connect(parserWorker, SIGNAL(gitCommandFinished(QString,QString,bool)), this, SLOT(gitCommandFinished(QString,QString,bool)));
     connect(parserWorker, SIGNAL(serversCommandFinished(QString)), this, SLOT(serversCommandFinished(QString)));
-    connect(parserWorker, SIGNAL(sassCommandFinished(QString)), this, SLOT(sassCommandFinished(QString)));
+    connect(parserWorker, SIGNAL(sassCommandFinished(QString,QString)), this, SLOT(sassCommandFinished(QString,QString)));
     connect(parserWorker, SIGNAL(quickFound(QString,QString,QString,int)), qa, SLOT(quickFound(QString,QString,QString,int)));
     connect(parserWorker, SIGNAL(activateProgress()), this, SLOT(activateProgressLine()));
     connect(parserWorker, SIGNAL(deactivateProgress()), this, SLOT(deactivateProgressLine()));
@@ -1406,10 +1406,13 @@ void MainWindow::compileSass(QString src, QString dst)
     emit sassCommand(src, dst);
 }
 
-void MainWindow::sassCommandFinished(QString output)
+void MainWindow::sassCommandFinished(QString output, QString directory)
 {
     output = output.trimmed();
-    if (output.size() == 0) output = tr("Finished.");
+    if (output.size() == 0) {
+        output = tr("Finished.");
+        filebrowser->refreshFileBrowserDirectory(directory);
+    }
     ui->outputEdit->append(output);
     QTextCursor cursor = ui->outputEdit->textCursor();
     cursor.movePosition(QTextCursor::Start);
