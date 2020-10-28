@@ -105,15 +105,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // font issue workaround for Qt < 5.12
     bool applyWidgetsFont = false;
-    QString qV = QString(qVersion());
-    QStringList qVL = qV.split(".");
-    if (qVL.size() == 3) {
-        QVersionNumber v1(qVL.at(0).toInt(), qVL.at(1).toInt(), qVL.at(2).toInt());
-        QVersionNumber v2(5, 12, 0);
-        if (QVersionNumber::compare(v1, v2) < 0) {
-            applyWidgetsFont = true;
-        }
-    }
+    if (Helper::isQtVersionLessThan(5, 12, 0)) applyWidgetsFont = true;
+
     #if defined(Q_OS_ANDROID)
     applyWidgetsFont = true;
     #endif

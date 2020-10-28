@@ -59,10 +59,12 @@ void FileBrowser::initFileBrowser(QString homeDir)
         if (stddirs.size()>0) homeDir = stddirs.at(0);
     }
     if (homeDir.size()==0) homeDir = ".";
-    QAction * upAction = pathLine->addAction(Icon::get("up", QIcon(":icons/levelup.png")), QLineEdit::TrailingPosition);
-    connect(upAction, SIGNAL(triggered(bool)), this, SLOT(upActionTriggered(bool)));
-    QAction * homeAction = pathLine->addAction(Icon::get("home", QIcon(":icons/home.png")), QLineEdit::LeadingPosition);
-    connect(homeAction, SIGNAL(triggered(bool)), this, SLOT(homeActionTriggered(bool)));
+    if (!Helper::isQtVersionLessThan(5, 12, 0)) {
+        QAction * upAction = pathLine->addAction(Icon::get("up", QIcon(":icons/levelup.png")), QLineEdit::TrailingPosition);
+        connect(upAction, SIGNAL(triggered(bool)), this, SLOT(upActionTriggered(bool)));
+        QAction * homeAction = pathLine->addAction(Icon::get("home", QIcon(":icons/home.png")), QLineEdit::LeadingPosition);
+        connect(homeAction, SIGNAL(triggered(bool)), this, SLOT(homeActionTriggered(bool)));
+    }
     buildFileBrowserTree(homeDir);
     connect(treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(fileBrowserExpanded(QTreeWidgetItem*)));
     connect(treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(fileBrowserCollapsed(QTreeWidgetItem*)));

@@ -20,6 +20,7 @@
 #include <QStandardPaths>
 #include <QStylePlugin>
 #include <QDirIterator>
+#include <QVersionNumber>
 #include "mainwindow.h"
 #include "fileiconprovider.h"
 #include "filedialog.h"
@@ -472,6 +473,19 @@ void Helper::showMessage(QString text)
 bool Helper::showQuestion(QString title, QString msg)
 {
     return QMessageBox::question(getWindowWidget(), title, msg, QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok;
+}
+
+bool Helper::isQtVersionLessThan(int maj, int min, int mic) {
+    QString qV = QString(qVersion());
+    QStringList qVL = qV.split(".");
+    if (qVL.size() == 3) {
+        QVersionNumber v1(qVL.at(0).toInt(), qVL.at(1).toInt(), qVL.at(2).toInt());
+        QVersionNumber v2(maj, min, mic);
+        if (QVersionNumber::compare(v1, v2) < 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 #if defined(Q_OS_ANDROID)

@@ -66,6 +66,7 @@ public:
     static QWidget * getWindowWidget();
     static void showMessage(QString text);
     static bool showQuestion(QString title, QString msg);
+    static bool isQtVersionLessThan(int maj, int min, int mic);
     #if defined(Q_OS_ANDROID)
     static void requestAndroidPermissions();
     #endif
