@@ -957,9 +957,11 @@ void MainWindow::enableActionsForOpenProject()
 void MainWindow::projectLoadOnStart()
 {
     showWelcomeScreen();
+    /*
     #if defined(Q_OS_ANDROID)
     emit installAndroidPack();
     #endif
+    */
     QSettings windowSettings;
     QString projectPath = windowSettings.value("project_path").toString();
     if (projectPath.size() > 0 && Helper::folderExists(projectPath) && project->exists(projectPath)) {

@@ -24,6 +24,8 @@ const QString ANDROID_PHP_TMP_DIR = "tmp";
 const QString ANDROID_INSTALL_RESULT_LINE_TEMPLATE = "<p>%1</p>";
 const QString PHP_WEBSERVER_URI = "127.0.0.1:8000";
 
+const QString ZIRA_DEV_PACK_PATH = "/data/data/com.github.ziracms.devpack/files/bin";
+
 ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(parent)
 {   
     phpPath = "";
@@ -127,6 +129,19 @@ ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(paren
     if (phpcsPathStr.size() > 0 && Helper::fileOrFolderExists(phpcsPathStr)) {
         phpcsPath = phpcsPathStr;
     }
+
+    #if defined(Q_OS_ANDROID)
+    setAndroidBinPaths(); // use installed binaries if exists
+    if (phpPath.size() == 0 && Helper::fileOrFolderExists(ZIRA_DEV_PACK_PATH+"/php")) {
+        phpPath = ZIRA_DEV_PACK_PATH+"/php";
+    }
+    if (gitPath.size() == 0 && Helper::fileOrFolderExists(ZIRA_DEV_PACK_PATH+"/git")) {
+        gitPath = ZIRA_DEV_PACK_PATH+"/git";
+    }
+    if (sasscPath.size() == 0 && Helper::fileOrFolderExists(ZIRA_DEV_PACK_PATH+"/sassc")) {
+        sasscPath = ZIRA_DEV_PACK_PATH+"/sassc";
+    }
+    #endif
 }
 
 ParserWorker::~ParserWorker()
@@ -171,7 +186,11 @@ void ParserWorker::lint(int tabIndex, QString path)
 void ParserWorker::execPHP(int tabIndex, QString path)
 {
     if (phpPath.size() == 0)  {
-        emit message(tr("PHP executable not found."));
+        QString msgSuffix = "";
+        #if defined(Q_OS_ANDROID)
+        msgSuffix = "\n"+tr("Zira DevPack installation is required.") + "\n(" + tr("Menu / Help / Zira DevPack")+")";
+        #endif
+        emit message(tr("PHP executable not found.")+msgSuffix);
         return;
     }
     QProcess process(this);
@@ -186,7 +205,11 @@ void ParserWorker::execPHP(int tabIndex, QString path)
 void ParserWorker::execSelection(int tabIndex, QString text)
 {
     if (phpPath.size() == 0)  {
-        emit message(tr("PHP executable not found."));
+        QString msgSuffix = "";
+        #if defined(Q_OS_ANDROID)
+        msgSuffix = "\n"+tr("Zira DevPack installation is required.") + "\n(" + tr("Menu / Help / Zira DevPack")+")";
+        #endif
+        emit message(tr("PHP executable not found.")+msgSuffix);
         return;
     }
     QProcess process(this);
@@ -201,7 +224,11 @@ void ParserWorker::execSelection(int tabIndex, QString text)
 void ParserWorker::startPHPWebServer(QString path)
 {
     if (phpPath.size() == 0)  {
-        emit message(tr("PHP executable not found."));
+        QString msgSuffix = "";
+        #if defined(Q_OS_ANDROID)
+        msgSuffix = "\n"+tr("Zira DevPack installation is required.") + "\n(" + tr("Menu / Help / Zira DevPack")+")";
+        #endif
+        emit message(tr("PHP executable not found.")+msgSuffix);
         return;
     }
     if (path.size() == 0 || !Helper::folderExists(path)) return;
@@ -499,7 +526,11 @@ void ParserWorker::searchInFilesResultFound(QString file, QString lineText, int 
 void ParserWorker::gitCommand(QString path, QString command, QStringList attrs, bool outputResult, bool silent)
 {
     if (gitPath.size() == 0) {
-        if (!silent) emit message(tr("Git not found."));
+        QString msgSuffix = "";
+        #if defined(Q_OS_ANDROID)
+        msgSuffix = "\n"+tr("Zira DevPack installation is required.") + "\n(" + tr("Menu / Help / Zira DevPack")+")";
+        #endif
+        if (!silent) emit message(tr("Git not found.")+msgSuffix);
         return;
     }
     if (path.size() == 0 || !Helper::folderExists(path)) return;
@@ -595,7 +626,11 @@ void ParserWorker::serversCommand(QString command, QString pwd)
 void ParserWorker::sassCommand(QString src, QString dst)
 {
     if (sasscPath.size() == 0) {
-        emit message(tr("Sassc not found."));
+        QString msgSuffix = "";
+        #if defined(Q_OS_ANDROID)
+        msgSuffix = "\n"+tr("Zira DevPack installation is required.") + "\n(" + tr("Menu / Help / Zira DevPack")+")";
+        #endif
+        emit message(tr("Sassc not found.")+msgSuffix);
         return;
     }
     if (src.size() == 0 || dst.size() == 0) return;
