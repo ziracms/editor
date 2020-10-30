@@ -33,3 +33,8 @@ void Welcome::connectButtons(QWidget *mainWnd)
     connect(ui->welcomeOpenProjectButton, SIGNAL(pressed()), mainWnd, SLOT(on_actionOpenProject_triggered()));
     connect(ui->welcomeCreateProjectButton, SIGNAL(pressed()), mainWnd, SLOT(on_actionNewProject_triggered()));
 }
+
+void Welcome::focus()
+{
+    ui->welcomeOpenProjectButton->setFocus();
+}

@@ -2007,6 +2007,7 @@ void MainWindow::showWelcomeScreen()
     editorsSplitter->hide();
     welcomeScreen->show();
     welcomeScreen->raise();
+    welcomeScreen->focus();
 }
 
 void MainWindow::hideWelcomeScreen()

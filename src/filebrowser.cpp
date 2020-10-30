@@ -50,6 +50,8 @@ FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * sett
     mousePressTimer.setInterval(1000);
     mousePressTimer.setSingleShot(true);
     connect(&mousePressTimer, SIGNAL(timeout()), this, SLOT(contextMenu()));
+
+    treeWidget->setFocus();
 }
 
 void FileBrowser::initFileBrowser(QString homeDir)

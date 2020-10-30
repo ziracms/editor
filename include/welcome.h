@@ -11,6 +11,7 @@ public:
     explicit Welcome(bool light, QWidget *parent = nullptr);
     ~Welcome();
     void connectButtons(QWidget * mainWnd);
+    void focus();
 private:
     Ui::WelcomeScreen * ui;
 signals:
