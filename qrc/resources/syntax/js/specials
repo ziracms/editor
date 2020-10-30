@@ -38,3 +38,8 @@ void
 while
 with
 parent 
+extends
+implements
+interface
+abstract
+class
