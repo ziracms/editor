@@ -27,6 +27,7 @@ public:
     void addJSFunction(QString k);
     void addJSInterface(QString k);
     void addJSObject(QString k);
+    void addJSExtDartObject(QString k);
     void addCSSProperty(QString k);
     void addHTMLTag(QString k);
     void addHTMLShortTag(QString k);
@@ -63,6 +64,8 @@ public:
     std::unordered_map<std::string, QTextCharFormat>::iterator phpClassWordsCSIterator;
     std::unordered_map<std::string, QTextCharFormat> jswordsCS;
     std::unordered_map<std::string, QTextCharFormat>::iterator jswordsCSIterator;
+    std::unordered_map<std::string, QTextCharFormat> jsExtDartWordsCS;
+    std::unordered_map<std::string, QTextCharFormat>::iterator jsExtDartWordsCSIterator;
     std::unordered_map<std::string, QTextCharFormat> csswords;
     std::unordered_map<std::string, QTextCharFormat>::iterator csswordsIterator;
     std::unordered_map<std::string, QTextCharFormat> htmlwords;

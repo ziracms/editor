@@ -236,7 +236,7 @@ void CompleteWords::loadJSWords()
         k = dcrin.readLine();
         if (k == "") continue;
         dartObjectsComplete[k.toStdString()] = k.toStdString();
-        HW->addJSObject(k);
+        HW->addJSExtDartObject(k);
     }
     dcr.close();
 
@@ -248,7 +248,7 @@ void CompleteWords::loadJSWords()
         k = flcin.readLine();
         if (k == "") continue;
         flutterObjectsComplete[k.toStdString()] = k.toStdString();
-        HW->addJSObject(k);
+        HW->addJSExtDartObject(k);
     }
     flc.close();
 
@@ -260,7 +260,7 @@ void CompleteWords::loadJSWords()
         k = flwin.readLine();
         if (k == "") continue;
         flutterObjectsComplete[k.toStdString()] = k.toStdString();
-        HW->addJSObject(k);
+        HW->addJSExtDartObject(k);
     }
     flw.close();
 }

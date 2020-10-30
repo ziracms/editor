@@ -40,6 +40,8 @@ const int STATE_REGEXP_JS = 18;
 const int STATE_EXPRESSION_JS = 19;
 const int STATE_EXPRESSION_PHP = 20;
 
+const QString EXTENSION_DART = "dart";
+
 const int EXTRA_HIGHLIGHT_BLOCKS_COUNT = 100; // should be >= 1
 
 Highlight::Highlight(Settings * settings, HighlightWords * hWords, QTextDocument * parent) :
@@ -93,6 +95,7 @@ Highlight::Highlight(Settings * settings, HighlightWords * hWords, QTextDocument
     lastVisibleBlockNumber = -1;
     dirty = false;
     isBigFile = false;
+    extension = "";
 
     HW = hWords;
 }
@@ -364,6 +367,7 @@ void Highlight::resetMode()
     lastVisibleBlockNumber = -1;
     dirty = false;
     foundModes.clear();
+    extension = "";
 }
 
 void Highlight::setIsBigFile(bool isBig) {
@@ -374,6 +378,7 @@ void Highlight::initMode(QString ext, int lastBlockNumber)
 {
     enabled = true;
     if (ext.size()==0) return;
+    extension = ext;
     modeTypesIterator = modeTypes.find(ext.toLower().toStdString());
     if (modeTypesIterator != modeTypes.end()) {
         modeType = modeTypesIterator->second;
@@ -2228,6 +2233,16 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 keywordJSStart = -1;
                 known = true;
                 isKeyword = true;
+            }
+            if (!known && extension == EXTENSION_DART) {
+                HW->jsExtDartWordsCSIterator = HW->jsExtDartWordsCS.find(keywordStringJS.toStdString());
+                if (HW->jsExtDartWordsCSIterator != HW->jsExtDartWordsCS.end()) {
+                    QTextCharFormat format = HW->jsExtDartWordsCSIterator->second;
+                    highlightString(keywordJSStart, keywordJSLength, format);
+                    keywordJSStart = -1;
+                    known = true;
+                    isKeyword = true;
+                }
             }
             if (!known && c != ":" && c != "." && !isBigFile) {
                 jsNamesIterator = jsNames.find(keywordStringJS.toStdString());

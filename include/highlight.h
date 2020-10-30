@@ -38,6 +38,8 @@ extern const int STATE_STRING_DQ_CSS;
 extern const int STATE_TAG;
 extern const int STATE_REGEXP_JS;
 
+extern const QString EXTENSION_DART;
+
 class Highlight : public QObject
 {
     Q_OBJECT
@@ -175,6 +177,7 @@ private:
     HighlightData * blockData;
     std::string modeType;
     std::string mode;
+    QString extension;
     std::string prevMode;
     QVector<int> modeStarts;
     QVector<int> modeEnds;
