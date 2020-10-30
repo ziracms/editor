@@ -6174,6 +6174,10 @@ void Editor::replaceAllText(QString searchTxt, QString replaceTxt, bool CaSe, bo
             curs.insertText(replaceTxt);
             co++;
         }
+        if (co > SEARCH_LIMIT) {
+            emit showPopupText(tabIndex, QObject::tr("Too many results. Breaking..."));
+            break;
+        }
     } while(!resCurs.isNull());
     curs.endEditBlock();
     if (co > 0) {
