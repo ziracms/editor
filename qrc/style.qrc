@@ -99,6 +99,7 @@
         <file alias="separator.png">resources/styles/dark/icons/separator.png</file>
         <file alias="close.png">resources/styles/dark/icons/close.png</file>
         <file alias="home.png">resources/styles/dark/icons/home.png</file>
+        <file alias="actionHelpZiraDevPack.png">resources/styles/dark/icons/actionHelpZiraDevPack.png</file>
     </qresource>
     <qresource prefix="/styles/light/icons">
         <file alias="actionOpenFile.png">resources/styles/light/icons/actionOpenFile.png</file>
@@ -148,5 +149,6 @@
         <file alias="separator.png">resources/styles/light/icons/separator.png</file>
         <file alias="close.png">resources/styles/light/icons/close.png</file>
         <file alias="home.png">resources/styles/light/icons/home.png</file>
+        <file alias="actionHelpZiraDevPack.png">resources/styles/light/icons/actionHelpZiraDevPack.png</file>
     </qresource>
 </RCC>

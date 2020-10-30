@@ -1224,6 +1224,10 @@
    </property>
   </action>
   <action name="actionHelpZiraDevPack">
+   <property name="icon">
+    <iconset resource="../qrc/image.qrc">
+     <normaloff>:/icons/zira-devpack.png</normaloff>:/icons/zira-devpack.png</iconset>
+   </property>
    <property name="text">
     <string>Zira DevPack</string>
    </property>

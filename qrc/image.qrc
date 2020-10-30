@@ -58,5 +58,6 @@
         <file alias="branch-close.png">resources/images/icons/branch-close.png</file>
         <file alias="branch-open.png">resources/images/icons/branch-open.png</file>
         <file alias="home.png">resources/images/icons/home.png</file>
+        <file alias="zira-devpack.png">resources/images/icons/zira-devpack.png</file>
     </qresource>
 </RCC>
