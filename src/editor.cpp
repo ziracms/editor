@@ -1802,27 +1802,56 @@ bool Editor::onKeyPress(QKeyEvent *e)
         QChar nextChar = '\0';
         if (pos < total) nextChar = blockText[pos];
         bool doInsert = true;
-        if ((code == Qt::Key_QuoteDbl && blockText.count("\"")%2!=0) ||
-            (code == Qt::Key_Apostrophe && blockText.count("'")%2!=0) ||
-            (code == Qt::Key_BraceLeft && blockText.count("{")!=blockText.count("}")) ||
-            (code == Qt::Key_BracketLeft && blockText.count("[")!=blockText.count("]")) ||
-            (code == Qt::Key_ParenLeft && blockText.count("(")!=blockText.count(")"))
-        ) {
-            doInsert = false;
+        QString selectedText = curs.selectedText();
+        if (selectedText.size() == 0) {
+            if ((code == Qt::Key_QuoteDbl && blockText.count("\"")%2!=0) ||
+                (code == Qt::Key_Apostrophe && blockText.count("'")%2!=0) ||
+                (code == Qt::Key_BraceLeft && blockText.count("{")!=blockText.count("}")) ||
+                (code == Qt::Key_BracketLeft && blockText.count("[")!=blockText.count("]")) ||
+                (code == Qt::Key_ParenLeft && blockText.count("(")!=blockText.count(")"))
+            ) {
+                doInsert = false;
+            }
+            if (nextChar == '\0') doInsert = true;
+            else if (isalpha(nextChar.toLatin1()) || nextChar == "$") doInsert = false;
+            if (doInsert && highlight->isStateOpen(&block ,pos)) doInsert = false;
+        } else {
+            QString prefix = "";
+            QTextCursor cursor = textCursor();
+            cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+            int pos = cursor.positionInBlock();
+            QString blockText = cursor.block().text();
+            int total = blockText.size();
+            while(pos < total) {
+                if (!cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor)) break;
+                pos = cursor.positionInBlock();
+                QChar prevChar = blockText[pos-1];
+                if ((prevChar == " " || prevChar == "\t")) {
+                    prefix += prevChar;
+                } else {
+                    break;
+                }
+            }
+            QString indent = (tabType == "spaces") ? QString(" ").repeated(tabWidth) : "\t";
+            selectedText.replace(QString::fromWCharArray(L"\u2029"),"\n");
+            if (selectedText.indexOf("\n") >= 0 && code != Qt::Key_QuoteDbl && code != Qt::Key_Apostrophe) {
+                selectedText.replace("\n","\n"+indent);
+                selectedText = "\n"+prefix+indent+selectedText+"\n"+prefix;
+            }
         }
-        if (nextChar == '\0') doInsert = true;
-        else if (isalpha(nextChar.toLatin1()) || nextChar == "$") doInsert = false;
-        if (doInsert && highlight->isStateOpen(&block ,pos)) doInsert = false;
         if (doInsert) {
             QString insert = "";
-            if (code == Qt::Key_QuoteDbl) insert = "\"\"";
-            if (code == Qt::Key_Apostrophe) insert = "''";
-            if (code == Qt::Key_BraceLeft) insert = "{}";
-            if (code == Qt::Key_BracketLeft) insert = "[]";
-            if (code == Qt::Key_ParenLeft) insert = "()";
+            if (code == Qt::Key_QuoteDbl) insert = "\""+selectedText+"\"";
+            if (code == Qt::Key_Apostrophe) insert = "'"+selectedText+"'";
+            if (code == Qt::Key_BraceLeft) insert = "{"+selectedText+"}";
+            if (code == Qt::Key_BracketLeft) insert = "["+selectedText+"]";
+            if (code == Qt::Key_ParenLeft) insert = "("+selectedText+")";
             if (insert.size()>0) {
                 curs.insertText(insert);
                 curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor);
+                if (selectedText.size() > 0) {
+                    curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, selectedText.size());
+                }
                 setTextCursor(curs);
                 return false;
             }
