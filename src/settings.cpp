@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QColor>
+#include "helper.h"
 
 const QString COLOR_SCHEME_TYPE = "scheme";
 const QString COLOR_SCHEME_LIGHT = "light";
@@ -27,6 +28,9 @@ const QString CUSTOM_THEMES_FALLBACK_FOLDER = "themes";
 const QString PHP_MANUAL_FALLBACK_FOLDER = "php-chunked-xhtml";
 
 const std::string PHP_MANUAL_ENCODING = "UTF-8";
+
+const QString SCALE_AUTO_SETTINGS_VAR = "scale_auto";
+const QString SCALE_FACTOR_SETTINGS_VAR = "scale_factor";
 
 Settings::Settings(QObject * parent) : QObject(parent)
 {
@@ -361,5 +365,26 @@ void Settings::reset()
     for (auto it : data) {
         if (!windowSettings.contains(QString::fromStdString(it.first))) continue;
         windowSettings.remove(QString::fromStdString(it.first));
+    }
+}
+
+void Settings::initApplicationScaling()
+{
+    double scaleFactor = 1.;
+    bool scaleAuto = true;
+    QSettings qSettings;
+    if (qSettings.contains(SCALE_AUTO_SETTINGS_VAR)) {
+        QVariant scaleAutoVar = qSettings.value(SCALE_AUTO_SETTINGS_VAR, "yes");
+        if (scaleAutoVar.toString() == "no") scaleAuto = false;
+    }
+    if (qSettings.contains(SCALE_FACTOR_SETTINGS_VAR)) {
+        QVariant scaleFactorPercent = qSettings.value(SCALE_FACTOR_SETTINGS_VAR, "100");
+        scaleFactor = scaleFactorPercent.toDouble() / 100;
+    }
+    if (!scaleAuto && scaleFactor >= 1. && scaleFactor <= 4.) {
+        qputenv("QT_SCALE_FACTOR", Helper::doubleToStr(scaleFactor).toLatin1());
+    } else {
+        qunsetenv("QT_SCALE_FACTOR");
+        qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", QByteArray("1"));
     }
 }

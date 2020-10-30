@@ -488,6 +488,22 @@ bool Helper::isQtVersionLessThan(int maj, int min, int mic) {
     return false;
 }
 
+void Helper::setApplicationAttributes()
+{
+    QCoreApplication::setApplicationName(APPLICATION_NAME);
+    QCoreApplication::setApplicationVersion(APPLICATION_VERSION);
+    QCoreApplication::setOrganizationName(ORGANIZATION_NAME);
+
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
+    // disable text handles in Android (copy, paste menu)
+    #if defined(Q_OS_ANDROID)
+    qputenv("QT_QPA_NO_TEXT_HANDLES", QByteArray("1"));
+    #endif
+
+}
+
 #if defined(Q_OS_ANDROID)
 void Helper::requestAndroidPermissions()
 {
