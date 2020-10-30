@@ -227,6 +227,42 @@ void CompleteWords::loadJSWords()
         jsEventsComplete[k.toStdString()] = k.toStdString();
     }
     ef.close();
+
+    // dart core
+    QFile dcr(":/syntax/dart_core");
+    dcr.open(QIODevice::ReadOnly);
+    QTextStream dcrin(&dcr);
+    while (!dcrin.atEnd()) {
+        k = dcrin.readLine();
+        if (k == "") continue;
+        dartObjectsComplete[k.toStdString()] = k.toStdString();
+        HW->addJSObject(k);
+    }
+    dcr.close();
+
+    // flutter classes
+    QFile flc(":/syntax/flutter_classes");
+    flc.open(QIODevice::ReadOnly);
+    QTextStream flcin(&flc);
+    while (!flcin.atEnd()) {
+        k = flcin.readLine();
+        if (k == "") continue;
+        flutterObjectsComplete[k.toStdString()] = k.toStdString();
+        HW->addJSObject(k);
+    }
+    flc.close();
+
+    // flutter widgets
+    QFile flw(":/syntax/flutter_widgets");
+    flw.open(QIODevice::ReadOnly);
+    QTextStream flwin(&flw);
+    while (!flwin.atEnd()) {
+        k = flwin.readLine();
+        if (k == "") continue;
+        flutterObjectsComplete[k.toStdString()] = k.toStdString();
+        HW->addJSObject(k);
+    }
+    flw.close();
 }
 
 void CompleteWords::loadPHPWords()

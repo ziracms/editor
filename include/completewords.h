@@ -49,6 +49,8 @@ public:
     std::map<std::string, std::string> phpGlobalsComplete;
     std::map<std::string, std::string> phpSpecialsComplete;
     std::map<std::string, std::string> phpMagicComplete;
+    std::map<std::string, std::string> dartObjectsComplete;
+    std::map<std::string, std::string> flutterObjectsComplete;
 protected:
     void loadCSSWords();
     void loadHTMLWords();

@@ -75,6 +75,7 @@ const int LONG_LINE_CHARS_COUNT = 72;
 const int FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE = 300;
 
 const QString SNIPPET_PREFIX = "Snippet: @";
+const QString DART_EXTENSION = "dart";
 
 Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent):
     QTextEdit(parent), spellChecker(spellChecker), tooltipLabel(settings), mousePressTimer(this)
@@ -3119,6 +3120,28 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos, QChar cursorT
         // js interfaces
         if (completePopup->count() < completePopup->limit()) {
             for (auto & it : CW->jsInterfacesComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+        }
+        // flutter
+        if (completePopup->count() < completePopup->limit() && extension == DART_EXTENSION) {
+            for (auto & it : CW->flutterObjectsComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+        }
+        // dart
+        if (completePopup->count() < completePopup->limit() && extension == DART_EXTENSION) {
+            for (auto & it : CW->dartObjectsComplete) {
                 QString k = QString::fromStdString(it.first);
                 //if (k == text) continue;
                 if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
