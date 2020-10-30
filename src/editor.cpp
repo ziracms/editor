@@ -1813,6 +1813,7 @@ bool Editor::onKeyPress(QKeyEvent *e)
                 doInsert = false;
             }
             if (nextChar == '\0') doInsert = true;
+            else if (code != Qt::Key_QuoteDbl && code != Qt::Key_Apostrophe && nextChar != ")" && nextChar != "}" && nextChar != "]" && !iswspace(nextChar.toLatin1())) doInsert = false;
             else if (isalpha(nextChar.toLatin1()) || nextChar == "$") doInsert = false;
             if (doInsert && highlight->isStateOpen(&block ,pos)) doInsert = false;
         } else {
