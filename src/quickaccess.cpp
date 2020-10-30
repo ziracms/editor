@@ -12,6 +12,7 @@
 #include <QScrollBar>
 #include <QFontDatabase>
 #include "icon.h"
+#include "helper.h"
 
 const int WIDGET_MIN_WIDTH = 200;
 const int WIDGET_MIN_HEIGHT = 100;
@@ -48,9 +49,12 @@ QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
 
     vLayout->addStretch();
 
-    clearAction = findEdit->addAction(Icon::get("clear", QIcon(":icons/clear.png")), QLineEdit::TrailingPosition);
-    clearAction->setVisible(false);
-    connect(clearAction, SIGNAL(triggered(bool)), this, SLOT(clearActionTriggered(bool)));
+    clearAction = nullptr;
+    if (!Helper::isQtVersionLessThan(5, 12, 0)) {
+        clearAction = findEdit->addAction(Icon::get("clear", QIcon(":icons/clear.png")), QLineEdit::TrailingPosition);
+        clearAction->setVisible(false);
+        connect(clearAction, SIGNAL(triggered(bool)), this, SLOT(clearActionTriggered(bool)));
+    }
 
     connect(findEdit, SIGNAL(textChanged(QString)), this, SLOT(findTextChanged(QString)));
     connect(findEdit, SIGNAL(returnPressed()), this, SLOT(findTextReturned()));
@@ -503,7 +507,7 @@ void QuickAccess::findTextChanged(QString text)
     text = text.trimmed();
     if (text.size() == 0) {
         restoreResults();
-        clearAction->setVisible(false);
+        if (clearAction != nullptr) clearAction->setVisible(false);
         return;
     }
     lastSearch = text;
@@ -512,7 +516,7 @@ void QuickAccess::findTextChanged(QString text)
         findLocked = true;
         QTimer::singleShot(SEARCH_DELAY_MILLISECONDS, this, SLOT(findTextDelayed()));
     }
-    clearAction->setVisible(true);
+    if (clearAction != nullptr) clearAction->setVisible(true);
 }
 
 void QuickAccess::clearActionTriggered(bool)
