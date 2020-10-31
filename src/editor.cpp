@@ -3094,58 +3094,85 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos, QChar cursorT
                 }
             }
         }
-        // js objects
-        if (completePopup->count() < completePopup->limit()) {
-            for (auto & it : CW->jsObjectsComplete) {
-                QString k = QString::fromStdString(it.first);
-                //if (k == text) continue;
-                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-                    if (completePopup->count() >= completePopup->limit()) break;
+        if (extension != EXTENSION_DART) {
+            // js objects
+            if (completePopup->count() < completePopup->limit()) {
+                for (auto & it : CW->jsObjectsComplete) {
+                    QString k = QString::fromStdString(it.first);
+                    //if (k == text) continue;
+                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                        if (completePopup->count() >= completePopup->limit()) break;
+                    }
+                }
+            }
+            // js functions
+            if (completePopup->count() < completePopup->limit()) {
+                for (auto & it : CW->jsFunctionsComplete) {
+                    QString k = QString::fromStdString(it.first);
+                    //if (k == text) continue;
+                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                        if (completePopup->count() >= completePopup->limit()) break;
+                    }
+                }
+            }
+            // js interfaces
+            if (completePopup->count() < completePopup->limit()) {
+                for (auto & it : CW->jsInterfacesComplete) {
+                    QString k = QString::fromStdString(it.first);
+                    //if (k == text) continue;
+                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                        if (completePopup->count() >= completePopup->limit()) break;
+                    }
                 }
             }
         }
-        // js functions
-        if (completePopup->count() < completePopup->limit()) {
-            for (auto & it : CW->jsFunctionsComplete) {
-                QString k = QString::fromStdString(it.first);
-                //if (k == text) continue;
-                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-                    if (completePopup->count() >= completePopup->limit()) break;
+        // flutter / dart
+        if (extension == EXTENSION_DART) {
+            // flutter classes
+            if (completePopup->count() < completePopup->limit()) {
+                for (auto & it : CW->flutterObjectsComplete) {
+                    QString k = QString::fromStdString(it.first);
+                    //if (k == text) continue;
+                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                        if (completePopup->count() >= completePopup->limit()) break;
+                    }
                 }
             }
-        }
-        // js interfaces
-        if (completePopup->count() < completePopup->limit()) {
-            for (auto & it : CW->jsInterfacesComplete) {
-                QString k = QString::fromStdString(it.first);
-                //if (k == text) continue;
-                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-                    if (completePopup->count() >= completePopup->limit()) break;
+            // dart classes
+            if (completePopup->count() < completePopup->limit()) {
+                for (auto & it : CW->dartObjectsComplete) {
+                    QString k = QString::fromStdString(it.first);
+                    //if (k == text) continue;
+                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                        if (completePopup->count() >= completePopup->limit()) break;
+                    }
                 }
             }
-        }
-        // flutter
-        if (completePopup->count() < completePopup->limit() && extension == EXTENSION_DART) {
-            for (auto & it : CW->flutterObjectsComplete) {
-                QString k = QString::fromStdString(it.first);
-                //if (k == text) continue;
-                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-                    if (completePopup->count() >= completePopup->limit()) break;
+            // flutter functions
+            if (completePopup->count() < completePopup->limit()) {
+                for (auto & it : CW->flutterFunctionsComplete) {
+                    QString k = QString::fromStdString(it.first);
+                    //if (k == text) continue;
+                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                        if (completePopup->count() >= completePopup->limit()) break;
+                    }
                 }
             }
-        }
-        // dart
-        if (completePopup->count() < completePopup->limit() && extension == EXTENSION_DART) {
-            for (auto & it : CW->dartObjectsComplete) {
-                QString k = QString::fromStdString(it.first);
-                //if (k == text) continue;
-                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-                    if (completePopup->count() >= completePopup->limit()) break;
+            // dart functions
+            if (completePopup->count() < completePopup->limit()) {
+                for (auto & it : CW->dartFunctionsComplete) {
+                    QString k = QString::fromStdString(it.first);
+                    //if (k == text) continue;
+                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                        if (completePopup->count() >= completePopup->limit()) break;
+                    }
                 }
             }
         }

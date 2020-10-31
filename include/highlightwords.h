@@ -28,6 +28,7 @@ public:
     void addJSInterface(QString k);
     void addJSObject(QString k);
     void addJSExtDartObject(QString k);
+    void addJSExtDartFunction(QString k);
     void addCSSProperty(QString k);
     void addHTMLTag(QString k);
     void addHTMLShortTag(QString k);

@@ -51,11 +51,14 @@ public:
     std::map<std::string, std::string> phpMagicComplete;
     std::map<std::string, std::string> dartObjectsComplete;
     std::map<std::string, std::string> flutterObjectsComplete;
+    std::map<std::string, std::string> dartFunctionsComplete;
+    std::map<std::string, std::string> flutterFunctionsComplete;
 protected:
     void loadCSSWords();
     void loadHTMLWords();
     void loadJSWords();
     void loadPHPWords();
+    void loadFlutterWords();
 private:
     HighlightWords * HW;
 public slots:

@@ -291,6 +291,11 @@ void HighlightWords::addJSExtDartObject(QString k)
     jsExtDartWordsCS[k.toStdString()] = classFormat;
 }
 
+void HighlightWords::addJSExtDartFunction(QString k)
+{
+    jsExtDartWordsCS[k.toStdString()] = knownFunctionFormat;
+}
+
 void HighlightWords::addCSSProperty(QString k)
 {
     csswords[k.toStdString()] = knownFormat;

@@ -24,6 +24,7 @@ void CompleteWords::load()
     loadCSSWords();
     loadHTMLWords();
     loadJSWords();
+    loadFlutterWords();
     loadPHPWords();
 }
 
@@ -227,6 +228,11 @@ void CompleteWords::loadJSWords()
         jsEventsComplete[k.toStdString()] = k.toStdString();
     }
     ef.close();
+}
+
+void CompleteWords::loadFlutterWords()
+{
+    QString k;
 
     // dart core
     QFile dcr(":/syntax/dart_core");
@@ -239,6 +245,18 @@ void CompleteWords::loadJSWords()
         HW->addJSExtDartObject(k);
     }
     dcr.close();
+
+    // dart core functions
+    QFile dcf(":/syntax/dart_functions");
+    dcf.open(QIODevice::ReadOnly);
+    QTextStream dcfin(&dcf);
+    while (!dcfin.atEnd()) {
+        k = dcfin.readLine();
+        if (k == "") continue;
+        dartFunctionsComplete[k.toStdString()] = k.toStdString();
+        HW->addJSExtDartFunction(k);
+    }
+    dcf.close();
 
     // flutter classes
     QFile flc(":/syntax/flutter_classes");
@@ -263,6 +281,18 @@ void CompleteWords::loadJSWords()
         HW->addJSExtDartObject(k);
     }
     flw.close();
+
+    // flutter functions
+    QFile flf(":/syntax/flutter_functions");
+    flf.open(QIODevice::ReadOnly);
+    QTextStream flfin(&flf);
+    while (!flfin.atEnd()) {
+        k = flfin.readLine();
+        if (k == "") continue;
+        flutterFunctionsComplete[k.toStdString()] = k.toStdString();
+        HW->addJSExtDartFunction(k);
+    }
+    flf.close();
 }
 
 void CompleteWords::loadPHPWords()

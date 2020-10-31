@@ -23,8 +23,10 @@
         <file alias="js_events">resources/syntax/js/events</file>
         <file alias="js_methods">resources/syntax/js/methods</file>
         <file alias="php_magic">resources/syntax/php/magic</file>
-        <file alias="flutter_classes">resources/syntax/js/flutter_classes</file>
-        <file alias="flutter_widgets">resources/syntax/js/flutter_widgets</file>
-        <file alias="dart_core">resources/syntax/js/dart_core</file>
+        <file alias="dart_core">resources/syntax/flutter/dart_core</file>
+        <file alias="dart_functions">resources/syntax/flutter/dart_functions</file>
+        <file alias="flutter_classes">resources/syntax/flutter/flutter_classes</file>
+        <file alias="flutter_functions">resources/syntax/flutter/flutter_functions</file>
+        <file alias="flutter_widgets">resources/syntax/flutter/flutter_widgets</file>
     </qresource>
 </RCC>
