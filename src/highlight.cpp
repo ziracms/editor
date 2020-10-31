@@ -3440,6 +3440,12 @@ void Highlight::rehighlight()
     rehighlightBlockMode = false;
 }
 
+void Highlight::resetHighlightBlock(QTextBlock & block)
+{
+    HighlightData * blockData = dynamic_cast<HighlightData *>(block.userData());
+    if (blockData != nullptr) blockData->isNewBlock = true;
+}
+
 void Highlight::rehighlightBlock(QTextBlock & block)
 {
     rehighlightBlockMode = true;
@@ -3486,6 +3492,7 @@ bool Highlight::parseBlock(const QString & text)
         mode = modeType;
     }
 
+    bool isNewBlock = false;
     std::string _mode = mode;
     std::string _prevMode = prevMode;
     QString _stringBlock = stringBlock;
@@ -3546,7 +3553,9 @@ bool Highlight::parseBlock(const QString & text)
     // load current block data
     if (blockData == nullptr) {
         blockData = new HighlightData();
+        isNewBlock = true;
     } else {
+        isNewBlock = blockData->isNewBlock;
         _mode = blockData->mode.toStdString();
         _prevMode = blockData->prevMode.toStdString();
         _stringBlock = blockData->stringBlock;
@@ -3658,7 +3667,8 @@ bool Highlight::parseBlock(const QString & text)
 
     // Helper::log(Helper::intToStr(cBlock.blockNumber())+": "+QString::fromStdString(prevMode)+", "+QString::fromStdString(mode)+" : "+Helper::intToStr(prevState)+", "+Helper::intToStr(state)+"\n");
 
-    if (mode != _mode ||
+    if (isNewBlock ||
+        mode != _mode ||
         prevMode != _prevMode ||
         state != _state ||
         prevState != _prevState ||
@@ -3717,6 +3727,7 @@ bool Highlight::parseBlock(const QString & text)
     }
 
     // save current block data
+    blockData->isNewBlock = false;
     blockData->state = state;
     blockData->prevState = prevState;
     blockData->prevPrevState = prevPrevState;

@@ -50,6 +50,7 @@ public:
     Highlight(Settings * settings, HighlightWords * HW, QTextDocument * parent);
     void rehighlight();
     void rehighlightBlock(QTextBlock & block);
+    void resetHighlightBlock(QTextBlock & block);
     void highlightChanges(QTextCursor curs);
     void updateBlocks(int lastBlockNumber);
     void resetMode();

@@ -2369,13 +2369,12 @@ void Editor::insertFromMimeData(const QMimeData *source)
             if (endBlockNumber > startBlockNumber) {
                 cursor.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor, endBlockNumber - startBlockNumber);
             }
-            bool rehighlightAll = false;
-            if (endBlockNumber - startBlockNumber > 1000) rehighlightAll = true;
-            if (rehighlightAll) highlight->rehighlight();
+            QTextBlock block = cursor.block();
+            highlight->resetHighlightBlock(block);
+            highlight->highlightChanges(cursor);
             do {
-                QTextBlock block = cursor.block();
+                block = cursor.block();
                 if (!block.isValid()) break;
-                if (!rehighlightAll) highlight->rehighlightBlock(block);
                 // modified state
                 modifiedLinesIterator = modifiedLines.find(cursor.block().blockNumber() + 1);
                 if (modifiedLinesIterator == modifiedLines.end()) {
@@ -2487,6 +2486,8 @@ void Editor::contentsChange(int position, int charsRemoved, int charsAdded)
     if (!is_ready || isReadOnly()) return;
     QTextBlock block = document()->findBlock(position);
     if (!block.isValid()) return;
+
+    highlight->resetHighlightBlock(block);
 
     QTextBlock lastBlock = document()->findBlock(position + charsAdded + (charsRemoved > 0 ? 1 : 0));
     if (!lastBlock.isValid()) {
@@ -4532,16 +4533,11 @@ void Editor::completePopupSelected(QString text, QString data)
             tooltipSavedBlockNumber = curs.block().blockNumber();
         }
         if (isSnippet) {
-            int co = text.count("\n");
             QTextCursor cursor = textCursor();
             cursor.setPosition(startPos);
-            int b = 0;
-            do {
-                b++;
-                QTextBlock block = cursor.block();
-                highlight->rehighlightBlock(block);
-                if (b > co) break;
-            } while(cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor));
+            QTextBlock block = cursor.block();
+            highlight->resetHighlightBlock(block);
+            highlight->highlightChanges(cursor);
         }
     }
     hideCompletePopup();

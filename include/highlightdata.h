@@ -142,6 +142,7 @@ public:
     QList<int> clsScopeChainJS;
     QVector<bool> clsOpensJS;
     bool clsOpenJS;
+    bool isNewBlock;
 };
 
 #endif // HIGHLIGHTDATA_H

@@ -138,4 +138,5 @@ void HighlightData::reset()
     clsScopeChainJS.clear();
     clsOpensJS.clear();
     clsOpenJS = false;
+    isNewBlock = true;
 }
