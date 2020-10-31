@@ -1,6 +1,5 @@
-Zira Editor is a lightweight PHP Editor for Linux with syntax highlighting and autocomplete.
-If you're looking for Geany alternative for KDE, you should try Zira Editor.
-It's written in QT and can be run in both KDE and Gnome (also tested in Android and Raspbian Buster with Raspberry PI 3 B+).
+Zira Editor is a lightweight PHP Editor for Linux, Android and Raspberry Pi
+with syntax highlighting and autocomplete.
 
 Watch demo and view screenshots: https://ziracms.github.io/editor/en/index.html
 
@@ -18,6 +17,7 @@ Main features:
       JS objects, variables
       CSS selectors, properties
       HTML tags
+- flutter / dart support
 - unused variables check
 - files browser
 - file symbols navigator
@@ -50,33 +50,14 @@ Main features:
 - built-in colorpicker
 - built-in light and dark themes
 - custom themes support
-
-Tested in:
-      OpenSuSe Leap 15.0
-      OpenSuSe Leap 15.1
-      Raspbian Buster
       
 Requirements:
       Qt 5.11+ (5.12.6 is recommended)
       hunspell library (optional)
       qtermwidget5 library (optional)
-
-Compiled binary (x86-64) can be found in bin (or bin/arm for ARM) folder.
-      
+    
 Installation:
-      - download and unpack bin folder from ZIP-archive**
-      - run install.sh
-      
-Install in Raspbian:
-      - install qt5-default (libhunspell is required for spellchecker)
-      - install libqtermwidget5-0 (required by terminal plugin)
-      - download and unpack ZIP-archive**
-      - copy bin/arm to any folder
-      - copy bin/themes, bin/zira.png, bin/desktop.txt, bin/install.sh to the same folder
-      - run install.sh
-      
-** - you can also download archive with all necessary files from releases section
+      - download package for your OS from https://github.com/ziracms/editor/releases
+      - unpack and run install.sh (Linux only)
 
-Download for Android: https://play.google.com/store/apps/details?id=com.github.ziracms.editor
-
-If Qt version in your Linux distribution is < 5.12, download archive with linked Qt from releases section.
+Get it for Android on Google Play: https://play.google.com/store/apps/details?id=com.github.ziracms.editor
