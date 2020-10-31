@@ -37,6 +37,7 @@ extern const int STATE_STRING_SQ_CSS;
 extern const int STATE_STRING_DQ_CSS;
 extern const int STATE_TAG;
 extern const int STATE_REGEXP_JS;
+extern const int STATE_COMMENT_SL_UNKNOWN;
 
 extern const QString EXTENSION_DART;
 
@@ -73,6 +74,7 @@ public:
     bool isDirty();
     void setIsBigFile(bool isBig);
     QStringList getFoundModes();
+    QString getJsExtMode();
 
     std::unordered_map<std::string, int> unusedVars;
     std::unordered_map<std::string, int>::iterator unusedVarsIterator;
@@ -108,6 +110,7 @@ protected:
     bool detectMLCommentPHP(const QChar c, int pos);
     bool detectSLCommentJS(const QChar c, int pos);
     bool detectSLCommentPHP(const QChar c, int pos);
+    bool detectSLCommentUnknown(const QChar c, int pos);
     bool detectStringBPHP(const QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast);
     int detectKeywordJS(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast);
     int detectKeywordPHP(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast, bool forceDetect);
@@ -178,6 +181,7 @@ private:
     std::string modeType;
     std::string mode;
     QString extension;
+    QString jsExtMode;
     std::string prevMode;
     QVector<int> modeStarts;
     QVector<int> modeEnds;
@@ -226,6 +230,7 @@ private:
     int commentSLOpenedPHP;
     int commentMLOpenedPHP;
     int commentMLOpenedCSS;
+    int commentSLOpenedUnknown;
     QString stringEscStringCSS;
     QString stringEscStringJS;
     QString prevStringEscStringCSS;
@@ -237,6 +242,7 @@ private:
     QString commentJSStringSL;
     QString commentPHPStringSL;
     QString commentCSSStringML;
+    QString commentUnknownStringSL;
     int regexpOpenedJS;
     QString regexpEscStringJS;
     QString prevRegexpEscStringJS;

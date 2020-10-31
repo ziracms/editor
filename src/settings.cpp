@@ -35,7 +35,7 @@ const QString SCALE_FACTOR_SETTINGS_VAR = "scale_factor";
 Settings::Settings(QObject * parent) : QObject(parent)
 {
     data = {
-        {"file_dialog_filter", "Project files (*.php *.phtml *.html *.xml *.tpl *.css *.less *.scss *.sass *.js *.dart *.htaccess *.txt);;All files (*)"},
+        {"file_dialog_filter", "Project files (*.php *.phtml *.html *.xml *.iml *.tpl *.css *.less *.scss *.sass *.js *.dart *.yaml *.htaccess *.txt);;All files (*)"},
         {"file_dialog_path", ""},
         {"file_browser_home", ""},
         {"php_manual_path", ""},
@@ -63,7 +63,7 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"highlight_php_extensions", "php, phtml, tpl, html"},
         {"highlight_js_extensions", "js, dart"},
         {"highlight_css_extensions", "css, less, scss, sass"},
-        {"highlight_html_extensions", "xml"},
+        {"highlight_html_extensions", "xml, iml"},
         {"parser_enable_php_lint", "yes"},
         {"parser_enable_php_cs", "yes"},
         {"parser_enable_parse_php", "yes"},

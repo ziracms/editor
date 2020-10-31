@@ -39,6 +39,7 @@ const int STATE_TAG = 17;
 const int STATE_REGEXP_JS = 18;
 const int STATE_EXPRESSION_JS = 19;
 const int STATE_EXPRESSION_PHP = 20;
+const int STATE_COMMENT_SL_UNKNOWN = 21;
 
 const QString EXTENSION_DART = "dart";
 
@@ -96,6 +97,7 @@ Highlight::Highlight(Settings * settings, HighlightWords * hWords, QTextDocument
     dirty = false;
     isBigFile = false;
     extension = "";
+    jsExtMode = "";
 
     HW = hWords;
 }
@@ -195,11 +197,13 @@ void Highlight::reset()
     commentSLOpenedPHP = -1;
     commentMLOpenedPHP = -1;
     commentMLOpenedCSS = -1;
+    commentSLOpenedUnknown = -1;
     commentJSStringML = "";
     commentPHPStringML = "";
     commentJSStringSL = "";
     commentPHPStringSL = "";
     commentCSSStringML = "";
+    commentUnknownStringSL = "";
     stringEscStringCSS = "";
     stringEscStringJS = "";
     prevStringEscStringCSS = "";
@@ -368,10 +372,16 @@ void Highlight::resetMode()
     dirty = false;
     foundModes.clear();
     extension = "";
+    jsExtMode = "";
 }
 
 void Highlight::setIsBigFile(bool isBig) {
     isBigFile = isBig;
+}
+
+QString Highlight::getJsExtMode()
+{
+    return jsExtMode;
 }
 
 void Highlight::initMode(QString ext, int lastBlockNumber)
@@ -379,12 +389,16 @@ void Highlight::initMode(QString ext, int lastBlockNumber)
     enabled = true;
     if (ext.size()==0) return;
     extension = ext;
+    jsExtMode = "";
     modeTypesIterator = modeTypes.find(ext.toLower().toStdString());
     if (modeTypesIterator != modeTypes.end()) {
         modeType = modeTypesIterator->second;
         lastVisibleBlockNumber = lastBlockNumber;
         if (modeType != MODE_MIXED) {
             foundModes.append(QString::fromStdString(modeType));
+        }
+        if (modeType == MODE_JS && extension == EXTENSION_DART) {
+            jsExtMode = EXTENSION_DART;
         }
     }
 }
@@ -1478,6 +1492,23 @@ bool Highlight::detectExpressionPHP(const QChar c, int pos)
     return false;
 }
 
+bool Highlight::detectSLCommentUnknown(const QChar c, int pos)
+{
+    bool opened = commentSLOpenedUnknown >= 0;
+    if (!opened && commentUnknownStringSL.trimmed().size()==0 && (c == ";" || c == "#")) {
+        if (c == ";" || c == "#") {
+            commentUnknownStringSL = "";
+            commentSLOpenedUnknown = pos;
+            state = STATE_COMMENT_SL_UNKNOWN;
+            return true;
+        } else {
+            commentUnknownStringSL = c;
+        }
+    }
+
+    return false;
+}
+
 void Highlight::restoreState() {
     // load previous block data
     QTextCursor curs = QTextCursor(cBlock);
@@ -2234,7 +2265,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 known = true;
                 isKeyword = true;
             }
-            if (!known && extension == EXTENSION_DART) {
+            if (!known && jsExtMode == EXTENSION_DART) {
                 HW->jsExtDartWordsCSIterator = HW->jsExtDartWordsCS.find(keywordStringJS.toStdString());
                 if (HW->jsExtDartWordsCSIterator != HW->jsExtDartWordsCS.end()) {
                     QTextCharFormat format = HW->jsExtDartWordsCSIterator->second;
@@ -3210,13 +3241,21 @@ void Highlight::parseUnknown(const QChar &c, int pos)
 {
     if (mode != MODE_UNKNOWN) return;
 
-    if (highlightTabs && c == "\t") {
-        highlightChar(pos, HW->tabFormat);
-    } else if (highlightSpaces && c == " ") {
-        highlightChar(pos, HW->spaceFormat);
+    // comments (whole-line)
+    detectSLCommentUnknown(c, pos);
+    if (commentSLOpenedUnknown>=0) {
+        highlightChar(pos, HW->singleLineCommentFormat);
     }
-    if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@" || c == "&" || c == "<" || c == ">" || c == "." || c == "*" || c == "/" || c == "?" || c == ":" || c == "%" || c == "$" || c == "^" || c == "#" || c == "@" || c == "!" || c == "-" || c == "=" || c == "+" || c == "'" || c == "\"" || c == "|" || c == "~" || c == "`")) {
-        highlightChar(pos, HW->punctuationFormat);
+
+    if (commentSLOpenedUnknown < 0) {
+        if (highlightTabs && c == "\t") {
+            highlightChar(pos, HW->tabFormat);
+        } else if (highlightSpaces && c == " ") {
+            highlightChar(pos, HW->spaceFormat);
+        }
+        if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@" || c == "&" || c == "<" || c == ">" || c == "." || c == "*" || c == "/" || c == "?" || c == ":" || c == "%" || c == "$" || c == "^" || c == "#" || c == "@" || c == "!" || c == "-" || c == "=" || c == "+" || c == "'" || c == "\"" || c == "|" || c == "~" || c == "`")) {
+            highlightChar(pos, HW->punctuationFormat);
+        }
     }
 }
 

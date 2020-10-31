@@ -2301,6 +2301,10 @@ void Editor::insertFromMimeData(const QMimeData *source)
     // clean, indent & insert clipboard text
     if (source->hasText()) {
         QTextCursor curs = textCursor();
+        if (curs.selectedText().size() > 0) {
+            int selectionStart = curs.selectionStart();
+            curs.setPosition(selectionStart);
+        }
         QTextBlock block = curs.block();
         QString blockText = block.text();
         int total = blockText.size();
@@ -2353,9 +2357,25 @@ void Editor::insertFromMimeData(const QMimeData *source)
             }
             QTextCursor cursor = textCursor();
             int startBlockNumber = cursor.block().blockNumber();
+            if (cursor.selectedText().size() > 0) {
+                int selectionStart = cursor.selectionStart();
+                QTextCursor curs = textCursor();
+                curs.setPosition(selectionStart);
+                startBlockNumber = curs.block().blockNumber();
+            }
             if (tabType == "spaces") textF = textF.replace("\t", space);
             cursor.insertText(textF);
+            int endBlockNumber = cursor.block().blockNumber();
+            if (endBlockNumber > startBlockNumber) {
+                cursor.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor, endBlockNumber - startBlockNumber);
+            }
+            bool rehighlightAll = false;
+            if (endBlockNumber - startBlockNumber > 1000) rehighlightAll = true;
+            if (rehighlightAll) highlight->rehighlight();
             do {
+                QTextBlock block = cursor.block();
+                if (!block.isValid()) break;
+                if (!rehighlightAll) highlight->rehighlightBlock(block);
                 // modified state
                 modifiedLinesIterator = modifiedLines.find(cursor.block().blockNumber() + 1);
                 if (modifiedLinesIterator == modifiedLines.end()) {
@@ -2370,10 +2390,15 @@ void Editor::insertFromMimeData(const QMimeData *source)
                 if (spellCheckerEnabled && spellChecker != nullptr && !isBigFile) {
                     spellPastedBlocksQueue.append(cursor.block().blockNumber());
                 }
-                if (cursor.block().blockNumber() == startBlockNumber) break;
-            } while(cursor.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor));
+                if (cursor.block().blockNumber() == endBlockNumber) break;
+            } while(cursor.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor));
             lineNumber->update();
             if (spellCheckerEnabled && spellChecker != nullptr && !isBigFile) {
+                /*
+                if (spellPastedBlocksQueue.size() > 1) {
+                    std::reverse(spellPastedBlocksQueue.begin(), spellPastedBlocksQueue.end());
+                }
+                */
                 QTimer::singleShot(INTERVAL_SPELL_CHECK_MILLISECONDS, this, SLOT(spellCheckPasted()));
             }
             return;
@@ -3070,7 +3095,7 @@ void Editor::detectCompleteTextCSS(QString text, QChar cursorTextPrevChar)
     }
 }
 
-void Editor::detectCompleteTextJS(QString text, int cursorTextPos, QChar cursorTextPrevChar)
+void Editor::detectCompleteTextJS(QString text, int cursorTextPos, QChar cursorTextPrevChar, QString jsExtMode)
 {
     QTextCursor curs = textCursor();
     curs.movePosition(QTextCursor::StartOfBlock);
@@ -3094,7 +3119,7 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos, QChar cursorT
                 }
             }
         }
-        if (extension != EXTENSION_DART) {
+        if (jsExtMode.isEmpty()) {
             // js objects
             if (completePopup->count() < completePopup->limit()) {
                 for (auto & it : CW->jsObjectsComplete) {
@@ -3128,53 +3153,8 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos, QChar cursorT
                     }
                 }
             }
-        }
-        // flutter / dart
-        if (extension == EXTENSION_DART) {
-            // flutter classes
-            if (completePopup->count() < completePopup->limit()) {
-                for (auto & it : CW->flutterObjectsComplete) {
-                    QString k = QString::fromStdString(it.first);
-                    //if (k == text) continue;
-                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-                        if (completePopup->count() >= completePopup->limit()) break;
-                    }
-                }
-            }
-            // dart classes
-            if (completePopup->count() < completePopup->limit()) {
-                for (auto & it : CW->dartObjectsComplete) {
-                    QString k = QString::fromStdString(it.first);
-                    //if (k == text) continue;
-                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-                        if (completePopup->count() >= completePopup->limit()) break;
-                    }
-                }
-            }
-            // flutter functions
-            if (completePopup->count() < completePopup->limit()) {
-                for (auto & it : CW->flutterFunctionsComplete) {
-                    QString k = QString::fromStdString(it.first);
-                    //if (k == text) continue;
-                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-                        if (completePopup->count() >= completePopup->limit()) break;
-                    }
-                }
-            }
-            // dart functions
-            if (completePopup->count() < completePopup->limit()) {
-                for (auto & it : CW->dartFunctionsComplete) {
-                    QString k = QString::fromStdString(it.first);
-                    //if (k == text) continue;
-                    if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
-                        completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
-                        if (completePopup->count() >= completePopup->limit()) break;
-                    }
-                }
-            }
+        } else {
+            detectCompleteTextJSExt(text, jsExtMode);
         }
         // parsed classes
         if (completePopup->count() < completePopup->limit()) {
@@ -3292,6 +3272,56 @@ void Editor::detectCompleteTextJS(QString text, int cursorTextPos, QChar cursorT
                         completePopup->addItem(k, k);
                         if (completePopup->count() >= completePopup->limit()) break;
                     }
+                }
+            }
+        }
+    }
+}
+
+void Editor::detectCompleteTextJSExt(QString text, QString jsExtMode)
+{
+    if (jsExtMode == EXTENSION_DART) {
+        // flutter classes
+        if (completePopup->count() < completePopup->limit()) {
+            for (auto & it : CW->flutterObjectsComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+        }
+        // dart classes
+        if (completePopup->count() < completePopup->limit()) {
+            for (auto & it : CW->dartObjectsComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+        }
+        // flutter functions
+        if (completePopup->count() < completePopup->limit()) {
+            for (auto & it : CW->flutterFunctionsComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
+                }
+            }
+        }
+        // dart functions
+        if (completePopup->count() < completePopup->limit()) {
+            for (auto & it : CW->dartFunctionsComplete) {
+                QString k = QString::fromStdString(it.first);
+                //if (k == text) continue;
+                if (k.indexOf(text, 0, Qt::CaseInsensitive)==0) {
+                    completePopup->addItem(QString::fromStdString(it.first), QString::fromStdString(it.second));
+                    if (completePopup->count() >= completePopup->limit()) break;
                 }
             }
         }
@@ -4282,7 +4312,7 @@ void Editor::detectCompleteText(QString text, QChar cursorTextPrevChar, int curs
     } else if (mode == MODE_CSS) {
         detectCompleteTextCSS(text, cursorTextPrevChar);
     } else if (mode == MODE_JS) {
-        detectCompleteTextJS(text, cursorTextPos, cursorTextPrevChar);
+        detectCompleteTextJS(text, cursorTextPos, cursorTextPrevChar, highlight->getJsExtMode());
     } else if (mode == MODE_PHP) {
         detectCompleteTextPHP(text, cursorTextPos, cursorTextPrevChar);
     }
