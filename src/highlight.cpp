@@ -1497,14 +1497,14 @@ bool Highlight::detectExpressionPHP(const QChar c, int pos)
 bool Highlight::detectSLCommentUnknown(const QChar c, int pos)
 {
     bool opened = commentSLOpenedUnknown >= 0;
-    if (!opened && commentUnknownStringSL.trimmed().size()==0 && (c == ";" || c == "#")) {
+    if (!opened && commentUnknownStringSL.trimmed().size()==0) {
         if (c == ";" || c == "#") {
             commentUnknownStringSL = "";
             commentSLOpenedUnknown = pos;
             state = STATE_COMMENT_SL_UNKNOWN;
             return true;
         } else {
-            commentUnknownStringSL = c;
+            commentUnknownStringSL += c;
         }
     }
 
