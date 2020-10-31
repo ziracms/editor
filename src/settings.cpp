@@ -35,7 +35,7 @@ const QString SCALE_FACTOR_SETTINGS_VAR = "scale_factor";
 Settings::Settings(QObject * parent) : QObject(parent)
 {
     data = {
-        {"file_dialog_filter", "Project files (*.php *.phtml *.html *.xml *.iml *.tpl *.css *.less *.scss *.sass *.js *.dart *.yaml *.htaccess *.txt);;All files (*)"},
+        {"file_dialog_filter", "Project files (*.php *.phtml *.html *.xml *.iml *.tpl *.css *.less *.scss *.sass *.js *.dart *.yaml *.ini *.htaccess *.txt);;All files (*)"},
         {"file_dialog_path", ""},
         {"file_browser_home", ""},
         {"php_manual_path", ""},

@@ -40,6 +40,8 @@ extern const int STATE_REGEXP_JS;
 extern const int STATE_COMMENT_SL_UNKNOWN;
 
 extern const QString EXTENSION_DART;
+extern const QString EXTENSION_YAML;
+extern const QString EXTENSION_INI;
 
 class Highlight : public QObject
 {

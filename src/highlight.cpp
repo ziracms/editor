@@ -42,6 +42,8 @@ const int STATE_EXPRESSION_PHP = 20;
 const int STATE_COMMENT_SL_UNKNOWN = 21;
 
 const QString EXTENSION_DART = "dart";
+const QString EXTENSION_YAML = "yaml";
+const QString EXTENSION_INI = "ini";
 
 const int EXTRA_HIGHLIGHT_BLOCKS_COUNT = 100; // should be >= 1
 
@@ -1689,6 +1691,9 @@ void Highlight::restoreState() {
     }
     if (state == STATE_EXPRESSION_JS || prevState == STATE_EXPRESSION_JS) {
         exprOpenedJS = 0;
+    }
+    if (state == STATE_COMMENT_SL_UNKNOWN) {
+        state = STATE_NONE;
     }
 }
 
