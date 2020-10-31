@@ -1870,7 +1870,7 @@ bool Highlight::parseMode(const QChar & c, int pos, bool isWSpace, bool isLast, 
     return true;
 }
 
-void Highlight::parseHTML(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isLast)
+void Highlight::parseHTML(const QChar & c, const QChar & prevC, int pos, bool isAlpha, bool isAlnum, bool isLast)
 {
     if (mode != MODE_HTML) return;
     bool tagChanged = detectTag(c, pos);
@@ -1953,9 +1953,16 @@ void Highlight::parseHTML(const QChar & c, int pos, bool isAlpha, bool isAlnum, 
     // close open short tag
     if (tagChainStartsHTML.size() > tagChainEndsHTML.size() && tagChainHTML.size() > 0 && c == ">" && tagChanged) {
         QStringList tagChainList = tagChainHTML.split(",");
-        QString lastTag = tagChainList.last();
-        HW->htmlshortsIterator = HW->htmlshorts.find(lastTag.toLower().toStdString());
-        if (HW->htmlshortsIterator != HW->htmlshorts.end()) {
+        bool doClose = false;
+        if (prevC == "/") doClose = true;
+        if (!doClose) {
+            QString lastTag = tagChainList.last();
+            HW->htmlshortsIterator = HW->htmlshorts.find(lastTag.toLower().toStdString());
+            if (HW->htmlshortsIterator != HW->htmlshorts.end()) {
+                doClose = true;
+            }
+        }
+        if (doClose) {
             tagChainList.removeLast();
             tagChainEndsHTML.append(pos);
             QString tagChainN = "";
@@ -3630,6 +3637,7 @@ bool Highlight::parseBlock(const QString & text)
     int pState = state;
     int keywordCSSStartPrev = -1, keywordCSSLengthPrev = -1, keywordJSStartPrev = -1, keywordJSLengthPrev = -1, keywordPHPStartPrev = -1, keywordPHPLengthPrev = -1;
     bool cssValuePart = true;
+    QChar prevC = '\0';
     for (int i=0; i<text.size(); i++) {
         QChar c = text[i];
         bool isLast = (i == text.size()-1) ? true : false;
@@ -3641,7 +3649,7 @@ bool Highlight::parseBlock(const QString & text)
         if (parseMode(c, i, isWSpace, isLast, pMode, pState)) continue;
 
         // html mode
-        parseHTML(c, i, isAlpha, isAlnum, isLast);
+        parseHTML(c, prevC, i, isAlpha, isAlnum, isLast);
 
         // css mode
         parseCSS(c, i, isAlpha, isAlnum, isWSpace, isLast, keywordCSSStartPrev, keywordCSSLengthPrev, cssValuePart);
@@ -3657,6 +3665,8 @@ bool Highlight::parseBlock(const QString & text)
 
         // state changes
         updateState(c, i, pState);
+
+        prevC = c;
     }
 
     // draw spell underline

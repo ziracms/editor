@@ -122,7 +122,7 @@ protected:
     bool detectExpressionPHP(const QChar c, int pos);
     bool detectExpressionJS(const QChar c, int pos);
     bool parseMode(const QChar & c, int pos, bool isWSpace, bool isLast, std::string & pMode, int & pState);
-    void parseHTML(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isLast);
+    void parseHTML(const QChar & c, const QChar & prevC, int pos, bool isAlpha, bool isAlnum, bool isLast);
     void parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordCSSStartPrev, int & keywordCSSLengthPrev, bool & cssValuePart);
     void parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordJSStartPrev, int & keywordJSLengthPrev);
     void parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordPHPStartPrev, int & keywordPHPLengthPrev);
