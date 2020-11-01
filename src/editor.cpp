@@ -2325,7 +2325,7 @@ void Editor::insertFromMimeData(const QMimeData *source)
         QString textF = "";
         text = text.replace("\r\n","\n");
         QStringList textList = text.split(QRegularExpression("[\r\n]"));
-        int count = 0;
+        int count = 0, countBraces = 0, countParens = 0, countBrackets = 0;
         if (textList.size()>0) {
             QString space = (tabType == "spaces") ? QString(" ").repeated(tabWidth) : "\t";
             if (textList.size()>1) {
@@ -2340,15 +2340,27 @@ void Editor::insertFromMimeData(const QMimeData *source)
                     }
                     QChar first = line[0];
                     QChar last = line[line.size()-1];
-                    if (first == "}" || first == ")" || first == "]") {
+                    if ((first == "}" && countBraces > 0) ||
+                        (first == ")" && countParens > 0) ||
+                        (first == "]" && countBrackets > 0)
+                    ) {
                         count--;
                         if (count < 0) count = 0;
+                        if (first == "}") countBraces--;
+                        if (first == ")") countParens--;
+                        if (first == "]") countBrackets--;
+                        if (countBraces < 0) countBraces = 0;
+                        if (countParens < 0) countParens = 0;
+                        if (countBrackets < 0) countBrackets = 0;
                     }
                     if (i>0) {
                         textF += prefix + space.repeated(count) + line + "\n";
                     }
                     if ((last == "{" || last == "(" || last == "[") && first != "/") {
                         count++;
+                        if (last == "{") countBraces++;
+                        else if (last == "(") countParens++;
+                        else if (last == "[") countBrackets++;
                     }
                 }
                 textF = textF.trimmed();
