@@ -1,6 +1,9 @@
 #include "icon.h"
 #include <QFileInfo>
+#include <QPainter>
 #include "helper.h"
+
+const int ICON_SIZE = 64;
 
 /*
 Action names:
@@ -132,5 +135,12 @@ QIcon Icon::get(QString actionName, QIcon defaultIcon)
     if (!QFileInfo::exists(path)) return defaultIcon;
     QIcon icon(path);
     if (icon.isNull()) return defaultIcon;
+    // disabled icon
+    QImage img(ICON_SIZE, ICON_SIZE, QImage::Format_ARGB32);
+    QPainter p(&img);
+    p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    p.drawPixmap(img.rect(), QPixmap(path));
+    p.fillRect(img.rect(), QColor(128, 128, 128));
+    icon.addPixmap(QPixmap::fromImage(img), QIcon::Disabled);
     return icon;
 }
