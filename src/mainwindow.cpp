@@ -1471,7 +1471,7 @@ void MainWindow::execPHPWebServerFinished(bool success, QString output)
     if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
     ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
     ui->outputEdit->clear();
-    ui->outputEdit->setHtml(Servers::highlightServersCommand(output, settings));
+    ui->outputEdit->setText(output);
     if (success) {
         QDesktopServices::openUrl(QUrl("http://" + PHP_WEBSERVER_URI));
     }

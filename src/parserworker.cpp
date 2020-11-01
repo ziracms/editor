@@ -240,7 +240,7 @@ void ParserWorker::startPHPWebServer(QString path)
     process.setStandardOutputFile(QProcess::nullDevice());
     process.setStandardErrorFile(QProcess::nullDevice());
     if (process.startDetached(&phpWebServerPid)) {
-        emit execPHPWebServerFinished(true, tr("PHP web-server started."));
+        emit execPHPWebServerFinished(true, tr("PHP web-server started.")+"\n"+tr("Document root: %1").arg(path)+"\n"+tr("URL address: %1").arg("http://" + PHP_WEBSERVER_URI));
     } else {
         emit execPHPWebServerFinished(false, tr("Could not start PHP web-server."));
     }
