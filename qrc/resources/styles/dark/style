@@ -938,10 +938,13 @@ QRadioButton::indicator:checked, QRadioButton::indicator:unchecked{
     background-color: none;
     border: none;
     border-radius: 0px;
+    width: 12px;
+    height: 12px;
 }
 
 QRadioButton::indicator:checked
 {
+    /*
     background: qradialgradient(
         cx: 0.5, cy: 0.5,
         fx: 0.5, fy: 0.5,
@@ -949,6 +952,8 @@ QRadioButton::indicator:checked
         stop: 0.25 #0089ff,
         stop: 0.3 transparent
     );
+    */
+    image: url(:/styles/dark/ok.png);
 }
 
 QRadioButton::indicator:unchecked
@@ -957,6 +962,7 @@ QRadioButton::indicator:unchecked
         cx: 0.5, cy: 0.5,
         fx: 0.5, fy: 0.5,
         radius: 1.0,
+        stop: 0.0 transparent,
         stop: 0.25 #90989a,
         stop: 0.3 transparent
     );
