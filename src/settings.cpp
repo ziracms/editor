@@ -233,8 +233,8 @@ void Settings::applyDarkColors()
     data["editor_search_word_color"] = "#ffffff";
     data["editor_text_color"] = "#a5a9ad";
     data["editor_bg_color"] = "#0f0f10";
-    data["editor_tooltip_border_color"] = "#232627";
-    data["editor_tooltip_bg_color"] = "#194067";
+    data["editor_tooltip_border_color"] = "#48678e";
+    data["editor_tooltip_bg_color"] = "#314661";
     data["editor_tooltip_color"] = "#c4c8cc";
     data["editor_tooltip_bold_color"] = "#ffffff";
     data["editor_search_input_bg_color"] = "#3a4a50";

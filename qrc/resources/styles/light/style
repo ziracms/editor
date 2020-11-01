@@ -977,10 +977,13 @@ QCheckBox::indicator{
     color: #000000;
     background: none;
     border: none;
+    width: 12px;
+    height: 12px;
 }
 
 QCheckBox::indicator:checked
 {
+    /*
     background: qradialgradient(
         cx: 0.5, cy: 0.5,
         fx: 0.5, fy: 0.5,
@@ -988,6 +991,8 @@ QCheckBox::indicator:checked
         stop: 0.25 #2b85ff,
         stop: 0.3 transparent
     );
+    */
+    image: url(:/styles/light/ok.png);
 }
 
 QCheckBox::indicator:unchecked
@@ -996,6 +1001,7 @@ QCheckBox::indicator:unchecked
         cx: 0.5, cy: 0.5,
         fx: 0.5, fy: 0.5,
         radius: 1.0,
+        stop: 0.0 transparent,
         stop: 0.25 #90989a,
         stop: 0.3 transparent
     );
