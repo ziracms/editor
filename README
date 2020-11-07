@@ -19,6 +19,7 @@ Main features:
       HTML tags
 - flutter / dart support
 - unused variables check
+- multiple selections editing
 - files browser
 - file symbols navigator
 - highlight matching 
