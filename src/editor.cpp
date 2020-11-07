@@ -1290,17 +1290,19 @@ bool Editor::event(QEvent *e)
                     curs.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, cursorTextPos);
                     QChar prevChar = findPrevCharNonSpaceAtCursos(curs);
                     QChar prevPrevChar = findPrevCharNonSpaceAtCursos(curs);
-                    bool showAllowed = false;
-                    if ((prevChar != ">" || prevPrevChar != "-") && (prevChar != ":" || prevPrevChar != ":")) showAllowed = true;
-                    CW->tooltipsIteratorPHP = CW->tooltipsPHP.find(cursorText.toStdString());
-                    if (showAllowed && CW->tooltipsIteratorPHP != CW->tooltipsPHP.end()) {
-                        QString fName = QString::fromStdString(CW->tooltipsIteratorPHP->first);
-                        QString params = QString::fromStdString(CW->tooltipsIteratorPHP->second);
-                        if (params.indexOf(TOOLTIP_DELIMITER) >= 0) {
-                            params.replace(TOOLTIP_DELIMITER, "<br />" + fName);
+                    if (mode == MODE_PHP) {
+                        bool showAllowed = false;
+                        if ((prevChar != ">" || prevPrevChar != "-") && (prevChar != ":" || prevPrevChar != ":")) showAllowed = true;
+                        CW->tooltipsIteratorPHP = CW->tooltipsPHP.find(cursorText.toStdString());
+                        if (showAllowed && CW->tooltipsIteratorPHP != CW->tooltipsPHP.end()) {
+                            QString fName = QString::fromStdString(CW->tooltipsIteratorPHP->first);
+                            QString params = QString::fromStdString(CW->tooltipsIteratorPHP->second);
+                            if (params.indexOf(TOOLTIP_DELIMITER) >= 0) {
+                                params.replace(TOOLTIP_DELIMITER, "<br />" + fName);
+                            }
+                            QString tooltipText = fName + " " + params;
+                            showTooltip(& curs, tooltipText);
                         }
-                        QString tooltipText = fName + " " + params;
-                        showTooltip(& curs, tooltipText);
                     } else {
                         QRegularExpressionMatch m = colorExpr.match(cursorText);
                         if (m.capturedStart()==0 && QColor::isValidColor(cursorText)) {
