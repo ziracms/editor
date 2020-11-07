@@ -177,6 +177,8 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     std::string selectedExpressionBgColorStr = settings->get("editor_selected_expression_bg_color");
     std::string searchWordBgColorStr = settings->get("editor_search_word_bg_color");
     std::string searchWordColorStr = settings->get("editor_search_word_color");
+    std::string selectionBgColorStr = settings->get("editor_selection_bg_color");
+    std::string selectionColorStr = settings->get("editor_selection_color");
     std::string searchInputBgColorStr = settings->get("editor_search_input_bg_color");
     std::string searchInputErrorBgColorStr = settings->get("editor_search_input_error_bg_color");
     std::string lineMarkColorStr = settings->get("editor_line_mark_color");
@@ -212,6 +214,8 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     selectedExpressionBgColor = QColor(selectedExpressionBgColorStr.c_str());
     searchWordBgColor = QColor(searchWordBgColorStr.c_str());
     searchWordColor = QColor(searchWordColorStr.c_str());
+    selectionBgColor = QColor(selectionBgColorStr.c_str());
+    selectionColor = QColor(selectionColorStr.c_str());
     searchInputBgColor = QColor(searchInputBgColorStr.c_str());
     searchInputErrorBgColor = QColor(searchInputErrorBgColorStr.c_str());
     lineMarkColor = QColor(lineMarkColorStr.c_str());
@@ -323,6 +327,16 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     shortcutSearch->setContext(Qt::WidgetWithChildrenShortcut);
     connect(shortcutSearch, SIGNAL(activated()), this, SLOT(findToggle()));
 
+    QString shortcutSelectWordStr = QString::fromStdString(settings->get("shortcut_select_word"));
+    QShortcut * shortcutSelectWord = new QShortcut(QKeySequence(shortcutSelectWordStr), this);
+    shortcutSelectWord->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(shortcutSelectWord, SIGNAL(activated()), this, SLOT(selectWord()));
+
+    QString shortcutMultiSelectStr = QString::fromStdString(settings->get("shortcut_multiselect"));
+    QShortcut * shortcutMultiSelect = new QShortcut(QKeySequence(shortcutMultiSelectStr), this);
+    shortcutMultiSelect->setContext(Qt::WidgetWithChildrenShortcut);
+    connect(shortcutMultiSelect, SIGNAL(activated()), this, SLOT(multiSelectToggle()));
+
     QString shortcutHelpStr = QString::fromStdString(settings->get("shortcut_help"));
     QShortcut * shortcutHelp = new QShortcut(QKeySequence(shortcutHelpStr), this);
     shortcutHelp->setContext(Qt::WidgetShortcut);
@@ -410,6 +424,11 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     isRedoAvailable = false;
     lastCursorPositionBlockNumber = -1;
     isBigFile = false;
+    isMultiSelectMode = false;
+    multiSelectString = "";
+    multiSelectInsertText = "";
+    multiSelectCursors.clear();
+    multiSelectCursor = QTextCursor(document());
 
     connect(this, SIGNAL(undoAvailable(bool)), this, SLOT(onUndoAvailable(bool)));
     connect(this, SIGNAL(redoAvailable(bool)), this, SLOT(onRedoAvailable(bool)));
@@ -588,6 +607,10 @@ void Editor::reset()
     spellProgressPercent = 0;
     firstVisibleBlockIndex = -1;
     lastVisibleBlockIndex = -1;
+    isMultiSelectMode = false;
+    multiSelectString = "";
+    multiSelectInsertText = "";
+    multiSelectCursors.clear();
 }
 
 void Editor::highlightProgressChanged(int percent)
@@ -1783,6 +1806,49 @@ bool Editor::onKeyPress(QKeyEvent *e)
     lastKeyPressedBlockNumber = textCursor().block().blockNumber();
     // shift + enter will add new row to existing block
     if (code == Qt::Key_Return && shift) return false;
+    // multiselect
+    if (isMultiSelectMode) {
+        QString text = e->text();
+        if (text.size() > 0 && !ctrl && code != Qt::Key_Return && code != Qt::Key_Backspace && code != Qt::Key_Delete && code != Qt::Key_Escape) {
+            multiSelectCursor.joinPreviousEditBlock();
+            multiSelectCursor.insertText(text);
+            multiSelectInsertText += text;
+            for (QTextCursor cursor : multiSelectCursors) {
+                cursor.insertText(text);
+            }
+            multiSelectCursor.endEditBlock();
+        } else if (code == Qt::Key_Backspace && (multiSelectInsertText.size() > 0 || multiSelectCursor.hasSelection())) {
+            if (!multiSelectCursor.hasSelection() && multiSelectCursor.positionInBlock() > 0) {
+                multiSelectCursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
+            }
+            multiSelectCursor.joinPreviousEditBlock();
+            if (multiSelectCursor.hasSelection()) {
+                if (multiSelectCursor.selectedText().size() <= multiSelectInsertText.size()) {
+                    multiSelectInsertText = multiSelectInsertText.remove(multiSelectInsertText.size()-multiSelectCursor.selectedText().size(), multiSelectCursor.selectedText().size());
+                }
+                multiSelectCursor.deleteChar();
+            }
+            for (QTextCursor cursor : multiSelectCursors) {
+                if (!cursor.hasSelection() && cursor.positionInBlock() > 0) {
+                    cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
+                }
+                if (cursor.hasSelection()) {
+                    cursor.deleteChar();
+                }
+            }
+            multiSelectCursor.endEditBlock();
+        } else if (!shift && !ctrl && code != Qt::Key_Backspace) {
+            multiSelectToggle();
+        }
+        setTextCursor(multiSelectCursor);
+
+        QList<QTextEdit::ExtraSelection> extraSelections;
+        highlightCurrentLine(& extraSelections);
+        highlightMultiSelection(& extraSelections);
+        setExtraSelections(extraSelections);
+
+        return false;
+    }
     bool ignoreKey = false; // workaround for wrong key code, android emulator bug ?
     #if defined(Q_OS_ANDROID)
     if (code == Qt::Key_BracketLeft && e->text() != "[") ignoreKey = true;
@@ -2475,6 +2541,7 @@ void Editor::verticalScrollbarValueChangedDelayed()
 
 void Editor::mousePressEvent(QMouseEvent *e)
 {
+    if (isMultiSelectMode) multiSelectToggle();
     hideCompletePopup();
     #if defined(Q_OS_ANDROID)
     mousePressTimer.start();
@@ -4320,7 +4387,7 @@ void Editor::detectCompleteText(QString text, QChar cursorTextPrevChar, int curs
 {
     int min = 2;
     if (mode == MODE_HTML) min = 1;
-    if (text.size() < min) return;
+    if (text.size() < min || isMultiSelectMode) return;
     completePopup->clearItems();
 
     if (mode == MODE_HTML) {
@@ -5991,6 +6058,45 @@ void Editor::highlightCurrentLine(QList<QTextEdit::ExtraSelection> * extraSelect
     extraSelections->append(selectedLineSelection);
 }
 
+void Editor::highlightMultiSelection(QList<QTextEdit::ExtraSelection> * extraSelections)
+{
+    if (isMultiSelectMode && multiSelectString.size() > 0) {
+        int searchWordBlockNumber = -1;
+        QTextCursor curs = textCursor();
+        if (multiSelectCursor.hasSelection()) curs = multiSelectCursor;
+        else {
+            curs.setPosition(multiSelectCursor.position());
+            curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, multiSelectInsertText.length());
+        }
+        QTextEdit::ExtraSelection selectedWordSelection;
+        selectedWordSelection.format.setBackground(selectionBgColor);
+        selectedWordSelection.format.setForeground(selectionColor);
+        selectedWordSelection.cursor = curs;
+        extraSelections->append(selectedWordSelection);
+        if (searchWordBlockNumber != curs.block().blockNumber()) {
+            searchWordBlockNumber = curs.block().blockNumber();
+            static_cast<LineMap *>(lineMap)->addMark(searchWordBlockNumber+1);
+        }
+        for (QTextCursor cursor : multiSelectCursors) {
+            QTextCursor curs = textCursor();
+            if (cursor.hasSelection()) curs = cursor;
+            else {
+                curs.setPosition(cursor.position());
+                curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor, multiSelectInsertText.length());
+            }
+            QTextEdit::ExtraSelection selectedWordSelection;
+            selectedWordSelection.format.setBackground(selectionBgColor);
+            selectedWordSelection.format.setForeground(selectionColor);
+            selectedWordSelection.cursor = curs;
+            extraSelections->append(selectedWordSelection);
+            if (searchWordBlockNumber != curs.block().blockNumber()) {
+                searchWordBlockNumber = curs.block().blockNumber();
+                static_cast<LineMap *>(lineMap)->addMark(searchWordBlockNumber+1);
+            }
+        }
+    }
+}
+
 void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPrevChar, QString cursorText, int cursorTextPos, std::string mode)
 {
     QList<QTextEdit::ExtraSelection> extraSelections;
@@ -6056,6 +6162,10 @@ void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPre
                 if (co >= SEARCH_LIMIT) break; // too much results
             }
         }
+
+        // multiselect
+        highlightMultiSelection(& extraSelections);
+
         // repaint line map
         lineMap->update();
 
@@ -6278,6 +6388,50 @@ void Editor::replaceAllText(QString searchTxt, QString replaceTxt, bool CaSe, bo
         static_cast<Search *>(search)->setFindEditBg(searchInputErrorBgColor);
         static_cast<Search *>(search)->setFindEditProp("results", "notfound");
     }
+    highlightExtras();
+}
+
+void Editor::selectWord()
+{
+    QTextCursor curs = textCursor();
+    if (curs.hasSelection()) return;
+    curs.select(QTextCursor::WordUnderCursor);
+    setTextCursor(curs);
+}
+
+void Editor::multiSelectToggle()
+{
+    selectWord();
+    QTextCursor curs = textCursor();
+    if (!isMultiSelectMode && curs.hasSelection() && curs.selectedText().replace(QString::fromWCharArray(L"\u2029"),"\n").indexOf("\n") < 0) {
+        isMultiSelectMode = true;
+        multiSelectString = curs.selectedText();
+        multiSelectInsertText = "";
+        multiSelectCursor.setPosition(curs.selectionStart());
+        multiSelectCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, curs.selectionEnd() - curs.selectionStart());
+        curs.clearSelection();
+        setTextCursor(curs);
+
+        QTextCursor searchWordCursor(document());
+        QTextDocument::FindFlags findFlags = nullptr;
+        findFlags |= QTextDocument::FindCaseSensitively;
+        searchWordCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+        int co = 0;
+        while(!searchWordCursor.isNull() && !searchWordCursor.atEnd()) {
+            searchWordCursor = document()->find(multiSelectString, searchWordCursor, findFlags);
+            if (!searchWordCursor.isNull() && searchWordCursor.position() != multiSelectCursor.position()) {
+                multiSelectCursors.append(searchWordCursor);
+            }
+            co++;
+            if (co >= SEARCH_LIMIT) break; // too much results
+        }
+    } else {
+        isMultiSelectMode = false;
+        multiSelectString = "";
+        multiSelectInsertText = "";
+        multiSelectCursors.clear();
+    }
+    static_cast<LineMap *>(lineMap)->clearMarks();
     highlightExtras();
 }
 
@@ -6756,6 +6910,7 @@ void Editor::contextMenuEvent(QContextMenuEvent *event)
     menu->addAction(Icon::get("actionFindReplace"), tr("Find \\ Replace"), this, SLOT(showSearchRequested()));
     menu->addAction(Icon::get("actionOpenDeclaration"), tr("Open declaration"), this, SLOT(showDeclarationRequested()));
     menu->addAction(Icon::get("actionSearchInFiles"), tr("Search in files"), this, SLOT(searchInFilesRequested()));
+    menu->addAction(Icon::get("actionMultiSelect"), tr("Multi-Selection"), this, SLOT(multiSelectToggle()));
     menu->addSeparator();
     menu->addAction(Icon::get("actionSave", QIcon(":/icons/document-save.png")), tr("Save"), this, SLOT(save()));
     menu->addSeparator();

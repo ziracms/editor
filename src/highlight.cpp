@@ -2520,12 +2520,11 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         expectedClsNameJS = "";
     }
     // unexpected function scope
-    if (expectedFuncNameJS.size() > 0 && expectedFuncNameJS != "function" && c == ";" && expectedFuncParsJS == parensJS) {
+    if (expectedFuncNameJS.size() > 0 && expectedFuncNameJS != "function" && (c == ";" || c == ")" || c == "}" || c == "]" || c == "," || c == ":" || c == "=" || c == "+" || c == "-" || c == "*" || c == "/" || c == "%" || c == "&" || c == "|" || c == "?") && expectedFuncParsJS == parensJS) {
         expectedFuncNameJS = "";
         expectedFuncParsJS = -1;
         expectedFuncArgsJS.clear();
     }
-
     if (keywordJSStart < 0 && expectedFuncVarJS.size() > 0 && expectedFuncParsJS < 0 && !isWSpace && (isAlnum || c == "=")) {
         expectedFuncVarJS += c;
     } else if (expectedFuncVarJS.size() > 0 && expectedFuncParsJS < 0 && expectedFuncVarJS.indexOf("=") < 0 && c == "(") {

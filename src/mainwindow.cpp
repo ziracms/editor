@@ -1256,6 +1256,13 @@ void MainWindow::on_actionSearchInFiles_triggered()
     editorSearchInFilesRequested(text);
 }
 
+void MainWindow::on_actionMultiSelect_triggered()
+{
+    Editor * textEditor = getActiveEditor();
+    if (textEditor == nullptr) return;
+    textEditor->multiSelectToggle();
+}
+
 void MainWindow::on_actionShowHideSidebar_triggered()
 {
     hideQAPanel();

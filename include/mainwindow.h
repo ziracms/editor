@@ -122,6 +122,7 @@ private slots:
     void on_actionFindReplace_triggered();
     void on_actionColorPicker_triggered();
     void on_actionSearchInFiles_triggered();
+    void on_actionMultiSelect_triggered();
     void on_actionGitStatus_triggered();
     void on_actionGitLog_triggered();
     void on_actionGitDiffTree_triggered();

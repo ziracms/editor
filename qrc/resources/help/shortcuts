@@ -10,6 +10,7 @@
 <tr><td>Commenting:</td><td><b>Ctrl+/</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Tabs list:</td><td><b>Alt+&uarr;</b></td></tr>
 <tr><td>Show tooltip:</td><td><b>Ctrl+Space</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Search file:</td><td><b>Ctrl+F</b></td></tr>
 <tr><td>Context help:</td><td><b>F1</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Search in files:</td><td><b>Ctrl+Shift+F</b></td></tr>
+<tr><td>Select word:</td><td><b>Ctrl+W</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Multi-Selection:</td><td><b>Ctrl+R</b></td></tr>
 <tr><td>Duplicate line:</td><td><b>Ctrl+D</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Focus on files tree:</td><td><b>Alt+&darr;</b></td></tr>
 <tr><td>Delete line:</td><td><b>Ctrl+Shift+D</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Quick Access: </td><td><b>F3 / Ctrl+P</b></td></tr>
 <tr><td>Show Terminal:</td><td><b>Ctrl+T</b></td> <td>&nbsp;</td><td>&nbsp;</td> <td>Execute file:</td><td><b>F5</b></td></tr>

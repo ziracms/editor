@@ -87,6 +87,8 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"shortcut_tooltip", "Ctrl+Space"},
         {"shortcut_search", "Ctrl+F"},
         {"shortcut_search_in_files", "Ctrl+Shift+F"},
+        {"shortcut_select_word", "Ctrl+W"},
+        {"shortcut_multiselect", "Ctrl+R"},
         {"shortcut_help", "F1"},
         {"shortcut_execute", "F5"},
         {"shortcut_execute_selection", "Shift+F5"},
@@ -153,6 +155,8 @@ void Settings::applyLightColors()
     data["editor_selected_expression_bg_color"] = "#ecffbd";
     data["editor_search_word_bg_color"] = "#a800ff";
     data["editor_search_word_color"] = "#ffffff";
+    data["editor_selection_bg_color"] = "#1666e0";
+    data["editor_selection_color"] = "#ffffff";
     data["editor_text_color"] = "#333333";
     data["editor_bg_color"] = "#ffffff";
     data["editor_tooltip_border_color"] = "#d0cec1";
@@ -231,6 +235,8 @@ void Settings::applyDarkColors()
     data["editor_selected_expression_bg_color"] = "#5f3353";
     data["editor_search_word_bg_color"] = "#ea0053";
     data["editor_search_word_color"] = "#ffffff";
+    data["editor_selection_bg_color"] = "#008dc1";
+    data["editor_selection_color"] = "#ffffff";
     data["editor_text_color"] = "#a5a9ad";
     data["editor_bg_color"] = "#0f0f10";
     data["editor_tooltip_border_color"] = "#48678e";

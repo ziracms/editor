@@ -132,6 +132,7 @@
     <addaction name="separator"/>
     <addaction name="actionFindReplace"/>
     <addaction name="actionSearchInFiles"/>
+    <addaction name="actionMultiSelect"/>
     <addaction name="separator"/>
     <addaction name="actionSettings"/>
    </widget>
@@ -1230,6 +1231,11 @@
    </property>
    <property name="text">
     <string>Zira DevPack</string>
+   </property>
+  </action>
+  <action name="actionMultiSelect">
+   <property name="text">
+    <string>Multi-Selection</string>
    </property>
   </action>
  </widget>

@@ -148,6 +148,7 @@ protected:
     void highlightPHPCloseSpecialTagPair(QString tagName, int pos, QList<QTextEdit::ExtraSelection> * extraSelections);
     void highlightPHPOpenSpecialTagPair(QString tagName, int pos, QList<QTextEdit::ExtraSelection> * extraSelections);
     void highlightCurrentLine(QList<QTextEdit::ExtraSelection> * extraSelections);
+    void highlightMultiSelection(QList<QTextEdit::ExtraSelection> * extraSelections);
     void showCompletePopup();
     void hideCompletePopup();
     void detectCompleteText(QString text, QChar cursorTextPrevChar, int cursorTextPos, std::string mode, int state);
@@ -180,6 +181,8 @@ public slots:
     void back();
     void forward();
     void findToggle();
+    void selectWord();
+    void multiSelectToggle();
     void contextMenu();
 protected slots:
     void resizeEvent(QResizeEvent *event) override;
@@ -276,6 +279,8 @@ private:
     QColor selectedExpressionBgColor;
     QColor searchWordBgColor;
     QColor searchWordColor;
+    QColor selectionBgColor;
+    QColor selectionColor;
     QColor textColor;
     QColor bgColor;
     QColor searchInputBgColor;
@@ -386,6 +391,11 @@ private:
     bool wrapLines;
     int firstVisibleBlockIndex;
     int lastVisibleBlockIndex;
+    bool isMultiSelectMode;
+    QString multiSelectString;
+    QString multiSelectInsertText;
+    QList<QTextCursor> multiSelectCursors;
+    QTextCursor multiSelectCursor;
 
     QHash<QString, QString> phpSnippets;
     QHash<QString, QString> jsSnippets;
