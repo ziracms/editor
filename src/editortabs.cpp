@@ -15,14 +15,15 @@
 #include <QShortcut>
 #include "fileiconprovider.h"
 
-EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords):
+EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, Snippets * snippets):
     spellChecker(spellChecker),
     tabWidget(widget),
     settings(settings),
     highlightWords(highlightWords),
     completeWords(completeWords),
     helpWords(helpWords),
-    spellWords(spellWords)
+    spellWords(spellWords),
+    snippets(snippets)
 {
     editor = nullptr;
     blockSig = false;
@@ -65,7 +66,7 @@ QString EditorTabs::getTabNameFromPath(QString filepath)
 void EditorTabs::createTab(QString filepath, bool initHighlight)
 {
     EditorTab * tab = new EditorTab();
-    editor = new Editor(spellChecker, settings, highlightWords, completeWords, helpWords, spellWords);
+    editor = new Editor(spellChecker, settings, highlightWords, completeWords, helpWords, spellWords, snippets);
     tab->setEditor(editor);
 
     QString tabName = getTabNameFromPath(filepath);

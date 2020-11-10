@@ -18,6 +18,7 @@
 #include "highlightwords.h"
 #include "completewords.h"
 #include "spellwords.h"
+#include "snippets.h"
 #include "parserworker.h"
 #include "filebrowser.h"
 #include "editortabs.h"
@@ -268,6 +269,7 @@ private:
     CompleteWords * completeWords;
     HelpWords * helpWords;
     SpellWords * spellWords;
+    Snippets * snippets;
     ParserWorker * parserWorker;
     QThread parserThread;
     FileBrowser * filebrowser;

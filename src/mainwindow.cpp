@@ -153,6 +153,7 @@ MainWindow::MainWindow(QWidget *parent) :
     completeWords = new CompleteWords(highlightWords);
     helpWords = new HelpWords();
     spellWords = new SpellWords();
+    snippets = new Snippets(settings);
 
     // welcome screen
     welcomeScreen = new Welcome(schemeType == COLOR_SCHEME_LIGHT);
@@ -160,7 +161,7 @@ MainWindow::MainWindow(QWidget *parent) :
     welcomeScreen->connectButtons(this);
 
     // editor tabs
-    editorTabs = new EditorTabs(spellChecker, ui->tabWidget, settings, highlightWords, completeWords, helpWords, spellWords);
+    editorTabs = new EditorTabs(spellChecker, ui->tabWidget, settings, highlightWords, completeWords, helpWords, spellWords, snippets);
     connect(editorTabs, SIGNAL(statusBarText(QString)), this, SLOT(setStatusBarText(QString)));
     connect(editorTabs, SIGNAL(editorFilenameChanged(QString)), this, SLOT(editorFilenameChanged(QString)));
     connect(editorTabs, SIGNAL(tabOpened(int)), this, SLOT(editorTabOpened(int)));
@@ -210,7 +211,7 @@ MainWindow::MainWindow(QWidget *parent) :
     editorsSplitter->addWidget(ui->tabWidget);
     editorsSplitter->addWidget(tabWidgetSplit);
 
-    editorTabsSplit = new EditorTabs(spellChecker, tabWidgetSplit, settings, highlightWords, completeWords, helpWords, spellWords);
+    editorTabsSplit = new EditorTabs(spellChecker, tabWidgetSplit, settings, highlightWords, completeWords, helpWords, spellWords, snippets);
     tabWidgetSplit->hide();
     isSplitActive = false;
 
@@ -669,6 +670,7 @@ MainWindow::~MainWindow()
     delete completeWords;
     delete helpWords;
     delete spellWords;
+    delete snippets;
     delete ui;
 }
 

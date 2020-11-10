@@ -21,6 +21,7 @@
 #include "completewords.h"
 #include "helpwords.h"
 #include "spellwords.h"
+#include "snippets.h"
 #include "tooltip.h"
 #include "parsephp.h"
 #include "parsejs.h"
@@ -33,7 +34,7 @@ class Editor : public QTextEdit
 {
     Q_OBJECT
 public:
-    Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, QWidget * parent = nullptr);
+    Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, Snippets * snippets, QWidget * parent = nullptr);
     ~Editor() override;
     void init();
     void lineNumberAreaPaintEvent(QPaintEvent *event);
@@ -226,6 +227,7 @@ private:
     HighlightWords * HW;
     HelpWords * HPW;
     SpellWords * SW;
+    Snippets * SNP;
     int tabIndex;
     std::string tabWidthStr;
     std::string tabTypeStr;
@@ -396,12 +398,6 @@ private:
     QString multiSelectInsertText;
     QList<QTextCursor> multiSelectCursors;
     QTextCursor multiSelectCursor;
-
-    QHash<QString, QString> phpSnippets;
-    QHash<QString, QString> jsSnippets;
-    QHash<QString, QString> cssSnippets;
-    QHash<QString, QString> htmlSnippets;
-
     int inputEventKey; // workaround for Android
     QTimer mousePressTimer;
 signals:

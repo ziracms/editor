@@ -60,6 +60,7 @@ SOURCES += \
     src/parsecss.cpp \
     src/parse.cpp \
     src/navigator.cpp \
+    src/snippets.cpp \
     src/style.cpp \
     src/tabslist.cpp \
     src/terminalinterface.cpp \
@@ -114,6 +115,7 @@ HEADERS += \
     include/parsecss.h \
     include/parse.h \
     include/navigator.h \
+    include/snippets.h \
     include/style.h \
     include/tabslist.h \
     include/terminalinterface.h \

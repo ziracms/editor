@@ -314,13 +314,17 @@ QString Settings::getDefaultSnippets()
         << "// @doc"
         << "[{html:@doc}] = [[<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n\\t<meta charset=\"UTF-8\" />\\n\\t<title></title>\\n</head>\\n<body>\\n\\t{$cursor}\\n</body>\\n</html>]]"
         << "// @font"
-        << "[{css:@font}] = [[@font-face {\\n\\tfont-family: Roboto;\\n\\tsrc: url({$cursor});\\n}]]"
+        << "[{css:@font}] = [[@font-face {\\n\\tfont-family: {$selectStart}Roboto{$selectEnd};\\n\\tsrc: url();\\n}]]"
         << "// @media"
-        << "[{css:@media}] = [[@media only screen and (max-width: 767px){\\n\\t{$cursor}\\n}]]"
+        << "[{css:@media}] = [[@media only screen and (max-width: {$selectStart}767{$selectEnd}px){\\n\\t\\n}]]"
         << "// @for"
         << "[{js:@for}] = [[for (var i=0; i<{$cursor}; i++){\\n\\t\\n}]]"
         << "// @for"
         << "[{php:@for}] = [[for ($i=0; $i<{$cursor}; $i++){\\n\\t\\n}]]"
+        << "// @cls"
+        << "[{php:@cls}] = [[class {$selectStart}MyClassNameInsert{$selectEnd} {\\n\\t public function __construct() {\\n\\t\\n\\t}\\n}]]"
+        << "// @cls"
+        << "[{html:@cls}] = [[<?php\\n/**\\n * Class MyClassNameInsert\\n */\\n\\nclass {$multiSelectStart}MyClassNameInsert{$multiSelectEnd} {\\n\\t public function __construct() {\\n\\t\\n\\t}\\n}]]"
     ;
     return snippets.join("\n\n");
 }
