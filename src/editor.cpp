@@ -478,6 +478,10 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     std::string drawLongLineMarkerStr = settings->get("editor_long_line_marker_enabled");
     if (drawLongLineMarkerStr == "yes") drawLongLineMarker = true;
 
+    drawIndentGuideLines = false;
+    std::string drawIndentGuideLinesStr = settings->get("editor_indent_guide_lines_enabled");
+    if (drawIndentGuideLinesStr == "yes") drawIndentGuideLines = true;
+
     // cursor is not set to default sometimes
     horizontalScrollBar()->setCursor(Qt::ArrowCursor);
     verticalScrollBar()->setCursor(Qt::ArrowCursor);
@@ -525,6 +529,7 @@ void Editor::setTabsSettings()
     */
     setTabStopDistance(tabWidth * fm.horizontalAdvance(" "));
     tabType = tabTypeStr;
+    tabWidthPixels = 0;
     if (detectTabTypeStr == "yes") detectTabType = true;
     else detectTabType = false;
 }
@@ -730,9 +735,69 @@ bool Editor::isReady()
     return is_ready;
 }
 
-void Editor::paintEvent(QPaintEvent *e)
+void Editor::paintEvent(QPaintEvent * event)
 {
     if (highlight->isDirty()) return;
+
+    QPainter painter(viewport());
+
+    if (drawIndentGuideLines && tabWidthPixels > 0) {
+        QPen pen(widgetBorderColor);
+        pen.setStyle(Qt::DotLine);
+        painter.setPen(pen);
+
+        int blockNumber = getFirstVisibleBlockIndex();
+        if (blockNumber < 0) return;
+        if (blockNumber>0) blockNumber--;
+
+        QTextBlock block = document()->findBlockByNumber(blockNumber);
+        //int top = contentsMargins().top();
+        int top = 0; // widget has offset
+
+        if (blockNumber == 0) {
+            top += static_cast<int>(document()->documentMargin()) - verticalScrollBar()->sliderPosition();
+        } else {
+            QTextBlock prev_block = document()->findBlockByNumber(blockNumber-1);
+            int prev_y = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).y());
+            int prev_h = static_cast<int>(document()->documentLayout()->blockBoundingRect(prev_block).height());
+            top += prev_y + prev_h - verticalScrollBar()->sliderPosition();
+        }
+
+        int bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
+
+        int scrollX = horizontalScrollBar()->value();
+
+        while (block.isValid() && top <= event->rect().bottom()) {
+            if (block.isVisible() && block.blockNumber() > 0) {
+                int braces = 0;
+                QString blockText = block.text();
+                if (blockText.size() != 0) {
+                    QString prefix = "";
+                    for (int i=0; i<blockText.size(); i++) {
+                        QChar c = blockText[i];
+                        if (iswspace(c.toLatin1())) {
+                            prefix += c;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (prefix.size() > 0) {
+                        prefix = prefix.replace("\t", QString(" ").repeated(tabWidth));
+                        braces = static_cast<int>(ceil(prefix.size() * 1.0 / tabWidth) - 1);
+                    }
+                }
+                if (braces > 0) {
+                    for (int i=1; i <= braces; i++) {
+                        painter.drawLine(document()->documentMargin() + tabWidthPixels*i-scrollX, top, document()->documentMargin() + tabWidthPixels*i-scrollX, bottom);
+                    }
+                }
+            }
+            block = block.next();
+            top = bottom;
+            bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
+            blockNumber++;
+        }
+    }
 
     if (drawLongLineMarker) {
         QFontMetrics fm(font());
@@ -743,14 +808,13 @@ void Editor::paintEvent(QPaintEvent *e)
         int longMarkerX = fm.horizontalAdvance(QString("w").repeated(LONG_LINE_CHARS_COUNT));
         int scrollX = horizontalScrollBar()->value();
 
-        QPainter painter(viewport());
         QPen pen(widgetBorderColor);
         pen.setStyle(Qt::DotLine);
         painter.setPen(pen);
         painter.drawLine(longMarkerX-scrollX, 0, longMarkerX-scrollX, viewport()->geometry().height());
     }
 
-    QTextEdit::paintEvent(e);
+    QTextEdit::paintEvent(event);
 }
 
 void Editor::setParseResult(ParsePHP::ParseResult result)
@@ -973,7 +1037,11 @@ bool Editor::isOverwrite()
 
 void Editor::detectTabsMode()
 {
-    if (!detectTabType) return;
+    QFontMetrics fm(font());
+    if (!detectTabType) {
+        tabWidthPixels = tabType == "spaces" ? fm.horizontalAdvance(QString(" ").repeated(tabWidth)) : tabStopDistance();
+        return;
+    }
     QTextCursor curs = textCursor();
     curs.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
     int indentPos = -1;
@@ -1027,6 +1095,7 @@ void Editor::detectTabsMode()
             indentPos = -1;
         }
     } while(curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor));
+    tabWidthPixels = tabType == "spaces" ? fm.horizontalAdvance(QString(" ").repeated(tabWidth)) : tabStopDistance();
 }
 
 void Editor::convertNewLines(QString & txt)

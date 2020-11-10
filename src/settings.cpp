@@ -57,6 +57,7 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"editor_show_annotations", "yes"},
         {"editor_parse_interval", "5000"},
         {"editor_long_line_marker_enabled", "yes"},
+        {"editor_indent_guide_lines_enabled", "yes"},
         {"editor_wrap_long_lines", "no"},
         {"highlight_spaces", "no"},
         {"highlight_tabs", "no"},

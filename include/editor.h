@@ -233,6 +233,7 @@ private:
     std::string tabTypeStr;
     std::string detectTabTypeStr;
     int tabWidth;
+    int tabWidthPixels;
     std::string tabType;
     bool detectTabType;
     std::string newLineMode;
@@ -390,6 +391,7 @@ private:
     int highlightProgressPercent;
     int spellProgressPercent;
     bool drawLongLineMarker;
+    bool drawIndentGuideLines;
     bool wrapLines;
     int firstVisibleBlockIndex;
     int lastVisibleBlockIndex;
