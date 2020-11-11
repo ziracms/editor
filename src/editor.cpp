@@ -771,7 +771,7 @@ void Editor::paintEvent(QPaintEvent * event)
         int prevBraces = 0;
 
         while (block.isValid() && top <= event->rect().bottom()) {
-            if (block.isVisible() && block.blockNumber() > 0) {
+            if (block.isVisible()) {
                 int braces = 0;
                 QString blockText = block.text();
                 if (blockText.size() != 0) {
