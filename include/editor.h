@@ -274,6 +274,7 @@ private:
     QColor breadcrumbsErrorBgColor;
     QColor breadcrumbsColor;
     QColor widgetBorderColor;
+    QColor indentGuideLineColor;
     QColor selectedLineBgColor;
     QColor selectedWordBgColor;
     QColor selectedCharBgColor;

@@ -148,6 +148,7 @@ void Settings::applyLightColors()
     data["editor_breadcrumbs_error_bg_color"] = "#ff83ab";
     data["editor_breadcrumbs_color"] = "#333333";
     data["editor_widget_border_color"] = "#98c6ff";
+    data["editor_indent_guide_line_color"] = "#e2e2e2";
     data["editor_selected_line_bg_color"] = "#fef8ff";
     data["editor_selected_word_bg_color"] = "#fffac7";
     data["editor_selected_char_bg_color"] = "#c1ffba";
@@ -228,6 +229,7 @@ void Settings::applyDarkColors()
     data["editor_breadcrumbs_error_bg_color"] = "#1d181a";
     data["editor_breadcrumbs_color"] = "#cccccc";
     data["editor_widget_border_color"] = "#15365f";
+    data["editor_indent_guide_line_color"] = "#232627";
     data["editor_selected_line_bg_color"] = "#1f1d23";
     data["editor_selected_word_bg_color"] = "#422a58";
     data["editor_selected_char_bg_color"] = "#65b544";

@@ -169,6 +169,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     std::string breadcrumbsErrorBgColorStr = settings->get("editor_breadcrumbs_error_bg_color");
     std::string breadcrumbsColorStr = settings->get("editor_breadcrumbs_color");
     std::string widgetBorderColorStr = settings->get("editor_widget_border_color");
+    std::string indentGuideLineColorStr = settings->get("editor_indent_guide_line_color");
     std::string selectedLineBgColorStr = settings->get("editor_selected_line_bg_color");
     std::string selectedWordBgColorStr = settings->get("editor_selected_word_bg_color");
     std::string selectedCharBgColorStr = settings->get("editor_selected_char_bg_color");
@@ -206,6 +207,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     breadcrumbsErrorBgColor = QColor(breadcrumbsErrorBgColorStr.c_str());
     breadcrumbsColor = QColor(breadcrumbsColorStr.c_str());
     widgetBorderColor = QColor(widgetBorderColorStr.c_str());
+    indentGuideLineColor = QColor(indentGuideLineColorStr.c_str());
     selectedLineBgColor = QColor(selectedLineBgColorStr.c_str());
     selectedWordBgColor = QColor(selectedWordBgColorStr.c_str());
     selectedCharBgColor = QColor(selectedCharBgColorStr.c_str());
@@ -742,8 +744,8 @@ void Editor::paintEvent(QPaintEvent * event)
     QPainter painter(viewport());
 
     if (drawIndentGuideLines && tabWidthPixels > 0) {
-        QPen pen(widgetBorderColor);
-        pen.setStyle(Qt::DotLine);
+        QPen pen(indentGuideLineColor);
+        pen.setStyle(Qt::SolidLine);
         painter.setPen(pen);
 
         int blockNumber = getFirstVisibleBlockIndex();
@@ -766,6 +768,7 @@ void Editor::paintEvent(QPaintEvent * event)
         int bottom = top + static_cast<int>(document()->documentLayout()->blockBoundingRect(block).height());
 
         int scrollX = horizontalScrollBar()->value();
+        int prevBraces = 0;
 
         while (block.isValid() && top <= event->rect().bottom()) {
             if (block.isVisible() && block.blockNumber() > 0) {
@@ -785,6 +788,9 @@ void Editor::paintEvent(QPaintEvent * event)
                         prefix = prefix.replace("\t", QString(" ").repeated(tabWidth));
                         braces = static_cast<int>(ceil(prefix.size() * 1.0 / tabWidth) - 1);
                     }
+                    prevBraces = braces;
+                } else {
+                    braces = prevBraces;
                 }
                 if (braces > 0) {
                     for (int i=1; i <= braces; i++) {
