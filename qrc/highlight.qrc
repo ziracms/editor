@@ -9,5 +9,6 @@
         <file alias="css_keys">resources/highlight/css/keywords</file>
         <file alias="css_spec">resources/highlight/css/special</file>
         <file alias="css_pseudo">resources/highlight/css/pseudo</file>
+        <file alias="general_keys">resources/highlight/general/keywords</file>
     </qresource>
 </RCC>

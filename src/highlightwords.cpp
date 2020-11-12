@@ -122,6 +122,7 @@ void HighlightWords::load()
     loadPHPWords();
     loadJSWords();
     loadCSSWords();
+    loadGeneralWords();
 }
 
 void HighlightWords::reload()
@@ -242,6 +243,22 @@ void HighlightWords::loadCSSWords()
         csswords[k.toStdString()] = pseudoClassFormat;
     }
     tf.close();
+}
+
+void HighlightWords::loadGeneralWords()
+{
+    QString k;
+
+    // keywords
+    QFile kf(":/highlight/general_keys");
+    kf.open(QIODevice::ReadOnly);
+    QTextStream kin(&kf);
+    while (!kin.atEnd()) {
+        k = kin.readLine();
+        if (k == "") continue;
+        generalwords[k.toStdString()] = keywordFormat;
+    }
+    kf.close();
 }
 
 void HighlightWords::addPHPClass(QString k)

@@ -40,10 +40,16 @@ const int STATE_REGEXP_JS = 18;
 const int STATE_EXPRESSION_JS = 19;
 const int STATE_EXPRESSION_PHP = 20;
 const int STATE_COMMENT_SL_UNKNOWN = 21;
+const int STATE_COMMENT_ML_UNKNOWN = 22;
+const int STATE_STRING_SQ_UNKNOWN = 23;
+const int STATE_STRING_DQ_UNKNOWN = 24;
 
 const QString EXTENSION_DART = "dart";
-const QString EXTENSION_YAML = "yaml";
 const QString EXTENSION_INI = "ini";
+const QString EXTENSION_TXT = "txt";
+
+const QString CMAKE_LISTS_FILENAME = "CMakeLists";
+const QString ROBOTS_FILENAME = "robots";
 
 const int EXTRA_HIGHLIGHT_BLOCKS_COUNT = 100; // should be >= 1
 
@@ -100,6 +106,7 @@ Highlight::Highlight(Settings * settings, HighlightWords * hWords, QTextDocument
     isBigFile = false;
     extension = "";
     jsExtMode = "";
+    fileName = "";
 
     HW = hWords;
 }
@@ -200,17 +207,22 @@ void Highlight::reset()
     commentMLOpenedPHP = -1;
     commentMLOpenedCSS = -1;
     commentSLOpenedUnknown = -1;
+    stringSQOpenedUnknown = -1;
+    stringDQOpenedUnknown = -1;
+    commentMLOpenedUnknown = -1;
     commentJSStringML = "";
     commentPHPStringML = "";
     commentJSStringSL = "";
     commentPHPStringSL = "";
     commentCSSStringML = "";
     commentUnknownStringSL = "";
+    commentUnknownStringML = "";
     stringEscStringCSS = "";
     stringEscStringJS = "";
     prevStringEscStringCSS = "";
     prevStringEscStringJS = "";
     stringEscStringPHP = "";
+    stringEscStringUnknown = "";
     stringBExpect = -1;
     regexpOpenedJS = -1;
     regexpEscStringJS = "";
@@ -220,10 +232,12 @@ void Highlight::reset()
     keywordStringCSS = "";
     keywordStringPHP = "";
     keywordStringHTML = "";
+    keywordStringUnknown = "";
     keywordJSOpened = -1;
     keywordCSSOpened = -1;
     keywordPHPOpened = -1;
     keywordHTMLOpened = -1;
+    keywordUnknownOpened = -1;
     exprOpenedPHP = -1;
     exprOpenedJS = -1;
     exprEscStringPHP = "";
@@ -243,6 +257,7 @@ void Highlight::reset()
     prevStringEscVariableJS = "";
     keywordHTMLprevChar = "";
     keywordHTMLprevPrevChar = "";
+    keywordUnknownprevChar = "";
     bracesCSS = 0;
     bracesJS = 0;
     bracesPHP = 0;
@@ -375,15 +390,28 @@ void Highlight::resetMode()
     foundModes.clear();
     extension = "";
     jsExtMode = "";
+    fileName = "";
 }
 
-void Highlight::setIsBigFile(bool isBig) {
+void Highlight::setIsBigFile(bool isBig)
+{
     isBigFile = isBig;
 }
 
 QString Highlight::getJsExtMode()
 {
     return jsExtMode;
+}
+
+void Highlight::setFileName(QString name)
+{
+    fileName = name;
+}
+
+bool Highlight::isTextMode()
+{
+    if (modeType != MODE_UNKNOWN) return false;
+    return extension.size() == 0 || (extension == EXTENSION_TXT && fileName != ROBOTS_FILENAME && fileName != CMAKE_LISTS_FILENAME);
 }
 
 void Highlight::initMode(QString ext, int lastBlockNumber)
@@ -1494,21 +1522,130 @@ bool Highlight::detectExpressionPHP(const QChar c, int pos)
     return false;
 }
 
+bool Highlight::detectStringSQUnknown(const QChar c, int pos)
+{
+    bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
+    if (!opened && c == "'") {
+        stringSQOpenedUnknown = pos;
+        state = STATE_STRING_SQ_UNKNOWN;
+        stringEscStringUnknown = "";
+        return true;
+    } else if (stringSQOpenedUnknown >= 0 && c == "'" && stringEscStringUnknown.size()%2 == 0) {
+        stringSQOpenedUnknown = -1;
+        state = STATE_NONE;
+        stringEscStringUnknown = "";
+        return true;
+    } else if (stringSQOpenedUnknown >= 0 && c == "\\") {
+        stringEscStringUnknown += c;
+    } else if (stringSQOpenedUnknown >= 0) {
+        stringEscStringUnknown = "";
+    }
+    return false;
+}
+
+bool Highlight::detectStringDQUnknown(const QChar c, int pos)
+{
+    bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
+    if (!opened && c == "\"") {
+        stringDQOpenedUnknown = pos;
+        state = STATE_STRING_DQ_UNKNOWN;
+        stringEscStringUnknown = "";
+        return true;
+    } else if (stringDQOpenedUnknown >= 0 && c == "\"" && stringEscStringUnknown.size()%2 == 0) {
+        stringDQOpenedUnknown = -1;
+        state = STATE_NONE;
+        stringEscStringUnknown = "";
+        return true;
+    } else if (stringDQOpenedUnknown >= 0 && c == "\\") {
+        stringEscStringUnknown += c;
+    } else if (stringDQOpenedUnknown >= 0) {
+        stringEscStringUnknown = "";
+    }
+    return false;
+}
+
 bool Highlight::detectSLCommentUnknown(const QChar c, int pos)
 {
-    bool opened = commentSLOpenedUnknown >= 0;
-    if (!opened && commentUnknownStringSL.trimmed().size()==0) {
-        if (c == ";" || c == "#") {
+    bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
+    if (!opened && commentUnknownStringSL.size()==0 && (c == "/" || c == "#" || (c == ";" && extension == EXTENSION_INI))) {
+        if (c == "#" || (c == ";" && extension == EXTENSION_INI)) {
             commentUnknownStringSL = "";
             commentSLOpenedUnknown = pos;
             state = STATE_COMMENT_SL_UNKNOWN;
             return true;
         } else {
-            commentUnknownStringSL += c;
+            commentUnknownStringSL = c;
+        }
+    } else if (!opened && commentUnknownStringSL.size()==1) {
+        commentUnknownStringSL += c;
+        if (commentUnknownStringSL=="//") {
+            commentUnknownStringSL = "";
+            commentSLOpenedUnknown = pos;
+            state = STATE_COMMENT_SL_UNKNOWN;
+            return true;
+        } else {
+            commentUnknownStringSL = "";
         }
     }
 
     return false;
+}
+
+bool Highlight::detectMLCommentUnknown(const QChar c, int pos)
+{
+    bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
+    if (!opened && commentUnknownStringML.size()==0 && c == "/") {
+        commentUnknownStringML = c;
+    } else if (!opened && commentUnknownStringML.size()==1) {
+        commentUnknownStringML += c;
+        if (commentUnknownStringML=="/*") {
+            commentUnknownStringML = "";
+            commentMLOpenedUnknown = pos;
+            state = STATE_COMMENT_ML_UNKNOWN;
+            return true;
+        } else {
+            commentUnknownStringML = "";
+        }
+    } else if (commentMLOpenedUnknown >= 0 && c == "*") {
+        commentUnknownStringML = c;
+    } else if (commentMLOpenedUnknown >= 0 && commentUnknownStringML.size()==1) {
+        commentUnknownStringML += c;
+        if (commentUnknownStringML == "*/") {
+            commentUnknownStringML = "";
+            commentMLOpenedUnknown = -1;
+            state = STATE_NONE;
+            return true;
+        } else {
+            commentUnknownStringML = "";
+        }
+    }
+
+    return false;
+}
+
+int Highlight::detectKeywordUnknown(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
+    if (!isAlpha && c == "-") isAlpha = true;
+    if (!isAlnum && c == "-") isAlnum = true;
+    bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0 || keywordUnknownOpened >= 0;
+    if (!opened && keywordUnknownOpened!=-2 && isAlnum && !isAlpha) {
+        keywordUnknownOpened = -2;
+    } else if (!opened && keywordUnknownOpened==-2 && !isAlnum) {
+        keywordUnknownOpened = -1;
+        keywordUnknownprevChar = c;
+    } else if (!opened && keywordUnknownOpened!=-2 && isAlpha) {
+        keywordStringUnknown = c;
+        keywordUnknownOpened = pos;
+    } else if (keywordUnknownOpened>=0 && isAlnum) {
+        keywordStringUnknown += c;
+    } else if (keywordUnknownOpened<0) {
+        keywordUnknownprevChar = c;
+    }
+    if (keywordUnknownOpened>=0 && (!isAlnum || isLast)) {
+        int kOpened = keywordUnknownOpened;
+        keywordUnknownOpened = -1;
+        return kOpened;
+    }
+    return -1;
 }
 
 void Highlight::restoreState() {
@@ -1691,6 +1828,15 @@ void Highlight::restoreState() {
     }
     if (state == STATE_EXPRESSION_JS || prevState == STATE_EXPRESSION_JS) {
         exprOpenedJS = 0;
+    }
+    if (state == STATE_STRING_SQ_UNKNOWN) {
+        stringSQOpenedUnknown = 0;
+    }
+    if (state == STATE_STRING_DQ_UNKNOWN) {
+        stringDQOpenedUnknown = 0;
+    }
+    if (state == STATE_COMMENT_ML_UNKNOWN) {
+        commentMLOpenedUnknown = 0;
     }
     if (state == STATE_COMMENT_SL_UNKNOWN) {
         state = STATE_NONE;
@@ -3248,23 +3394,96 @@ void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, boo
     }
 }
 
-void Highlight::parseUnknown(const QChar &c, int pos)
+void Highlight::parseUnknown(const QChar &c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordUnknownStartPrev, int & keywordUnknownLengthPrev)
 {
     if (mode != MODE_UNKNOWN) return;
 
-    // comments (whole-line)
-    detectSLCommentUnknown(c, pos);
-    if (commentSLOpenedUnknown>=0) {
-        highlightChar(pos, HW->singleLineCommentFormat);
+    bool stringSQchangedUnknown = false;
+    bool stringDQchangedUnknown = false;
+    bool commentsSLchangedUnknown = false;
+    bool commentsMLchangedUnknown = false;
+
+    if (!isTextMode()) {
+        // string (single quote)
+        stringSQchangedUnknown = detectStringSQUnknown(c, pos);
+        if ((stringSQOpenedUnknown>=0 && state == STATE_STRING_SQ_UNKNOWN) || stringSQchangedUnknown) {
+            highlightChar(pos, HW->stringFormat);
+        }
+
+        // string (double quote)
+        stringDQchangedUnknown = detectStringDQUnknown(c, pos);
+        if ((stringDQOpenedUnknown>=0 && state == STATE_STRING_DQ_UNKNOWN)|| stringDQchangedUnknown) {
+            highlightChar(pos, HW->stringFormat);
+        }
+
+        // comments (single-line)
+        commentsSLchangedUnknown = detectSLCommentUnknown(c, pos);
+        if (commentSLOpenedUnknown>=0 || commentsSLchangedUnknown) {
+            highlightChar(pos, HW->singleLineCommentFormat);
+            if (commentSLOpenedUnknown>=0 && commentsSLchangedUnknown && pos>0 && c != "#" && c != ";") {
+                highlightChar(pos-1, HW->singleLineCommentFormat);
+            }
+        }
+
+        // comments (multi-line)
+        commentsMLchangedUnknown = detectMLCommentUnknown(c, pos);
+        if ((commentMLOpenedUnknown>=0 && state == STATE_COMMENT_ML_UNKNOWN)|| commentsMLchangedUnknown) {
+            highlightChar(pos, HW->multiLineCommentFormat);
+            if (commentMLOpenedUnknown>=0 && state == STATE_COMMENT_ML_UNKNOWN && commentsMLchangedUnknown && pos>0) {
+                highlightChar(pos-1, HW->multiLineCommentFormat);
+            }
+        }
+
+        // keywords
+        int keywordUnknownStart = detectKeywordUnknown(c, pos, isAlpha, isAlnum, isLast);
+        if (keywordUnknownStart>=0) {
+            int keywordUnknownLength = pos-keywordUnknownStart;
+            if (isLast && (isAlnum || c == "-")) keywordUnknownLength += 1;
+            bool known = false;
+            if (keywordStringUnknown.size()>0) {
+                // general keywords
+                HW->generalwordsIterator = HW->generalwords.find(keywordStringUnknown.toLower().toStdString());
+                if (HW->generalwordsIterator != HW->generalwords.end()) {
+                    QTextCharFormat format = HW->generalwordsIterator->second;
+                    highlightString(keywordUnknownStart, keywordUnknownLength, format);
+                    keywordUnknownStart = -1;
+                    known = true;
+                }
+            }
+            if (!known && !isBigFile) {
+                if (keywordUnknownprevChar == "@") {
+                    highlightString(keywordUnknownStart, keywordUnknownLength, HW->punctuationFormat);
+                } else if (keywordJSprevChar != "." && c == ":") {
+                    highlightString(keywordUnknownStart, keywordUnknownLength, HW->propertyFormat);
+                }
+            }
+            if (keywordUnknownprevChar != ".") {
+                keywordUnknownStartPrev = keywordUnknownStart;
+                keywordUnknownLengthPrev = keywordUnknownLength;
+            }
+            keywordUnknownprevChar = c;
+        }
+    }
+    if (keywordUnknownStartPrev>=0 && keywordUnknownLengthPrev>0) {
+        // functions
+        if (c == "(") {
+            highlightString(keywordUnknownStartPrev, keywordUnknownLengthPrev, HW->functionFormat);
+        }
+        if (!isWSpace) {
+            if (!isAlnum && c != "-") {
+                keywordUnknownStartPrev = -1;
+                keywordUnknownLengthPrev = -1;
+            }
+        }
     }
 
-    if (commentSLOpenedUnknown < 0) {
+    if (stringSQOpenedUnknown < 0 && stringDQOpenedUnknown < 0 && commentSLOpenedUnknown < 0 && commentMLOpenedUnknown < 0 && !commentsMLchangedUnknown && !commentsSLchangedUnknown && !stringSQchangedUnknown && !stringDQchangedUnknown) {
         if (highlightTabs && c == "\t") {
             highlightChar(pos, HW->tabFormat);
         } else if (highlightSpaces && c == " ") {
             highlightChar(pos, HW->spaceFormat);
         }
-        if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@" || c == "&" || c == "<" || c == ">" || c == "." || c == "*" || c == "/" || c == "?" || c == ":" || c == "%" || c == "$" || c == "^" || c == "#" || c == "@" || c == "!" || c == "-" || c == "=" || c == "+" || c == "'" || c == "\"" || c == "|" || c == "~" || c == "`")) {
+        if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@" || c == "&" || c == "<" || c == ">" || c == "." || c == "?" || c == ":" || c == "%" || c == "$" || c == "^" || c == "#" || c == "@" || c == "!" || c == "'" || c == "\"" || c == "|" || c == "~" || c == "`")) {
             highlightChar(pos, HW->punctuationFormat);
         }
     }
@@ -3635,7 +3854,7 @@ bool Highlight::parseBlock(const QString & text)
 
     std::string pMode = mode;
     int pState = state;
-    int keywordCSSStartPrev = -1, keywordCSSLengthPrev = -1, keywordJSStartPrev = -1, keywordJSLengthPrev = -1, keywordPHPStartPrev = -1, keywordPHPLengthPrev = -1;
+    int keywordCSSStartPrev = -1, keywordCSSLengthPrev = -1, keywordJSStartPrev = -1, keywordJSLengthPrev = -1, keywordPHPStartPrev = -1, keywordPHPLengthPrev = -1, keywordUnknownStartPrev = -1, keywordUnknownLengthPrev = -1;
     bool cssValuePart = true;
     QChar prevC = '\0';
     for (int i=0; i<text.size(); i++) {
@@ -3661,7 +3880,7 @@ bool Highlight::parseBlock(const QString & text)
         parsePHP(c, i, isAlpha, isAlnum, isWSpace, isLast, keywordPHPStartPrev, keywordPHPLengthPrev);
 
         // unknown
-        parseUnknown(c, i);
+        parseUnknown(c, i, isAlpha, isAlnum, isWSpace, isLast, keywordUnknownStartPrev, keywordUnknownLengthPrev);
 
         // state changes
         updateState(c, i, pState);

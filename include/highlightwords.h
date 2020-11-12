@@ -73,10 +73,13 @@ public:
     std::unordered_map<std::string, QTextCharFormat>::iterator htmlwordsIterator;
     std::unordered_map<std::string, QTextCharFormat> htmlshorts;
     std::unordered_map<std::string, QTextCharFormat>::iterator htmlshortsIterator;
+    std::unordered_map<std::string, QTextCharFormat> generalwords;
+    std::unordered_map<std::string, QTextCharFormat>::iterator generalwordsIterator;
 protected:
     void loadPHPWords();
     void loadJSWords();
     void loadCSSWords();
+    void loadGeneralWords();
 public slots:
     void load();
 };

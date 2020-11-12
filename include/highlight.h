@@ -38,10 +38,13 @@ extern const int STATE_STRING_DQ_CSS;
 extern const int STATE_TAG;
 extern const int STATE_REGEXP_JS;
 extern const int STATE_COMMENT_SL_UNKNOWN;
+extern const int STATE_COMMENT_ML_UNKNOWN;
+extern const int STATE_STRING_SQ_UNKNOWN;
+extern const int STATE_STRING_DQ_UNKNOWN;
 
 extern const QString EXTENSION_DART;
-extern const QString EXTENSION_YAML;
 extern const QString EXTENSION_INI;
+extern const QString EXTENSION_TXT;
 
 class Highlight : public QObject
 {
@@ -78,6 +81,8 @@ public:
     void setIsBigFile(bool isBig);
     QStringList getFoundModes();
     QString getJsExtMode();
+    void setFileName(QString name);
+    bool isTextMode();
 
     std::unordered_map<std::string, int> unusedVars;
     std::unordered_map<std::string, int>::iterator unusedVarsIterator;
@@ -107,10 +112,13 @@ protected:
     bool detectStringDQJS(const QChar c, int pos);
     bool detectStringSQPHP(const QChar c, int pos);
     bool detectStringDQPHP(const QChar c, int pos);
+    bool detectStringSQUnknown(const QChar c, int pos);
+    bool detectStringDQUnknown(const QChar c, int pos);
     bool detectRegexpJS(const QChar c, int pos, bool isWSPace, bool isAlnum);
     bool detectMLCommentCSS(const QChar c, int pos);
     bool detectMLCommentJS(const QChar c, int pos);
     bool detectMLCommentPHP(const QChar c, int pos);
+    bool detectMLCommentUnknown(const QChar c, int pos);
     bool detectSLCommentJS(const QChar c, int pos);
     bool detectSLCommentPHP(const QChar c, int pos);
     bool detectSLCommentUnknown(const QChar c, int pos);
@@ -119,6 +127,7 @@ protected:
     int detectKeywordPHP(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast, bool forceDetect);
     int detectKeywordCSS(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast);
     int detectKeywordHTML(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast);
+    int detectKeywordUnknown(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast);
     bool detectExpressionPHP(const QChar c, int pos);
     bool detectExpressionJS(const QChar c, int pos);
     bool parseMode(const QChar & c, int pos, bool isWSpace, bool isLast, std::string & pMode, int & pState);
@@ -126,7 +135,7 @@ protected:
     void parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordCSSStartPrev, int & keywordCSSLengthPrev, bool & cssValuePart);
     void parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordJSStartPrev, int & keywordJSLengthPrev);
     void parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordPHPStartPrev, int & keywordPHPLengthPrev);
-    void parseUnknown(const QChar & c, int pos);
+    void parseUnknown(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordUnknownStartPrev, int & keywordUnknownLengthPrev);
     void updateState(const QChar & c, int pos, int & pState);
     void openBlockDataLists();
     void closeBlockDataLists(int textSize);
@@ -184,6 +193,7 @@ private:
     std::string modeType;
     std::string mode;
     QString extension;
+    QString fileName;
     QString jsExtMode;
     std::string prevMode;
     QVector<int> modeStarts;
@@ -234,6 +244,9 @@ private:
     int commentMLOpenedPHP;
     int commentMLOpenedCSS;
     int commentSLOpenedUnknown;
+    int commentMLOpenedUnknown;
+    int stringSQOpenedUnknown;
+    int stringDQOpenedUnknown;
     QString stringEscStringCSS;
     QString stringEscStringJS;
     QString prevStringEscStringCSS;
@@ -246,6 +259,8 @@ private:
     QString commentPHPStringSL;
     QString commentCSSStringML;
     QString commentUnknownStringSL;
+    QString commentUnknownStringML;
+    QString stringEscStringUnknown;
     int regexpOpenedJS;
     QString regexpEscStringJS;
     QString prevRegexpEscStringJS;
@@ -254,10 +269,12 @@ private:
     QString keywordStringCSS;
     QString keywordStringPHP;
     QString keywordStringHTML;
+    QString keywordStringUnknown;
     int keywordJSOpened;
     int keywordCSSOpened;
     int keywordPHPOpened;
     int keywordHTMLOpened;
+    int keywordUnknownOpened;
     int exprOpenedPHP;
     int exprOpenedJS;
     QString exprEscStringPHP;
@@ -275,6 +292,7 @@ private:
     QString stringEscVariablePHP;
     QString keywordHTMLprevChar;
     QString keywordHTMLprevPrevChar;
+    QString keywordUnknownprevChar;
     int keywordPHPScopedOpened;
     bool keywordPHPScoped;
     int keywordJSScopedOpened;

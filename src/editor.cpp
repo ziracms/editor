@@ -617,6 +617,7 @@ void Editor::setFileName(QString name)
     QFileInfo fInfo(fileName);
     QDateTime dtModified = fInfo.lastModified();
     lastModifiedMsec = dtModified.time().msec();
+    highlight->setFileName(fInfo.baseName());
 }
 
 QString Editor::getFileName()
@@ -2883,7 +2884,7 @@ void Editor::spellCheck(bool suggest, bool forceRehighlight)
                 if (mode == MODE_JS && state != STATE_COMMENT_ML_JS) continue;
                 if (mode == MODE_CSS && state != STATE_COMMENT_ML_CSS) continue;
                 if (mode == MODE_HTML && state != STATE_NONE) continue;
-                if (mode == MODE_UNKNOWN && (extension == EXTENSION_YAML || extension == EXTENSION_INI) && state != STATE_COMMENT_SL_UNKNOWN) continue;
+                if (mode == MODE_UNKNOWN && !highlight->isTextMode() && state != STATE_COMMENT_ML_UNKNOWN) continue;
                 bool doSuggest = suggest;
                 if (word.size() < 4) doSuggest = false;
                 if (mode != MODE_HTML && mode != MODE_UNKNOWN) doSuggest = false;
