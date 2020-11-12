@@ -3560,6 +3560,7 @@ bool Highlight::parseBlock(const QString & text)
     if (blockData == nullptr) {
         blockData = new HighlightData();
         isNewBlock = true;
+        if (!firstRunMode) _isModified = true; // used by editor
     } else {
         isNewBlock = blockData->isNewBlock;
         _mode = blockData->mode.toStdString();
