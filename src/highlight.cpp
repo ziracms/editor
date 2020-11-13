@@ -47,6 +47,7 @@ const int STATE_STRING_DQ_UNKNOWN = 24;
 const QString EXTENSION_DART = "dart";
 const QString EXTENSION_INI = "ini";
 const QString EXTENSION_TXT = "txt";
+const QString EXTENSION_MD = "md";
 
 const QString CMAKE_LISTS_FILENAME = "CMakeLists";
 const QString ROBOTS_FILENAME = "robots";
@@ -411,7 +412,7 @@ void Highlight::setFileName(QString name)
 bool Highlight::isTextMode()
 {
     if (modeType != MODE_UNKNOWN) return false;
-    return extension.size() == 0 || (extension == EXTENSION_TXT && fileName != ROBOTS_FILENAME && fileName != CMAKE_LISTS_FILENAME);
+    return extension.size() == 0 || (extension == EXTENSION_TXT && fileName != ROBOTS_FILENAME && fileName != CMAKE_LISTS_FILENAME) || extension == EXTENSION_MD;
 }
 
 void Highlight::initMode(QString ext, int lastBlockNumber)
