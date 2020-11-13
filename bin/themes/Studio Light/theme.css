@@ -832,6 +832,11 @@ QTabBar::close-button
     subcontrol-position: right;
 }
 
+QTabBar::close-button:selected
+{
+    image: url($theme_dir/images/close-light.png);
+}
+
 QTabBar::close-button:hover
 {
     image: url($theme_dir/images/close-hover.png);
