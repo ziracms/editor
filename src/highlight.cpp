@@ -3501,13 +3501,15 @@ void Highlight::updateState(const QChar & c, int pos, int & pState)
             state == STATE_COMMENT_ML_CSS ||
             state == STATE_COMMENT_ML_JS ||
             state == STATE_COMMENT_ML_PHP ||
-            state == STATE_COMMENT_SL_JS
+            state == STATE_COMMENT_SL_JS ||
+            state == STATE_COMMENT_ML_UNKNOWN
         )) {
             stateStart = pos - 1;
         }
         if (state == STATE_COMMENT_SL_PHP && c != "#" && pos > 0) stateStart = pos - 1;
         if (state == STATE_COMMENT_ML_HTML) stateStart = commentHTMLOpened;
         if (state == STATE_STRING_HEREDOC || state == STATE_STRING_NOWDOC) stateStart = stringBStart;
+        if (state == STATE_COMMENT_SL_UNKNOWN && c != "#" && c != ";" && pos > 0) stateStart = pos - 1;
         stateStart++;
         if (stateStarts.size() > 0 && stateStarts.last() == stateStart &&
             stateStarts.size() == stateIds.size() && stateStarts.size() == stateEnds.size()
