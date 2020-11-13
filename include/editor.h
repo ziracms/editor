@@ -29,6 +29,7 @@
 #include "git.h"
 
 extern const int BIG_FILE_SIZE;
+extern const int TOO_BIG_FILE_SIZE;
 
 class Editor : public QTextEdit
 {

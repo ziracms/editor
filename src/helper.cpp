@@ -193,6 +193,12 @@ bool Helper::fileOrFolderExists(QString path)
     return check_file.exists();
 }
 
+qint64 Helper::getFileSize(QString path)
+{
+    QFileInfo fm(path);
+    return fm.size();
+}
+
 QString Helper::intToStr(int n)
 {
     std::stringstream ss;

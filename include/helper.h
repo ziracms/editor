@@ -46,6 +46,7 @@ public:
     static bool fileExists(QString path);
     static bool folderExists(QString path);
     static bool fileOrFolderExists(QString path);
+    static qint64 getFileSize(QString path);
     static QString intToStr(int n);
     static QString doubleToStr(double n);
     static QString stripScopedText(QString scopedText);

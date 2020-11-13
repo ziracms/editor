@@ -70,6 +70,7 @@ const QString TOOLTIP_COLOR_TPL = "<span style=\"background:%1;\">&nbsp;&nbsp;&n
 
 const int SEARCH_LIMIT = 10000;
 const int BIG_FILE_SIZE = 512000;
+const int TOO_BIG_FILE_SIZE = 1048576;
 
 const int LONG_LINE_CHARS_COUNT = 72;
 const int FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE = 300;

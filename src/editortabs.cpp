@@ -13,6 +13,8 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 #include <QShortcut>
+#include <iomanip>
+#include <sstream>
 #include "fileiconprovider.h"
 
 EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, Snippets * snippets):
@@ -65,6 +67,15 @@ QString EditorTabs::getTabNameFromPath(QString filepath)
 
 void EditorTabs::createTab(QString filepath, bool initHighlight)
 {
+    if (filepath.size() == 0 || !Helper::fileExists(filepath)) return;
+    qint64 bytes = Helper::getFileSize(filepath);
+    if (bytes >= TOO_BIG_FILE_SIZE) {
+        std::stringstream sizeStream;
+        sizeStream << std::fixed << std::setprecision(2) << (bytes * 1.0)/1048576;
+        QString fileSizeStr = QString::fromStdString(sizeStream.str());
+        if (!Helper::showQuestion(tr("Open"), tr("File size: %1 MB. Do you really want to open it ?").arg(fileSizeStr))) return;
+    }
+
     EditorTab * tab = new EditorTab();
     editor = new Editor(spellChecker, settings, highlightWords, completeWords, helpWords, spellWords, snippets);
     tab->setEditor(editor);
@@ -100,31 +111,29 @@ void EditorTabs::createTab(QString filepath, bool initHighlight)
     connect(editor, SIGNAL(showPopupText(int,QString)), this, SLOT(showPopupText(int,QString)));
     connect(editor, SIGNAL(showPopupError(int,QString)), this, SLOT(showPopupError(int,QString)));
 
-    if (filepath.size() > 0 && Helper::fileExists(filepath)) {
-        QString txt = Helper::loadFile(filepath, editor->getEncoding(), editor->getFallbackEncoding());
-        QString ext = "";
-        QRegularExpression regexp = QRegularExpression("[.]([^.]+)$");
-        QRegularExpressionMatch regexpMatch = regexp.match(filepath);
-        if (regexpMatch.capturedStart(1)>=0) {
-            ext = regexpMatch.captured(1);
-        }
-        editor->reset();
-        editor->setFileName(filepath);
+    QString txt = Helper::loadFile(filepath, editor->getEncoding(), editor->getFallbackEncoding());
+    QString ext = "";
+    QRegularExpression regexp = QRegularExpression("[.]([^.]+)$");
+    QRegularExpressionMatch regexpMatch = regexp.match(filepath);
+    if (regexpMatch.capturedStart(1)>=0) {
+        ext = regexpMatch.captured(1);
+    }
+    editor->reset();
+    editor->setFileName(filepath);
 
-        if (txt.size() >= BIG_FILE_SIZE) editor->setIsBigFile(true);
-        else editor->setIsBigFile(false);
+    if (txt.size() >= BIG_FILE_SIZE) editor->setIsBigFile(true);
+    else editor->setIsBigFile(false);
 
-        editor->convertNewLines(txt);
-        editor->setPlainText(txt);
-        //editor->resetExtraSelections();
-        editor->initMode(ext);
-        editor->setFocus();
-        editor->detectTabsMode();
+    editor->convertNewLines(txt);
+    editor->setPlainText(txt);
+    //editor->resetExtraSelections();
+    editor->initMode(ext);
+    editor->setFocus();
+    editor->detectTabsMode();
 
-        emit tabOpened(tabIndex);
-        if (initHighlight) {
-            editor->initHighlighter();
-        }
+    emit tabOpened(tabIndex);
+    if (initHighlight) {
+        editor->initHighlighter();
     }
 }
 
