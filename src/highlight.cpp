@@ -893,7 +893,7 @@ bool Highlight::detectModeClose(const QChar & c, int pos, bool isWSpace)
     return false;
 }
 
-bool Highlight::detectTag(const QChar c, int pos)
+bool Highlight::detectTag(const QChar & c, int pos)
 {
     if (stringSQOpenedHTML>=0 || stringDQOpenedHTML>=0) return false;
     if (tagOpened < 0 && c == "<") {
@@ -908,7 +908,7 @@ bool Highlight::detectTag(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectCommentHTML(const QChar c)
+bool Highlight::detectCommentHTML(const QChar & c)
 {
     if (tagOpened>=0 && commentHTMLOpened < 0 && commentHTMLString.size()<=4) {
         commentHTMLString += c;
@@ -934,7 +934,7 @@ bool Highlight::detectCommentHTML(const QChar c)
     return false;
 }
 
-bool Highlight::detectMLCommentCSS(const QChar c, int pos)
+bool Highlight::detectMLCommentCSS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedCSS >= 0 || stringDQOpenedCSS >= 0 || commentMLOpenedCSS >= 0;
     if (!opened && commentCSSStringML.size()==0 && c == "/") {
@@ -966,7 +966,7 @@ bool Highlight::detectMLCommentCSS(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectSLCommentJS(const QChar c, int pos)
+bool Highlight::detectSLCommentJS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || exprOpenedJS >= 0;
     if (!opened && commentJSStringSL.size()==0 && c == "/" && (regexpOpenedJS < 0 || regexpOpenedJS == pos)) {
@@ -989,7 +989,7 @@ bool Highlight::detectSLCommentJS(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectMLCommentJS(const QChar c, int pos)
+bool Highlight::detectMLCommentJS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || exprOpenedJS >= 0;
     if (!opened && commentJSStringML.size()==0 && c == "/" && (regexpOpenedJS < 0 || regexpOpenedJS == pos)) {
@@ -1022,7 +1022,7 @@ bool Highlight::detectMLCommentJS(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectMLCommentPHP(const QChar c, int pos)
+bool Highlight::detectMLCommentPHP(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
     if (!opened && commentPHPStringML.size()==0 && c == "/") {
@@ -1054,7 +1054,7 @@ bool Highlight::detectMLCommentPHP(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectSLCommentPHP(const QChar c, int pos)
+bool Highlight::detectSLCommentPHP(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
     if (!opened && commentPHPStringSL.size()==0 && (c == "/" || c == "#")) {
@@ -1081,7 +1081,7 @@ bool Highlight::detectSLCommentPHP(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringSQHTML(const QChar c, int pos)
+bool Highlight::detectStringSQHTML(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedHTML >= 0 || stringDQOpenedHTML >= 0 || commentHTMLOpened >= 0;
     if (!opened && tagOpened >= 0 && c == "'") {
@@ -1100,7 +1100,7 @@ bool Highlight::detectStringSQHTML(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringDQHTML(const QChar c, int pos)
+bool Highlight::detectStringDQHTML(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedHTML >= 0 || stringDQOpenedHTML >= 0 || commentHTMLOpened >= 0;
     if (!opened && tagOpened >= 0 && c == "\"") {
@@ -1119,7 +1119,7 @@ bool Highlight::detectStringDQHTML(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringSQCSS(const QChar c, int pos)
+bool Highlight::detectStringSQCSS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedCSS >= 0 || stringDQOpenedCSS >= 0 || commentMLOpenedCSS >= 0;
     if (!opened && c == "'") {
@@ -1145,7 +1145,7 @@ bool Highlight::detectStringSQCSS(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringDQCSS(const QChar c, int pos)
+bool Highlight::detectStringDQCSS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedCSS >= 0 || stringDQOpenedCSS >= 0 || commentMLOpenedCSS >= 0;
     if (!opened && c == "\"") {
@@ -1171,7 +1171,7 @@ bool Highlight::detectStringDQCSS(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringSQJS(const QChar c, int pos)
+bool Highlight::detectStringSQJS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || regexpOpenedJS >= 0 || exprOpenedJS >= 0;
     if (!opened && c == "'") {
@@ -1197,7 +1197,7 @@ bool Highlight::detectStringSQJS(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringDQJS(const QChar c, int pos)
+bool Highlight::detectStringDQJS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || regexpOpenedJS >= 0 || exprOpenedJS >= 0;
     if (!opened && c == "\"") {
@@ -1223,7 +1223,7 @@ bool Highlight::detectStringDQJS(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringSQPHP(const QChar c, int pos)
+bool Highlight::detectStringSQPHP(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
     if (!opened && c == "'") {
@@ -1244,7 +1244,7 @@ bool Highlight::detectStringSQPHP(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringDQPHP(const QChar c, int pos)
+bool Highlight::detectStringDQPHP(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
     if (!opened && c == "\"") {
@@ -1265,7 +1265,7 @@ bool Highlight::detectStringDQPHP(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringBPHP(const QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast)
+bool Highlight::detectStringBPHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isLast)
 {
     bool opened = stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
     if (!opened && stringBstring.size()<=3 && c == "<" && stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0) {
@@ -1334,7 +1334,7 @@ bool Highlight::detectStringBPHP(const QChar c, int pos, bool isAlpha, bool isAl
     return false;
 }
 
-bool Highlight::detectRegexpJS(const QChar c, int pos, bool isWSPace, bool isAlnum)
+bool Highlight::detectRegexpJS(const QChar & c, int pos, bool isWSPace, bool isAlnum)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || regexpOpenedJS >= 0 || exprOpenedJS >= 0;
     if (!opened && c == "/" && regexpPrevCharJS.size()==0) {
@@ -1366,7 +1366,7 @@ bool Highlight::detectRegexpJS(const QChar c, int pos, bool isWSPace, bool isAln
     return false;
 }
 
-int Highlight::detectKeywordHTML(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
+int Highlight::detectKeywordHTML(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
     bool opened = stringSQOpenedHTML >= 0 || stringDQOpenedHTML >= 0 || commentHTMLOpened >= 0 || keywordHTMLOpened >= 0;
     if (!opened && keywordHTMLOpened!=-2 && isAlnum && !isAlpha) {
         keywordHTMLOpened = -2;
@@ -1391,7 +1391,7 @@ int Highlight::detectKeywordHTML(QChar c, int pos, bool isAlpha, bool isAlnum, b
     return -1;
 }
 
-int Highlight::detectKeywordCSS(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
+int Highlight::detectKeywordCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
     if (!isAlpha && c == "-") isAlpha = true;
     if (!isAlnum && c == "-") isAlnum = true;
     if (!isAlpha && isAlnum && keywordCSSprevChar == "#") isAlpha = true;
@@ -1425,7 +1425,7 @@ int Highlight::detectKeywordCSS(QChar c, int pos, bool isAlpha, bool isAlnum, bo
     return -1;
 }
 
-int Highlight::detectKeywordJS(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
+int Highlight::detectKeywordJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
     if (!isAlpha && c == "$") isAlpha = true;
     if (!isAlnum && c == "$") isAlnum = true;
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || regexpOpenedJS >= 0 || keywordJSOpened >= 0 || exprOpenedJS >= 0;
@@ -1450,7 +1450,7 @@ int Highlight::detectKeywordJS(QChar c, int pos, bool isAlpha, bool isAlnum, boo
     return -1;
 }
 
-int Highlight::detectKeywordPHP(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast, bool forceDetect) {
+int Highlight::detectKeywordPHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isLast, bool forceDetect) {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || keywordPHPOpened >= 0 || exprOpenedPHP >= 0;
     if (forceDetect && keywordPHPOpened<0) opened = false;
     if (!opened && keywordPHPOpened!=-2 && isAlnum && !isAlpha) {
@@ -1476,7 +1476,7 @@ int Highlight::detectKeywordPHP(QChar c, int pos, bool isAlpha, bool isAlnum, bo
     return -1;
 }
 
-bool Highlight::detectExpressionJS(const QChar c, int pos)
+bool Highlight::detectExpressionJS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || regexpOpenedJS >= 0 || exprOpenedJS >= 0;
     if (!opened && c == "`") {
@@ -1502,7 +1502,7 @@ bool Highlight::detectExpressionJS(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectExpressionPHP(const QChar c, int pos)
+bool Highlight::detectExpressionPHP(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
     if (!opened && c == "`") {
@@ -1523,7 +1523,7 @@ bool Highlight::detectExpressionPHP(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringSQUnknown(const QChar c, int pos)
+bool Highlight::detectStringSQUnknown(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
     if (!opened && c == "'") {
@@ -1544,7 +1544,7 @@ bool Highlight::detectStringSQUnknown(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectStringDQUnknown(const QChar c, int pos)
+bool Highlight::detectStringDQUnknown(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
     if (!opened && c == "\"") {
@@ -1565,7 +1565,7 @@ bool Highlight::detectStringDQUnknown(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectSLCommentUnknown(const QChar c, int pos)
+bool Highlight::detectSLCommentUnknown(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
     if (!opened && commentUnknownStringSL.size()==0 && (c == "/" || c == "#" || (c == ";" && extension == EXTENSION_INI))) {
@@ -1592,7 +1592,7 @@ bool Highlight::detectSLCommentUnknown(const QChar c, int pos)
     return false;
 }
 
-bool Highlight::detectMLCommentUnknown(const QChar c, int pos)
+bool Highlight::detectMLCommentUnknown(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
     if (!opened && commentUnknownStringML.size()==0 && c == "/") {
@@ -1624,7 +1624,7 @@ bool Highlight::detectMLCommentUnknown(const QChar c, int pos)
     return false;
 }
 
-int Highlight::detectKeywordUnknown(QChar c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
+int Highlight::detectKeywordUnknown(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
     if (!isAlpha && c == "-") isAlpha = true;
     if (!isAlnum && c == "-") isAlnum = true;
     bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0 || keywordUnknownOpened >= 0;
@@ -2744,7 +2744,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
     }
 }
 
-void Highlight::parsePHP(const QChar c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordPHPStartPrev, int & keywordPHPLengthPrev)
+void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isWSpace, bool isLast, int & keywordPHPStartPrev, int & keywordPHPLengthPrev)
 {
     if (mode != MODE_PHP) return;
     // php string (single quote)
