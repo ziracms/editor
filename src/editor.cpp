@@ -1873,6 +1873,7 @@ bool Editor::onKeyPress(QKeyEvent *e)
                 }
             }
             multiSelectCursor.endEditBlock();
+            lineNumber->update();
         } else if (code == Qt::Key_Backspace && (multiSelectInsertText.size() > 0 || multiSelectCursor.hasSelection())) {
             if (!multiSelectCursor.hasSelection() && multiSelectCursor.positionInBlock() > 0) {
                 multiSelectCursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
@@ -1903,6 +1904,7 @@ bool Editor::onKeyPress(QKeyEvent *e)
                 }
             }
             multiSelectCursor.endEditBlock();
+            lineNumber->update();
         } else if (!shift && !ctrl && code != Qt::Key_Backspace) {
             multiSelectToggle();
         }
@@ -6475,6 +6477,7 @@ void Editor::replaceAllText(QString searchTxt, QString replaceTxt, bool CaSe, bo
         static_cast<Search *>(search)->setFindEditBg(searchInputErrorBgColor);
         static_cast<Search *>(search)->setFindEditProp("results", "notfound");
     }
+    lineNumber->update();
     highlightExtras();
 }
 
