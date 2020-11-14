@@ -1861,6 +1861,16 @@ bool Editor::onKeyPress(QKeyEvent *e)
             multiSelectInsertText += text;
             for (QTextCursor cursor : multiSelectCursors) {
                 cursor.insertText(text);
+                // modified state
+                modifiedLinesIterator = modifiedLines.find(cursor.block().blockNumber() + 1);
+                if (modifiedLinesIterator == modifiedLines.end()) {
+                    modifiedLines[cursor.block().blockNumber() + 1] = cursor.block().blockNumber() + 1;
+                    HighlightData * blockData = dynamic_cast<HighlightData *>(cursor.block().userData());
+                    if (blockData != nullptr) {
+                        blockData->isModified = true;
+                        cursor.block().setUserData(blockData);
+                    }
+                }
             }
             multiSelectCursor.endEditBlock();
         } else if (code == Qt::Key_Backspace && (multiSelectInsertText.size() > 0 || multiSelectCursor.hasSelection())) {
@@ -1880,6 +1890,16 @@ bool Editor::onKeyPress(QKeyEvent *e)
                 }
                 if (cursor.hasSelection()) {
                     cursor.deleteChar();
+                    // modified state
+                    modifiedLinesIterator = modifiedLines.find(cursor.block().blockNumber() + 1);
+                    if (modifiedLinesIterator == modifiedLines.end()) {
+                        modifiedLines[cursor.block().blockNumber() + 1] = cursor.block().blockNumber() + 1;
+                        HighlightData * blockData = dynamic_cast<HighlightData *>(cursor.block().userData());
+                        if (blockData != nullptr) {
+                            blockData->isModified = true;
+                            cursor.block().setUserData(blockData);
+                        }
+                    }
                 }
             }
             multiSelectCursor.endEditBlock();
@@ -2501,7 +2521,8 @@ void Editor::insertFromMimeData(const QMimeData *source)
             do {
                 block = cursor.block();
                 if (!block.isValid()) break;
-                // modified state
+                // modified state (no need anymore)
+                /*
                 modifiedLinesIterator = modifiedLines.find(cursor.block().blockNumber() + 1);
                 if (modifiedLinesIterator == modifiedLines.end()) {
                     modifiedLines[cursor.block().blockNumber() + 1] = cursor.block().blockNumber() + 1;
@@ -2511,6 +2532,7 @@ void Editor::insertFromMimeData(const QMimeData *source)
                         cursor.block().setUserData(blockData);
                     }
                 }
+                */
                 // spell check
                 if (spellCheckerEnabled && spellChecker != nullptr && !isBigFile) {
                     spellPastedBlocksQueue.append(cursor.block().blockNumber());
@@ -2677,7 +2699,7 @@ void Editor::textChanged()
 
     // set line modified status
     QTextCursor curs = textCursor();
-    if ((lastKeyPressedBlockNumber == curs.block().blockNumber() && lastKeyPressed != Qt::Key_Return) || (curs.positionInBlock() == 0 && curs.block().text().size() > 0) || (curs.positionInBlock() > 0 && curs.positionInBlock() != curs.block().text().size())) {
+    if (lastKeyPressedBlockNumber >= curs.block().blockNumber() && !ctrl) {
         modifiedLinesIterator = modifiedLines.find(curs.block().blockNumber() + 1);
         if (modifiedLinesIterator == modifiedLines.end()) {
             modifiedLines[curs.block().blockNumber() + 1] = curs.block().blockNumber() + 1;
@@ -2688,23 +2710,22 @@ void Editor::textChanged()
             }
             lineNumber->update();
         }
-        if (lastKeyPressedBlockNumber < curs.block().blockNumber()) {
-            modifiedLinesIterator = modifiedLines.find(lastKeyPressedBlockNumber + 1);
-            if (modifiedLinesIterator == modifiedLines.end()) {
-                modifiedLines[lastKeyPressedBlockNumber + 1] = lastKeyPressedBlockNumber + 1;
-                if (lastKeyPressedBlockNumber == curs.block().blockNumber()-1) {
-                    curs.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor);
-                } else {
-                    curs.movePosition(QTextCursor::Start);
-                    if (lastKeyPressedBlockNumber > 0) curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, lastKeyPressedBlockNumber);
-                }
-                HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
-                if (blockData != nullptr) {
-                    blockData->isModified = true;
-                    curs.block().setUserData(blockData);
-                }
-                lineNumber->update();
+    } else if (lastKeyPressedBlockNumber < curs.block().blockNumber()) {
+        modifiedLinesIterator = modifiedLines.find(lastKeyPressedBlockNumber + 1);
+        if (modifiedLinesIterator == modifiedLines.end()) {
+            modifiedLines[lastKeyPressedBlockNumber + 1] = lastKeyPressedBlockNumber + 1;
+            if (lastKeyPressedBlockNumber == curs.block().blockNumber()-1) {
+                curs.movePosition(QTextCursor::PreviousBlock, QTextCursor::MoveAnchor);
+            } else {
+                curs.movePosition(QTextCursor::Start);
+                if (lastKeyPressedBlockNumber > 0) curs.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, lastKeyPressedBlockNumber);
             }
+            HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
+            if (blockData != nullptr) {
+                blockData->isModified = true;
+                curs.block().setUserData(blockData);
+            }
+            lineNumber->update();
         }
     }
     // workaround for Android
@@ -6428,6 +6449,16 @@ void Editor::replaceAllText(QString searchTxt, QString replaceTxt, bool CaSe, bo
             curs.setPosition(resCurs.selectionStart(), QTextCursor::MoveAnchor);
             curs.setPosition(resCurs.selectionEnd(), QTextCursor::KeepAnchor);
             curs.insertText(replaceTxt);
+            // modified state
+            modifiedLinesIterator = modifiedLines.find(curs.block().blockNumber() + 1);
+            if (modifiedLinesIterator == modifiedLines.end()) {
+                modifiedLines[curs.block().blockNumber() + 1] = curs.block().blockNumber() + 1;
+                HighlightData * blockData = dynamic_cast<HighlightData *>(curs.block().userData());
+                if (blockData != nullptr) {
+                    blockData->isModified = true;
+                    curs.block().setUserData(blockData);
+                }
+            }
             co++;
         }
         if (co > SEARCH_LIMIT) {
