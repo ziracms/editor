@@ -6,6 +6,8 @@
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QGridLayout>
+#include <QScroller>
+#include <QScrollerProperties>
 
 FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
 {
@@ -32,9 +34,24 @@ FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
     if (newFolderButton != nullptr) newFolderButton->hide();
 
     QTreeView * treeView = findChild<QTreeView *>("treeView");
-    if (treeView != nullptr) treeView->setDragEnabled(false);
+    if (treeView != nullptr) {
+        treeView->setDragEnabled(false);
+        #if defined(Q_OS_ANDROID)
+        // scrolling by gesture
+        QScroller::grabGesture(treeView->viewport(), QScroller::LeftMouseButtonGesture);
+        treeView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+        QScrollerProperties scrollProps;
+        scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+        scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+        scrollProps.setScrollMetric(QScrollerProperties::MinimumVelocity, 0);
+        scrollProps.setScrollMetric(QScrollerProperties::MaximumVelocity, 0);
+        QScroller::scroller(treeView->viewport())->setScrollerProperties(scrollProps);
+        #endif
+    }
     QListView * listView = findChild<QListView *>("listView");
-    if (listView != nullptr) listView->setDragEnabled(false);
+    if (listView != nullptr) {
+        listView->setDragEnabled(false);
+    }
 
     QDialogButtonBox * buttonBox = findChild<QDialogButtonBox *>("buttonBox");
     if (buttonBox != nullptr && layout() != nullptr) {

@@ -3,6 +3,7 @@
 #include <QMenu>
 #include <QShortcut>
 #include <QKeyEvent>
+#include <QScroller>
 #include "icon.h"
 
 const QString GB_ACTION_NAME_ADD = "add";
@@ -23,6 +24,9 @@ GitBrowser::GitBrowser(QTreeWidget * widget, Settings * settings):
     treeWidget->installEventFilter(this);
     #if defined(Q_OS_ANDROID)
     treeWidget->viewport()->installEventFilter(this); // for context menu
+    // scrolling by gesture
+    QScroller::grabGesture(treeWidget->viewport(), QScroller::LeftMouseButtonGesture);
+    treeWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     #endif
 
     QString shortcutContextMenuStr = QString::fromStdString(settings->get("shortcut_context_menu"));

@@ -32,6 +32,8 @@
 #include <QInputDialog>
 #include <QAction>
 #include <QScreen>
+#include <QScroller>
+#include <QScrollerProperties>
 #include "math.h"
 #include "helper.h"
 #include "icon.h"
@@ -432,6 +434,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     multiSelectInsertText = "";
     multiSelectCursors.clear();
     multiSelectCursor = QTextCursor(document());
+    ignoreMouseRelease = false;
 
     connect(this, SIGNAL(undoAvailable(bool)), this, SLOT(onUndoAvailable(bool)));
     connect(this, SIGNAL(redoAvailable(bool)), this, SLOT(onRedoAvailable(bool)));
@@ -495,6 +498,17 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     mousePressTimer.setInterval(1000);
     mousePressTimer.setSingleShot(true);
     connect(&mousePressTimer, SIGNAL(timeout()), this, SLOT(contextMenu()));
+
+    #if defined(Q_OS_ANDROID)
+    // scrolling by gesture
+    QScroller::grabGesture(viewport(), QScroller::LeftMouseButtonGesture);
+    QScrollerProperties scrollProps;
+    scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+    scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+    scrollProps.setScrollMetric(QScrollerProperties::MinimumVelocity, 0);
+    scrollProps.setScrollMetric(QScrollerProperties::MaximumVelocity, 0);
+    QScroller::scroller(viewport())->setScrollerProperties(scrollProps);
+    #endif
 }
 
 Editor::~Editor()
@@ -588,6 +602,7 @@ void Editor::reset()
     multiSelectString = "";
     multiSelectInsertText = "";
     multiSelectCursors.clear();
+    ignoreMouseRelease = false;
 }
 
 void Editor::highlightProgressChanged(int percent)
@@ -2427,6 +2442,7 @@ void Editor::inputMethodEvent(QInputMethodEvent *e)
 
 void Editor::contextMenu()
 {
+    ignoreMouseRelease = false;
     QContextMenuEvent * cEvent = new QContextMenuEvent(QContextMenuEvent::Keyboard, mapFromGlobal(QCursor::pos()));
     contextMenuEvent(cEvent);
     delete cEvent;
@@ -2615,6 +2631,12 @@ void Editor::mousePressEvent(QMouseEvent *e)
     hideCompletePopup();
     #if defined(Q_OS_ANDROID)
     mousePressTimer.start();
+    // hide virtual keyboard if visible
+    if (QApplication::inputMethod()->isVisible()) {
+        QApplication::inputMethod()->hide();
+        ignoreMouseRelease = true;
+        return;
+    }
     #endif
     QTextEdit::mousePressEvent(e);
 }
@@ -2628,6 +2650,10 @@ void Editor::mouseReleaseEvent(QMouseEvent *e)
     }
     #if defined(Q_OS_ANDROID)
     if (mousePressTimer.isActive()) mousePressTimer.stop();
+    if (ignoreMouseRelease) {
+        ignoreMouseRelease = false;
+        return;
+    }
     #endif
     QTextEdit::mouseReleaseEvent(e);
 }

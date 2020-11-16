@@ -404,6 +404,7 @@ private:
     QTextCursor multiSelectCursor;
     int inputEventKey; // workaround for Android
     QTimer mousePressTimer;
+    bool ignoreMouseRelease;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

@@ -158,7 +158,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // welcome screen
     welcomeScreen = new Welcome(schemeType == COLOR_SCHEME_LIGHT);
     ui->centralWidget->layout()->addWidget(welcomeScreen);
-    welcomeScreen->connectButtons(this);
+    connect(welcomeScreen, SIGNAL(openProject()), this, SLOT(on_actionOpenProject_triggered()));
+    connect(welcomeScreen, SIGNAL(createProject()), this, SLOT(on_actionNewProject_triggered()));
 
     // editor tabs
     editorTabs = new EditorTabs(spellChecker, ui->tabWidget, settings, highlightWords, completeWords, helpWords, spellWords, snippets);

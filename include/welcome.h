@@ -10,13 +10,20 @@ class Welcome : public QWidget
 public:
     explicit Welcome(bool light, QWidget *parent = nullptr);
     ~Welcome();
-    void connectButtons(QWidget * mainWnd);
     void focus();
+protected:
+    void enableGestures();
+    void disableGestures();
 private:
     Ui::WelcomeScreen * ui;
+    bool isGesturesEnabled;
 signals:
-
+    void openProject();
+    void createProject();
 public slots:
+private slots:
+    void onOpenProjectPressed();
+    void onCreateProjectPressed();
 };
 
 #endif // WELCOME_H

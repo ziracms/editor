@@ -5,6 +5,7 @@
  *******************************************/
 
 #include <QKeyEvent>
+#include <QScroller>
 #include "navigator.h"
 #include "helper.h"
 
@@ -16,6 +17,11 @@ Navigator::Navigator(QTreeWidget * widget, Settings * /*settings*/) : treeWidget
     connect(treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(navigatorExpanded(QTreeWidgetItem*)));
     connect(treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(navigatorCollapsed(QTreeWidgetItem*)));
     treeWidget->installEventFilter(this);
+    #if defined(Q_OS_ANDROID)
+    // scrolling by gesture
+    QScroller::grabGesture(treeWidget->viewport(), QScroller::LeftMouseButtonGesture);
+    treeWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    #endif
 }
 
 void Navigator::clear()

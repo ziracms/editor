@@ -148,6 +148,12 @@
              </property>
              <item>
               <widget class="QCheckBox" name="spellCheckerCheckbox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Enable spell checker (plugin required)</string>
                </property>
@@ -168,6 +174,12 @@
              </property>
              <item>
               <widget class="QCheckBox" name="experimentalModeCheckbox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Enable experimental mode</string>
                </property>
@@ -1209,6 +1221,18 @@
              </property>
              <item>
               <widget class="QCheckBox" name="phplintCheckbox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Enable php lint by default (syntax check)</string>
                </property>
@@ -1229,6 +1253,18 @@
              </property>
              <item>
               <widget class="QCheckBox" name="phpcsCheckbox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Enable php code sniffer by default</string>
                </property>
@@ -1521,6 +1557,12 @@
              </property>
              <item>
               <widget class="QLabel" name="snippetsLabel">
+               <property name="minimumSize">
+                <size>
+                 <width>400</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Format: [{mode:@name}] = [[text \n\t {$cursor} \n text]]</string>
                </property>
@@ -1541,6 +1583,12 @@
              </property>
              <item>
               <widget class="QLabel" name="snippetsLabel2">
+               <property name="minimumSize">
+                <size>
+                 <width>400</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>[mode: php,js,css,html;  name: [a-zA-Z0-9]{2,}; \n -new line; \t - indent]</string>
                </property>
@@ -1555,6 +1603,12 @@
              </property>
              <item>
               <widget class="QLabel" name="snippetsLabel3">
+               <property name="minimumSize">
+                <size>
+                 <width>400</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>{$cursor} - cursor position;</string>
                </property>
@@ -1569,6 +1623,12 @@
              </property>
              <item>
               <widget class="QLabel" name="snippetsLabel4">
+               <property name="minimumSize">
+                <size>
+                 <width>400</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>{$selectStart} ... {$selectEnd} - selection;</string>
                </property>
@@ -1583,6 +1643,12 @@
              </property>
              <item>
               <widget class="QLabel" name="snippetsLabel5">
+               <property name="minimumSize">
+                <size>
+                 <width>400</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>{$multiSelectStart} ... {$multiSelectEnd} - multi-selection;</string>
                </property>
@@ -1858,6 +1924,18 @@
              </property>
              <item>
               <widget class="QCheckBox" name="gitCheckbox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Allow git commands execution</string>
                </property>
@@ -1878,6 +1956,18 @@
              </property>
              <item>
               <widget class="QCheckBox" name="serversCheckbox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>300</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Allow service commands execution (servers)</string>
                </property>

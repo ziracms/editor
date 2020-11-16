@@ -12,6 +12,8 @@
 #include <QDirIterator>
 #include <QStyledItemDelegate>
 #include <QAbstractItemView>
+#include <QScroller>
+#include <QTimer>
 #include "helper.h"
 
 const std::string CHECKED_YES = "yes";
@@ -22,10 +24,13 @@ const std::string NEW_LINE_LF = "lf";
 const std::string NEW_LINE_CR = "cr";
 const std::string NEW_LINE_CRLF = "crlf";
 
+const int ANDROID_PUSH_BUTTON_DELAY = 100;
+
 SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     QDialog(parent),
     ui(new Ui::SettingsDialog()),
-    settings(settings)
+    settings(settings),
+    isGesturesEnabled(false)
 {
     ui->setupUi(this);
     setModal(true);
@@ -192,6 +197,8 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
+    // scrolling by gesture
+    enableGestures();
     #else
     ui->buttonBox->button(QDialogButtonBox::Help)->hide();
     #endif
@@ -504,49 +511,104 @@ void SettingsDialog::editorNewLineCRLFToggled(bool checked)
 
 void SettingsDialog::projectHomeButtonPressed()
 {
+    #if defined(Q_OS_ANDROID)
+    // temporarily disable gestures and call it again after delay
+    if (isGesturesEnabled) {
+        disableGestures();
+        QTimer::singleShot(ANDROID_PUSH_BUTTON_DELAY, this, SLOT(projectHomeButtonPressed()));
+        return;
+    }
+    #endif
     QString home = ui->projectsHomeLineEdit->text();
     //QString dir = QFileDialog::getExistingDirectory(this, tr("Choose projects home directory"), home, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     QString dir = Helper::getExistingDirectory(this, tr("Choose projects home directory"), home);
     if (dir.size() > 0) {
         ui->projectsHomeLineEdit->setText(dir);
     }
+    #if defined(Q_OS_ANDROID)
+    enableGestures();
+    #endif
 }
 
 void SettingsDialog::phpManualButtonPressed()
 {
+    #if defined(Q_OS_ANDROID)
+    // temporarily disable gestures and call it again after delay
+    if (isGesturesEnabled) {
+        disableGestures();
+        QTimer::singleShot(ANDROID_PUSH_BUTTON_DELAY, this, SLOT(phpManualButtonPressed()));
+        return;
+    }
+    #endif
     QString path = ui->phpmanualLineEdit->text();
     QString dir = Helper::getExistingDirectory(this, tr("Select directory"), path);
     if (dir.size() > 0) {
         ui->phpmanualLineEdit->setText(dir);
     }
+    #if defined(Q_OS_ANDROID)
+    enableGestures();
+    #endif
 }
 
 void SettingsDialog::customThemesButtonPressed()
 {
+    #if defined(Q_OS_ANDROID)
+    // temporarily disable gestures and call it again after delay
+    if (isGesturesEnabled) {
+        disableGestures();
+        QTimer::singleShot(ANDROID_PUSH_BUTTON_DELAY, this, SLOT(customThemesButtonPressed()));
+        return;
+    }
+    #endif
     QString path = ui->customThemesFolderLineEdit->text();
     QString dir = Helper::getExistingDirectory(this, tr("Select directory"), path);
     if (dir.size() > 0) {
         ui->customThemesFolderLineEdit->setText(dir);
     }
+    #if defined(Q_OS_ANDROID)
+    enableGestures();
+    #endif
 }
 
 void SettingsDialog::pluginsFolderButtonPressed()
 {
+    #if defined(Q_OS_ANDROID)
+    // temporarily disable gestures and call it again after delay
+    if (isGesturesEnabled) {
+        disableGestures();
+        QTimer::singleShot(ANDROID_PUSH_BUTTON_DELAY, this, SLOT(pluginsFolderButtonPressed()));
+        return;
+    }
+    #endif
     QString path = ui->pluginsFolderLineEdit->text();
     QString dir = Helper::getExistingDirectory(this, tr("Select directory"), path);
     if (dir.size() > 0) {
         ui->pluginsFolderLineEdit->setText(dir);
     }
+    #if defined(Q_OS_ANDROID)
+    enableGestures();
+    #endif
 }
 
 void SettingsDialog::customSnippetsFileButtonPressed()
 {
+    #if defined(Q_OS_ANDROID)
+    // temporarily disable gestures and call it again after delay
+    if (isGesturesEnabled) {
+        disableGestures();
+        QTimer::singleShot(ANDROID_PUSH_BUTTON_DELAY, this, SLOT(customSnippetsFileButtonPressed()));
+        return;
+    }
+    #endif
     QString file = ui->customSnippetsFileLineEdit->text();
     QFileInfo fInfo(file);
     QString fileName = Helper::getExistingFile(this, tr("Select file"), fInfo.absolutePath());
     if (fileName.size() > 0) {
         ui->customSnippetsFileLineEdit->setText(fileName);
     }
+    #if defined(Q_OS_ANDROID)
+    enableGestures();
+    #endif
 }
 
 void SettingsDialog::resetButtonPressed()
@@ -579,4 +641,28 @@ void SettingsDialog::contextMenuRequested()
     }
     QContextMenuEvent * contextEvent = new QContextMenuEvent(QContextMenuEvent::Keyboard, widget->mapFromGlobal(QCursor::pos()));
     QCoreApplication::postEvent(widget, contextEvent);
+}
+
+void SettingsDialog::enableGestures()
+{
+    QScroller::grabGesture(ui->generalSettingsScrollArea->viewport(), QScroller::LeftMouseButtonGesture);
+    QScroller::grabGesture(ui->editorSettingsScrollArea->viewport(), QScroller::LeftMouseButtonGesture);
+    QScroller::grabGesture(ui->fileTypesSettingsScrollArea->viewport(), QScroller::LeftMouseButtonGesture);
+    QScroller::grabGesture(ui->syntaxSettingsScrollArea->viewport(), QScroller::LeftMouseButtonGesture);
+    QScroller::grabGesture(ui->snippetsSettingsScrollArea->viewport(), QScroller::LeftMouseButtonGesture);
+    QScroller::grabGesture(ui->pathsSettingsScrollArea->viewport(), QScroller::LeftMouseButtonGesture);
+    QScroller::grabGesture(ui->miscSettingsScrollArea->viewport(), QScroller::LeftMouseButtonGesture);
+    isGesturesEnabled = true;
+}
+
+void SettingsDialog::disableGestures()
+{
+    QScroller::ungrabGesture(ui->generalSettingsScrollArea->viewport());
+    QScroller::ungrabGesture(ui->editorSettingsScrollArea->viewport());
+    QScroller::ungrabGesture(ui->fileTypesSettingsScrollArea->viewport());
+    QScroller::ungrabGesture(ui->syntaxSettingsScrollArea->viewport());
+    QScroller::ungrabGesture(ui->snippetsSettingsScrollArea->viewport());
+    QScroller::ungrabGesture(ui->pathsSettingsScrollArea->viewport());
+    QScroller::ungrabGesture(ui->miscSettingsScrollArea->viewport());
+    isGesturesEnabled = false;
 }

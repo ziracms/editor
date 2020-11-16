@@ -8,6 +8,7 @@
 #include "ui_helpdialog.h"
 #include <QFile>
 #include <QTextStream>
+#include <QScroller>
 #include "helper.h"
 
 const QString TPL_QT_VERSION = "<div><center>Qt %1</center></div>";
@@ -31,6 +32,8 @@ HelpDialog::HelpDialog(QWidget *parent) :
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
+    // scrolling by gesture
+    QScroller::grabGesture(ui->helpScrollArea->viewport(), QScroller::LeftMouseButtonGesture);
     #endif
 }
 

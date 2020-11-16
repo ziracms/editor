@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QScrollBar>
 #include <QFontDatabase>
+#include <QScroller>
 #include "icon.h"
 #include "helper.h"
 
@@ -98,6 +99,12 @@ QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
     }
     outputFont.setPointSize(std::stoi(fontSize));
     resultsList->setFont(outputFont);
+
+    #if defined(Q_OS_ANDROID)
+    // scrolling by gesture
+    QScroller::grabGesture(resultsList->viewport(), QScroller::LeftMouseButtonGesture);
+    resultsList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    #endif
 }
 
 QSize QuickAccess::sizeHint() const {

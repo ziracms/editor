@@ -18,6 +18,9 @@ public:
     SettingsDialog(Settings * settings, QWidget * parent);
     ~SettingsDialog() override;
     std::unordered_map<std::string, std::string> getData();
+protected:
+    void enableGestures();
+    void disableGestures();
 private:
     Ui::SettingsDialog * ui;
     Settings * settings;
@@ -27,6 +30,7 @@ private:
     std::string tabsType;
     std::string newLineMode;
     int initScaleFactor;
+    bool isGesturesEnabled;
 private slots:
     void projectHomeButtonPressed();
     void phpManualButtonPressed();

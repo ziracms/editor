@@ -13,6 +13,7 @@
 #include <QKeyEvent>
 #include <QFileDialog>
 #include <QShortcut>
+#include <QScroller>
 #include "helper.h"
 #include "createfiledialog.h"
 #include "createfolderdialog.h"
@@ -79,6 +80,9 @@ void FileBrowser::initFileBrowser(QString homeDir)
     treeWidget->installEventFilter(this);
     #if defined(Q_OS_ANDROID)
     treeWidget->viewport()->installEventFilter(this); // for context menu
+    // scrolling by gesture
+    QScroller::grabGesture(treeWidget->viewport(), QScroller::LeftMouseButtonGesture);
+    treeWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     #endif
     pathLine->installEventFilter(this);
 }
