@@ -126,7 +126,8 @@ Settings::Settings(QObject * parent) : QObject(parent)
         {"scale_auto", "yes"},
         {"scale_factor", "100"},
         {"scale_factor_unchecked", "no"},
-        {"devpack_install_silent", "no"}
+        {"devpack_install_silent", "no"},
+        {"editor_enable_android_gestures", "yes"}
     };
 }
 

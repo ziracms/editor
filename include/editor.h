@@ -116,6 +116,8 @@ protected:
     void inputMethodEvent(QInputMethodEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
+    void mouseMoveEvent(QMouseEvent *e) override;
+    void wheelEvent(QWheelEvent *e) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
     bool event(QEvent *e) override;
     void paintEvent(QPaintEvent *e) override;
@@ -178,6 +180,8 @@ protected:
     bool isKnownWord(QString word);
     QString getFixedCompleteClassMethodName(QString clsMethodComplete, QString params);
     QString getFixedCompleteClassConstName(QString clsConstComplete);
+    void enableGestures();
+    void disableGestures();
 public slots:
     void save(QString name = "");
     void back();
@@ -405,6 +409,7 @@ private:
     int inputEventKey; // workaround for Android
     QTimer mousePressTimer;
     bool ignoreMouseRelease;
+    bool isGesturesEnabled;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

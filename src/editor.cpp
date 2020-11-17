@@ -499,15 +499,12 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     mousePressTimer.setSingleShot(true);
     connect(&mousePressTimer, SIGNAL(timeout()), this, SLOT(contextMenu()));
 
+    isGesturesEnabled = false;
     #if defined(Q_OS_ANDROID)
     // scrolling by gesture
-    QScroller::grabGesture(viewport(), QScroller::LeftMouseButtonGesture);
-    QScrollerProperties scrollProps;
-    scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    scrollProps.setScrollMetric(QScrollerProperties::MinimumVelocity, 0);
-    scrollProps.setScrollMetric(QScrollerProperties::MaximumVelocity, 0);
-    QScroller::scroller(viewport())->setScrollerProperties(scrollProps);
+    if (settings->get("editor_enable_android_gestures") == "yes") {
+        enableGestures();
+    }
     #endif
 }
 
@@ -603,6 +600,24 @@ void Editor::reset()
     multiSelectInsertText = "";
     multiSelectCursors.clear();
     ignoreMouseRelease = false;
+}
+
+void Editor::enableGestures()
+{
+    QScroller::grabGesture(viewport(), QScroller::LeftMouseButtonGesture);
+    QScrollerProperties scrollProps;
+    scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+    scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+    scrollProps.setScrollMetric(QScrollerProperties::MinimumVelocity, 0);
+    scrollProps.setScrollMetric(QScrollerProperties::MaximumVelocity, 0);
+    QScroller::scroller(viewport())->setScrollerProperties(scrollProps);
+    isGesturesEnabled = true;
+}
+
+void Editor::disableGestures()
+{
+    QScroller::ungrabGesture(viewport());
+    isGesturesEnabled = false;
 }
 
 void Editor::highlightProgressChanged(int percent)
@@ -2642,6 +2657,14 @@ void Editor::mousePressEvent(QMouseEvent *e)
     QTextEdit::mousePressEvent(e);
 }
 
+void Editor::mouseMoveEvent(QMouseEvent *e)
+{
+    #if defined(Q_OS_ANDROID)
+    if (mousePressTimer.isActive()) mousePressTimer.stop();
+    #endif
+    QTextEdit::mouseMoveEvent(e);
+}
+
 void Editor::mouseReleaseEvent(QMouseEvent *e)
 {
     if (e->modifiers() & Qt::ControlModifier) {
@@ -2657,6 +2680,16 @@ void Editor::mouseReleaseEvent(QMouseEvent *e)
     }
     #endif
     QTextEdit::mouseReleaseEvent(e);
+}
+
+void Editor::wheelEvent(QWheelEvent *e)
+{
+    #if defined(Q_OS_ANDROID)
+    if (isGesturesEnabled) {
+        disableGestures();
+    }
+    #endif
+    QTextEdit::wheelEvent(e);
 }
 
 void Editor::contentsChange(int position, int charsRemoved, int charsAdded)
