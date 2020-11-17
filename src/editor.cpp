@@ -494,7 +494,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
 
     // for Android
     inputEventKey = -1;
-    setInputMethodHints(Qt::ImhNoPredictiveText | Qt::ImhMultiLine);
+    setInputMethodHints(Qt::ImhNoPredictiveText);
     mousePressTimer.setInterval(1000);
     mousePressTimer.setSingleShot(true);
     connect(&mousePressTimer, SIGNAL(timeout()), this, SLOT(contextMenu()));
@@ -2634,6 +2634,7 @@ void Editor::mousePressEvent(QMouseEvent *e)
     // hide virtual keyboard if visible
     if (QApplication::inputMethod()->isVisible()) {
         QApplication::inputMethod()->hide();
+        QApplication::inputMethod()->reset();
         ignoreMouseRelease = true;
         return;
     }
