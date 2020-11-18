@@ -30,6 +30,7 @@ INCLUDEPATH += include
 
 SOURCES += \
     main.cpp \
+    src/contextdialog.cpp \
     src/docktitlebar.cpp \
     src/filedialog.cpp \
     src/fileiconprovider.cpp \
@@ -85,6 +86,7 @@ SOURCES += \
     src/welcome.cpp
 
 HEADERS += \
+    include/contextdialog.h \
     include/docktitlebar.h \
     include/filedialog.h \
     include/fileiconprovider.h \
@@ -141,6 +143,7 @@ HEADERS += \
     include/welcome.h
 
 FORMS += \
+    ui/contextdialog.ui \
     ui/mainwindow.ui \
     ui/createfile.ui \
     ui/createfolder.ui \

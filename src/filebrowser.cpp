@@ -293,10 +293,15 @@ void FileBrowser::fileBrowserContextMenuRequested(QTreeWidgetItem * item)
 
     acceptEnter = false;
 
+    QAction * selectedAction = nullptr;
+    #if defined(Q_OS_ANDROID)
+    selectedAction = Helper::contextMenuToDialog(&menu, treeWidget);
+    #else
     //QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));
     QPoint p = QCursor::pos();
-    QAction * selectedAction = menu.exec(p);
+    selectedAction = menu.exec(p);
     menu.hide();
+    #endif
     if (selectedAction == nullptr) {
         acceptEnter = true;
         return;

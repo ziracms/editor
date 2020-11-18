@@ -8,9 +8,11 @@
 #define HELPER_H
 
 #include <QList>
+#include <QMenu>
 #include "plugininterface.h"
 #include "spellcheckerinterface.h"
 #include "terminalinterface.h"
+#include "contextdialog.h"
 
 extern const QString APPLICATION_NAME;
 extern const QString APPLICATION_VERSION;
@@ -69,6 +71,7 @@ public:
     static bool showQuestion(QString title, QString msg);
     static bool isQtVersionLessThan(int maj, int min, int mic);
     static void setApplicationAttributes();
+    static QAction * contextMenuToDialog(QMenu * menu, QWidget * parent = nullptr);
     #if defined(Q_OS_ANDROID)
     static void requestAndroidPermissions();
     #endif

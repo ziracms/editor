@@ -510,6 +510,15 @@ void Helper::setApplicationAttributes()
 
 }
 
+QAction * Helper::contextMenuToDialog(QMenu *menu, QWidget * parent)
+{
+    ContextDialog dialog(parent);
+    QList<QAction *> actions = menu->actions();
+    dialog.build(actions);
+    dialog.show();
+    return dialog.getAction();
+}
+
 #if defined(Q_OS_ANDROID)
 void Helper::requestAndroidPermissions()
 {

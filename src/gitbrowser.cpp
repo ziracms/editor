@@ -5,6 +5,7 @@
 #include <QKeyEvent>
 #include <QScroller>
 #include "icon.h"
+#include "helper.h"
 
 const QString GB_ACTION_NAME_ADD = "add";
 const QString GB_ACTION_NAME_RESET = "reset";
@@ -131,9 +132,14 @@ void GitBrowser::gitBrowserContextMenuRequested(QTreeWidgetItem * item)
     QAction * commitAction = menu.addAction(Icon::get("actionGitCommit", QIcon(":icons/ok.png")), tr("Commit"));
     commitAction->setData(QVariant(GB_ACTION_NAME_COMMIT));
 
+    QAction * selectedAction = nullptr;
+    #if defined(Q_OS_ANDROID)
+    selectedAction = Helper::contextMenuToDialog(&menu, treeWidget);
+    #else
     //QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));
     QPoint p = QCursor::pos();
-    QAction * selectedAction = menu.exec(p);
+    selectedAction = menu.exec(p);
+    #endif
     if (selectedAction == nullptr) return;
 
     QString actionName = selectedAction->data().toString();

@@ -7072,7 +7072,13 @@ void Editor::contextMenuEvent(QContextMenuEvent *event)
 
     if (!isBackable()) backAction->setEnabled(false);
     if (!isForwadable()) forwardAction->setEnabled(false);
+
+    #if defined(Q_OS_ANDROID)
+    Helper::contextMenuToDialog(menu, this);
+    #else
     menu->exec(event->globalPos());
+    #endif
+
     delete menu;
 }
 
