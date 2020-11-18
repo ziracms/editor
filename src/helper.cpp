@@ -21,6 +21,9 @@
 #include <QStylePlugin>
 #include <QDirIterator>
 #include <QVersionNumber>
+#include <QInputDialog>
+#include <QScreen>
+#include <QPropertyAnimation>
 #include "mainwindow.h"
 #include "fileiconprovider.h"
 #include "filedialog.h"
@@ -479,6 +482,35 @@ void Helper::showMessage(QString text)
 bool Helper::showQuestion(QString title, QString msg)
 {
     return QMessageBox::question(getWindowWidget(), title, msg, QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok;
+}
+
+QString Helper::showInputDialog(QString title, QString label, QLineEdit::EchoMode mode, QString defaultValue)
+{
+    QString result;
+    QInputDialog dialog(getWindowWidget());
+    dialog.setWindowTitle(title);
+    dialog.setLabelText(label);
+    dialog.setTextEchoMode(mode);
+    dialog.setTextValue(defaultValue);
+    #if defined(Q_OS_ANDROID)
+    dialog.setVisible(true);
+    QScreen * screen = QGuiApplication::primaryScreen();
+    dialog.setGeometry(0, 0, screen->availableGeometry().width(), screen->availableGeometry().height() / 2);
+    QEasingCurve easingIn(QEasingCurve::OutCubic);
+    QPropertyAnimation * animationIn = new QPropertyAnimation(&dialog, "geometry");
+    animationIn->setDuration(100);
+    animationIn->setEasingCurve(easingIn);
+    QRect rect = dialog.geometry();
+    animationIn->setStartValue(QRect(rect.x(), rect.y()-rect.height(), rect.width(), rect.height()));
+    animationIn->setEndValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
+    animationIn->start(QAbstractAnimation::DeleteWhenStopped);
+    dialog.setVisible(false);
+    #endif
+    if (dialog.exec()) {
+        result = dialog.textValue();
+        if (result.isNull()) result = "";
+    }
+    return result;
 }
 
 bool Helper::isQtVersionLessThan(int maj, int min, int mic) {

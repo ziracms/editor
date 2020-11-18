@@ -7084,11 +7084,8 @@ void Editor::contextMenuEvent(QContextMenuEvent *event)
 
 void Editor::gotoLineRequest()
 {
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("Go to"),
-                                         tr("Line:"), QLineEdit::Normal,
-                                         "", &ok);
-    if (ok && !text.isEmpty()) {
+    QString text = Helper::showInputDialog(tr("Go to"), tr("Line:"), QLineEdit::Normal);
+    if (!text.isNull() && !text.isEmpty()) {
         int line = text.toInt();
         if (line > 0) gotoLine(line);
     }

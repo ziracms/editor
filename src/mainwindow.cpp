@@ -1342,25 +1342,22 @@ void MainWindow::on_actionQuickAccess_triggered()
 
 void MainWindow::on_actionStartServers_triggered()
 {
-    bool ok;
-    QString pwd = QInputDialog::getText(this, tr("Enter root password"), tr("Password:"), QLineEdit::Password, "", &ok);
-    if (!ok) return;
+    QString pwd = Helper::showInputDialog(tr("Enter root password"), tr("Password:"), QLineEdit::Password);
+    if (pwd.isNull()) return;
     runServersCommand(SERVERS_START_CMD, pwd, tr("Starting apache2 and mariadb servers..."));
 }
 
 void MainWindow::on_actionStopServers_triggered()
 {
-    bool ok;
-    QString pwd = QInputDialog::getText(this, tr("Enter root password"), tr("Password:"), QLineEdit::Password, "", &ok);
-    if (!ok) return;
+    QString pwd = Helper::showInputDialog(tr("Enter root password"), tr("Password:"), QLineEdit::Password);
+    if (pwd.isNull()) return;
     runServersCommand(SERVERS_STOP_CMD, pwd, tr("Stopping apache2 and mariadb servers..."));
 }
 
 void MainWindow::on_actionServersStatus_triggered()
 {
-    bool ok;
-    QString pwd = QInputDialog::getText(this, tr("Enter root password"), tr("Password:"), QLineEdit::Password, "", &ok);
-    if (!ok) return;
+    QString pwd = Helper::showInputDialog(tr("Enter root password"), tr("Password:"), QLineEdit::Password);
+    if (pwd.isNull()) return;
     runServersCommand(SERVERS_STATUS_CMD, pwd, tr("Fetching status of apache2 and mariadb servers..."));
 }
 
@@ -1394,9 +1391,8 @@ void MainWindow::on_actionCompileSass_triggered()
     QFileInfo fInfo(fileName);
     QString file = fInfo.baseName() + ".css";
     QString path = fInfo.absolutePath();
-    bool ok;
-    file = QInputDialog::getText(this, tr("Enter filename"), tr("Filename:"), QLineEdit::Normal, file, &ok);
-    if (!ok) return;
+    file = Helper::showInputDialog(tr("Enter filename"), tr("Filename:"), QLineEdit::Normal, file);
+    if (file.isNull()) return;
     compileSass(fileName, path + "/" + file);
 }
 
@@ -1599,9 +1595,8 @@ void MainWindow::on_actionGitAddCurrent_triggered()
 
 void MainWindow::on_actionGitCommit_triggered(bool add)
 {
-    bool ok;
-    QString msg = QInputDialog::getText(this, tr("Commit message"), tr("Message:"), QLineEdit::Normal, "", &ok);
-    if (!ok || msg.isEmpty()) return;
+    QString msg = Helper::showInputDialog(tr("Commit message"), tr("Message:"), QLineEdit::Normal);
+    if (msg.isNull()) return;
     if (!add) git->commit(getGitWorkingDir(), msg);
     else git->addAndCommit(getGitWorkingDir(), msg);
 }
@@ -1623,52 +1618,22 @@ void MainWindow::on_actionGitInitializeRepository_triggered()
 
 void MainWindow::on_actionGitAddRemoteURL_triggered()
 {
-    QInputDialog dialog(this);
-    dialog.setWindowTitle(tr("Enter URL"));
-    dialog.setLabelText(tr("Add remote URL.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"));
-    dialog.setTextEchoMode(QLineEdit::Normal);
-    #if defined(Q_OS_ANDROID)
-    int offset = 20;
-    dialog.setGeometry(offset, ui->centralWidget->geometry().top(), geometry().width() - 2*offset, geometry().height() / 2);
-    //dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
-    #endif
-    if (!dialog.exec()) return;
-    QString url = dialog.textValue();
-    if (url.size() == 0) return;
+    QString url = Helper::showInputDialog(tr("Enter URL"), tr("Add remote URL.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"), QLineEdit::Normal);
+    if (url.isNull() || url.size() == 0) return;
     git->addRemoteURL(getGitWorkingDir(), url);
 }
 
 void MainWindow::on_actionGitChangeRemoteURL_triggered()
 {
-    QInputDialog dialog(this);
-    dialog.setWindowTitle(tr("Enter URL"));
-    dialog.setLabelText(tr("Change remote URL.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"));
-    dialog.setTextEchoMode(QLineEdit::Normal);
-    #if defined(Q_OS_ANDROID)
-    int offset = 20;
-    dialog.setGeometry(offset, ui->centralWidget->geometry().top(), geometry().width() - 2*offset, geometry().height() / 2);
-    //dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
-    #endif
-    if (!dialog.exec()) return;
-    QString url = dialog.textValue();
-    if (url.size() == 0) return;
+    QString url = Helper::showInputDialog(tr("Enter URL"), tr("Change remote URL.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"), QLineEdit::Normal);
+    if (url.isNull() || url.size() == 0) return;
     git->changeRemoteURL(getGitWorkingDir(), url);
 }
 
 void MainWindow::on_actionGitCloneRepository_triggered()
 {
-    QInputDialog dialog(this);
-    dialog.setWindowTitle(tr("Enter URL"));
-    dialog.setLabelText(tr("Clone repository.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"));
-    dialog.setTextEchoMode(QLineEdit::Normal);
-    #if defined(Q_OS_ANDROID)
-    int offset = 20;
-    dialog.setGeometry(offset, ui->centralWidget->geometry().top(), geometry().width() - 2*offset, geometry().height() / 2);
-    //dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
-    #endif
-    if (!dialog.exec()) return;
-    QString url = dialog.textValue();
-    if (url.size() == 0) return;
+    QString url = Helper::showInputDialog(tr("Enter URL"), tr("Clone repository.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"), QLineEdit::Normal);
+    if (url.isNull() || url.size() == 0) return;
     git->clone(getGitWorkingDir(), url);
 }
 
