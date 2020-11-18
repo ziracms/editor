@@ -21,6 +21,10 @@ Navigator::Navigator(QTreeWidget * widget, Settings * /*settings*/) : treeWidget
     // scrolling by gesture
     QScroller::grabGesture(treeWidget->viewport(), QScroller::LeftMouseButtonGesture);
     treeWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    QScrollerProperties scrollProps;
+    scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+    scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+    QScroller::scroller(treeWidget->viewport())->setScrollerProperties(scrollProps);
     #endif
 }
 

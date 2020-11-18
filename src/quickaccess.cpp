@@ -104,6 +104,10 @@ QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
     // scrolling by gesture
     QScroller::grabGesture(resultsList->viewport(), QScroller::LeftMouseButtonGesture);
     resultsList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    QScrollerProperties scrollProps;
+    scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+    scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
+    QScroller::scroller(resultsList->viewport())->setScrollerProperties(scrollProps);
     #endif
 }
 
