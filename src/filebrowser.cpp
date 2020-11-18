@@ -399,6 +399,7 @@ void FileBrowser::fbEditItemRequested(QTreeWidgetItem * item, QString actionName
 void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
 {
     if (item == nullptr) return;
+    if (isGesturesEnabled) disableGestures();
     QTreeWidgetItem * parent = item->parent();
     QString path = item->data(0, Qt::UserRole).toString();
     if (path.size() == 0) return;
@@ -440,6 +441,10 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
     }
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
+
+    #if defined(Q_OS_ANDROID)
+    if (!isGesturesEnabled) enableGestures();
+    #endif
 }
 
 void FileBrowser::fileBrowserItemChanged(QTreeWidgetItem * item, int col)

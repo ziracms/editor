@@ -195,7 +195,7 @@ bool GitBrowser::eventFilter(QObject *watched, QEvent *event)
             mousePressTimer.start();
         }
     }
-    if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonRelease) {
+    if(watched == treeWidget->viewport() && (event->type() == QEvent::MouseButtonRelease || event->type() == QEvent::MouseMove)) {
         if (mousePressTimer.isActive()) mousePressTimer.stop();
     }
     return false;

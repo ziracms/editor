@@ -1961,7 +1961,7 @@ void MainWindow::dropEvent(QDropEvent * event)
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     if (tabsList->isVisible()) tabsList->hide();
-    hideQAPanel();
+    if (e->key() != Qt::Key_Down && e->key() != Qt::Key_Up) hideQAPanel();
     QMainWindow::keyPressEvent(e);
 }
 

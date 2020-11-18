@@ -43,6 +43,7 @@ protected:
     void fbPasteItem(QTreeWidgetItem * item);
     void fileBrowserRemoveEmptyItems();
     void fileBrowserContextMenuRequested(QTreeWidgetItem * item);
+protected slots:
     void enableGestures();
     void disableGestures();
 private:
