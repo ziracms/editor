@@ -749,7 +749,7 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
             fileBrowserDoubleClicked(item, 0);
         } else if (keyEvent->key() == Qt::Key_Return && editMode) {
             editMode = false;
-            treeWidget->setFocus(); // workaround for Android
+            //treeWidget->setFocus(); // workaround for Android (causes segmentation fault)
         } else if (keyEvent->key() == Qt::Key_Up) {
             if (treeWidget->topLevelItemCount() == 0 || treeWidget->currentItem() == treeWidget->topLevelItem(0)) {
                 pathLine->setFocus();
