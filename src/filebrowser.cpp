@@ -37,6 +37,7 @@ FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * sett
 {
     fbpath = ""; fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
+    isGesturesEnabled = false;
     fileBrowserHomeDir = QString::fromStdString(settings->get("file_browser_home"));
     initFileBrowser(fileBrowserHomeDir);
     menu.hide();
@@ -81,14 +82,26 @@ void FileBrowser::initFileBrowser(QString homeDir)
     #if defined(Q_OS_ANDROID)
     treeWidget->viewport()->installEventFilter(this); // for context menu
     // scrolling by gesture
+    enableGestures();
+    #endif
+    pathLine->installEventFilter(this);
+}
+
+void FileBrowser::enableGestures()
+{
     QScroller::grabGesture(treeWidget->viewport(), QScroller::LeftMouseButtonGesture);
     treeWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     QScrollerProperties scrollProps;
     scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
     scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
     QScroller::scroller(treeWidget->viewport())->setScrollerProperties(scrollProps);
-    #endif
-    pathLine->installEventFilter(this);
+    isGesturesEnabled = true;
+}
+
+void FileBrowser::disableGestures()
+{
+    QScroller::ungrabGesture(treeWidget->viewport());
+    isGesturesEnabled = false;
 }
 
 void FileBrowser::buildFileBrowserTree(QString startDir, QTreeWidgetItem * parent)
@@ -344,6 +357,7 @@ void FileBrowser::fbCreateNewItemRequested(QTreeWidgetItem * item, QString actio
     if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isWritable() || !fInfo.isDir()) return;
 
     editMode = true;
+    if (isGesturesEnabled) disableGestures();
 
     if (!item->isExpanded()) treeWidget->expandItem(item);
     QTreeWidgetItem * tmpitem = new QTreeWidgetItem();
@@ -375,6 +389,7 @@ void FileBrowser::fbEditItemRequested(QTreeWidgetItem * item, QString actionName
     if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isWritable()) return;
 
     editMode = true;
+    if (isGesturesEnabled) disableGestures();
 
     item->setData(0, Qt::UserRole+1, QVariant(actionName));
     item->setFlags(item->flags() | Qt::ItemIsEditable);
@@ -397,7 +412,7 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
             // folder is not empty ?
             if (Helper::showQuestion(tr("Delete"), tr("Folder is not empty. Delete all files in \"%1\" ?").arg(fInfo.fileName()))) {
                 if (!Helper::deleteFolderRecursivly(path)) {
-                    Helper::showMessage(QObject::tr("Could not delete folder."));
+                    emit showError(QObject::tr("Could not delete folder."));
                 } else {
                     // reload
                     if (parent != nullptr) fbReloadItem(parent);
@@ -414,7 +429,7 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
                //QMessageBox::question(treeWidget, tr("Delete"), tr("Do you really want to delete file \"%1\" ?").arg(fInfo.fileName()), QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok
     ) {
         if (!Helper::deleteFile(path)) {
-            Helper::showMessage(QObject::tr("Could not delete file."));
+            emit showError(QObject::tr("Could not delete file."));
         } else {
             // reload
             if (parent != nullptr) fbReloadItem(parent);
@@ -453,14 +468,14 @@ void FileBrowser::fileBrowserItemChanged(QTreeWidgetItem * item, int col)
             else if (actionName == FB_ACTION_NAME_CREATE_FOLDER) success = Helper::createDir(newPath);
             else if (actionName == FB_ACTION_NAME_RENAME) success = Helper::renameFileOrFolder(oldPath, newPath);
             if (!success) {
-                Helper::showMessage(QObject::tr("Could not create new file or folder."));
+                emit showError(QObject::tr("Could not create new file or folder."));
             } else {
                 if (actionName == FB_ACTION_NAME_CREATE_FILE) emit fileCreated(newPath);
                 if (actionName == FB_ACTION_NAME_CREATE_FOLDER) emit folderCreated(newPath);
                 if (actionName == FB_ACTION_NAME_RENAME) emit fileOrFolderRenamed(oldPath, newPath);
             }
         } else {
-            Helper::showMessage(QObject::tr("File or folder with such name already exists."));
+            emit showError(QObject::tr("File or folder with such name already exists."));
         }
         // reload
         if (parent != nullptr) fbReloadItem(parent);
@@ -468,6 +483,10 @@ void FileBrowser::fileBrowserItemChanged(QTreeWidgetItem * item, int col)
     }
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
+
+    #if defined(Q_OS_ANDROID)
+    if (!isGesturesEnabled) enableGestures();
+    #endif
 }
 
 void FileBrowser::fileBrowserItemSelectionChanged()
@@ -549,7 +568,7 @@ void FileBrowser::fbPasteItem(QTreeWidgetItem * item)
             fbcopypath = ""; fbcutpath = "";
             fbcopyitem = nullptr; fbcutitem = nullptr;
         } else {
-            Helper::showMessage(QObject::tr("File or folder with such name already exists."));
+            emit showError(QObject::tr("File or folder with such name already exists."));
         }
     } else if (fbcutpath.size() > 0) {
         QFileInfo fInfo(fbcutpath);
@@ -557,7 +576,7 @@ void FileBrowser::fbPasteItem(QTreeWidgetItem * item)
         QString newPath = path + "/" + fInfo.fileName();
         if (!Helper::fileOrFolderExists(newPath)) {
             if (!Helper::renameFile(fbcutpath, newPath)) {
-                Helper::showMessage(QObject::tr("Could not create new file or folder."));
+                emit showError(QObject::tr("Could not create new file or folder."));
             } else {
                 // reload
                 fbReloadItem(item);
@@ -571,7 +590,7 @@ void FileBrowser::fbPasteItem(QTreeWidgetItem * item)
             fbcopypath = ""; fbcutpath = "";
             fbcopyitem = nullptr; fbcutitem = nullptr;
         } else {
-            Helper::showMessage(QObject::tr("File or folder with such name already exists."));
+            emit showError(QObject::tr("File or folder with such name already exists."));
         }
     }
 }
@@ -589,7 +608,7 @@ void FileBrowser::showCreateFileDialog(QString startDir)
     if (directory.size() == 0 || path.size() == 0) return;
     if (!Helper::fileOrFolderExists(path)) {
         if (!Helper::createFile(path)) {
-            Helper::showMessage(QObject::tr("Could not create new file or folder."));
+            emit showError(QObject::tr("Could not create new file or folder."));
         } else {
             emit fileCreated(path);
             // reload
@@ -617,14 +636,14 @@ void FileBrowser::showCreateFolderDialog(QString startDir)
     if (directory.size() == 0 || path.size() == 0) return;
     if (!Helper::fileOrFolderExists(path)) {
         if (!Helper::createDir(path)) {
-            Helper::showMessage(QObject::tr("Could not create new file or folder."));
+            emit showError(QObject::tr("Could not create new file or folder."));
         } else {
             emit folderCreated(path);
             // reload
             refreshFileBrowserDirectory(directory);
         }
     } else {
-        Helper::showMessage(QObject::tr("File or folder with such name already exists."));
+        emit showError(QObject::tr("File or folder with such name already exists."));
     }
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
@@ -648,7 +667,7 @@ void FileBrowser::showCreateProjectDialog(bool phpLintEnabled, bool phpCSEnabled
     if (Helper::folderExists(path)) {
         emit projectCreateRequested(name, path, lintEnabled, csEnabled);
     } else {
-        Helper::showMessage(QObject::tr("Folder with such name not found."));
+        emit showError(QObject::tr("Folder with such name not found."));
     }
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
@@ -685,7 +704,7 @@ void FileBrowser::openProject(QString startDir)
     if (Helper::folderExists(path)) {
         emit projectOpenRequested(path);
     } else {
-        Helper::showMessage(QObject::tr("Folder with such name not found."));
+        emit showError(QObject::tr("Folder with such name not found."));
     }
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
@@ -753,7 +772,7 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
             fileBrowserDoubleClicked(item, 0);
         } else if (keyEvent->key() == Qt::Key_Return && editMode) {
             editMode = false;
-            //treeWidget->setFocus(); // workaround for Android (causes segmentation fault)
+            treeWidget->setFocus(); // workaround for Android (causes segmentation fault if QMessageBox is displayed)
         } else if (keyEvent->key() == Qt::Key_Up) {
             if (treeWidget->topLevelItemCount() == 0 || treeWidget->currentItem() == treeWidget->topLevelItem(0)) {
                 pathLine->setFocus();
@@ -767,7 +786,7 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
             mousePressTimer.start();
         }
     }
-    if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonRelease) {
+    if(watched == treeWidget->viewport() && (event->type() == QEvent::MouseButtonRelease || event->type() == QEvent::MouseMove)) {
         if (mousePressTimer.isActive()) mousePressTimer.stop();
     }
     // focus

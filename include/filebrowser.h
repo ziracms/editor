@@ -43,6 +43,8 @@ protected:
     void fbPasteItem(QTreeWidgetItem * item);
     void fileBrowserRemoveEmptyItems();
     void fileBrowserContextMenuRequested(QTreeWidgetItem * item);
+    void enableGestures();
+    void disableGestures();
 private:
     QTreeWidget * treeWidget;
     QLineEdit * pathLine;
@@ -56,6 +58,7 @@ private:
     bool acceptEnter;
     bool editMode;
     QTimer mousePressTimer;
+    bool isGesturesEnabled;
 public slots:
     void contextMenu();
 private slots:
@@ -77,6 +80,8 @@ signals:
     void projectCreateRequested(QString, QString, bool, bool);
     void projectEditRequested(QString, QString, bool, bool);
     void projectOpenRequested(QString);
+    void showMessage(QString text);
+    void showError(QString text);
 };
 
 #endif // FILEBROWSER_H

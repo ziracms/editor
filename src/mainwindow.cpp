@@ -246,6 +246,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(filebrowser, SIGNAL(projectCreateRequested(QString,QString, bool, bool)), this, SLOT(projectCreateRequested(QString, QString, bool, bool)));
     connect(filebrowser, SIGNAL(projectEditRequested(QString,QString, bool, bool)), this, SLOT(projectEditRequested(QString, QString, bool, bool)));
     connect(filebrowser, SIGNAL(projectOpenRequested(QString)), this, SLOT(projectOpenRequested(QString)));
+    connect(filebrowser, SIGNAL(showMessage(QString)), this, SLOT(showPopupText(QString)));
+    connect(filebrowser, SIGNAL(showError(QString)), this, SLOT(showPopupError(QString)));
 
     // navigator
     navigator = new Navigator(ui->navigatorTreeWidget, settings);
