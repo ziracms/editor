@@ -1061,8 +1061,34 @@ QuickAccess QListView:focus
 }
 
 QColorDialog,
-QInputDialog
+QInputDialog,
+MessageDialog,
+QuestionDialog,
+InputDialog,
+ContextDialog QListWidget,
+ContextDialog QListWidget:hover,
+ContextDialog QListWidget:focus
 {
-    border: 1px solid #8dbae8;
+    border: 1px solid #a0b3bb;
     padding: 3px;
+}
+
+MessageDialog #headerLabel,
+QuestionDialog #headerLabel,
+InputDialog #headerLabel
+{
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+InputDialog #descriptionLabel
+{
+    color: #ababab;
+}
+
+MessageDialog QPushButton,
+QuestionDialog QPushButton,
+InputDialog QPushButton
+{
+    width: 100px;
 }

@@ -12,7 +12,7 @@ QToolTip
 QWidget
 {
     color: #bbbbbb;
-    background-color: #3c3f41;
+    background-color: #2b2f30;
 }
 
 /* use built-in style */
@@ -20,7 +20,7 @@ QWidget
 QWidget:item:hover
 {
     color: #bbbbbb;
-    background-color: #555459;
+    background-color: #484d50;
 }
 
 QWidget:item:selected
@@ -44,13 +44,13 @@ QMenuBar::item
 
 QMenuBar::item:selected
 {
-    background-color: #555459;
-    border: 1px solid #3c3f41;
+    background-color: #484d50;
+    border: 1px solid #2b2f30;
 }
 
 QMenuBar::item:pressed
 {
-    border: 1px solid #3c3f41;
+    border: 1px solid #2b2f30;
     background-color: #474a4d;
     color: #fff;
 }
@@ -62,7 +62,7 @@ QMenu
 
 QMenu::item
 {
-    background: #3c3f41;
+    background: #2b2f30;
     padding: 5px 80px 5px 25px;
     min-width: 100px;
 }
@@ -70,7 +70,7 @@ QMenu::item
 QMenu::item:selected
 {
     color: #fff;
-    background-color: #555459;
+    background-color: #484d50;
 }
 
 QMenu::icon
@@ -133,12 +133,12 @@ QMenu::right-arrow
 QWidget:disabled
 {
     color: #616161;
-    background-color: #3c3f41;
+    background-color: #2b2f30;
 }
 
 QLineEdit
 {
-    background-color: #2c2e2f;
+    background-color: #272c2e;
     border-style: solid;
     border: 1px solid #444;
     border-radius: 3;
@@ -190,7 +190,7 @@ QSizeGrip
 
 QHeaderView::section
 {
-    background-color: #3c3f41;
+    background-color: #2b2f30;
     border: 0px solid #444; /* workaround for dialog header background */
     border-bottom: 1px solid #444;
     padding-top: 5px;
@@ -233,7 +233,7 @@ QLineEdit#fileBrowserPathLine
 QPushButton
 {
     color: #e5e8ea;
-    background-color: #2c2e2f;
+    background-color: #272c2e;
     border: 1px solid #444;
     border-radius: 3;
     padding: 5px 10px 5px 10px;
@@ -257,13 +257,13 @@ QPushButton#gitTabPushButton
 
 QPushButton:hover
 {
-    border: 1px solid #4d5052;
-    background:  #4d5052;
+    border: 1px solid #3e4244;
+    background:  #3e4244;
 }
 
 QPushButton:focus
 {
-    background-color:  #4d5052;
+    background-color:  #3e4244;
 }
 
 QPushButton:pressed
@@ -275,7 +275,7 @@ QPushButton:pressed
 QSpinBox
 {
     /*selection-background-color: #ffaa00;*/
-    background-color: #383a3c;
+    background-color: #272c2e;
     border: 1px solid #444;
     border-radius: 3;
     padding: 5px 40px 5px 5px;
@@ -284,7 +284,7 @@ QSpinBox
 /*QComboBox:hover,*/ /* use built-in style */
 QSpinBox:hover
 {
-    border: 1px solid #4d5052;
+    border: 1px solid #3e4244;
 }
 
 /* use built-in style */
@@ -298,7 +298,7 @@ QComboBox:on
 QComboBox QAbstractItemView
 {
     border: 2px solid darkgray;
-    /*selection-background-color: #4d5052;*/
+    /*selection-background-color: #3e4244;*/
     outline: none;
 }
 
@@ -329,7 +329,7 @@ QComboBox::down-arrow
 QComboBox QListView::item:hover
 {
     color: #bbbbbb;
-    background-color: #555459;
+    background-color: #484d50;
 }
 
 QComboBox QListView::item:selected
@@ -372,12 +372,12 @@ QSpinBox::down-button:hover
 
 QGroupBox:focus
 {
-    border: 1px solid #4d5052;
+    border: 1px solid #3e4244;
 }
 
 QScrollBar:horizontal {
     border: none;
-    background: #3c3f41;
+    background: #2b2f30;
     height: 18px;
     margin: 0px 1px;
     padding: 2px 0px;
@@ -392,7 +392,7 @@ QScrollBar::handle:horizontal
 
 QScrollBar::handle:horizontal:hover
 {
-    background: #555459;
+    background: #484d50;
 }
 
 QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal
@@ -421,7 +421,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
 
 QScrollBar:vertical
 {
-    background: #3c3f41;
+    background: #2b2f30;
     width: 18px;
     margin: 1px 0px;
     border: none;
@@ -437,7 +437,7 @@ QScrollBar::handle:vertical
 
 QScrollBar::handle:vertical:hover 
 {
-    background: #555459;
+    background: #484d50;
 }
 
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical
@@ -478,7 +478,7 @@ QListWidget::item
 QListWidget::item:hover
 {
     color: #bbbbbb;
-    background-color: #555459;
+    background-color: #484d50;
 }
 
 QListWidget::item:selected
@@ -511,7 +511,7 @@ QTextEdit, QTextEdit:hover, QTextEdit:focus
 
 QTreeView
 {
-    background: #3c3f41;
+    background: #2b2f30;
 }
 
 QTreeView:focus
@@ -557,18 +557,18 @@ QTreeView::branch:open:!has-children:has-siblings:selected
 
 QMainWindow::separator
 {
-    background-color: #3c3f41;
+    background-color: #2b2f30;
     color: #bbbbbb;
     padding-left: 4px;
-    border: 1px solid #3c3f41;
+    border: 1px solid #2b2f30;
     spacing: 3px; /* spacing between items in the tool bar */
 }
 
 QToolBar
 {
     color: #bbbbbb;
-    background-color: #3c3f41;
-    border: 1px solid #3c3f41; /* workaround for lxde */
+    background-color: #2b2f30;
+    border: 1px solid #2b2f30; /* workaround for lxde */
     spacing: 5px;
 }
 
@@ -610,19 +610,19 @@ QToolBar::separator:vertical
 QToolButton
 {
     background: transparent;
-    border: 1px solid #3c3f41;
+    border: 1px solid #2b2f30;
 }
 
 QToolButton:hover
 {
     background: transparent;
-    border: 1px solid #555459;
+    border: 1px solid #484d50;
 }
 
 QToolButton:pressed
 {
-    background: #4d5052;
-    border: 1px solid #4d5052;
+    background: #3e4244;
+    border: 1px solid #3e4244;
 }
 
 QFileDialog QToolButton:hover,
@@ -630,7 +630,7 @@ QFileDialog QToolButton:focus,
 QFileDialog QToolButton:pressed
 {
     background-color: transparent;
-    border: 1px solid #4d5052;
+    border: 1px solid #3e4244;
 }
 
 QTabWidget QToolButton,
@@ -681,7 +681,7 @@ QTabBar::tab:top, QTabBar::tab:bottom,
 QTabBar::tab:left, QTabBar::tab:right
 {
     border: none;
-    background-color: #2c2e2f;
+    background-color: #272c2e;
 }
 
 QTabBar::tab:!selected
@@ -693,12 +693,12 @@ QTabBar::tab:top:selected, QTabBar::tab:bottom:selected,
 QTabBar::tab:left:selected, QTabBar::tab:right:selected
 {
     color: #e5e8ea;
-    background-color: #555459;
+    background-color: #484d50;
 }
 
 QTabBar::tab:!selected:hover
 {
-    background-color: #555459;
+    background-color: #484d50;
 }
 
 QTabBar::tab:top
@@ -793,13 +793,13 @@ QTabBar::tab:right:last, QTabBar::tab:right:only-one
 
 QTabBar QToolButton
 {
-    background-color: #2c2e2f;
+    background-color: #272c2e;
     border: 1px solid #444;
 }
 
 QTabBar QToolButton:hover
 {
-    background-color: #4d5052;
+    background-color: #3e4244;
 }
 
 QTabBar QToolButton::right-arrow {
@@ -1038,7 +1038,7 @@ QuickAccess,
 QuickAccess:hover,
 QuickAccess:focus
 {
-    background: #3c3f41;
+    background: #2b2f30;
     border: 1px solid #444;
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
@@ -1053,10 +1053,36 @@ QuickAccess QListView:focus
 }
 
 QColorDialog,
-QInputDialog
+QInputDialog,
+MessageDialog,
+QuestionDialog,
+InputDialog,
+ContextDialog QListWidget,
+ContextDialog QListWidget:hover,
+ContextDialog QListWidget:focus
 {
-    border: 1px solid #555459;
+    border: 1px solid #4a6068;
     padding: 3px;
+}
+
+MessageDialog #headerLabel,
+QuestionDialog #headerLabel,
+InputDialog #headerLabel
+{
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+InputDialog #descriptionLabel
+{
+    color: #616161;
+}
+
+MessageDialog QPushButton,
+QuestionDialog QPushButton,
+InputDialog QPushButton
+{
+    width: 100px;
 }
 
 #helpBrowser
