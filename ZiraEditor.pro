@@ -54,6 +54,7 @@ SOURCES += \
     src/parserworker.cpp \
     src/createfiledialog.cpp \
     src/createfolderdialog.cpp \
+    src/renamedialog.cpp \
     src/filebrowser.cpp \
     src/editortabs.cpp \
     src/parsephp.cpp \
@@ -110,6 +111,7 @@ HEADERS += \
     include/parserworker.h \
     include/createfiledialog.h \
     include/createfolderdialog.h \
+    include/renamedialog.h \
     include/filebrowser.h \
     include/editortabs.h \
     include/parsephp.h \
@@ -147,6 +149,7 @@ FORMS += \
     ui/mainwindow.ui \
     ui/createfile.ui \
     ui/createfolder.ui \
+    ui/rename.ui \
     ui/createproject.ui \
     ui/search.ui \
     ui/editproject.ui \

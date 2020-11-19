@@ -817,13 +817,14 @@ void MainWindow::editorBackForwardChanged()
 
 void MainWindow::editorActionsChanged()
 {
-    bool undo = false, redo = false, back = false, forward = false;
+    bool undo = false, redo = false, back = false, forward = false, rename = false;
     Editor * textEditor = getActiveEditor();
     if (textEditor != nullptr) {
         undo = textEditor->isUndoable();
         redo = textEditor->isRedoable();
         back = textEditor->isBackable();
         forward = textEditor->isForwadable();
+        rename = true;
     }
     QList<QAction *> editActions = ui->menuEdit->actions();
     foreach (QAction * action, editActions) {
@@ -835,6 +836,8 @@ void MainWindow::editorActionsChanged()
             action->setEnabled(back);
         } else if (action->objectName() == "actionForward") {
             action->setEnabled(forward);
+        } else if (action->objectName() == "actionRename") {
+            action->setEnabled(rename);
         }
     }
 }
@@ -1082,6 +1085,13 @@ void MainWindow::on_actionNewFile_triggered()
 void MainWindow::on_actionNewFolder_triggered()
 {
     filebrowser->showCreateFolderDialog();
+}
+
+void MainWindow::on_actionRename_triggered()
+{
+    QString fileName = getCurrentTabFilename();
+    if (fileName.size() == 0 || !Helper::fileExists(fileName)) return;
+    filebrowser->showRenameDialog(fileName);
 }
 
 void MainWindow::on_actionNewProject_triggered()

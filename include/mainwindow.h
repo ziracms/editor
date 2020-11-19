@@ -42,6 +42,7 @@ namespace Ui {
     class MainWindow;
     class CreateFileDialog;
     class CreateFolderDialog;
+    class RenameDialog;
     class CreateProjectDialog;
     class EditProjectDialog;
     class SearchDialog;
@@ -108,6 +109,7 @@ private slots:
     void on_actionOpenFile_triggered();
     void on_actionNewFile_triggered();
     void on_actionNewFolder_triggered();
+    void on_actionRename_triggered();
     void on_actionUpdateProject_triggered();
     void on_actionRescanProject_triggered();
     void on_actionCloseProject_triggered();

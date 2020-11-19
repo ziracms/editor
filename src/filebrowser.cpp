@@ -17,6 +17,7 @@
 #include "helper.h"
 #include "createfiledialog.h"
 #include "createfolderdialog.h"
+#include "renamedialog.h"
 #include "createprojectdialog.h"
 #include "editprojectdialog.h"
 #include "project.h"
@@ -365,6 +366,12 @@ void FileBrowser::fbCreateNewItemRequested(QTreeWidgetItem * item, QString actio
     QFileInfo fInfo(path);
     if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isWritable() || !fInfo.isDir()) return;
 
+    #if defined(Q_OS_ANDROID)
+    if (actionName == FB_ACTION_NAME_CREATE_FILE) showCreateFileDialog(path);
+    else if (actionName == FB_ACTION_NAME_CREATE_FOLDER) showCreateFolderDialog(path);
+    return;
+    #endif
+
     editMode = true;
     /*
     if (isGesturesEnabled) disableGestures();
@@ -398,6 +405,11 @@ void FileBrowser::fbEditItemRequested(QTreeWidgetItem * item, QString actionName
     if (path.size() == 0) return;
     QFileInfo fInfo(path);
     if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isWritable()) return;
+
+    #if defined(Q_OS_ANDROID)
+    showRenameDialog(path);
+    return;
+    #endif
 
     editMode = true;
     /*
@@ -582,9 +594,7 @@ void FileBrowser::fbPasteItem(QTreeWidgetItem * item)
         QString newPath = path + "/" + fInfo.fileName();
         if (!Helper::fileOrFolderExists(newPath)) {
             if (!Helper::copyFile(fbcopypath, newPath)) {
-                QMessageBox msgBox;
-                msgBox.setText(QObject::tr("Could not create new file or folder."));
-                msgBox.exec();
+                emit showError(QObject::tr("Could not create new file or folder."));
             } else {
                 // reload
                 fbReloadItem(item);
@@ -639,9 +649,7 @@ void FileBrowser::showCreateFileDialog(QString startDir)
             refreshFileBrowserDirectory(directory);
         }
     } else {
-        QMessageBox msgBox;
-        msgBox.setText(QObject::tr("File or folder with such name already exists."));
-        msgBox.exec();
+        emit showError(QObject::tr("File or folder with such name already exists."));
     }
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
@@ -663,6 +671,35 @@ void FileBrowser::showCreateFolderDialog(QString startDir)
             emit showError(QObject::tr("Could not create new file or folder."));
         } else {
             emit folderCreated(path);
+            // reload
+            refreshFileBrowserDirectory(directory);
+        }
+    } else {
+        emit showError(QObject::tr("File or folder with such name already exists."));
+    }
+    fbcopypath = ""; fbcutpath = "";
+    fbcopyitem = nullptr; fbcutitem = nullptr;
+}
+
+void FileBrowser::showRenameDialog(QString startPath)
+{
+    if (startPath.size() == 0) return;
+    QFileInfo fm(startPath);
+    QString directory = fm.absolutePath();
+    QString name = fm.fileName();
+    treeWidget->clearFocus();
+    RenameDialog dialog(treeWidget);
+    dialog.setDirectory(directory);
+    dialog.setName(name);
+    dialog.focusName();
+    if (dialog.exec() != QDialog::Accepted) return;
+    QString path = dialog.getPath();
+    if (path.size() == 0) return;
+    if (!Helper::fileOrFolderExists(path)) {
+        if (!Helper::renameFileOrFolder(startPath, path)) {
+            emit showError(QObject::tr("Could not rename file or folder."));
+        } else {
+            emit fileOrFolderRenamed(startPath, path);
             // reload
             refreshFileBrowserDirectory(directory);
         }
@@ -796,7 +833,6 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
             fileBrowserDoubleClicked(item, 0);
         } else if (keyEvent->key() == Qt::Key_Return && editMode) {
             editMode = false;
-            treeWidget->setFocus(); // workaround for Android (causes segmentation fault if QMessageBox is displayed)
         } else if (keyEvent->key() == Qt::Key_Up) {
             if (treeWidget->topLevelItemCount() == 0 || treeWidget->currentItem() == treeWidget->topLevelItem(0)) {
                 pathLine->setFocus();

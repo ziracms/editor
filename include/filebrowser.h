@@ -21,6 +21,7 @@ public:
     FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * settings);
     void showCreateFileDialog(QString startDir = "");
     void showCreateFolderDialog(QString startDir = "");
+    void showRenameDialog(QString startPath);
     void showCreateProjectDialog(bool phpLintEnabled, bool phpCSEnabled, QString startDir = "");
     void showEditProjectDialog(QString title, QString path, bool phpLintEnabled, bool phpCSEnabled);
     void openProject(QString startDir = "");

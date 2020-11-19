@@ -130,6 +130,8 @@
     <addaction name="actionBack"/>
     <addaction name="actionForward"/>
     <addaction name="separator"/>
+    <addaction name="actionRename"/>
+    <addaction name="separator"/>
     <addaction name="actionFindReplace"/>
     <addaction name="actionSearchInFiles"/>
     <addaction name="actionMultiSelect"/>
@@ -1236,6 +1238,11 @@
   <action name="actionMultiSelect">
    <property name="text">
     <string>Multi-Selection</string>
+   </property>
+  </action>
+  <action name="actionRename">
+   <property name="text">
+    <string>Rename</string>
    </property>
   </action>
  </widget>
