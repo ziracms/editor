@@ -60,6 +60,8 @@ private:
     bool editMode;
     QTimer mousePressTimer;
     bool isGesturesEnabled;
+    bool isGesturesActive;
+    int gesturesY;
 public slots:
     void contextMenu();
 private slots:

@@ -13,7 +13,7 @@
 #include <QKeyEvent>
 #include <QFileDialog>
 #include <QShortcut>
-#include <QScroller>
+#include <QScrollBar>
 #include "helper.h"
 #include "createfiledialog.h"
 #include "createfolderdialog.h"
@@ -38,6 +38,8 @@ FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * sett
     fbpath = ""; fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
     isGesturesEnabled = false;
+    isGesturesActive = false;
+    gesturesY = -1;
     fileBrowserHomeDir = QString::fromStdString(settings->get("file_browser_home"));
     initFileBrowser(fileBrowserHomeDir);
     menu.hide();
@@ -53,6 +55,8 @@ FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * sett
     mousePressTimer.setSingleShot(true);
     connect(&mousePressTimer, SIGNAL(timeout()), this, SLOT(contextMenu()));
 
+    treeWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    treeWidget->setMouseTracking(true);
     treeWidget->setFocus();
 }
 
@@ -89,18 +93,23 @@ void FileBrowser::initFileBrowser(QString homeDir)
 
 void FileBrowser::enableGestures()
 {
+    // QScroller removed due to segfaults
+    /*
     QScroller::grabGesture(treeWidget->viewport(), QScroller::LeftMouseButtonGesture);
     treeWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     QScrollerProperties scrollProps;
     scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
     scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
     QScroller::scroller(treeWidget->viewport())->setScrollerProperties(scrollProps);
+    */
     isGesturesEnabled = true;
 }
 
 void FileBrowser::disableGestures()
 {
+    /*
     QScroller::ungrabGesture(treeWidget->viewport());
+    */
     isGesturesEnabled = false;
 }
 
@@ -357,7 +366,9 @@ void FileBrowser::fbCreateNewItemRequested(QTreeWidgetItem * item, QString actio
     if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isWritable() || !fInfo.isDir()) return;
 
     editMode = true;
+    /*
     if (isGesturesEnabled) disableGestures();
+    */
 
     if (!item->isExpanded()) treeWidget->expandItem(item);
     QTreeWidgetItem * tmpitem = new QTreeWidgetItem();
@@ -389,7 +400,9 @@ void FileBrowser::fbEditItemRequested(QTreeWidgetItem * item, QString actionName
     if (!fInfo.exists() || !fInfo.isReadable() || !fInfo.isWritable()) return;
 
     editMode = true;
+    /*
     if (isGesturesEnabled) disableGestures();
+    */
 
     item->setData(0, Qt::UserRole+1, QVariant(actionName));
     item->setFlags(item->flags() | Qt::ItemIsEditable);
@@ -399,7 +412,9 @@ void FileBrowser::fbEditItemRequested(QTreeWidgetItem * item, QString actionName
 void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
 {
     if (item == nullptr) return;
+    /*
     if (isGesturesEnabled) disableGestures();
+    */
     QTreeWidgetItem * parent = item->parent();
     QString path = item->data(0, Qt::UserRole).toString();
     if (path.size() == 0) return;
@@ -442,9 +457,11 @@ void FileBrowser::fbDeleteRequested(QTreeWidgetItem * item)
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
 
+    /*
     #if defined(Q_OS_ANDROID)
     if (!isGesturesEnabled) enableGestures();
     #endif
+    */
 }
 
 void FileBrowser::fileBrowserItemChanged(QTreeWidgetItem * item, int col)
@@ -489,9 +506,11 @@ void FileBrowser::fileBrowserItemChanged(QTreeWidgetItem * item, int col)
     fbcopypath = ""; fbcutpath = "";
     fbcopyitem = nullptr; fbcutitem = nullptr;
 
+    /*
     #if defined(Q_OS_ANDROID)
     if (!isGesturesEnabled) enableGestures();
     #endif
+    */
 }
 
 void FileBrowser::fileBrowserItemSelectionChanged()
@@ -789,10 +808,33 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
         QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent *>(event);
         if (mouseEvent != nullptr && mouseEvent->buttons() == Qt::LeftButton) {
             mousePressTimer.start();
+            if (isGesturesEnabled) {
+                isGesturesActive = true;
+                gesturesY = mouseEvent->globalY();
+            }
         }
     }
-    if(watched == treeWidget->viewport() && (event->type() == QEvent::MouseButtonRelease || event->type() == QEvent::MouseMove)) {
+    if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonRelease) {
         if (mousePressTimer.isActive()) mousePressTimer.stop();
+        isGesturesActive = false;
+        gesturesY = -1;
+    }
+    if(watched == treeWidget->viewport() && event->type() == QEvent::MouseMove) {
+        QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent *>(event);
+        if (mouseEvent != nullptr && mouseEvent->buttons() == Qt::LeftButton) {
+            if (mousePressTimer.isActive()) mousePressTimer.stop();
+            if (isGesturesEnabled && isGesturesActive && gesturesY >= 0 && treeWidget->topLevelItemCount() > 0 && treeWidget->verticalScrollBar()->isVisible()) {
+                int deltaY = mouseEvent->globalY() - gesturesY;
+                int offset = treeWidget->sizeHintForRow(0) * 2;
+                if (std::abs(deltaY) > offset) {
+                    int sliderPos = treeWidget->verticalScrollBar()->sliderPosition();
+                    int sliderStep = treeWidget->verticalScrollBar()->singleStep();
+                    if (deltaY > 0) sliderStep *= -1;
+                    treeWidget->verticalScrollBar()->setSliderPosition(sliderPos + sliderStep);
+                    gesturesY = mouseEvent->globalY();
+                }
+            }
+        }
     }
     // focus
     if(watched == pathLine && event->type() == QEvent::KeyPress) {
