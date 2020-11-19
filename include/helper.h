@@ -70,7 +70,7 @@ public:
     static QWidget * getWindowWidget();
     static void showMessage(QString text);
     static bool showQuestion(QString title, QString msg);
-    static QString showInputDialog(QString title, QString label, QLineEdit::EchoMode mode, QString defaultValue = "");
+    static QString showInputDialog(QString title, QString label, QLineEdit::EchoMode mode, QString defaultValue = "", QString description = "");
     static bool isQtVersionLessThan(int maj, int min, int mic);
     static void setApplicationAttributes();
     static QAction * contextMenuToDialog(QMenu * menu, QWidget * parent = nullptr);

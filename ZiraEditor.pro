@@ -35,10 +35,13 @@ SOURCES += \
     src/filedialog.cpp \
     src/fileiconprovider.cpp \
     src/icon.cpp \
+    src/inputdialog.cpp \
     src/mainwindow.cpp \
     src/helper.cpp \
+    src/messagedialog.cpp \
     src/progressinfo.cpp \
     src/progressline.cpp \
+    src/questiondialog.cpp \
     src/settings.cpp \
     src/editor.cpp \
     src/linenumber.cpp \
@@ -92,10 +95,13 @@ HEADERS += \
     include/filedialog.h \
     include/fileiconprovider.h \
     include/icon.h \
+    include/inputdialog.h \
     include/mainwindow.h \
     include/helper.h \
+    include/messagedialog.h \
     include/progressinfo.h \
     include/progressline.h \
+    include/questiondialog.h \
     include/settings.h \
     include/editor.h \
     include/linenumber.h \
@@ -146,9 +152,12 @@ HEADERS += \
 
 FORMS += \
     ui/contextdialog.ui \
+    ui/inputdialog.ui \
     ui/mainwindow.ui \
     ui/createfile.ui \
     ui/createfolder.ui \
+    ui/messagedialog.ui \
+    ui/questiondialog.ui \
     ui/rename.ui \
     ui/createproject.ui \
     ui/search.ui \

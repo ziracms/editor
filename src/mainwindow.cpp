@@ -1630,21 +1630,21 @@ void MainWindow::on_actionGitInitializeRepository_triggered()
 
 void MainWindow::on_actionGitAddRemoteURL_triggered()
 {
-    QString url = Helper::showInputDialog(tr("Enter URL"), tr("Add remote URL.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"), QLineEdit::Normal);
+    QString url = Helper::showInputDialog(tr("Add remote URL"), tr("Enter URL:"), QLineEdit::Normal, "", "Note: you might want to add a username and password to repository URL\n(https://username:password@host/path)");
     if (url.isNull() || url.size() == 0) return;
     git->addRemoteURL(getGitWorkingDir(), url);
 }
 
 void MainWindow::on_actionGitChangeRemoteURL_triggered()
 {
-    QString url = Helper::showInputDialog(tr("Enter URL"), tr("Change remote URL.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"), QLineEdit::Normal);
+    QString url = Helper::showInputDialog(tr("Change remote URL"), tr("Enter URL:"), QLineEdit::Normal, "", "Note: you might want to add a username and password to repository URL\n(https://username:password@host/path)");
     if (url.isNull() || url.size() == 0) return;
     git->changeRemoteURL(getGitWorkingDir(), url);
 }
 
 void MainWindow::on_actionGitCloneRepository_triggered()
 {
-    QString url = Helper::showInputDialog(tr("Enter URL"), tr("Clone repository.\nNote: you might want to add a username and password\nto repository URL\n(https://username:password@host/path)"), QLineEdit::Normal);
+    QString url = Helper::showInputDialog(tr("Clone repository"), tr("Enter URL:"), QLineEdit::Normal, "", "Note: you might want to add a username and password to repository URL\n(https://username:password@host/path)");
     if (url.isNull() || url.size() == 0) return;
     git->clone(getGitWorkingDir(), url);
 }

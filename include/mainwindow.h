@@ -50,6 +50,7 @@ namespace Ui {
     class HelpDialog;
     class WelcomeScreen;
     class ContextDialog;
+    class InputDialog;
 }
 
 Q_DECLARE_METATYPE(ParsePHP::ParseResult)
