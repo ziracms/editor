@@ -13,16 +13,17 @@ public:
     explicit ContextDialog(QWidget *parent = nullptr);
     ~ContextDialog();
     void build(QList<QAction *> actions);
-    int show();
+    int exec() override;
     QAction * getAction();
 protected:
-    void focusOutEvent(QFocusEvent *e);
+    bool eventFilter(QObject *watched, QEvent *event) override;
+    void updateGeometry();
     void addItem(QListWidgetItem * item);
     void animateIn();
 private:
     Ui::ContextDialog *ui;
     QList<QAction *> actionsList;
-    QWidget * parent;
+    QWidget * parentWidget;
     QAction * action;
     QPropertyAnimation *animationIn;
     bool animationInProgress;

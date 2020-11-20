@@ -6,12 +6,11 @@
 #include "helper.h"
 
 const int ICON_SIZE = 64;
-const int ANIMATION_DURATION = 100;
 
 ContextDialog::ContextDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ContextDialog),
-    parent(parent)
+    parentWidget(parent)
 {
     ui->setupUi(this);
 
@@ -29,9 +28,13 @@ ContextDialog::ContextDialog(QWidget *parent) :
     animationInProgress = false;
     QEasingCurve easingIn(QEasingCurve::OutCubic);
     animationIn = new QPropertyAnimation(this, "geometry");
-    animationIn->setDuration(ANIMATION_DURATION);
+    animationIn->setDuration(ANDROID_DIALOG_ANIMATION_DURATION);
     animationIn->setEasingCurve(easingIn);
     connect(animationIn, SIGNAL(finished()), this, SLOT(animationInFinished()));
+
+    if (parent != nullptr) {
+        parent->installEventFilter(this);
+    }
 }
 
 ContextDialog::~ContextDialog()
@@ -75,34 +78,13 @@ void ContextDialog::addItem(QListWidgetItem * item)
     ui->contextListWidget->addItem(item);
 }
 
-int ContextDialog::show()
+int ContextDialog::exec()
 {
-    int width = ui->contextListWidget->geometry().width();
-    int height = ui->contextListWidget->geometry().height();
-    int co = ui->contextListWidget->model()->rowCount();
-    if (co>0) {
-        setVisible(true);
-        #if defined(Q_OS_ANDROID)
-        QScreen * screen = QGuiApplication::primaryScreen();
-        if (width < screen->availableGeometry().width() / 2) width = screen->availableGeometry().width() / 2;
-        if (height < screen->availableGeometry().height()) height = screen->availableGeometry().height();
-        ui->contextListWidget->setFixedWidth(width);
-        ui->contextListWidget->setFixedHeight(height);
-        setGeometry(0, 0, width, height);
-        animateIn();
-        #else
-        width = ui->contextListWidget->sizeHintForColumn(0) + ui->contextListWidget->frameWidth() * 2;
-        if (ui->contextListWidget->verticalScrollBar()->isVisible()) width += ui->contextListWidget->verticalScrollBar()->width();
-        height = co * ui->contextListWidget->sizeHintForRow(0) + ui->contextListWidget->frameWidth() * 2;
-        if (width > parent->geometry().width()) width = parent->geometry().width();
-        if (height > parent->geometry().height()) height = parent->geometry().height();
-        ui->contextListWidget->setFixedWidth(width);
-        ui->contextListWidget->setFixedHeight(height);
-        setFocus();
-        #endif
-        setVisible(false);
-    }
-    return exec();
+    setVisible(true);
+    updateGeometry();
+    animateIn();
+    setVisible(false);
+    return QDialog::exec();
 
 }
 
@@ -113,18 +95,12 @@ void ContextDialog::onItemClicked(QListWidgetItem *item)
         action = actionsList.at(index);
         if (!action->isSeparator() && action->isEnabled()) {
             close();
-            parent->setFocus();
+            if (parentWidget != nullptr) {
+                parentWidget->setFocus();
+            }
             action->activate(QAction::Trigger);
-        } else {
-            action = nullptr;
         }
     }
-}
-
-void ContextDialog::focusOutEvent(QFocusEvent *e)
-{
-    if (action == nullptr) close();
-    QDialog::focusOutEvent(e);
 }
 
 void ContextDialog::animateIn()
@@ -142,4 +118,27 @@ void ContextDialog::animateIn()
 void ContextDialog::animationInFinished()
 {
     animationInProgress = false;
+}
+
+void ContextDialog::updateGeometry()
+{
+    int width = ui->contextListWidget->sizeHintForColumn(0) + ui->contextListWidget->frameWidth() * 2;
+    if (ui->contextListWidget->verticalScrollBar()->isVisible()) width += ui->contextListWidget->verticalScrollBar()->width();
+    QScreen * screen = QGuiApplication::primaryScreen();
+    if (width > screen->availableGeometry().width()) width = screen->availableGeometry().width();
+    if (width < screen->availableGeometry().width() / 2) width = screen->availableGeometry().width() / 2;
+    int height = screen->availableGeometry().height();
+    ui->contextListWidget->setFixedWidth(width);
+    ui->contextListWidget->setFixedHeight(height);
+    setMinimumWidth(width);
+    setMinimumHeight(height);
+    setGeometry(0, 0, width, height);
+}
+
+bool ContextDialog::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == parent() && event->type() == QEvent::Resize) {
+        updateGeometry();
+    }
+    return false;
 }

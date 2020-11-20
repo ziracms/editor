@@ -16,6 +16,7 @@ GitBrowser::GitBrowser(QTreeWidget * widget, Settings * settings):
 {
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(gitBrowserContextMenuRequested(QPoint)));
+    connect(treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(gitBrowserItemSelectionChanged()));
 
     QString errorColorStr = QString::fromStdString(settings->get("git_output_error_color"));
     errorColor = QColor(errorColorStr);
@@ -175,6 +176,11 @@ void GitBrowser::gbCommitRequested()
     emit commitRequested();
 }
 
+void GitBrowser::gitBrowserItemSelectionChanged()
+{
+    if (mousePressTimer.isActive()) mousePressTimer.stop();
+}
+
 bool GitBrowser::eventFilter(QObject *watched, QEvent *event)
 {
     QKeyEvent * keyEvent = static_cast<QKeyEvent *>(event);
@@ -195,7 +201,7 @@ bool GitBrowser::eventFilter(QObject *watched, QEvent *event)
             mousePressTimer.start();
         }
     }
-    if(watched == treeWidget->viewport() && (event->type() == QEvent::MouseButtonRelease || event->type() == QEvent::MouseMove)) {
+    if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonRelease) {
         if (mousePressTimer.isActive()) mousePressTimer.stop();
     }
     return false;

@@ -16,6 +16,11 @@ public:
     ~QuestionDialog();
     void setLabelText(QString text);
     void setHeaderText(QString text);
+    int exec() override;
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+    void updateGeometry();
+    void slideIn();
 private:
     Ui::QuestionDialog *ui;
 };

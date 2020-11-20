@@ -33,6 +33,7 @@
 #include "helpdialog.h"
 #include "docktitlebar.h"
 #include "icon.h"
+#include "colordialog.h"
 
 const int OUTPUT_TAB_MESSAGES_INDEX = 0;
 const int OUTPUT_TAB_HELP_INDEX = 1;
@@ -1235,18 +1236,8 @@ void MainWindow::on_actionColorPicker_triggered()
         }
     }
     //QColor color = QColorDialog::getColor(initColor, this, tr("Pick a color"));
-    QColorDialog dialog(this);
-    dialog.setOption(QColorDialog::DontUseNativeDialog);
+    ColorDialog dialog(this);
     dialog.setCurrentColor(initColor);
-    dialog.setWindowTitle(tr("Pick a color"));
-    //dialog.setOption(QColorDialog::ShowAlphaChannel); // no effect
-    #if defined(Q_OS_ANDROID)
-    dialog.open(); // workaround for setMaxHeight
-    if (dialog.geometry().width() > geometry().width() || dialog.geometry().height() > geometry().height()) {
-        dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
-    }
-    dialog.close();
-    #endif
     if (!dialog.exec()) return;
     QColor color = dialog.selectedColor();
     if (!color.isValid()) return;

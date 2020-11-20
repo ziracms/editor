@@ -15,6 +15,12 @@ QWidget
     background-color: #eeeef2;
 }
 
+QWidget:disabled
+{
+    color: #ababab;
+    background-color: #eeeef2;
+}
+
 /* use built-in style */
 /*
 QWidget:item:hover
@@ -130,12 +136,6 @@ QMenu::right-arrow
     image: url(":/styles/light/item.png");
 }
 
-QWidget:disabled
-{
-    color: #ababab;
-    background-color: #eeeef2;
-}
-
 QLineEdit
 {
     background-color: #ffffff;
@@ -238,6 +238,7 @@ QPushButton
     border-radius: 3;
     padding: 5px 10px 5px 10px;
     outline: none;
+    min-width: 60px;
 }
 
 QPushButton#gitTabPullButton,
@@ -248,6 +249,7 @@ QPushButton#gitTabCommitButton
     border-radius: 0;
     border: none;
     margin: 1px 0px 0px 1px;
+    min-width: 30px;
 }
 
 QPushButton#gitTabPushButton
@@ -1084,11 +1086,4 @@ InputDialog #headerLabel
 InputDialog #descriptionLabel
 {
     color: #ababab;
-}
-
-MessageDialog QPushButton,
-QuestionDialog QPushButton,
-InputDialog QPushButton
-{
-    width: 100px;
 }

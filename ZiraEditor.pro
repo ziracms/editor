@@ -30,6 +30,7 @@ INCLUDEPATH += include
 
 SOURCES += \
     main.cpp \
+    src/colordialog.cpp \
     src/contextdialog.cpp \
     src/docktitlebar.cpp \
     src/filedialog.cpp \
@@ -90,6 +91,7 @@ SOURCES += \
     src/welcome.cpp
 
 HEADERS += \
+    include/colordialog.h \
     include/contextdialog.h \
     include/docktitlebar.h \
     include/filedialog.h \

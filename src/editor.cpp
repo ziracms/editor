@@ -2659,9 +2659,12 @@ void Editor::mousePressEvent(QMouseEvent *e)
 
 void Editor::mouseMoveEvent(QMouseEvent *e)
 {
+    // QScroller triggers mouseReleaseEvent
+    /*
     #if defined(Q_OS_ANDROID)
     if (mousePressTimer.isActive()) mousePressTimer.stop();
     #endif
+    */
     QTextEdit::mouseMoveEvent(e);
 }
 

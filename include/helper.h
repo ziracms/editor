@@ -31,6 +31,8 @@ extern const QString STYLE_PLUGIN_SUFFIX;
 extern const QString STYLE_PLUGIN_DISPLAY_NAME_SUFFIX;
 extern const QString DIALOG_HEADER_STYLESHEET;
 
+extern const int ANDROID_DIALOG_ANIMATION_DURATION;
+
 class Helper
 {
 public:

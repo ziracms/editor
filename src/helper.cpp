@@ -482,18 +482,6 @@ void Helper::showMessage(QString text)
     dialog.setWindowTitle(QObject::tr("Message"));
     dialog.setHeaderText(QObject::tr("Message"));
     dialog.setLabelText(text);
-    dialog.setVisible(true);
-    QScreen * screen = QGuiApplication::primaryScreen();
-    dialog.setGeometry(0, 0, screen->availableGeometry().width(), dialog.sizeHint().height());
-    QEasingCurve easingIn(QEasingCurve::OutCubic);
-    QPropertyAnimation * animationIn = new QPropertyAnimation(&dialog, "geometry");
-    animationIn->setDuration(ANDROID_DIALOG_ANIMATION_DURATION);
-    animationIn->setEasingCurve(easingIn);
-    QRect rect = dialog.geometry();
-    animationIn->setStartValue(QRect(rect.x(), rect.y()-rect.height(), rect.width(), rect.height()));
-    animationIn->setEndValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
-    animationIn->start(QAbstractAnimation::DeleteWhenStopped);
-    dialog.setVisible(false);
     dialog.exec();
     #else
     QMessageBox msgBox(getWindowWidget());
@@ -511,18 +499,6 @@ bool Helper::showQuestion(QString title, QString msg)
     dialog.setWindowTitle(title);
     dialog.setHeaderText(title);
     dialog.setLabelText(msg);
-    dialog.setVisible(true);
-    QScreen * screen = QGuiApplication::primaryScreen();
-    dialog.setGeometry(0, 0, screen->availableGeometry().width(), dialog.sizeHint().height());
-    QEasingCurve easingIn(QEasingCurve::OutCubic);
-    QPropertyAnimation * animationIn = new QPropertyAnimation(&dialog, "geometry");
-    animationIn->setDuration(ANDROID_DIALOG_ANIMATION_DURATION);
-    animationIn->setEasingCurve(easingIn);
-    QRect rect = dialog.geometry();
-    animationIn->setStartValue(QRect(rect.x(), rect.y()-rect.height(), rect.width(), rect.height()));
-    animationIn->setEndValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
-    animationIn->start(QAbstractAnimation::DeleteWhenStopped);
-    dialog.setVisible(false);
     if (dialog.exec()) return true;
     else return false;
     #else
@@ -537,21 +513,10 @@ QString Helper::showInputDialog(QString title, QString label, QLineEdit::EchoMod
     InputDialog dialog(getWindowWidget());
     dialog.setWindowTitle(title);
     dialog.setHeaderText(title);
+    dialog.setTextEchoMode(mode);
     dialog.setLabelText(label);
     if (description.size() > 0) dialog.setDescriptionText(description);
     dialog.setTextValue(defaultValue);
-    dialog.setVisible(true);
-    QScreen * screen = QGuiApplication::primaryScreen();
-    dialog.setGeometry(0, 0, screen->availableGeometry().width(), dialog.sizeHint().height());
-    QEasingCurve easingIn(QEasingCurve::OutCubic);
-    QPropertyAnimation * animationIn = new QPropertyAnimation(&dialog, "geometry");
-    animationIn->setDuration(ANDROID_DIALOG_ANIMATION_DURATION);
-    animationIn->setEasingCurve(easingIn);
-    QRect rect = dialog.geometry();
-    animationIn->setStartValue(QRect(rect.x(), rect.y()-rect.height(), rect.width(), rect.height()));
-    animationIn->setEndValue(QRect(rect.x(), rect.y(), rect.width(), rect.height()));
-    animationIn->start(QAbstractAnimation::DeleteWhenStopped);
-    dialog.setVisible(false);
     #else
     QInputDialog dialog(getWindowWidget());
     dialog.setWindowTitle(title);
@@ -601,7 +566,7 @@ QAction * Helper::contextMenuToDialog(QMenu *menu, QWidget * parent)
     ContextDialog dialog(parent);
     QList<QAction *> actions = menu->actions();
     dialog.build(actions);
-    dialog.show();
+    dialog.exec();
     return dialog.getAction();
 }
 

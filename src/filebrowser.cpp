@@ -529,6 +529,7 @@ void FileBrowser::fileBrowserItemSelectionChanged()
 {
     fileBrowserRemoveEmptyItems();
     editMode = false;
+    if (mousePressTimer.isActive()) mousePressTimer.stop();
 }
 
 void FileBrowser::fileBrowserRemoveEmptyItems()
@@ -858,10 +859,10 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
     if(watched == treeWidget->viewport() && event->type() == QEvent::MouseMove) {
         QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent *>(event);
         if (mouseEvent != nullptr && mouseEvent->buttons() == Qt::LeftButton) {
-            if (mousePressTimer.isActive()) mousePressTimer.stop();
+            // scroll by drag
             if (isGesturesEnabled && isGesturesActive && gesturesY >= 0 && treeWidget->topLevelItemCount() > 0 && treeWidget->verticalScrollBar()->isVisible()) {
                 int deltaY = mouseEvent->globalY() - gesturesY;
-                int offset = treeWidget->sizeHintForRow(0) * 2;
+                int offset = treeWidget->sizeHintForRow(0);
                 if (std::abs(deltaY) > offset) {
                     int sliderPos = treeWidget->verticalScrollBar()->sliderPosition();
                     int sliderStep = treeWidget->verticalScrollBar()->singleStep();

@@ -30,6 +30,7 @@ public slots:
     void contextMenu();
 private slots:
     void gitBrowserContextMenuRequested(QPoint p);
+    void gitBrowserItemSelectionChanged();
 signals:
     void addRequested(QString path);
     void resetRequested(QString path);
