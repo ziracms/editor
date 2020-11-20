@@ -529,7 +529,10 @@ void FileBrowser::fileBrowserItemSelectionChanged()
 {
     fileBrowserRemoveEmptyItems();
     editMode = false;
-    if (mousePressTimer.isActive()) mousePressTimer.stop();
+    if (mousePressTimer.isActive()) {
+        mousePressTimer.stop();
+        mousePressTimer.start();
+    }
 }
 
 void FileBrowser::fileBrowserRemoveEmptyItems()

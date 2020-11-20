@@ -178,7 +178,10 @@ void GitBrowser::gbCommitRequested()
 
 void GitBrowser::gitBrowserItemSelectionChanged()
 {
-    if (mousePressTimer.isActive()) mousePressTimer.stop();
+    if (mousePressTimer.isActive()) {
+        mousePressTimer.stop();
+        mousePressTimer.start();
+    }
 }
 
 bool GitBrowser::eventFilter(QObject *watched, QEvent *event)
