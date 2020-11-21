@@ -1949,6 +1949,7 @@ bool Editor::onKeyPress(QKeyEvent *e)
     }
     bool ignoreKey = false; // workaround for wrong key code, android emulator bug ?
     #if defined(Q_OS_ANDROID)
+    /*
     if (code == Qt::Key_BracketLeft && e->text() != "[") ignoreKey = true;
     if (code == Qt::Key_ParenLeft && e->text() != "(") ignoreKey = true;
     if (code == Qt::Key_BraceLeft && e->text() != "{") ignoreKey = true;
@@ -1957,6 +1958,17 @@ bool Editor::onKeyPress(QKeyEvent *e)
     if (code == Qt::Key_BraceRight && e->text() != "}") ignoreKey = true;
     if (code == Qt::Key_Apostrophe && e->text() != "'") ignoreKey = true;
     if (code == Qt::Key_QuoteDbl && e->text() != "\"") ignoreKey = true;
+    */
+    if (e->text() == "[") code = Qt::Key_BracketLeft;
+    if (e->text() == "(") code = Qt::Key_ParenLeft;
+    if (e->text() == "{") code = Qt::Key_BraceLeft;
+    if (e->text() == "]") code = Qt::Key_BracketRight;
+    if (e->text() == ")") code = Qt::Key_ParenRight;
+    if (e->text() == "}") code = Qt::Key_BraceRight;
+    if (e->text() == ">") code = Qt::Key_Greater;
+    if (e->text() == "<") code = Qt::Key_Less;
+    if (e->text() == "'") code = Qt::Key_Apostrophe;
+    if (e->text() == "\"") code = Qt::Key_QuoteDbl;
     #endif
     // insert quotes & brackets pair
     if ((code == Qt::Key_QuoteDbl || code == Qt::Key_Apostrophe || code == Qt::Key_BraceLeft || code == Qt::Key_BracketLeft || code == Qt::Key_ParenLeft) && !ctrl && !ignoreKey) {

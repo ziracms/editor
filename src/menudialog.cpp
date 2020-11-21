@@ -188,6 +188,7 @@ void MenuDialog::topLevelItemTriggered(bool)
         buildSubMenu(menu);
         build(subMenu->actions());
         updateGeometry();
+        animateIn();
     }
 }
 
@@ -209,6 +210,7 @@ void MenuDialog::backItemTriggered(bool)
 {
     build();
     updateGeometry();
+    animateIn();
 }
 
 void MenuDialog::contextMenuItemTriggered(bool)
