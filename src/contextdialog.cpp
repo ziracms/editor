@@ -5,8 +5,6 @@
 #include "icon.h"
 #include "helper.h"
 
-const int ICON_SIZE = 64;
-
 ContextDialog::ContextDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ContextDialog),

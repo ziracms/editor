@@ -37,6 +37,7 @@
 #include "welcome.h"
 #include "types.h"
 #include "style.h"
+#include "menudialog.h"
 
 namespace Ui {
     class MainWindow;
@@ -51,6 +52,7 @@ namespace Ui {
     class WelcomeScreen;
     class ContextDialog;
     class InputDialog;
+    class MenuDialog;
 }
 
 Q_DECLARE_METATYPE(ParsePHP::ParseResult)
@@ -266,6 +268,8 @@ private slots:
     void inputMethodVisibleChanged();
     void checkScaleFactor();
     void installAndroidPackFinished(QString result);
+    void mainMenuDialogTriggered(bool checked);
+    void sendContextMenuEvent();
 private:
     Ui::MainWindow *ui;
     Settings * settings;

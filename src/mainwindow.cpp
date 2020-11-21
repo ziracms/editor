@@ -653,6 +653,13 @@ MainWindow::MainWindow(QWidget *parent) :
     // make sure that window is maximized in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
+
+    ui->menuBar->setVisible(false);
+    ui->mainToolBar->insertSeparator(ui->mainToolBar->actions().at(0));
+    QAction * mainMenuAction = new QAction(tr("Menu"));
+    mainMenuAction->setIcon(Icon::get("actionMenu", QIcon(":/icons/separator-double.png")));
+    connect(mainMenuAction, SIGNAL(triggered(bool)), this, SLOT(mainMenuDialogTriggered(bool)));
+    ui->mainToolBar->insertAction(ui->mainToolBar->actions().at(0), mainMenuAction);
     #endif
 
     MainWindow::WANT_RESTART = false;
@@ -1035,6 +1042,16 @@ void MainWindow::fileBrowserOpen(QString file)
     }
 }
 
+void MainWindow::mainMenuDialogTriggered(bool)
+{
+    MenuDialog menuDialog(ui->menuBar, this);
+    connect(&menuDialog, SIGNAL(showContextMenu()), this, SLOT(on_actionOpenContextMenu_triggered()));
+    connect(&menuDialog, SIGNAL(showPreferences()), this, SLOT(on_actionSettings_triggered()));
+    connect(&menuDialog, SIGNAL(quit()), this, SLOT(on_actionQuit_triggered()));
+    menuDialog.build();
+    menuDialog.exec();
+}
+
 void MainWindow::on_actionSplitTab_triggered()
 {
     Editor * textEditor = editorTabs->getActiveEditor();
@@ -1061,6 +1078,11 @@ void MainWindow::on_actionSplitTab_triggered()
 }
 
 void MainWindow::on_actionOpenContextMenu_triggered()
+{
+    QTimer::singleShot(100, this, SLOT(sendContextMenuEvent()));
+}
+
+void MainWindow::sendContextMenuEvent()
 {
     QWidget * widget = QApplication::focusWidget();
     if (widget == nullptr) return;
@@ -2987,8 +3009,7 @@ void MainWindow::startTerminal()
 void MainWindow::inputMethodVisibleChanged()
 {
     if (QApplication::inputMethod()->isVisible()) {
-        ui->menuBar->setVisible(false);
-        //ui->statusBar->setVisible(false);
+        ui->statusBar->setVisible(false);
         ui->tabWidget->tabBar()->setVisible(false);
         tabWidgetSplit->tabBar()->setVisible(false);
         tabsListButton->hide();
@@ -2996,8 +3017,7 @@ void MainWindow::inputMethodVisibleChanged()
         Editor * textEditor = getActiveEditor();
         if (textEditor != nullptr) textEditor->closeSearch();
     } else {
-        ui->menuBar->setVisible(true);
-        //ui->statusBar->setVisible(true);
+        ui->statusBar->setVisible(true);
         ui->tabWidget->tabBar()->setVisible(true);
         tabWidgetSplit->tabBar()->setVisible(true);
         updateTabsListButton();

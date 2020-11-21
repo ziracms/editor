@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QMenuBar>
 
+extern const int ICON_SIZE;
+
 class Icon
 {
 public:

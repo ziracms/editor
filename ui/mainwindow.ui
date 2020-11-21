@@ -273,8 +273,6 @@
    <addaction name="actionBack"/>
    <addaction name="actionForward"/>
    <addaction name="separator"/>
-   <addaction name="actionColorPicker"/>
-   <addaction name="separator"/>
    <addaction name="actionSplitTab"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">

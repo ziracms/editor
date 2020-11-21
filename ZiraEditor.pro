@@ -39,6 +39,7 @@ SOURCES += \
     src/inputdialog.cpp \
     src/mainwindow.cpp \
     src/helper.cpp \
+    src/menudialog.cpp \
     src/messagedialog.cpp \
     src/progressinfo.cpp \
     src/progressline.cpp \
@@ -100,6 +101,7 @@ HEADERS += \
     include/inputdialog.h \
     include/mainwindow.h \
     include/helper.h \
+    include/menudialog.h \
     include/messagedialog.h \
     include/progressinfo.h \
     include/progressline.h \
@@ -158,6 +160,7 @@ FORMS += \
     ui/mainwindow.ui \
     ui/createfile.ui \
     ui/createfolder.ui \
+    ui/menudialog.ui \
     ui/messagedialog.ui \
     ui/questiondialog.ui \
     ui/rename.ui \
