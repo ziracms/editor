@@ -7,6 +7,7 @@
 #include "helper.h"
 
 const char * MENU_TOP_LEVEL_ITEM_PROPERTY = "toplevel";
+const int MENU_WIDTH_EXTRA_SPACE = 40;
 
 MenuDialog::MenuDialog(QMenuBar * menuBar, QWidget *parent) :
     QDialog(parent),
@@ -186,6 +187,7 @@ void MenuDialog::topLevelItemTriggered(bool)
         menu->aboutToShow();
         buildSubMenu(menu);
         build(subMenu->actions());
+        updateGeometry();
     }
 }
 
@@ -206,6 +208,7 @@ void MenuDialog::buildSubMenu(QMenu * menu)
 void MenuDialog::backItemTriggered(bool)
 {
     build();
+    updateGeometry();
 }
 
 void MenuDialog::contextMenuItemTriggered(bool)
@@ -242,11 +245,19 @@ void MenuDialog::animationInFinished()
 
 void MenuDialog::updateGeometry()
 {
-    int width = ui->listWidget->sizeHintForColumn(0) + ui->listWidget->frameWidth() * 2;
+    int width = 0;
+    int rowsCo = ui->listWidget->model()->rowCount();
+    for (int i=0; i<rowsCo; i++) {
+        QModelIndex modelIndex = ui->listWidget->model()->index(i, 0);
+        int w = ui->listWidget->sizeHintForIndex(modelIndex).width();
+        if (w > width) width = w;
+    }
+    if (width == 0) width = ui->listWidget->sizeHintForColumn(0);
+    width += ui->listWidget->frameWidth() * 2;
     if (ui->listWidget->verticalScrollBar()->isVisible()) width += ui->listWidget->verticalScrollBar()->width();
+    width += MENU_WIDTH_EXTRA_SPACE;
     QScreen * screen = QGuiApplication::primaryScreen();
     if (width > screen->availableGeometry().width()) width = screen->availableGeometry().width();
-    if (width < screen->availableGeometry().width() / 2) width = screen->availableGeometry().width() / 2;
     int height = screen->availableGeometry().height();
     ui->listWidget->setFixedWidth(width);
     ui->listWidget->setFixedHeight(height);

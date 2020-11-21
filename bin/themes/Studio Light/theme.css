@@ -249,7 +249,7 @@ QPushButton#gitTabCommitButton
     border-radius: 0;
     border: none;
     margin: 1px 0px 0px 1px;
-    min-width: 30px;
+    min-width: 20px;
 }
 
 QPushButton#gitTabPushButton
@@ -1069,7 +1069,10 @@ QuestionDialog,
 InputDialog,
 ContextDialog QListWidget,
 ContextDialog QListWidget:hover,
-ContextDialog QListWidget:focus
+ContextDialog QListWidget:focus,
+MenuDialog QListWidget,
+MenuDialog QListWidget:hover,
+MenuDialog QListWidget:focus
 {
     border: 1px solid #a0b3bb;
     padding: 3px;

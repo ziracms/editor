@@ -5,6 +5,8 @@
 #include "icon.h"
 #include "helper.h"
 
+const int MENU_WIDTH_EXTRA_SPACE = 40;
+
 ContextDialog::ContextDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ContextDialog),
@@ -120,11 +122,19 @@ void ContextDialog::animationInFinished()
 
 void ContextDialog::updateGeometry()
 {
-    int width = ui->contextListWidget->sizeHintForColumn(0) + ui->contextListWidget->frameWidth() * 2;
+    int width = 0;
+    int rowsCo = ui->contextListWidget->model()->rowCount();
+    for (int i=0; i<rowsCo; i++) {
+        QModelIndex modelIndex = ui->contextListWidget->model()->index(i, 0);
+        int w = ui->contextListWidget->sizeHintForIndex(modelIndex).width();
+        if (w > width) width = w;
+    }
+    if (width == 0) width = ui->contextListWidget->sizeHintForColumn(0);
+    width += ui->contextListWidget->frameWidth() * 2;
     if (ui->contextListWidget->verticalScrollBar()->isVisible()) width += ui->contextListWidget->verticalScrollBar()->width();
+    width += MENU_WIDTH_EXTRA_SPACE;
     QScreen * screen = QGuiApplication::primaryScreen();
     if (width > screen->availableGeometry().width()) width = screen->availableGeometry().width();
-    if (width < screen->availableGeometry().width() / 2) width = screen->availableGeometry().width() / 2;
     int height = screen->availableGeometry().height();
     ui->contextListWidget->setFixedWidth(width);
     ui->contextListWidget->setFixedHeight(height);
