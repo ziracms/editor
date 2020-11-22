@@ -24,7 +24,9 @@ const std::string NEW_LINE_LF = "lf";
 const std::string NEW_LINE_CR = "cr";
 const std::string NEW_LINE_CRLF = "crlf";
 
+#if defined(Q_OS_ANDROID)
 const int ANDROID_PUSH_BUTTON_DELAY = 100;
+#endif
 
 SettingsDialog::SettingsDialog(QWidget * parent):
     QDialog(parent),

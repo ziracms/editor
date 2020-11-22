@@ -3,7 +3,9 @@
 #include <QScroller>
 #include "helper.h"
 
+#if defined(Q_OS_ANDROID)
 const int ANDROID_PUSH_BUTTONS_DELAY = 100;
+#endif
 
 Welcome::Welcome(bool light, QWidget *parent) : QWidget(parent),
     ui(new Ui::WelcomeScreen()),
