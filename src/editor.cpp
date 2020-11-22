@@ -6567,6 +6567,10 @@ void Editor::selectWord()
 void Editor::multiSelectToggle()
 {
     selectWord();
+    #if defined(Q_OS_ANDROID)
+    emit showPopupText(tabIndex, tr("Multi-Selection is not working in Android"));
+    return;
+    #endif
     QTextCursor curs = textCursor();
     if (!isMultiSelectMode && curs.hasSelection() && curs.selectedText().replace(QString::fromWCharArray(L"\u2029"),"\n").indexOf("\n") < 0) {
         isMultiSelectMode = true;
@@ -7089,6 +7093,7 @@ void Editor::contextMenuEvent(QContextMenuEvent *event)
     if (!isForwadable()) forwardAction->setEnabled(false);
 
     #if defined(Q_OS_ANDROID)
+    event->accept();
     Helper::contextMenuToDialog(menu, this);
     #else
     menu->exec(event->globalPos());
