@@ -132,7 +132,7 @@ void MenuDialog::build(QList<QAction *> actions) {
             flags = flags  & ~Qt::ItemIsEnabled;
             item->setFlags(flags);
         }
-        QIcon icon = action->icon();
+        QIcon icon = action->isChecked() ? Icon::get("actionGitCommit", QIcon(":/icons/ok.png")) : action->icon();
         if (icon.isNull()) icon.addFile(":/icons/blank.png", QSize(ICON_SIZE, ICON_SIZE), QIcon::Normal);
         icon.addFile(":/icons/blank.png", QSize(ICON_SIZE, ICON_SIZE), QIcon::Disabled);
         item->setIcon(icon);
