@@ -68,6 +68,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->settingsTabWidget->setFocusPolicy(Qt::NoFocus);
     ui->projectsHomeLineEdit->setText(QString::fromStdString(settings->get("file_browser_home")));
     if (settings->get("experimental_mode_enabled") == CHECKED_YES) ui->experimentalModeCheckbox->setChecked(true);
+    if (settings->get("auto_show_virtual_keyboard") == CHECKED_YES) ui->virtualKeyboardCheckBox->setChecked(true);
     if (settings->get("scale_auto") == CHECKED_YES) ui->scaleFactorCheckBox->setChecked(true);
     initScaleFactor = std::stoi(settings->get("scale_factor"));
     ui->scaleFactorSpinBox->setValue(initScaleFactor);
@@ -221,6 +222,9 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
 
     if (ui->experimentalModeCheckbox->isChecked()) dataMap["experimental_mode_enabled"] = CHECKED_YES;
     else dataMap["experimental_mode_enabled"] = CHECKED_NO;
+
+    if (ui->virtualKeyboardCheckBox->isChecked()) dataMap["auto_show_virtual_keyboard"] = CHECKED_YES;
+    else dataMap["auto_show_virtual_keyboard"] = CHECKED_NO;
 
     if (ui->scaleFactorCheckBox->isChecked()) dataMap["scale_auto"] = CHECKED_YES;
     else dataMap["scale_auto"] = CHECKED_NO;

@@ -188,7 +188,7 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="experimentalModeDescLayout">
+            <layout class="QHBoxLayout" name="virtualKeyboardLayout">
              <property name="leftMargin">
               <number>156</number>
              </property>
@@ -199,12 +199,9 @@
               <number>10</number>
              </property>
              <item>
-              <widget class="QLabel" name="experimentalModeDescLabel">
+              <widget class="QCheckBox" name="virtualKeyboardCheckBox">
                <property name="text">
-                <string>Highlighting of unused php variables works only if experimental mode is enabled</string>
-               </property>
-               <property name="wordWrap">
-                <bool>true</bool>
+                <string>Automatically show virtual keyboard</string>
                </property>
               </widget>
              </item>

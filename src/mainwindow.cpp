@@ -653,7 +653,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // make sure that window is maximized in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
-
     ui->menuBar->setVisible(false);
     ui->mainToolBar->insertSeparator(ui->mainToolBar->actions().at(0));
     QAction * mainMenuAction = new QAction(tr("Menu"));
@@ -661,6 +660,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mainMenuAction, SIGNAL(triggered(bool)), this, SLOT(mainMenuDialogTriggered(bool)));
     ui->mainToolBar->insertAction(ui->mainToolBar->actions().at(0), mainMenuAction);
     #endif
+
+    bool autoShowVirtualKeyboard = false;
+    if (settings->get("auto_show_virtual_keyboard") == "yes") autoShowVirtualKeyboard = true;
+    qApp->setAutoSipEnabled(autoShowVirtualKeyboard);
 
     MainWindow::WANT_RESTART = false;
 }
