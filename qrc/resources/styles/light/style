@@ -558,14 +558,15 @@ QTreeView::branch:open:!has-children:has-siblings:selected
     background: #2247bf;
 }
 
+/*
 QMainWindow::separator
 {
     background-color: #e7e7e7;
     color: #333333;
     padding-left: 4px;
     border: 1px solid #e7e7e7;
-    spacing: 3px; /* spacing between items in the tool bar */
-}
+    spacing: 3px;
+*/
 
 QToolBar
 {
@@ -1024,6 +1025,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
         stop: 0.25 #333333,
         stop: 0.3 transparent
     );
+    image: none;
 }
 
 QDialogButtonBox
