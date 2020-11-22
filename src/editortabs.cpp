@@ -17,14 +17,9 @@
 #include <sstream>
 #include "fileiconprovider.h"
 
-EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, Snippets * snippets):
+EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget):
     spellChecker(spellChecker),
-    tabWidget(widget),
-    highlightWords(highlightWords),
-    completeWords(completeWords),
-    helpWords(helpWords),
-    spellWords(spellWords),
-    snippets(snippets)
+    tabWidget(widget)
 {
     editor = nullptr;
     blockSig = false;
@@ -76,7 +71,7 @@ void EditorTabs::createTab(QString filepath, bool initHighlight)
     }
 
     EditorTab * tab = new EditorTab();
-    editor = new Editor(spellChecker, highlightWords, completeWords, helpWords, spellWords, snippets);
+    editor = new Editor(spellChecker);
     tab->setEditor(editor);
 
     QString tabName = getTabNameFromPath(filepath);

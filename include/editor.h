@@ -35,7 +35,7 @@ class Editor : public QTextEdit
 {
     Q_OBJECT
 public:
-    Editor(SpellCheckerInterface * spellChecker, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, Snippets * snippets, QWidget * parent = nullptr);
+    Editor(SpellCheckerInterface * spellChecker, QWidget * parent = nullptr);
     ~Editor() override;
     void init();
     void lineNumberAreaPaintEvent(QPaintEvent *event);

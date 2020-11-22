@@ -16,22 +16,24 @@ class HighlightWords : public QObject
 {
     Q_OBJECT
 public:
-    HighlightWords();
-    void reload();
-    void reset();
-    void addPHPClass(QString k);
-    void addPHPFunction(QString k);
-    void addPHPVariable(QString k);
-    void addPHPConstant(QString k);
-    void addPHPClassConstant(QString cls, QString c);
-    void addJSFunction(QString k);
-    void addJSInterface(QString k);
-    void addJSObject(QString k);
-    void addJSExtDartObject(QString k);
-    void addJSExtDartFunction(QString k);
-    void addCSSProperty(QString k);
-    void addHTMLTag(QString k);
-    void addHTMLShortTag(QString k);
+    static HighlightWords& instance();
+    static void loadDelayed();
+    static void setColors();
+    static void reload();
+    static void reset();
+    static void addPHPClass(QString k);
+    static void addPHPFunction(QString k);
+    static void addPHPVariable(QString k);
+    static void addPHPConstant(QString k);
+    static void addPHPClassConstant(QString cls, QString c);
+    static void addJSFunction(QString k);
+    static void addJSInterface(QString k);
+    static void addJSObject(QString k);
+    static void addJSExtDartObject(QString k);
+    static void addJSExtDartFunction(QString k);
+    static void addCSSProperty(QString k);
+    static void addHTMLTag(QString k);
+    static void addHTMLShortTag(QString k);
     QTextCharFormat keywordFormat;
     QTextCharFormat classFormat;
     QTextCharFormat variableFormat;
@@ -80,8 +82,28 @@ protected:
     void loadJSWords();
     void loadCSSWords();
     void loadGeneralWords();
+    void _loadDelayed();
+    void _setColors();
+    void _reload();
+    void _reset();
+    void _addPHPClass(QString k);
+    void _addPHPFunction(QString k);
+    void _addPHPVariable(QString k);
+    void _addPHPConstant(QString k);
+    void _addPHPClassConstant(QString cls, QString c);
+    void _addJSFunction(QString k);
+    void _addJSInterface(QString k);
+    void _addJSObject(QString k);
+    void _addJSExtDartObject(QString k);
+    void _addJSExtDartFunction(QString k);
+    void _addCSSProperty(QString k);
+    void _addHTMLTag(QString k);
+    void _addHTMLShortTag(QString k);
+    void _load();
+private:
+    HighlightWords();
 public slots:
-    void load();
+    static void load();
 };
 
 #endif // HIGHLIGHTWORDS_H

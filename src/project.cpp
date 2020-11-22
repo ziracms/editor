@@ -43,6 +43,8 @@ const int PROJECT_LOAD_DELAY = 500;
 
 Project::Project(QObject *parent) : QObject(parent)
 {
+    CW = &CompleteWords::instance();
+    HPW = &HelpWords::instance();
     reset();
 }
 
@@ -300,17 +302,17 @@ bool Project::isPHPCSEnabled()
     return projectPHPCSEnabled;
 }
 
-void Project::loadWords(CompleteWords * CW, HighlightWords * HW, HelpWords * HPW)
+void Project::loadWords()
 {
     if (!isOpen()) return;
     QString project_dir = projectPath + "/" + PROJECT_SUBDIR;
     if (!Helper::folderExists(project_dir)) {
         return;
     }
-    loadPHPWords(project_dir, CW, HW, HPW);
+    loadPHPWords(project_dir);
 }
 
-void Project::loadPHPWords(QString project_dir, CompleteWords * CW, HighlightWords * HW, HelpWords * HPW)
+void Project::loadPHPWords(QString project_dir)
 {
     QString k;
 
@@ -328,10 +330,10 @@ void Project::loadPHPWords(QString project_dir, CompleteWords * CW, HighlightWor
             kParams = k.mid(kSep).trimmed();
             CW->phpFunctionsComplete[kName.toStdString()] = kParams.toStdString();
             CW->tooltipsPHP[kName.toStdString()] = kParams.replace("<", "&lt;").replace(">", "&gt;").toStdString();
-            //HW->addPHPFunction(kName);
+            //HighlightWords::addPHPFunction(kName);
         } else {
             CW->phpFunctionsComplete[k.toStdString()] = k.toStdString();
-            //HW->addPHPFunction(k);
+            //HighlightWords::addPHPFunction(k);
         }
     }
     ff.close();
@@ -344,7 +346,7 @@ void Project::loadPHPWords(QString project_dir, CompleteWords * CW, HighlightWor
         k = cnin.readLine();
         if (k == "") continue;
         CW->phpConstsComplete[k.toStdString()] = k.toStdString();
-        HW->addPHPConstant(k);
+        HighlightWords::addPHPConstant(k);
     }
     cnf.close();
 
@@ -366,7 +368,7 @@ void Project::loadPHPWords(QString project_dir, CompleteWords * CW, HighlightWor
             for (int i=0; i<classParts.size(); i++) {
                 QString classPart = classParts.at(i);
                 if (classPart.size() == 0) continue;
-                HW->addPHPClass(classPart);
+                HighlightWords::addPHPClass(classPart);
             }
         } else {
             CW->phpClassesComplete[k.toStdString()] = k.toStdString();
@@ -374,7 +376,7 @@ void Project::loadPHPWords(QString project_dir, CompleteWords * CW, HighlightWor
             for (int i=0; i<classParts.size(); i++) {
                 QString classPart = classParts.at(i);
                 if (classPart.size() == 0) continue;
-                HW->addPHPClass(classPart);
+                HighlightWords::addPHPClass(classPart);
             }
         }
     }
@@ -394,10 +396,10 @@ void Project::loadPHPWords(QString project_dir, CompleteWords * CW, HighlightWor
             kParams = k.mid(kSep).trimmed();
             CW->phpClassMethodsComplete[kName.toStdString()] = kParams.toStdString();
             CW->tooltipsPHP[kName.toStdString()] = kParams.replace("<", "&lt;").replace(">", "&gt;").toStdString();
-            //HW->addPHPFunction(kName);
+            //HighlightWords::addPHPFunction(kName);
         } else {
             CW->phpClassMethodsComplete[k.toStdString()] = k.toStdString();
-            //HW->addPHPFunction(k);
+            //HighlightWords::addPHPFunction(k);
         }
     }
     mf.close();
@@ -411,7 +413,7 @@ void Project::loadPHPWords(QString project_dir, CompleteWords * CW, HighlightWor
         if (k == "") continue;
         CW->phpClassConstsComplete[k.toStdString()] = k.toStdString();
         QStringList kParts = k.split("::");
-        if (kParts.size() == 2) HW->addPHPClassConstant(kParts.at(0), kParts.at(1));
+        if (kParts.size() == 2) HighlightWords::addPHPClassConstant(kParts.at(0), kParts.at(1));
     }
     cof.close();
 

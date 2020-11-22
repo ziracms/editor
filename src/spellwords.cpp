@@ -6,23 +6,51 @@
 
 const int LOAD_DELAY = 250; // should not be less then PROJECT_LOAD_DELAY
 
-SpellWords::SpellWords()
+SpellWords::SpellWords(){}
+
+SpellWords& SpellWords::instance()
+{
+    static SpellWords _instance;
+    return _instance;
+}
+
+void SpellWords::loadDelayed()
+{
+    instance()._loadDelayed();
+}
+
+void SpellWords::_loadDelayed()
 {
     QTimer::singleShot(LOAD_DELAY, this, SLOT(load()));
 }
 
 void SpellWords::load()
 {
+    instance()._load();
+}
+
+void SpellWords::_load()
+{
     loadWords();
 }
 
 void SpellWords::reload()
+{
+    instance()._reload();
+}
+
+void SpellWords::_reload()
 {
     reset();
     load();
 }
 
 void SpellWords::reset()
+{
+    instance()._reset();
+}
+
+void SpellWords::_reset()
 {
     words.clear();
 }

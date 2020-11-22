@@ -13,13 +13,30 @@
 
 const int LOAD_DELAY = 250; // should not be less then PROJECT_LOAD_DELAY
 
-CompleteWords::CompleteWords(HighlightWords * hWords)
+CompleteWords::CompleteWords(){}
+
+CompleteWords& CompleteWords::instance()
 {
-    HW = hWords;
+    static CompleteWords _instance;
+    return _instance;
+}
+
+void CompleteWords::loadDelayed()
+{
+    instance()._loadDelayed();
+}
+
+void CompleteWords::_loadDelayed()
+{
     QTimer::singleShot(LOAD_DELAY, this, SLOT(load()));
 }
 
 void CompleteWords::load()
+{
+    instance()._load();
+}
+
+void CompleteWords::_load()
 {
     loadCSSWords();
     loadHTMLWords();
@@ -30,11 +47,21 @@ void CompleteWords::load()
 
 void CompleteWords::reload()
 {
+    instance()._reload();
+}
+
+void CompleteWords::_reload()
+{
     reset();
     load();
 }
 
 void CompleteWords::reset()
+{
+    instance()._reset();
+}
+
+void CompleteWords::_reset()
 {
     tooltipsPHP.clear();
     htmlTags.clear();
@@ -73,7 +100,7 @@ void CompleteWords::loadCSSWords()
         k = pin.readLine();
         if (k == "") continue;
         cssPropertiesComplete[k.toStdString()] = k.toStdString();
-        HW->addCSSProperty(k);
+        HighlightWords::addCSSProperty(k);
     }
     pf.close();
 
@@ -123,7 +150,7 @@ void CompleteWords::loadHTMLWords()
         k = sin.readLine();
         if (k == "") continue;
         htmlAllTagsComplete[k.toStdString()] = k.toStdString();
-        HW->addHTMLTag(k);
+        HighlightWords::addHTMLTag(k);
     }
     sf.close();
 
@@ -134,7 +161,7 @@ void CompleteWords::loadHTMLWords()
     while (!cin.atEnd()) {
         k = cin.readLine();
         if (k == "") continue;
-        HW->addHTMLShortTag(k);
+        HighlightWords::addHTMLShortTag(k);
     }
     cf.close();
 }
@@ -151,7 +178,7 @@ void CompleteWords::loadJSWords()
         k = oin.readLine();
         if (k == "") continue;
         jsObjectsComplete[k.toStdString()] = k.toStdString();
-        HW->addJSObject(k);
+        HighlightWords::addJSObject(k);
     }
     of.close();
 
@@ -179,10 +206,10 @@ void CompleteWords::loadJSWords()
             kName = k.mid(0, kSep).trimmed();
             kParams = k.mid(kSep).trimmed();
             jsFunctionsComplete[kName.toStdString()] = kParams.toStdString();
-            HW->addJSFunction(kName);
+            HighlightWords::addJSFunction(kName);
         } else {
             jsFunctionsComplete[k.toStdString()] = k.toStdString();
-            HW->addJSFunction(k);
+            HighlightWords::addJSFunction(k);
         }
     }
     ff.close();
@@ -195,7 +222,7 @@ void CompleteWords::loadJSWords()
         k = inin.readLine();
         if (k == "") continue;
         jsInterfacesComplete[k.toStdString()] = k.toStdString();
-        HW->addJSInterface(k);
+        HighlightWords::addJSInterface(k);
     }
     inf.close();
 
@@ -242,7 +269,7 @@ void CompleteWords::loadFlutterWords()
         k = dcrin.readLine();
         if (k == "") continue;
         dartObjectsComplete[k.toStdString()] = k.toStdString();
-        HW->addJSExtDartObject(k);
+        HighlightWords::addJSExtDartObject(k);
     }
     dcr.close();
 
@@ -254,7 +281,7 @@ void CompleteWords::loadFlutterWords()
         k = dcfin.readLine();
         if (k == "") continue;
         dartFunctionsComplete[k.toStdString()] = k.toStdString();
-        HW->addJSExtDartFunction(k);
+        HighlightWords::addJSExtDartFunction(k);
     }
     dcf.close();
 
@@ -266,7 +293,7 @@ void CompleteWords::loadFlutterWords()
         k = flcin.readLine();
         if (k == "") continue;
         flutterObjectsComplete[k.toStdString()] = k.toStdString();
-        HW->addJSExtDartObject(k);
+        HighlightWords::addJSExtDartObject(k);
     }
     flc.close();
 
@@ -278,7 +305,7 @@ void CompleteWords::loadFlutterWords()
         k = flwin.readLine();
         if (k == "") continue;
         flutterObjectsComplete[k.toStdString()] = k.toStdString();
-        HW->addJSExtDartObject(k);
+        HighlightWords::addJSExtDartObject(k);
     }
     flw.close();
 
@@ -290,7 +317,7 @@ void CompleteWords::loadFlutterWords()
         k = flfin.readLine();
         if (k == "") continue;
         flutterFunctionsComplete[k.toStdString()] = k.toStdString();
-        HW->addJSExtDartFunction(k);
+        HighlightWords::addJSExtDartFunction(k);
     }
     flf.close();
 }
@@ -313,10 +340,10 @@ void CompleteWords::loadPHPWords()
             kParams = k.mid(kSep).trimmed();
             phpFunctionsComplete[kName.toStdString()] = kParams.toStdString();
             tooltipsPHP[kName.toStdString()] = kParams.replace("<", "&lt;").replace(">", "&gt;").toStdString();
-            HW->addPHPFunction(kName);
+            HighlightWords::addPHPFunction(kName);
         } else {
             phpFunctionsComplete[k.toStdString()] = k.toStdString();
-            HW->addPHPFunction(k);
+            HighlightWords::addPHPFunction(k);
         }
     }
     ff.close();
@@ -350,7 +377,7 @@ void CompleteWords::loadPHPWords()
             for (int i=0; i<classParts.size(); i++) {
                 QString classPart = classParts.at(i);
                 if (classPart.size() == 0) continue;
-                HW->addPHPClass(classPart);
+                HighlightWords::addPHPClass(classPart);
             }
         } else {
             phpClassesComplete[k.toStdString()] = k.toStdString();
@@ -358,7 +385,7 @@ void CompleteWords::loadPHPWords()
             for (int i=0; i<classParts.size(); i++) {
                 QString classPart = classParts.at(i);
                 if (classPart.size() == 0) continue;
-                HW->addPHPClass(classPart);
+                HighlightWords::addPHPClass(classPart);
             }
         }
     }
@@ -378,10 +405,10 @@ void CompleteWords::loadPHPWords()
             kParams = k.mid(kSep).trimmed();
             phpClassMethodsComplete[kName.toStdString()] = kParams.toStdString();
             tooltipsPHP[kName.toStdString()] = kParams.replace("<", "&lt;").replace(">", "&gt;").toStdString();
-            //HW->addPHPFunction(kName);
+            //HighlightWords::addPHPFunction(kName);
         } else {
             phpClassMethodsComplete[k.toStdString()] = k.toStdString();
-            //HW->addPHPFunction(k);
+            //HighlightWords::addPHPFunction(k);
         }
     }
     mf.close();
@@ -395,7 +422,7 @@ void CompleteWords::loadPHPWords()
         if (k == "") continue;
         phpClassConstsComplete[k.toStdString()] = k.toStdString();
         QStringList kParts = k.split("::");
-        if (kParts.size() == 2) HW->addPHPClassConstant(kParts.at(0), kParts.at(1));
+        if (kParts.size() == 2) HighlightWords::addPHPClassConstant(kParts.at(0), kParts.at(1));
     }
     cof.close();
 
@@ -418,7 +445,7 @@ void CompleteWords::loadPHPWords()
         k = oin.readLine();
         if (k == "") continue;
         phpGlobalsComplete[k.toStdString()] = k.toStdString();
-        HW->addPHPVariable(k);
+        HighlightWords::addPHPVariable(k);
     }
     of.close();
 

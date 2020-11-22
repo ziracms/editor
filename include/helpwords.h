@@ -15,10 +15,11 @@ class HelpWords : public QObject
 {
     Q_OBJECT
 public:
-    HelpWords();
-    void reload();
-    void reset();
-    QString findHelpFile(QString name);
+    static HelpWords& instance();
+    static  void loadDelayed();
+    static void reload();
+    static void reset();
+    static QString findHelpFile(QString name);
     std::unordered_map<std::string, std::string> phpFunctionDescs;
     std::unordered_map<std::string, std::string>::iterator phpFunctionDescsIterator;
     std::unordered_map<std::string, std::string> phpClassMethodDescs;
@@ -27,8 +28,15 @@ public:
     std::unordered_map<std::string, std::string>::iterator phpFilesIterator;
 protected:
     void loadPHPWords();
+    void _loadDelayed();
+    void _reload();
+    void _reset();
+    QString _findHelpFile(QString name);
+    void _load();
+private:
+    HelpWords();
 public slots:
-    void load();
+    static void load();
 };
 
 #endif // HELPWORDS_H

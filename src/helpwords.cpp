@@ -12,23 +12,51 @@
 
 const int LOAD_DELAY = 250; // should not be less then PROJECT_LOAD_DELAY
 
-HelpWords::HelpWords()
+HelpWords::HelpWords(){}
+
+HelpWords& HelpWords::instance()
+{
+    static HelpWords _instance;
+    return _instance;
+}
+
+void HelpWords::loadDelayed()
+{
+    instance()._loadDelayed();
+}
+
+void HelpWords::_loadDelayed()
 {
     QTimer::singleShot(LOAD_DELAY, this, SLOT(load()));
 }
 
 void HelpWords::load()
 {
+    instance()._load();
+}
+
+void HelpWords::_load()
+{
     loadPHPWords();
 }
 
 void HelpWords::reload()
+{
+    instance()._reload();
+}
+
+void HelpWords::_reload()
 {
     reset();
     load();
 }
 
 void HelpWords::reset()
+{
+    instance()._reset();
+}
+
+void HelpWords::_reset()
 {
     phpFunctionDescs.clear();
     phpClassMethodDescs.clear();
@@ -80,6 +108,11 @@ void HelpWords::loadPHPWords()
 }
 
 QString HelpWords::findHelpFile(QString name)
+{
+    return instance()._findHelpFile(name);
+}
+
+QString HelpWords::_findHelpFile(QString name)
 {
     QString file = "";
     phpFilesIterator = phpFiles.find(name.toStdString());

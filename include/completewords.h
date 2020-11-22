@@ -15,9 +15,10 @@ class CompleteWords : public QObject
 {
     Q_OBJECT
 public:
-    CompleteWords(HighlightWords * hWords);
-    void reload();
-    void reset();
+    static CompleteWords& instance();
+    static void loadDelayed();
+    static void reload();
+    static void reset();
     std::unordered_map<std::string, std::string> tooltipsPHP;
     std::unordered_map<std::string, std::string>::iterator tooltipsIteratorPHP;
     std::unordered_map<std::string, std::string> htmlTags;
@@ -59,10 +60,14 @@ protected:
     void loadJSWords();
     void loadPHPWords();
     void loadFlutterWords();
+    void _loadDelayed();
+    void _reload();
+    void _reset();
+    void _load();
 private:
-    HighlightWords * HW;
+    CompleteWords();
 public slots:
-    void load();
+    static void load();
 };
 
 #endif // COMPLETEWORDS_H

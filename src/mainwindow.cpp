@@ -148,12 +148,14 @@ MainWindow::MainWindow(QWidget *parent) :
     spellChecker = Helper::loadSpellChecker(pluginsDir);
     terminal = Helper::loadTerminalPlugin(pluginsDir);
 
+    HighlightWords::setColors();
+
     // load words
-    highlightWords = new HighlightWords();
-    completeWords = new CompleteWords(highlightWords);
-    helpWords = new HelpWords();
-    spellWords = new SpellWords();
-    snippets = new Snippets();
+    HighlightWords::loadDelayed();
+    CompleteWords::loadDelayed();
+    HelpWords::loadDelayed();
+    SpellWords::loadDelayed();
+    Snippets::load();
 
     // welcome screen
     welcomeScreen = new Welcome(schemeType == COLOR_SCHEME_LIGHT);
@@ -162,7 +164,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(welcomeScreen, SIGNAL(createProject()), this, SLOT(on_actionNewProject_triggered()));
 
     // editor tabs
-    editorTabs = new EditorTabs(spellChecker, ui->tabWidget, highlightWords, completeWords, helpWords, spellWords, snippets);
+    editorTabs = new EditorTabs(spellChecker, ui->tabWidget);
     connect(editorTabs, SIGNAL(statusBarText(QString)), this, SLOT(setStatusBarText(QString)));
     connect(editorTabs, SIGNAL(editorFilenameChanged(QString)), this, SLOT(editorFilenameChanged(QString)));
     connect(editorTabs, SIGNAL(tabOpened(int)), this, SLOT(editorTabOpened(int)));
@@ -212,7 +214,7 @@ MainWindow::MainWindow(QWidget *parent) :
     editorsSplitter->addWidget(ui->tabWidget);
     editorsSplitter->addWidget(tabWidgetSplit);
 
-    editorTabsSplit = new EditorTabs(spellChecker, tabWidgetSplit, highlightWords, completeWords, helpWords, spellWords, snippets);
+    editorTabsSplit = new EditorTabs(spellChecker, tabWidgetSplit);
     tabWidgetSplit->hide();
     isSplitActive = false;
 
@@ -678,11 +680,6 @@ MainWindow::~MainWindow()
     delete project;
     delete git;
     delete gitBrowser;
-    delete highlightWords;
-    delete completeWords;
-    delete helpWords;
-    delete spellWords;
-    delete snippets;
     delete ui;
 }
 
@@ -2419,7 +2416,7 @@ void MainWindow::parseProjectFinished(bool success, bool isModified)
     if (success) {
         setStatusBarText(tr("Loading project..."));
         reloadWords();
-        project->loadWords(completeWords, highlightWords, helpWords);
+        project->loadWords();
     }
     setStatusBarText(tr(""));
     if (ui->sidebarProgressBarWrapperWidget->isVisible()) ui->sidebarProgressBarWrapperWidget->hide();
@@ -2514,13 +2511,13 @@ void MainWindow::closeAllTabsRequested()
 
 void MainWindow::reloadWords()
 {
-    highlightWords->reset();
-    completeWords->reset();
-    helpWords->reset();
+    HighlightWords::reset();
+    CompleteWords::reset();
+    HelpWords::reset();
 
-    highlightWords->load();
-    completeWords->load();
-    helpWords->load();
+    HighlightWords::load();
+    CompleteWords::load();
+    HelpWords::load();
 }
 
 void MainWindow::editorShowDeclaration(QString name)
@@ -2551,7 +2548,7 @@ void MainWindow::editorShowHelp(QString name)
     }
     bool phpManualIsInstalled = false;
     if (php_manual_path.size() > 0 && Helper::folderExists(php_manual_path)) phpManualIsInstalled = true;
-    QString file = helpWords->findHelpFile(name);
+    QString file = HelpWords::findHelpFile(name);
     if (phpManualIsInstalled && file.size() > 0 && Helper::fileExists(php_manual_path + "/" + file)) {
         setHelpTabSource(php_manual_path + "/" + file);
     } else if (!phpManualIsInstalled && file.size() > 0) {
@@ -2559,6 +2556,7 @@ void MainWindow::editorShowHelp(QString name)
         QString helpStr = tr("PHP Manual is not installed. Go to %1").arg("<a href=\""+phpURL+"\">"+phpURL+"</a>");
         setHelpTabContents(helpStr);
     } else {
+        HelpWords * helpWords = &HelpWords::instance();
         clearHelpTabSource();
         QString text = "";
         if (name.indexOf("::") > 0) {

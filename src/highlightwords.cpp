@@ -12,7 +12,70 @@
 
 const int LOAD_DELAY = 250; // should not be less then PROJECT_LOAD_DELAY
 
-HighlightWords::HighlightWords()
+HighlightWords::HighlightWords(){}
+
+HighlightWords& HighlightWords::instance()
+{
+    static HighlightWords _instance;
+    return _instance;
+}
+
+void HighlightWords::loadDelayed()
+{
+    instance()._loadDelayed();
+}
+
+void HighlightWords::_loadDelayed()
+{
+    QTimer::singleShot(LOAD_DELAY, this, SLOT(load()));
+}
+
+void HighlightWords::load()
+{
+    instance()._load();
+}
+
+void HighlightWords::_load()
+{
+    loadPHPWords();
+    loadJSWords();
+    loadCSSWords();
+    loadGeneralWords();
+}
+
+void HighlightWords::reload()
+{
+    instance()._reload();
+}
+
+void HighlightWords::_reload()
+{
+    reset();
+    load();
+}
+
+void HighlightWords::reset()
+{
+    instance()._reset();
+}
+
+void HighlightWords::_reset()
+{
+    phpwords.clear();
+    phpwordsCS.clear();
+    phpClassWordsCS.clear();
+    jswordsCS.clear();
+    csswords.clear();
+    htmlwords.clear();
+    htmlshorts.clear();
+}
+
+void HighlightWords::setColors()
+{
+    instance()._setColors();
+}
+
+void HighlightWords::_setColors()
 {
     // highlight colors
     std::string keywordColorStr = Settings::get("highlight_keyword_color");
@@ -113,33 +176,6 @@ HighlightWords::HighlightWords()
     colorFormat.setUnderlineStyle(QTextCharFormat::DashUnderline);
     punctuationFormat.setForeground(punctuationColor);
     punctuationFormat.setFontWeight(QFont::Bold);
-
-    QTimer::singleShot(LOAD_DELAY, this, SLOT(load()));
-}
-
-void HighlightWords::load()
-{
-    loadPHPWords();
-    loadJSWords();
-    loadCSSWords();
-    loadGeneralWords();
-}
-
-void HighlightWords::reload()
-{
-    reset();
-    load();
-}
-
-void HighlightWords::reset()
-{
-    phpwords.clear();
-    phpwordsCS.clear();
-    phpClassWordsCS.clear();
-    jswordsCS.clear();
-    csswords.clear();
-    htmlwords.clear();
-    htmlshorts.clear();
 }
 
 void HighlightWords::loadPHPWords()
@@ -263,25 +299,50 @@ void HighlightWords::loadGeneralWords()
 
 void HighlightWords::addPHPClass(QString k)
 {
+    instance()._addPHPClass(k);
+}
+
+void HighlightWords::_addPHPClass(QString k)
+{
     phpwords[k.toLower().toStdString()] = classFormat;
 }
 
 void HighlightWords::addPHPFunction(QString k)
+{
+    instance()._addPHPFunction(k);
+}
+
+void HighlightWords::_addPHPFunction(QString k)
 {
     phpwords[k.toLower().toStdString()] = knownFunctionFormat;
 }
 
 void HighlightWords::addPHPVariable(QString k)
 {
+    instance()._addPHPVariable(k);
+}
+
+void HighlightWords::_addPHPVariable(QString k)
+{
     phpwordsCS[k.toStdString()] = knownVariableFormat;
 }
 
 void HighlightWords::addPHPConstant(QString k)
 {
+    instance()._addPHPConstant(k);
+}
+
+void HighlightWords::_addPHPConstant(QString k)
+{
     phpwordsCS[k.toStdString()] = constFormat;
 }
 
 void HighlightWords::addPHPClassConstant(QString cls, QString c)
+{
+    instance()._addPHPClassConstant(cls, c);
+}
+
+void HighlightWords::_addPHPClassConstant(QString cls, QString c)
 {
     if (cls.indexOf("\\") >= 0) cls = cls.mid(cls.lastIndexOf("\\")+1);
     QString k = cls.toLower() + "::" + c;
@@ -290,39 +351,80 @@ void HighlightWords::addPHPClassConstant(QString cls, QString c)
 
 void HighlightWords::addJSFunction(QString k)
 {
+    instance()._addJSFunction(k);
+}
+
+void HighlightWords::_addJSFunction(QString k)
+{
     jswordsCS[k.toStdString()] = knownFunctionFormat;
 }
 
 void HighlightWords::addJSInterface(QString k)
+{
+    instance()._addJSInterface(k);
+}
+
+void HighlightWords::_addJSInterface(QString k)
 {
     jswordsCS[k.toStdString()] = classFormat;
 }
 
 void HighlightWords::addJSObject(QString k)
 {
+    instance()._addJSObject(k);
+}
+
+void HighlightWords::_addJSObject(QString k)
+{
     jswordsCS[k.toStdString()] = classFormat;
 }
 
 void HighlightWords::addJSExtDartObject(QString k)
+{
+    instance()._addJSExtDartObject(k);
+}
+
+void HighlightWords::_addJSExtDartObject(QString k)
 {
     jsExtDartWordsCS[k.toStdString()] = classFormat;
 }
 
 void HighlightWords::addJSExtDartFunction(QString k)
 {
+    instance()._addJSExtDartFunction(k);
+}
+
+void HighlightWords::_addJSExtDartFunction(QString k)
+{
     jsExtDartWordsCS[k.toStdString()] = knownFunctionFormat;
 }
 
 void HighlightWords::addCSSProperty(QString k)
+{
+    instance()._addCSSProperty(k);
+}
+
+void HighlightWords::_addCSSProperty(QString k)
 {
     csswords[k.toStdString()] = knownFormat;
 }
 
 void HighlightWords::addHTMLTag(QString k)
 {
+    instance()._addHTMLTag(k);
+}
+
+void HighlightWords::_addHTMLTag(QString k)
+{
     htmlwords[k.toStdString()] = knownFormat;
 }
 
-void HighlightWords::addHTMLShortTag(QString k) {
+void HighlightWords::addHTMLShortTag(QString k)
+{
+    instance()._addHTMLShortTag(k);
+}
+
+void HighlightWords::_addHTMLShortTag(QString k)
+{
     htmlshorts[k.toStdString()] = knownFormat;
 }

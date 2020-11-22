@@ -54,7 +54,7 @@ const QString ROBOTS_FILENAME = "robots";
 
 const int EXTRA_HIGHLIGHT_BLOCKS_COUNT = 100; // should be >= 1
 
-Highlight::Highlight(HighlightWords * hWords, QTextDocument * parent) :
+Highlight::Highlight(QTextDocument * parent) :
     doc(parent)
 {
     std::string highlightTabsStr = Settings::get("highlight_tabs");
@@ -109,7 +109,7 @@ Highlight::Highlight(HighlightWords * hWords, QTextDocument * parent) :
     jsExtMode = "";
     fileName = "";
 
-    HW = hWords;
+    HW = &HighlightWords::instance();
 }
 
 void Highlight::setFormat(int start, int count, const QTextCharFormat &format)

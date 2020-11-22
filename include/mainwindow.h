@@ -272,11 +272,6 @@ private slots:
     void sendContextMenuEvent();
 private:
     Ui::MainWindow *ui;
-    HighlightWords * highlightWords;
-    CompleteWords * completeWords;
-    HelpWords * helpWords;
-    SpellWords * spellWords;
-    Snippets * snippets;
     ParserWorker * parserWorker;
     QThread parserThread;
     FileBrowser * filebrowser;

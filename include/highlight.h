@@ -50,7 +50,7 @@ class Highlight : public QObject
 {
     Q_OBJECT
 public:
-    Highlight(HighlightWords * HW, QTextDocument * parent);
+    Highlight(QTextDocument * parent);
     void rehighlight();
     void rehighlightBlock(QTextBlock & block);
     void resetHighlightBlock(QTextBlock & block);

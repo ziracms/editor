@@ -79,7 +79,7 @@ const int FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE = 300;
 
 const QString SNIPPET_PREFIX = "Snippet: @";
 
-Editor::Editor(SpellCheckerInterface * spellChecker, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, Snippets * snippets, QWidget * parent):
+Editor::Editor(SpellCheckerInterface * spellChecker, QWidget * parent):
     QTextEdit(parent), spellChecker(spellChecker), mousePressTimer(this)
 {
     setMinimumSize(0, 0);
@@ -288,7 +288,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, HighlightWords * highlightW
     if (experimentalModeStr == "yes") experimentalMode = true;
 
     // highlighter
-    highlight = new Highlight(highlightWords, document());
+    highlight = new Highlight(document());
     std::string unusedVariableColorStr = Settings::get("highlight_unused_variable_color");
     unusedVariableColor = QColor(unusedVariableColorStr.c_str());
     connect(document(), SIGNAL(contentsChange(int,int,int)), this, SLOT(contentsChange(int,int,int)));
@@ -446,11 +446,11 @@ Editor::Editor(SpellCheckerInterface * spellChecker, HighlightWords * highlightW
     tooltipBoldTagStart = "<b style=\"color:"+tooltipBoldColorStr+"\">";
     tooltipBoldTagEnd = "</b>";
 
-    CW = completeWords;
-    HW = highlightWords;
-    HPW = helpWords;
-    SW = spellWords;
-    SNP = snippets;
+    CW = &CompleteWords::instance();
+    HW = &HighlightWords::instance();
+    HPW = &HelpWords::instance();
+    SW = &SpellWords::instance();
+    SNP = &Snippets::instance();
 
     parsePHPEnabled = false;
     std::string parsePHPEnabledStr = Settings::get("parser_enable_parse_php");

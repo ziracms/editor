@@ -11,7 +11,20 @@ const QString SNIPPET_SELECT_END_TAG = "{$selectEnd}";
 const QString SNIPPET_MULTI_SELECT_START_TAG = "{$multiSelectStart}";
 const QString SNIPPET_MULTI_SELECT_END_TAG = "{$multiSelectEnd}";
 
-Snippets::Snippets()
+Snippets::Snippets(){}
+
+Snippets& Snippets::instance()
+{
+    static Snippets _instance;
+    return _instance;
+}
+
+void Snippets::load()
+{
+    instance()._load();
+}
+
+void Snippets::_load()
 {
     QString snippets = QString::fromStdString(Settings::get("snippets")).trimmed();
     QString customSnippetsFile = QString::fromStdString(Settings::get("custom_snippets_file"));
@@ -45,11 +58,6 @@ Snippets::Snippets()
             }
         }
     }
-}
-
-Snippets::~Snippets()
-{
-
 }
 
 QString Snippets::parse(QString data, QString prefix, QString indent, int & moveCursorBack, int & setSelectStartFromEnd, int & setSelectLength, int & setMultiSelectStartFromEnd, int & setMultiSelectLength)

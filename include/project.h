@@ -32,7 +32,7 @@ public:
     QString getPath();
     bool isPHPLintEnabled();
     bool isPHPCSEnabled();
-    void loadWords(CompleteWords * CW, HighlightWords * HW, HelpWords * HPW);
+    void loadWords();
     void deleteDataFile();
     void findDeclaration(QString name, QString & path, int & line);
     static QVariantMap createPHPResultMap();
@@ -49,7 +49,7 @@ public:
     std::unordered_map<std::string, std::string>::iterator phpClassDeclarationsIterator;
 protected:
     void reset();
-    void loadPHPWords(QString project_dir, CompleteWords * CW, HighlightWords * HW, HelpWords * HPW);
+    void loadPHPWords(QString project_dir);
     bool updateMetaFile(QString name, QString path, bool lintEnabled, bool csEnabled, QString time_created, QString time_modified, QStringList openTabFiles, QList<int> openTabLines, int currentTabIndex, QString todo);
     static std::unordered_map<std::string, std::string> getPHPFilesMapFromData(QVariantMap & data);
     static void preparePHPResults(QString project_dir, QVariantMap & map);
@@ -61,6 +61,8 @@ private:
     QString projectModified;
     bool projectPHPLintEnabled;
     bool projectPHPCSEnabled;
+    CompleteWords * CW;
+    HelpWords * HPW;
 signals:
     void openTabsRequested(QStringList openTabFiles, bool initHighlight);
     void gotoTabLinesRequested(QList<int> openTabLines);
