@@ -8,9 +8,9 @@ const int PROGRESS_PARTS_COUNT = 1;
 const int PROGRESS_MAX = 100;
 const int UPDATE_MILLISECONDS = 10;
 
-ProgressLine::ProgressLine(Settings * settings, QWidget *parent) : QWidget(parent)
+ProgressLine::ProgressLine(QWidget *parent) : QWidget(parent)
 {
-    progressColor = QColor(QString::fromStdString(settings->get("progress_color")));
+    progressColor = QColor(QString::fromStdString(Settings::get("progress_color")));
     progress = 0;
     active = false;
     wantStop = false;

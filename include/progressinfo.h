@@ -11,7 +11,7 @@ class ProgressInfo : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ProgressInfo(Settings * settings, QWidget *parent = nullptr);
+    explicit ProgressInfo(QWidget *parent = nullptr);
     void setText(QString text);
     void activate();
     void deactivate();

@@ -10,11 +10,11 @@
 
 const int TOOLTIP_PADDING = 7;
 
-Tooltip::Tooltip(Settings * settings)
+Tooltip::Tooltip()
 {
-    std::string tooltipBorderColorStr = settings->get("editor_tooltip_border_color");
-    std::string tooltipBgColorStr = settings->get("editor_tooltip_bg_color");
-    std::string tooltipColorStr = settings->get("editor_tooltip_color");
+    std::string tooltipBorderColorStr = Settings::get("editor_tooltip_border_color");
+    std::string tooltipBgColorStr = Settings::get("editor_tooltip_bg_color");
+    std::string tooltipColorStr = Settings::get("editor_tooltip_color");
 
     tooltipBorderColor = QColor(tooltipBorderColorStr.c_str());
     tooltipBgColor = QColor(tooltipBgColorStr.c_str());

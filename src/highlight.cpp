@@ -54,46 +54,46 @@ const QString ROBOTS_FILENAME = "robots";
 
 const int EXTRA_HIGHLIGHT_BLOCKS_COUNT = 100; // should be >= 1
 
-Highlight::Highlight(Settings * settings, HighlightWords * hWords, QTextDocument * parent) :
+Highlight::Highlight(HighlightWords * hWords, QTextDocument * parent) :
     doc(parent)
 {
-    std::string highlightTabsStr = settings->get("highlight_tabs");
-    std::string highlightSpacesStr = settings->get("highlight_spaces");
+    std::string highlightTabsStr = Settings::get("highlight_tabs");
+    std::string highlightSpacesStr = Settings::get("highlight_spaces");
     if (highlightTabsStr == "yes") highlightTabs = true;
     else highlightTabs = false;
     if (highlightSpacesStr == "yes") highlightSpaces = true;
     else highlightSpaces = false;
 
     // highlight modes by extension
-    QString phpExtentionsStr = QString::fromStdString(settings->get("highlight_php_extensions"));
+    QString phpExtentionsStr = QString::fromStdString(Settings::get("highlight_php_extensions"));
     QStringList phpExtensionsList = phpExtentionsStr.split(",");
     for (int i=0; i<phpExtensionsList.size(); i++) {
         QString ext = phpExtensionsList.at(i);
         modeTypes[ext.trimmed().toStdString()] = MODE_MIXED;
     }
-    QString jsExtentionsStr = QString::fromStdString(settings->get("highlight_js_extensions"));
+    QString jsExtentionsStr = QString::fromStdString(Settings::get("highlight_js_extensions"));
     QStringList jsExtensionsList = jsExtentionsStr.split(",");
     for (int i=0; i<jsExtensionsList.size(); i++) {
         QString ext = jsExtensionsList.at(i);
         modeTypes[ext.trimmed().toStdString()] = MODE_JS;
     }
-    QString cssExtentionsStr = QString::fromStdString(settings->get("highlight_css_extensions"));
+    QString cssExtentionsStr = QString::fromStdString(Settings::get("highlight_css_extensions"));
     QStringList cssExtensionsList = cssExtentionsStr.split(",");
     for (int i=0; i<cssExtensionsList.size(); i++) {
         QString ext = cssExtensionsList.at(i);
         modeTypes[ext.trimmed().toStdString()] = MODE_CSS;
     }
-    QString htmlExtentionsStr = QString::fromStdString(settings->get("highlight_html_extensions"));
+    QString htmlExtentionsStr = QString::fromStdString(Settings::get("highlight_html_extensions"));
     QStringList htmlExtensionsList = htmlExtentionsStr.split(",");
     for (int i=0; i<htmlExtensionsList.size(); i++) {
         QString ext = htmlExtensionsList.at(i);
         modeTypes[ext.trimmed().toStdString()] = MODE_HTML;
     }
 
-    std::string spellColorStr = settings->get("editor_line_warning_color");
+    std::string spellColorStr = Settings::get("editor_line_warning_color");
     spellColor = QColor(QString::fromStdString(spellColorStr));
 
-    std::string errorColorStr = settings->get("editor_line_error_color");
+    std::string errorColorStr = Settings::get("editor_line_error_color");
     errorColor = QColor(QString::fromStdString(errorColorStr));
 
     enabled = false;

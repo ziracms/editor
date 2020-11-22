@@ -14,7 +14,7 @@ class Annotation : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Annotation(Editor * editor, Settings * settings);
+    explicit Annotation(Editor * editor);
     QSize sizeHint() const override;
     void setText(QString text);
     QString getText();

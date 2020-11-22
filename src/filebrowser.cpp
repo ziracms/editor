@@ -33,7 +33,7 @@ const QString FB_ACTION_NAME_COPY = "fb_copy";
 const QString FB_ACTION_NAME_CUT = "fb_cut";
 const QString FB_ACTION_NAME_PASTE = "fb_paste";
 
-FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * settings):
+FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line):
     treeWidget(widget), pathLine(line), menu(widget), mousePressTimer(this)
 {
     fbpath = ""; fbcopypath = ""; fbcutpath = "";
@@ -41,13 +41,13 @@ FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line, Settings * sett
     isGesturesEnabled = false;
     isGesturesActive = false;
     gesturesY = -1;
-    fileBrowserHomeDir = QString::fromStdString(settings->get("file_browser_home"));
+    fileBrowserHomeDir = QString::fromStdString(Settings::get("file_browser_home"));
     initFileBrowser(fileBrowserHomeDir);
     menu.hide();
     acceptEnter = true;
     editMode = false;
 
-    QString shortcutContextMenuStr = QString::fromStdString(settings->get("shortcut_context_menu"));
+    QString shortcutContextMenuStr = QString::fromStdString(Settings::get("shortcut_context_menu"));
     QShortcut * shortcutContextMenu = new QShortcut(QKeySequence(shortcutContextMenuStr), treeWidget);
     shortcutContextMenu->setContext(Qt::WidgetShortcut);
     connect(shortcutContextMenu, SIGNAL(activated()), this, SLOT(contextMenu()));

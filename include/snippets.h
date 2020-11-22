@@ -7,7 +7,7 @@
 class Snippets
 {
 public:
-    Snippets(Settings * settings);
+    Snippets();
     ~Snippets();
     static QString parse(QString data, QString prefix, QString indent, int & moveCursorBack, int & setSelectStartFromEnd, int & setSelectLength, int & setMultiSelectStartFromEnd, int & setMultiSelectLength);
 

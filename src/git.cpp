@@ -18,13 +18,13 @@ const QString GIT_PUSH_COMMAND = "push";
 const QString GIT_PULL_COMMAND = "pull";
 const QString GIT_CLONE_COMMAND = "clone";
 
-Git::Git(Settings * settings, QObject *parent) : QObject(parent)
+Git::Git(QObject *parent) : QObject(parent)
 {
     cmdTpl = "<div><b>%1</b> %2</div><div>&nbsp;</div>";
     lineTpl = "<div>%1</div>";
-    errorTpl = "<span style=\"color:"+QString::fromStdString(settings->get("git_output_error_color"))+"\">%1</span>";
-    msgTpl = "<span style=\"color:"+QString::fromStdString(settings->get("git_output_message_color"))+"\">%1</span>";
-    infoTpl = "<span style=\"color:"+QString::fromStdString(settings->get("git_output_info_color"))+"\">%1</span>";
+    errorTpl = "<span style=\"color:"+QString::fromStdString(Settings::get("git_output_error_color"))+"\">%1</span>";
+    msgTpl = "<span style=\"color:"+QString::fromStdString(Settings::get("git_output_message_color"))+"\">%1</span>";
+    infoTpl = "<span style=\"color:"+QString::fromStdString(Settings::get("git_output_info_color"))+"\">%1</span>";
 }
 
 bool Git::isCommandSafe(QString command)

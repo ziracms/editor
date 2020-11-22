@@ -32,19 +32,31 @@ class Settings : public QObject
 {
     Q_OBJECT
 public:
-    Settings(QObject *parent = nullptr);
-    void applyLightColors();
-    void applyDarkColors();
-    void applyCustomColors(QString path);
-    void set(std::string k, std::string v);
-    std::string get(std::string k);
-    void load();
-    void reset();
-    void change(std::unordered_map<std::string, std::string> map);
-    void save();
-    QString getDefaultSnippets();
-    void static initApplicationScaling();
+    static Settings& instance();
+    static void applyLightColors();
+    static void applyDarkColors();
+    static void applyCustomColors(QString path);
+    static void set(std::string k, std::string v);
+    static std::string get(std::string k);
+    static void load();
+    static void reset();
+    static void change(std::unordered_map<std::string, std::string> map);
+    static void save();
+    static QString getDefaultSnippets();
+    static void initApplicationScaling();
+protected:
+    void initData();
+    void _applyLightColors();
+    void _applyDarkColors();
+    void _applyCustomColors(QString path);
+    void _set(std::string k, std::string v);
+    std::string _get(std::string k);
+    void _load();
+    void _reset();
+    void _change(std::unordered_map<std::string, std::string> map);
+    void _save();
 private:
+    Settings(QObject *parent = nullptr);
     std::unordered_map<std::string, std::string> data;
     std::unordered_map<std::string, std::string>::iterator iterator;
     std::unordered_map<std::string, std::string> changesData;

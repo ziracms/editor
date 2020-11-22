@@ -32,17 +32,17 @@ QString Servers::generateMariaDBServiceCommand(QString command, QString pwd)
     return SERVERS_MARIADB_SERVICE_CMD.arg(pwd).arg(command);
 }
 
-QString Servers::highlightServersCommand(QString & text, Settings * settings)
+QString Servers::highlightServersCommand(QString & text)
 {
-    QString infoColor = QString::fromStdString(settings->get("git_output_info_color"));
+    QString infoColor = QString::fromStdString(Settings::get("git_output_info_color"));
     return TPL_CMD_LINE.arg(TPL_COLOR_TEXT.arg(text).arg(infoColor));
 }
 
-QString Servers::highlightServersCommandOutput(QString & output, Settings * settings)
+QString Servers::highlightServersCommandOutput(QString & output)
 {
-    QString errorColor = QString::fromStdString(settings->get("git_output_error_color"));
-    QString msgColor = QString::fromStdString(settings->get("git_output_message_color"));
-    QString infoColor = QString::fromStdString(settings->get("git_output_info_color"));
+    QString errorColor = QString::fromStdString(Settings::get("git_output_error_color"));
+    QString msgColor = QString::fromStdString(Settings::get("git_output_message_color"));
+    QString infoColor = QString::fromStdString(Settings::get("git_output_info_color"));
     QString result = "";
     QStringList outputList = output.split("\n");
     QString highlightedOutput = "";

@@ -11,13 +11,13 @@ const QString SNIPPET_SELECT_END_TAG = "{$selectEnd}";
 const QString SNIPPET_MULTI_SELECT_START_TAG = "{$multiSelectStart}";
 const QString SNIPPET_MULTI_SELECT_END_TAG = "{$multiSelectEnd}";
 
-Snippets::Snippets(Settings * settings)
+Snippets::Snippets()
 {
-    QString snippets = QString::fromStdString(settings->get("snippets")).trimmed();
-    QString customSnippetsFile = QString::fromStdString(settings->get("custom_snippets_file"));
+    QString snippets = QString::fromStdString(Settings::get("snippets")).trimmed();
+    QString customSnippetsFile = QString::fromStdString(Settings::get("custom_snippets_file"));
     if (Helper::fileExists(customSnippetsFile)) {
-        std::string encoding = settings->get("editor_encoding");
-        std::string encodingFallback = settings->get("editor_fallback_encoding");
+        std::string encoding = Settings::get("editor_encoding");
+        std::string encodingFallback = Settings::get("editor_fallback_encoding");
         QString customSnippets = Helper::loadTextFile(customSnippetsFile, encoding, encodingFallback, true).trimmed();
         if (customSnippets.size() > 0) snippets += "\n"+customSnippets;
     }

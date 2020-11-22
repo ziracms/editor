@@ -24,7 +24,7 @@ class Git : public QObject
 {
     Q_OBJECT
 public:
-    explicit Git(Settings * settings, QObject *parent = nullptr);
+    explicit Git(QObject *parent = nullptr);
     bool isCommandSafe(QString command);
     void showStatus(QString path);
     void showStatusShort(QString path, bool outputResult = true, bool silent = false);

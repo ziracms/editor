@@ -59,9 +59,8 @@ MainWindow::MainWindow(QWidget *parent) :
     qRegisterMetaType<ParseCSS::ParseResult>();
     qRegisterMetaType<WordsMapList>();
 
-    settings = new Settings();
-    settings->load();
-    connect(settings, SIGNAL(restartApp()), this, SLOT(restartApp()));
+    Settings::load();
+    connect(&Settings::instance(), SIGNAL(restartApp()), this, SLOT(restartApp()));
 
     // loading built-in fonts
     QFontDatabase::addApplicationFont(":/fonts/SourceCodePro-Regular.ttf");
@@ -73,8 +72,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // app font
     QFont appFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
-    std::string appFontFamily = settings->get("app_font_family");
-    std::string appFontSize = settings->get("app_font_size");
+    std::string appFontFamily = Settings::get("app_font_family");
+    std::string appFontSize = Settings::get("app_font_size");
     if (appFontFamily.size() > 0) {
         appFont.setFamily(QString::fromStdString(appFontFamily));
         appFont.setStyleHint(QFont::SansSerif);
@@ -83,21 +82,21 @@ MainWindow::MainWindow(QWidget *parent) :
     appFont.setStyleName("");
     QApplication::setFont(appFont);
 
-    QString pluginsDir = QString::fromStdString(settings->get("plugins_path"));
+    QString pluginsDir = QString::fromStdString(Settings::get("plugins_path"));
 
-    theme = QString::fromStdString(settings->get("theme"));
-    colorSheme = QString::fromStdString(settings->get("color_scheme"));
-    customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
+    theme = QString::fromStdString(Settings::get("theme"));
+    colorSheme = QString::fromStdString(Settings::get("color_scheme"));
+    customThemesPath = QString::fromStdString(Settings::get("custom_themes_path"));
     if (customThemesPath.size() == 0) {
         QDir customThemesPathDir = QDir("./"+CUSTOM_THEMES_FALLBACK_FOLDER);
         customThemesPath = customThemesPathDir.absolutePath();
         if (!Helper::folderExists(customThemesPath)) customThemesPath = "";
     }
-    if (colorSheme == COLOR_SCHEME_DARK) settings->applyDarkColors();
-    else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyLightColors();
-    else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) settings->applyCustomColors(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE);
+    if (colorSheme == COLOR_SCHEME_DARK) Settings::applyDarkColors();
+    else if (colorSheme == COLOR_SCHEME_LIGHT || customThemesPath.size() == 0 || !Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) Settings::applyLightColors();
+    else if (customThemesPath.size() > 0 && Helper::fileExists(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE)) Settings::applyCustomColors(customThemesPath + "/" + colorSheme + "/" + CUSTOM_THEME_COLORS_FILE);
 
-    QString schemeType = QString::fromStdString(settings->get(COLOR_SCHEME_TYPE.toStdString()));
+    QString schemeType = QString::fromStdString(Settings::get(COLOR_SCHEME_TYPE.toStdString()));
     if (theme != THEME_SYSTEM && theme.indexOf(STYLE_PLUGIN_DISPLAY_NAME_SUFFIX) < 0) {
         Style * style = new Style(schemeType == COLOR_SCHEME_LIGHT);
         QApplication::setStyle(style);
@@ -150,11 +149,11 @@ MainWindow::MainWindow(QWidget *parent) :
     terminal = Helper::loadTerminalPlugin(pluginsDir);
 
     // load words
-    highlightWords = new HighlightWords(settings);
+    highlightWords = new HighlightWords();
     completeWords = new CompleteWords(highlightWords);
     helpWords = new HelpWords();
     spellWords = new SpellWords();
-    snippets = new Snippets(settings);
+    snippets = new Snippets();
 
     // welcome screen
     welcomeScreen = new Welcome(schemeType == COLOR_SCHEME_LIGHT);
@@ -163,7 +162,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(welcomeScreen, SIGNAL(createProject()), this, SLOT(on_actionNewProject_triggered()));
 
     // editor tabs
-    editorTabs = new EditorTabs(spellChecker, ui->tabWidget, settings, highlightWords, completeWords, helpWords, spellWords, snippets);
+    editorTabs = new EditorTabs(spellChecker, ui->tabWidget, highlightWords, completeWords, helpWords, spellWords, snippets);
     connect(editorTabs, SIGNAL(statusBarText(QString)), this, SLOT(setStatusBarText(QString)));
     connect(editorTabs, SIGNAL(editorFilenameChanged(QString)), this, SLOT(editorFilenameChanged(QString)));
     connect(editorTabs, SIGNAL(tabOpened(int)), this, SLOT(editorTabOpened(int)));
@@ -213,7 +212,7 @@ MainWindow::MainWindow(QWidget *parent) :
     editorsSplitter->addWidget(ui->tabWidget);
     editorsSplitter->addWidget(tabWidgetSplit);
 
-    editorTabsSplit = new EditorTabs(spellChecker, tabWidgetSplit, settings, highlightWords, completeWords, helpWords, spellWords, snippets);
+    editorTabsSplit = new EditorTabs(spellChecker, tabWidgetSplit, highlightWords, completeWords, helpWords, spellWords, snippets);
     tabWidgetSplit->hide();
     isSplitActive = false;
 
@@ -238,7 +237,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(editorTabsSplit, SIGNAL(gitTabRefreshRequested()), this, SLOT(gitTabRefreshRequested()));
 
     // filebrowser
-    filebrowser = new FileBrowser(ui->fileBrowserTreeWidget, ui->fileBrowserPathLine, settings);
+    filebrowser = new FileBrowser(ui->fileBrowserTreeWidget, ui->fileBrowserPathLine);
     connect(filebrowser, SIGNAL(openFile(QString)), this, SLOT(fileBrowserOpen(QString)));
     connect(filebrowser, SIGNAL(fileCreated(QString)), editorTabs, SLOT(fileBrowserCreated(QString)));
     connect(filebrowser, SIGNAL(fileOrFolderRenamed(QString, QString)), editorTabs, SLOT(fileBrowserRenamed(QString, QString)));
@@ -251,7 +250,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(filebrowser, SIGNAL(showError(QString)), this, SLOT(showPopupError(QString)));
 
     // navigator
-    navigator = new Navigator(ui->navigatorTreeWidget, settings);
+    navigator = new Navigator(ui->navigatorTreeWidget);
     connect(navigator, SIGNAL(showLine(int)), this, SLOT(editorShowLine(int)));
 
     // hide sidebar progressbar
@@ -266,10 +265,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(project, SIGNAL(showTodoRequested(QString)), this, SLOT(showTodoRequested(QString)));
 
     // git
-    git = new Git(settings);
+    git = new Git();
     connect(git, SIGNAL(runGitCommand(QString,QString,QStringList,bool,bool)), this, SLOT(runGitCommand(QString,QString,QStringList,bool,bool)));
 
-    gitBrowser = new GitBrowser(ui->gitTabTreeWidget, settings);
+    gitBrowser = new GitBrowser(ui->gitTabTreeWidget);
     connect(ui->gitTabPullButton, SIGNAL(pressed()), this, SLOT(on_actionGitPull_triggered()));
     connect(ui->gitTabPushButton, SIGNAL(pressed()), this, SLOT(on_actionGitPush_triggered()));
     connect(ui->gitTabRefreshButton, SIGNAL(pressed()), this, SLOT(gitTabRefreshRequested()));
@@ -279,38 +278,38 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(gitBrowser, SIGNAL(commitRequested()), this, SLOT(on_actionGitCommit_triggered()));
 
     // quick access widget
-    qa = new QuickAccess(settings, this);
+    qa = new QuickAccess(this);
     connect(qa, SIGNAL(quickAccessRequested(QString,int)), this, SLOT(quickAccessRequested(QString,int)));
     connect(qa, SIGNAL(quickFindRequested(QString)), this, SLOT(quickFindRequested(QString)));
 
     // messages popup
-    popup = new Popup(settings, this);
+    popup = new Popup(this);
 
     // progress line
-    progressLine = new ProgressLine(settings, this);
-    progressInfo = new ProgressInfo(settings, this);
+    progressLine = new ProgressLine(this);
+    progressInfo = new ProgressInfo(this);
 
     // enable php lint & cs
     parsePHPLintEnabled = false;
-    std::string parsePHPLintEnabledStr = settings->get("parser_enable_php_lint");
+    std::string parsePHPLintEnabledStr = Settings::get("parser_enable_php_lint");
     if (parsePHPLintEnabledStr == "yes") parsePHPLintEnabled = true;
     parsePHPCSEnabled = false;
-    std::string parsePHPCSEnabledStr = settings->get("parser_enable_php_cs");
+    std::string parsePHPCSEnabledStr = Settings::get("parser_enable_php_cs");
     if (parsePHPCSEnabledStr == "yes") parsePHPCSEnabled = true;
     parsePHPEnabled = false;
-    std::string parsePHPEnabledStr = settings->get("parser_enable_parse_php");
+    std::string parsePHPEnabledStr = Settings::get("parser_enable_parse_php");
     if (parsePHPEnabledStr == "yes") parsePHPEnabled = true;
     parseJSEnabled = false;
-    std::string parseJSEnabledStr = settings->get("parser_enable_parse_js");
+    std::string parseJSEnabledStr = Settings::get("parser_enable_parse_js");
     if (parseJSEnabledStr == "yes") parseJSEnabled = true;
     parseCSSEnabled = false;
-    std::string parseCSSEnabledStr = settings->get("parser_enable_parse_css");
+    std::string parseCSSEnabledStr = Settings::get("parser_enable_parse_css");
     if (parseCSSEnabledStr == "yes") parseCSSEnabled = true;
     gitCommandsEnabled = false;
-    std::string gitCommandsEnabledStr = settings->get("parser_enable_git");
+    std::string gitCommandsEnabledStr = Settings::get("parser_enable_git");
     if (gitCommandsEnabledStr == "yes") gitCommandsEnabled = true;
     serverCommandsEnabled = false;
-    std::string serverCommandsEnabledStr = settings->get("parser_enable_servers");
+    std::string serverCommandsEnabledStr = Settings::get("parser_enable_servers");
     if (serverCommandsEnabledStr == "yes") serverCommandsEnabled = true;
 
     // disable server commands on Android
@@ -319,7 +318,7 @@ MainWindow::MainWindow(QWidget *parent) :
     #endif
 
     // parser
-    parserWorker = new ParserWorker(settings);
+    parserWorker = new ParserWorker();
     parserWorker->moveToThread(&parserThread);
     connect(&parserThread, &QThread::finished, parserWorker, &QObject::deleteLater);
     connect(this, SIGNAL(disableWorker()), parserWorker, SLOT(disable()));
@@ -367,8 +366,8 @@ MainWindow::MainWindow(QWidget *parent) :
     tmpDisableParser = false;
 
     // message templates
-    QString outputMsgErrorColor = QString::fromStdString(settings->get("messages_error_color"));
-    QString outputMsgWarningColor = QString::fromStdString(settings->get("messages_warning_color"));
+    QString outputMsgErrorColor = QString::fromStdString(Settings::get("messages_error_color"));
+    QString outputMsgWarningColor = QString::fromStdString(Settings::get("messages_warning_color"));
     outputMsgErrorTpl = "<p style=\"color:"+outputMsgErrorColor+"\"><a href=\"%1\">["+tr("Line")+": %1]</a> %2</p>";
     outputMsgWarningTpl = "<p style=\"color:"+outputMsgWarningColor+"\"><a href=\"%1\">["+tr("Line")+": %1]</a> %2</p>";
 
@@ -445,7 +444,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->sidebarDockWidget, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(sidebarDockLocationChanged(Qt::DockWidgetArea)));
 
     bool showDockButtons = false;
-    if (settings->get("show_dock_buttons") == "yes") showDockButtons = true;
+    if (Settings::get("show_dock_buttons") == "yes") showDockButtons = true;
     if (!showDockButtons) {
         QWidget * sidebarTitleBarWidget = new DockTitleBar();
         ui->sidebarDockWidget->setTitleBarWidget(sidebarTitleBarWidget);
@@ -453,14 +452,14 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->outputDockWidget->setTitleBarWidget(outputTitleBarWidget);
     }
 
-    searchResultsColor = QColor(QString::fromStdString(settings->get("search_results_color")));
-    outputColor = QColor(QString::fromStdString(settings->get("output_color")));
-    outputBgColor = QColor(QString::fromStdString(settings->get("output_bg_color")));
+    searchResultsColor = QColor(QString::fromStdString(Settings::get("search_results_color")));
+    outputColor = QColor(QString::fromStdString(Settings::get("output_color")));
+    outputBgColor = QColor(QString::fromStdString(Settings::get("output_bg_color")));
 
     // output tabs font
     QFont outputFont;
-    std::string editorFontFamily = settings->get("editor_font_family");
-    std::string editorFontSize = settings->get("editor_font_size");
+    std::string editorFontFamily = Settings::get("editor_font_family");
+    std::string editorFontSize = Settings::get("editor_font_size");
     if (editorFontFamily=="") {
         QFont sysFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
         outputFont.setFamily(sysFont.family());
@@ -495,7 +494,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QShortcut * shortcutPaste = new QShortcut(QKeySequence(shortcutPasteStr), this);
         connect(shortcutPaste, SIGNAL(activated()), this, SLOT(terminalPaste()));
 
-        QString showTerminalStr = QString::fromStdString(settings->get("shortcut_terminal"));
+        QString showTerminalStr = QString::fromStdString(Settings::get("shortcut_terminal"));
         QShortcut * showTerminal = new QShortcut(QKeySequence(showTerminalStr), this);
         connect(showTerminal, SIGNAL(activated()), this, SLOT(showTerminal()));
 
@@ -560,93 +559,93 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     // shortcuts
-    QString shortcutSidebarStr = QString::fromStdString(settings->get("shortcut_sidebar"));
+    QString shortcutSidebarStr = QString::fromStdString(Settings::get("shortcut_sidebar"));
     QShortcut * shortcutSidebar = new QShortcut(QKeySequence(shortcutSidebarStr), this);
     connect(shortcutSidebar, SIGNAL(activated()), this, SLOT(on_actionShowHideSidebar_triggered()));
 
-    QString shortcutToobarStr = QString::fromStdString(settings->get("shortcut_toolbar"));
+    QString shortcutToobarStr = QString::fromStdString(Settings::get("shortcut_toolbar"));
     QShortcut * shortcutToobar = new QShortcut(QKeySequence(shortcutToobarStr), this);
     connect(shortcutToobar, SIGNAL(activated()), this, SLOT(on_actionShowHideToolbar_triggered()));
 
-    QString shortcutOutputStr = QString::fromStdString(settings->get("shortcut_output"));
+    QString shortcutOutputStr = QString::fromStdString(Settings::get("shortcut_output"));
     QShortcut * shortcutOutput = new QShortcut(QKeySequence(shortcutOutputStr), this);
     connect(shortcutOutput, SIGNAL(activated()), this, SLOT(on_actionShowHideOutput_triggered()));
 
-    QString shortcutQuickAccessStr = QString::fromStdString(settings->get("shortcut_quick_access"));
+    QString shortcutQuickAccessStr = QString::fromStdString(Settings::get("shortcut_quick_access"));
     QShortcut * shortcutQuickAccess = new QShortcut(QKeySequence(shortcutQuickAccessStr), this);
     connect(shortcutQuickAccess, SIGNAL(activated()), this, SLOT(on_actionQuickAccess_triggered()));
 
-    QString shortcutQuickAccessAltStr = QString::fromStdString(settings->get("shortcut_quick_access_alt"));
+    QString shortcutQuickAccessAltStr = QString::fromStdString(Settings::get("shortcut_quick_access_alt"));
     QShortcut * shortcutQuickAccessAlt = new QShortcut(QKeySequence(shortcutQuickAccessAltStr), this);
     connect(shortcutQuickAccessAlt, SIGNAL(activated()), this, SLOT(on_actionQuickAccess_triggered()));
 
-    QString shortcutFocusTreeStr = QString::fromStdString(settings->get("shortcut_focus_tree"));
+    QString shortcutFocusTreeStr = QString::fromStdString(Settings::get("shortcut_focus_tree"));
     QShortcut * shortcutFocusTree = new QShortcut(QKeySequence(shortcutFocusTreeStr), this);
     connect(shortcutFocusTree, SIGNAL(activated()), this, SLOT(focusTreeTriggered()));
 
-    QString shortcutOpenFileStr = QString::fromStdString(settings->get("shortcut_open_file"));
+    QString shortcutOpenFileStr = QString::fromStdString(Settings::get("shortcut_open_file"));
     QShortcut * shortcutOpenFile = new QShortcut(QKeySequence(shortcutOpenFileStr), this);
     connect(shortcutOpenFile, SIGNAL(activated()), this, SLOT(on_actionOpenFile_triggered()));
 
-    QString shortcutOpenProjectStr = QString::fromStdString(settings->get("shortcut_open_project"));
+    QString shortcutOpenProjectStr = QString::fromStdString(Settings::get("shortcut_open_project"));
     QShortcut * shortcutOpenProject = new QShortcut(QKeySequence(shortcutOpenProjectStr), this);
     connect(shortcutOpenProject, SIGNAL(activated()), this, SLOT(on_actionOpenProject_triggered()));
 
-    QString shortcutNewFileStr = QString::fromStdString(settings->get("shortcut_new_file"));
+    QString shortcutNewFileStr = QString::fromStdString(Settings::get("shortcut_new_file"));
     QShortcut * shortcutNewFile = new QShortcut(QKeySequence(shortcutNewFileStr), this);
     connect(shortcutNewFile, SIGNAL(activated()), this, SLOT(on_actionNewFile_triggered()));
 
-    QString shortcutNewFolderStr = QString::fromStdString(settings->get("shortcut_new_folder"));
+    QString shortcutNewFolderStr = QString::fromStdString(Settings::get("shortcut_new_folder"));
     QShortcut * shortcutNewFolder = new QShortcut(QKeySequence(shortcutNewFolderStr), this);
     connect(shortcutNewFolder, SIGNAL(activated()), this, SLOT(on_actionNewFolder_triggered()));
 
-    QString shortcutPreviousTabStr = QString::fromStdString(settings->get("shortcut_previous_tab"));
+    QString shortcutPreviousTabStr = QString::fromStdString(Settings::get("shortcut_previous_tab"));
     QShortcut * shortcutPreviousTab = new QShortcut(QKeySequence(shortcutPreviousTabStr), this);
     connect(shortcutPreviousTab, SIGNAL(activated()), this, SLOT(previousTabTriggered()));
 
-    QString shortcutNextTabStr = QString::fromStdString(settings->get("shortcut_next_tab"));
+    QString shortcutNextTabStr = QString::fromStdString(Settings::get("shortcut_next_tab"));
     QShortcut * shortcutNextTab = new QShortcut(QKeySequence(shortcutNextTabStr), this);
     connect(shortcutNextTab, SIGNAL(activated()), this, SLOT(nextTabTriggered()));
 
-    QString shortcutTabsListStr = QString::fromStdString(settings->get("shortcut_tabs_list"));
+    QString shortcutTabsListStr = QString::fromStdString(Settings::get("shortcut_tabs_list"));
     QShortcut * shortcutTabsList = new QShortcut(QKeySequence(shortcutTabsListStr), this);
     connect(shortcutTabsList, SIGNAL(activated()), this, SLOT(tabsListTriggered()));
 
-    QString shortcutSplitTabStr = QString::fromStdString(settings->get("shortcut_split_tab"));
+    QString shortcutSplitTabStr = QString::fromStdString(Settings::get("shortcut_split_tab"));
     QShortcut * shortcutSplitTab = new QShortcut(QKeySequence(shortcutSplitTabStr), this);
     connect(shortcutSplitTab, SIGNAL(activated()), this, SLOT(on_actionSplitTab_triggered()));
 
-    QString shortcutCloseTabStr = QString::fromStdString(settings->get("shortcut_close_tab"));
+    QString shortcutCloseTabStr = QString::fromStdString(Settings::get("shortcut_close_tab"));
     QShortcut * shortcutCloseTab = new QShortcut(QKeySequence(shortcutCloseTabStr), this);
     connect(shortcutCloseTab, SIGNAL(activated()), this, SLOT(on_actionClose_triggered()));
 
-    QString shortcutCloseProjectStr = QString::fromStdString(settings->get("shortcut_close_project"));
+    QString shortcutCloseProjectStr = QString::fromStdString(Settings::get("shortcut_close_project"));
     QShortcut * shortcutCloseProject = new QShortcut(QKeySequence(shortcutCloseProjectStr), this);
     connect(shortcutCloseProject, SIGNAL(activated()), this, SLOT(on_actionCloseProject_triggered()));
 
-    QString shortcutSaveAllStr = QString::fromStdString(settings->get("shortcut_save_all"));
+    QString shortcutSaveAllStr = QString::fromStdString(Settings::get("shortcut_save_all"));
     QShortcut * shortcutSaveAll = new QShortcut(QKeySequence(shortcutSaveAllStr), this);
     connect(shortcutSaveAll, SIGNAL(activated()), this, SLOT(on_actionSaveAll_triggered()));
 
-    QString shortcutSearchInFilesStr = QString::fromStdString(settings->get("shortcut_search_in_files"));
+    QString shortcutSearchInFilesStr = QString::fromStdString(Settings::get("shortcut_search_in_files"));
     QShortcut * shortcutSearchInFIles = new QShortcut(QKeySequence(shortcutSearchInFilesStr), this);
     connect(shortcutSearchInFIles, SIGNAL(activated()), this, SLOT(on_actionSearchInFiles_triggered()));
 
-    QString shortcutCloseAppStr = QString::fromStdString(settings->get("shortcut_close_app"));
+    QString shortcutCloseAppStr = QString::fromStdString(Settings::get("shortcut_close_app"));
     QShortcut * shortcutCloseApp = new QShortcut(QKeySequence(shortcutCloseAppStr), this);
     connect(shortcutCloseApp, SIGNAL(activated()), this, SLOT(on_actionQuit_triggered()));
 
-    QString shortcutExecuteStr = QString::fromStdString(settings->get("shortcut_execute"));
+    QString shortcutExecuteStr = QString::fromStdString(Settings::get("shortcut_execute"));
     QShortcut * shortcutExecute = new QShortcut(QKeySequence(shortcutExecuteStr), this);
     connect(shortcutExecute, SIGNAL(activated()), this, SLOT(on_actionExecuteFile_triggered()));
 
-    QString shortcutExecuteSelectionStr = QString::fromStdString(settings->get("shortcut_execute_selection"));
+    QString shortcutExecuteSelectionStr = QString::fromStdString(Settings::get("shortcut_execute_selection"));
     QShortcut * shortcutExecuteSelection = new QShortcut(QKeySequence(shortcutExecuteSelectionStr), this);
     connect(shortcutExecuteSelection, SIGNAL(activated()), this, SLOT(on_actionExecuteSelection_triggered()));
 
     connect(QApplication::inputMethod(), SIGNAL(visibleChanged()), this, SLOT(inputMethodVisibleChanged()));
 
-    if (settings->get("scale_factor_unchecked") == "yes" && settings->get("scale_auto") == "no") {
+    if (Settings::get("scale_factor_unchecked") == "yes" && Settings::get("scale_auto") == "no") {
         QTimer::singleShot(CHECK_SCALE_FACTOR_DELAY, this, SLOT(checkScaleFactor()));
     }
 
@@ -662,7 +661,7 @@ MainWindow::MainWindow(QWidget *parent) :
     #endif
 
     bool autoShowVirtualKeyboard = false;
-    if (settings->get("auto_show_virtual_keyboard") == "yes") autoShowVirtualKeyboard = true;
+    if (Settings::get("auto_show_virtual_keyboard") == "yes") autoShowVirtualKeyboard = true;
     qApp->setAutoSipEnabled(autoShowVirtualKeyboard);
 
     MainWindow::WANT_RESTART = false;
@@ -679,7 +678,6 @@ MainWindow::~MainWindow()
     delete project;
     delete git;
     delete gitBrowser;
-    delete settings;
     delete highlightWords;
     delete completeWords;
     delete helpWords;
@@ -706,12 +704,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
     emit disableWorker();
     // save project
     project->save(editorTabs->getOpenTabFiles(), editorTabs->getOpenTabLines(), editorTabs->getCurrentTabIndex(), ui->todoEdit->toPlainText());
-    if (settings->get("devpack_install_silent") == "no") {
+    if (Settings::get("devpack_install_silent") == "no") {
         std::unordered_map<std::string,std::string> sMap;
         sMap["devpack_install_silent"] = "yes";
-        settings->change(sMap);
+        Settings::change(sMap);
     }
-    settings->save();
+    Settings::save();
     // save wnd geometry & state
     QSettings windowSettings;
     windowSettings.setValue("main_window_geometry", saveGeometry());
@@ -737,7 +735,7 @@ void MainWindow::checkScaleFactor()
         ok = false;
     }
     settingsChanged["scale_factor_unchecked"] = "no";
-    settings->change(settingsChanged);
+    Settings::change(settingsChanged);
     if (!ok) {
         MainWindow::WANT_RESTART = true;
         if (close()) {
@@ -763,7 +761,7 @@ void MainWindow::menuViewOnShow()
             else action->setChecked(false);
         } else if (action->objectName() == "actionDisplayDockButtons") {
             bool showDockButtons = false;
-            if (settings->get("show_dock_buttons") == "yes") showDockButtons = true;
+            if (Settings::get("show_dock_buttons") == "yes") showDockButtons = true;
             action->setChecked(showDockButtons);
         }
     }
@@ -1343,7 +1341,7 @@ void MainWindow::on_actionDisplayDockButtons_triggered()
     QWidget * oldOutputTitleBarWidget = ui->outputDockWidget->titleBarWidget();
 
     bool showDockButtons = false;
-    if (settings->get("show_dock_buttons") == "yes") showDockButtons = true;
+    if (Settings::get("show_dock_buttons") == "yes") showDockButtons = true;
     std::unordered_map<std::string, std::string> data;
     if (showDockButtons) {
         QWidget * sidebarTitleBarWidget = new DockTitleBar();
@@ -1357,7 +1355,7 @@ void MainWindow::on_actionDisplayDockButtons_triggered()
         data["show_dock_buttons"] = "yes";
     }
 
-    settings->change(data);
+    Settings::change(data);
     if (oldSidebarTitleBarWidget != nullptr) oldSidebarTitleBarWidget->deleteLater();
     if (oldOutputTitleBarWidget != nullptr) oldOutputTitleBarWidget->deleteLater();
 }
@@ -1396,14 +1394,14 @@ void MainWindow::runServersCommand(QString command, QString pwd, QString descrip
     if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
     ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
     ui->outputEdit->clear();
-    ui->outputEdit->setHtml(Servers::highlightServersCommand(description, settings));
+    ui->outputEdit->setHtml(Servers::highlightServersCommand(description));
     emit serversCommand(command, pwd);
 }
 
 void MainWindow::serversCommandFinished(QString output)
 {
     output = output.trimmed() + "\n\n" + tr("Finished.");
-    ui->outputEdit->append(Servers::highlightServersCommandOutput(output, settings));
+    ui->outputEdit->append(Servers::highlightServersCommandOutput(output));
     QTextCursor cursor = ui->outputEdit->textCursor();
     cursor.movePosition(QTextCursor::Start);
     ui->outputEdit->setTextCursor(cursor);
@@ -1461,7 +1459,7 @@ void MainWindow::on_actionExecuteFile_triggered()
     ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
     ui->outputEdit->clear();
     QString cmdStr = "php -d max_execution_time=30 -f "+fileName;
-    ui->outputEdit->setHtml(Servers::highlightServersCommand(cmdStr, settings));
+    ui->outputEdit->setHtml(Servers::highlightServersCommand(cmdStr));
 
     emit execPHP(textEditor->getTabIndex(), fileName);
 }
@@ -1484,7 +1482,7 @@ void MainWindow::on_actionExecuteSelection_triggered()
     ui->outputTabWidget->setCurrentIndex(OUTPUT_TAB_RESULTS_INDEX);
     ui->outputEdit->clear();
     QString cmdStr = "php -d max_execution_time=30 -r '"+text+"'";
-    ui->outputEdit->setHtml(Servers::highlightServersCommand(cmdStr, settings));
+    ui->outputEdit->setHtml(Servers::highlightServersCommand(cmdStr));
 
     emit execSelection(textEditor->getTabIndex(), code);
 }
@@ -1520,7 +1518,7 @@ void MainWindow::execPHPFinished(int tabIndex, QString output)
     int maxSize = 1046576;
     if (output.size() == 0) output = tr("Finished.");
     else if (output.size() > maxSize) output = output.mid(0, maxSize) + "\n" + tr("Too many results. Breaking...");
-    ui->outputEdit->append(Servers::highlightServersCommandOutput(output, settings));
+    ui->outputEdit->append(Servers::highlightServersCommandOutput(output));
     QTextCursor cursor = ui->outputEdit->textCursor();
     cursor.movePosition(QTextCursor::Start);
     ui->outputEdit->setTextCursor(cursor);
@@ -1784,7 +1782,7 @@ void MainWindow::gitDiffUnifiedRequested(QString path)
 
 void MainWindow::installAndroidPackFinished(QString result)
 {
-    if (settings->get("devpack_install_silent") == "yes") return;
+    if (Settings::get("devpack_install_silent") == "yes") return;
     hideQAPanel();
     if (result.size() > 0) {
         if (!ui->outputDockWidget->isVisible()) ui->outputDockWidget->show();
@@ -1796,10 +1794,10 @@ void MainWindow::installAndroidPackFinished(QString result)
 
 void MainWindow::on_actionSettings_triggered()
 {
-    SettingsDialog dialog(settings, this);
+    SettingsDialog dialog(this);
     if (dialog.exec() != QDialog::Accepted) return;
-    settings->change(dialog.getData());
-    emit restartApp();
+    Settings::change(dialog.getData());
+    restartApp();
 }
 
 void MainWindow::on_actionHelpShortcuts_triggered()
@@ -2545,7 +2543,7 @@ void MainWindow::editorShowHelp(QString name)
 {
     if (name.size() > 0 && name.at(0) == "\\") name = name.mid(1);
     if (name.size() == 0) return;
-    QString php_manual_path = QString::fromStdString(settings->get("php_manual_path"));
+    QString php_manual_path = QString::fromStdString(Settings::get("php_manual_path"));
     if (php_manual_path.size() == 0) {
         QDir phpManDir = QDir("./"+PHP_MANUAL_FALLBACK_FOLDER);
         php_manual_path = phpManDir.absolutePath();
@@ -2660,7 +2658,7 @@ void MainWindow::helpBrowserAnchorClicked(QUrl url)
     if (file.indexOf("https://") == 0 || file.indexOf("http://") == 0) {
         QDesktopServices::openUrl(url);
     } else {
-        QString php_manual_path = QString::fromStdString(settings->get("php_manual_path"));
+        QString php_manual_path = QString::fromStdString(Settings::get("php_manual_path"));
         if (php_manual_path.size() == 0 || !Helper::folderExists(php_manual_path)) return;
         if (!Helper::fileExists(php_manual_path + "/" + file)) return;
         setHelpTabSource(php_manual_path + "/" + file);

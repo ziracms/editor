@@ -29,7 +29,7 @@ const int ANIMATION_OFFSET = 150;
 
 const int LIMIT = 1000;
 
-QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
+QuickAccess::QuickAccess(QWidget *parent) : QFrame(parent)
 {
     setFrameStyle(QFrame::Raised);
     setFrameShape(QFrame::StyledPanel);
@@ -88,8 +88,8 @@ QuickAccess::QuickAccess(Settings * settings, QWidget *parent) : QFrame(parent)
 
     // fonts
     QFont outputFont;
-    std::string fontFamily = settings->get("editor_font_family");
-    std::string fontSize = settings->get("editor_popup_font_size");
+    std::string fontFamily = Settings::get("editor_font_family");
+    std::string fontSize = Settings::get("editor_popup_font_size");
     if (fontFamily=="") {
         QFont sysFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
         outputFont.setFamily(sysFont.family());

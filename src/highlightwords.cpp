@@ -12,54 +12,54 @@
 
 const int LOAD_DELAY = 250; // should not be less then PROJECT_LOAD_DELAY
 
-HighlightWords::HighlightWords(Settings * settings)
+HighlightWords::HighlightWords()
 {
     // highlight colors
-    std::string keywordColorStr = settings->get("highlight_keyword_color");
+    std::string keywordColorStr = Settings::get("highlight_keyword_color");
     QColor keywordColor(keywordColorStr.c_str());
-    std::string classColorStr = settings->get("highlight_class_color");
+    std::string classColorStr = Settings::get("highlight_class_color");
     QColor classColor(classColorStr.c_str());
-    std::string functionColorStr = settings->get("highlight_function_color");
+    std::string functionColorStr = Settings::get("highlight_function_color");
     QColor functionColor(functionColorStr.c_str());
-    std::string knownFunctionColorStr = settings->get("highlight_known_function_color");
+    std::string knownFunctionColorStr = Settings::get("highlight_known_function_color");
     QColor knownFunctionColor(knownFunctionColorStr.c_str());
-    std::string variableColorStr = settings->get("highlight_variable_color");
+    std::string variableColorStr = Settings::get("highlight_variable_color");
     QColor variableColor(variableColorStr.c_str());
-    std::string knownVariableColorStr = settings->get("highlight_known_variable_color");
+    std::string knownVariableColorStr = Settings::get("highlight_known_variable_color");
     QColor knownVariableColor(knownVariableColorStr.c_str());
-    std::string unusedVariableColorStr = settings->get("highlight_unused_variable_color");
+    std::string unusedVariableColorStr = Settings::get("highlight_unused_variable_color");
     QColor unusedVariableColor(unusedVariableColorStr.c_str());
-    std::string singleLineCommentColorStr = settings->get("highlight_single_line_comment_color");
+    std::string singleLineCommentColorStr = Settings::get("highlight_single_line_comment_color");
     QColor singleLineCommentColor(singleLineCommentColorStr.c_str());
-    std::string multiLineCommentColorStr = settings->get("highlight_multi_line_comment_color");
+    std::string multiLineCommentColorStr = Settings::get("highlight_multi_line_comment_color");
     QColor multiLineCommentColor(multiLineCommentColorStr.c_str());
-    std::string stringColorStr = settings->get("highlight_string_color");
+    std::string stringColorStr = Settings::get("highlight_string_color");
     QColor stringColor(stringColorStr.c_str());
-    std::string tagColorStr = settings->get("highlight_tag_color");
+    std::string tagColorStr = Settings::get("highlight_tag_color");
     QColor tagColor(tagColorStr.c_str());
-    std::string tagNameColorStr = settings->get("highlight_tag_name_color");
+    std::string tagNameColorStr = Settings::get("highlight_tag_name_color");
     QColor tagNameColor(tagNameColorStr.c_str());
-    std::string phpTagColorStr = settings->get("highlight_php_tag_color");
+    std::string phpTagColorStr = Settings::get("highlight_php_tag_color");
     QColor phpTagColor(phpTagColorStr.c_str());
-    std::string selectorColorStr = settings->get("highlight_selector_color");
+    std::string selectorColorStr = Settings::get("highlight_selector_color");
     QColor selectorColor(selectorColorStr.c_str());
-    std::string selectorTagColorStr = settings->get("highlight_selector_tag_color");
+    std::string selectorTagColorStr = Settings::get("highlight_selector_tag_color");
     QColor selectorTagColor(selectorTagColorStr.c_str());
-    std::string propertyColorStr = settings->get("highlight_property_color");
+    std::string propertyColorStr = Settings::get("highlight_property_color");
     QColor propertyColor(propertyColorStr.c_str());
-    std::string pseudoClassColorStr = settings->get("highlight_pseudo_class_color");
+    std::string pseudoClassColorStr = Settings::get("highlight_pseudo_class_color");
     QColor pseudoClassColor(pseudoClassColorStr.c_str());
-    std::string cssSpecialColorStr = settings->get("highlight_css_special_color");
+    std::string cssSpecialColorStr = Settings::get("highlight_css_special_color");
     QColor cssSpecialColor(cssSpecialColorStr.c_str());
-    std::string knownColorStr = settings->get("highlight_known_color");
+    std::string knownColorStr = Settings::get("highlight_known_color");
     QColor knownColor(knownColorStr.c_str());
-    std::string exprColorStr = settings->get("highlight_expression_color");
+    std::string exprColorStr = Settings::get("highlight_expression_color");
     QColor exprColor(exprColorStr.c_str());
-    std::string spaceColorStr = settings->get("highlight_space_color");
+    std::string spaceColorStr = Settings::get("highlight_space_color");
     QColor spaceColor(spaceColorStr.c_str());
-    std::string tabColorStr = settings->get("highlight_tab_color");
+    std::string tabColorStr = Settings::get("highlight_tab_color");
     QColor tabColor(tabColorStr.c_str());
-    std::string punctuationColorStr = settings->get("highlight_punctuation_color");
+    std::string punctuationColorStr = Settings::get("highlight_punctuation_color");
     QColor punctuationColor(punctuationColorStr.c_str());
 
     // highlight formats

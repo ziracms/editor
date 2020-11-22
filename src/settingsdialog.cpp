@@ -26,22 +26,21 @@ const std::string NEW_LINE_CRLF = "crlf";
 
 const int ANDROID_PUSH_BUTTON_DELAY = 100;
 
-SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
+SettingsDialog::SettingsDialog(QWidget * parent):
     QDialog(parent),
     ui(new Ui::SettingsDialog()),
-    settings(settings),
     isGesturesEnabled(false)
 {
     ui->setupUi(this);
     setModal(true);
 
     // combobox frame background workaround (now using QStyle for paddings)
-    //ui->generalThemeCombobox->view()->parentWidget()->setStyleSheet("background:"+QString::fromStdString(settings->get("editor_search_bg_color"))+";");
+    //ui->generalThemeCombobox->view()->parentWidget()->setStyleSheet("background:"+QString::fromStdString(Settings::get("editor_search_bg_color"))+";");
 
     // app font
     appFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
-    std::string appFontFamily = settings->get("app_font_family");
-    std::string appFontSize = settings->get("app_font_size");
+    std::string appFontFamily = Settings::get("app_font_family");
+    std::string appFontSize = Settings::get("app_font_size");
     if (appFontFamily.size() > 0) {
         appFont.setFamily(QString::fromStdString(appFontFamily));
         appFont.setStyleHint(QFont::SansSerif);
@@ -49,8 +48,8 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     appFont.setPointSize(std::stoi(appFontSize));
 
     // editor font
-    std::string editorFontFamily = settings->get("editor_font_family");
-    std::string editorFontSize = settings->get("editor_font_size");
+    std::string editorFontFamily = Settings::get("editor_font_family");
+    std::string editorFontSize = Settings::get("editor_font_size");
     if (editorFontFamily=="") {
         QFont sysFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
         editorFont.setFamily(sysFont.family());
@@ -60,17 +59,17 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     }
     editorFont.setPointSize(std::stoi(editorFontSize));
 
-    tabsType = settings->get("editor_tab_type");
-    newLineMode = settings->get("editor_new_line_mode");
+    tabsType = Settings::get("editor_tab_type");
+    newLineMode = Settings::get("editor_new_line_mode");
 
-    QString pluginsDir = QString::fromStdString(settings->get("plugins_path"));
+    QString pluginsDir = QString::fromStdString(Settings::get("plugins_path"));
 
     ui->settingsTabWidget->setFocusPolicy(Qt::NoFocus);
-    ui->projectsHomeLineEdit->setText(QString::fromStdString(settings->get("file_browser_home")));
-    if (settings->get("experimental_mode_enabled") == CHECKED_YES) ui->experimentalModeCheckbox->setChecked(true);
-    if (settings->get("auto_show_virtual_keyboard") == CHECKED_YES) ui->virtualKeyboardCheckBox->setChecked(true);
-    if (settings->get("scale_auto") == CHECKED_YES) ui->scaleFactorCheckBox->setChecked(true);
-    initScaleFactor = std::stoi(settings->get("scale_factor"));
+    ui->projectsHomeLineEdit->setText(QString::fromStdString(Settings::get("file_browser_home")));
+    if (Settings::get("experimental_mode_enabled") == CHECKED_YES) ui->experimentalModeCheckbox->setChecked(true);
+    if (Settings::get("auto_show_virtual_keyboard") == CHECKED_YES) ui->virtualKeyboardCheckBox->setChecked(true);
+    if (Settings::get("scale_auto") == CHECKED_YES) ui->scaleFactorCheckBox->setChecked(true);
+    initScaleFactor = std::stoi(Settings::get("scale_factor"));
     ui->scaleFactorSpinBox->setValue(initScaleFactor);
     ui->appFontComboBox->setCurrentFont(appFont);
     ui->appFontSpinBox->setValue(appFont.pointSize());
@@ -78,49 +77,49 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     ui->editorFontSpinBox->setValue(editorFont.pointSize());
     if (tabsType == TABS_TYPE_TABS) ui->editorTabTypeTabsRadio->setChecked(true);
     else if (tabsType == TABS_TYPE_SPACES) ui->editorTabTypeSpacesRadio->setChecked(true);
-    ui->editorTabWidthSpinBox->setValue(std::stoi(settings->get("editor_tab_width")));
-    if (settings->get("editor_tab_type_detect") == CHECKED_YES) ui->editorDetectTabTypeCheckbox->setChecked(true);
-    ui->filesEncodingLineEdit->setText(QString::fromStdString(settings->get("editor_encoding")));
-    ui->filesFallbackEncodingLineEdit->setText(QString::fromStdString(settings->get("editor_fallback_encoding")));
+    ui->editorTabWidthSpinBox->setValue(std::stoi(Settings::get("editor_tab_width")));
+    if (Settings::get("editor_tab_type_detect") == CHECKED_YES) ui->editorDetectTabTypeCheckbox->setChecked(true);
+    ui->filesEncodingLineEdit->setText(QString::fromStdString(Settings::get("editor_encoding")));
+    ui->filesFallbackEncodingLineEdit->setText(QString::fromStdString(Settings::get("editor_fallback_encoding")));
     if (newLineMode == NEW_LINE_LF) ui->filesNewLineLFRadio->setChecked(true);
     else if (newLineMode == NEW_LINE_CR) ui->filesNewLineCRRadio->setChecked(true);
     else if (newLineMode == NEW_LINE_CRLF) ui->filesNewLineCRLFRadio->setChecked(true);
-    if (settings->get("editor_clean_before_save") == CHECKED_YES) ui->filesCleanForSaveCheckbox->setChecked(true);
-    if (settings->get("editor_wrap_long_lines") == CHECKED_YES) ui->filesLongLineWrapCheckBox->setChecked(true);
-    if (settings->get("editor_breadcrumbs_enabled") == CHECKED_YES) ui->breadcrumbsCheckbox->setChecked(true);
-    if (settings->get("highlight_spaces") == CHECKED_YES) ui->highlightSpacesCheckbox->setChecked(true);
-    if (settings->get("editor_show_annotations") == CHECKED_YES) ui->editorAnnotationsCheckBox->setChecked(true);
-    if (settings->get("editor_long_line_marker_enabled") == CHECKED_YES) ui->editorLongLineMarkerCheckBox->setChecked(true);
-    if (settings->get("editor_indent_guide_lines_enabled") == CHECKED_YES) ui->editorIndentGuideLinesCheckBox->setChecked(true);
-    ui->phpTypesEdit->setPlainText(QString::fromStdString(settings->get("highlight_php_extensions")).replace(" ", "").replace(",","\n"));
-    ui->jsTypesEdit->setPlainText(QString::fromStdString(settings->get("highlight_js_extensions")).replace(" ", "").replace(",","\n"));
-    ui->cssTypesEdit->setPlainText(QString::fromStdString(settings->get("highlight_css_extensions")).replace(" ", "").replace(",","\n"));
-    ui->htmlTypesEdit->setPlainText(QString::fromStdString(settings->get("highlight_html_extensions")).replace(" ", "").replace(",","\n"));
-    if (settings->get("parser_enable_php_lint") == CHECKED_YES) ui->phplintCheckbox->setChecked(true);
-    if (settings->get("parser_enable_php_cs") == CHECKED_YES) ui->phpcsCheckbox->setChecked(true);
-    ui->phpcsStandardLineEdit->setText(QString::fromStdString(settings->get("parser_phpcs_standard")));
-    ui->phpcsErrorSpinBox->setValue(std::stoi(settings->get("parser_phpcs_error_severity")));
-    ui->phpcsWarningSpinBox->setValue(std::stoi(settings->get("parser_phpcs_warning_severity")));
-    ui->editorParseIntervalSpinBox->setValue(std::stoi(settings->get("editor_parse_interval")) / 1000);
-    if (settings->get("parser_enable_git") == CHECKED_YES) ui->gitCheckbox->setChecked(true);
-    if (settings->get("parser_enable_servers") == CHECKED_YES) ui->serversCheckbox->setChecked(true);
+    if (Settings::get("editor_clean_before_save") == CHECKED_YES) ui->filesCleanForSaveCheckbox->setChecked(true);
+    if (Settings::get("editor_wrap_long_lines") == CHECKED_YES) ui->filesLongLineWrapCheckBox->setChecked(true);
+    if (Settings::get("editor_breadcrumbs_enabled") == CHECKED_YES) ui->breadcrumbsCheckbox->setChecked(true);
+    if (Settings::get("highlight_spaces") == CHECKED_YES) ui->highlightSpacesCheckbox->setChecked(true);
+    if (Settings::get("editor_show_annotations") == CHECKED_YES) ui->editorAnnotationsCheckBox->setChecked(true);
+    if (Settings::get("editor_long_line_marker_enabled") == CHECKED_YES) ui->editorLongLineMarkerCheckBox->setChecked(true);
+    if (Settings::get("editor_indent_guide_lines_enabled") == CHECKED_YES) ui->editorIndentGuideLinesCheckBox->setChecked(true);
+    ui->phpTypesEdit->setPlainText(QString::fromStdString(Settings::get("highlight_php_extensions")).replace(" ", "").replace(",","\n"));
+    ui->jsTypesEdit->setPlainText(QString::fromStdString(Settings::get("highlight_js_extensions")).replace(" ", "").replace(",","\n"));
+    ui->cssTypesEdit->setPlainText(QString::fromStdString(Settings::get("highlight_css_extensions")).replace(" ", "").replace(",","\n"));
+    ui->htmlTypesEdit->setPlainText(QString::fromStdString(Settings::get("highlight_html_extensions")).replace(" ", "").replace(",","\n"));
+    if (Settings::get("parser_enable_php_lint") == CHECKED_YES) ui->phplintCheckbox->setChecked(true);
+    if (Settings::get("parser_enable_php_cs") == CHECKED_YES) ui->phpcsCheckbox->setChecked(true);
+    ui->phpcsStandardLineEdit->setText(QString::fromStdString(Settings::get("parser_phpcs_standard")));
+    ui->phpcsErrorSpinBox->setValue(std::stoi(Settings::get("parser_phpcs_error_severity")));
+    ui->phpcsWarningSpinBox->setValue(std::stoi(Settings::get("parser_phpcs_warning_severity")));
+    ui->editorParseIntervalSpinBox->setValue(std::stoi(Settings::get("editor_parse_interval")) / 1000);
+    if (Settings::get("parser_enable_git") == CHECKED_YES) ui->gitCheckbox->setChecked(true);
+    if (Settings::get("parser_enable_servers") == CHECKED_YES) ui->serversCheckbox->setChecked(true);
     // disable server commands on Android
     #if defined(Q_OS_ANDROID)
     ui->serversCheckbox->setEnabled(false);
     #endif
-    if (settings->get("spellchecker_enabled") == CHECKED_YES) ui->spellCheckerCheckbox->setChecked(true);
+    if (Settings::get("spellchecker_enabled") == CHECKED_YES) ui->spellCheckerCheckbox->setChecked(true);
     if (!Helper::isPluginExists(SPELLCHECKER_PLUGIN_NAME, pluginsDir)) ui->spellCheckerCheckbox->setEnabled(false);
-    ui->phpPathLineEdit->setText(QString::fromStdString(settings->get("parser_php_path")));
-    ui->phpcsPathLineEdit->setText(QString::fromStdString(settings->get("parser_phpcs_path")));
-    ui->gitPathLineEdit->setText(QString::fromStdString(settings->get("parser_git_path")));
-    ui->bashPathLineEdit->setText(QString::fromStdString(settings->get("parser_bash_path")));
-    ui->sasscPathLineEdit->setText(QString::fromStdString(settings->get("parser_sassc_path")));
-    ui->phpmanualLineEdit->setText(QString::fromStdString(settings->get("php_manual_path")));
-    ui->pluginsFolderLineEdit->setText(QString::fromStdString(settings->get("plugins_path")));
-    ui->snippetsTextEdit->setPlainText(QString::fromStdString(settings->get("snippets")));
-    ui->customSnippetsFileLineEdit->setText(QString::fromStdString(settings->get("custom_snippets_file")));
+    ui->phpPathLineEdit->setText(QString::fromStdString(Settings::get("parser_php_path")));
+    ui->phpcsPathLineEdit->setText(QString::fromStdString(Settings::get("parser_phpcs_path")));
+    ui->gitPathLineEdit->setText(QString::fromStdString(Settings::get("parser_git_path")));
+    ui->bashPathLineEdit->setText(QString::fromStdString(Settings::get("parser_bash_path")));
+    ui->sasscPathLineEdit->setText(QString::fromStdString(Settings::get("parser_sassc_path")));
+    ui->phpmanualLineEdit->setText(QString::fromStdString(Settings::get("php_manual_path")));
+    ui->pluginsFolderLineEdit->setText(QString::fromStdString(Settings::get("plugins_path")));
+    ui->snippetsTextEdit->setPlainText(QString::fromStdString(Settings::get("snippets")));
+    ui->customSnippetsFileLineEdit->setText(QString::fromStdString(Settings::get("custom_snippets_file")));
 
-    QString customThemesPath = QString::fromStdString(settings->get("custom_themes_path"));
+    QString customThemesPath = QString::fromStdString(Settings::get("custom_themes_path"));
     ui->customThemesFolderLineEdit->setText(customThemesPath);
 
     if (customThemesPath.size() == 0) {
@@ -155,7 +154,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
         ui->generalThemeCombobox->addItem(stylePlugin+STYLE_PLUGIN_DISPLAY_NAME_SUFFIX);
     }
 
-    QString theme = QString::fromStdString(settings->get("theme"));
+    QString theme = QString::fromStdString(Settings::get("theme"));
     QString themeStr = theme;
     if (themeStr.size() > 0) themeStr = themeStr.at(0).toUpper() + themeStr.mid(1);
     if (theme == THEME_SYSTEM || theme == THEME_LIGHT || theme == THEME_DARK) {
@@ -163,7 +162,7 @@ SettingsDialog::SettingsDialog(Settings * settings, QWidget * parent):
     } else {
         ui->generalThemeCombobox->setCurrentText(theme);
     }
-    QString colorScheme = QString::fromStdString(settings->get("color_scheme"));
+    QString colorScheme = QString::fromStdString(Settings::get("color_scheme"));
     QString colorSchemeStr = colorScheme;
     if (colorSchemeStr.size() > 0) colorSchemeStr = colorSchemeStr.at(0).toUpper() + colorSchemeStr.mid(1);
     if (colorScheme == COLOR_SCHEME_LIGHT || colorScheme == COLOR_SCHEME_DARK) {
@@ -618,9 +617,9 @@ void SettingsDialog::customSnippetsFileButtonPressed()
 void SettingsDialog::resetButtonPressed()
 {
     if (!Helper::showQuestion(tr("Confirmation"), tr("Reset settings to default ?"))) return;
-    settings->reset();
+    Settings::reset();
     done(QDialog::Rejected);
-    emit settings->restartApp();
+    Settings::instance().restartApp();
 }
 
 void SettingsDialog::contextMenuRequested()

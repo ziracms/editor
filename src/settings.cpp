@@ -32,7 +32,15 @@ const std::string PHP_MANUAL_ENCODING = "UTF-8";
 const QString SCALE_AUTO_SETTINGS_VAR = "scale_auto";
 const QString SCALE_FACTOR_SETTINGS_VAR = "scale_factor";
 
-Settings::Settings(QObject * parent) : QObject(parent)
+Settings::Settings(QObject * parent) : QObject(parent){}
+
+Settings& Settings::instance()
+{
+    static Settings _instance;
+    return _instance;
+}
+
+void Settings::initData()
 {
     data = {
         {"file_dialog_filter", "Project files (*.php *.phtml *.html *.xml *.iml *.tpl *.css *.less *.scss *.sass *.js *.dart *.yaml *.ini *.htaccess *.txt);;All files (*)"},
@@ -134,6 +142,11 @@ Settings::Settings(QObject * parent) : QObject(parent)
 
 void Settings::applyLightColors()
 {
+    instance()._applyLightColors();
+}
+
+void Settings::_applyLightColors()
+{
     data[COLOR_SCHEME_TYPE.toStdString()] = COLOR_SCHEME_LIGHT.toStdString();
     data["editor_line_number_bg_color"] = "#eeeeee";
     data["editor_line_number_color"] = "#999999";
@@ -214,6 +227,11 @@ void Settings::applyLightColors()
 }
 
 void Settings::applyDarkColors()
+{
+    instance()._applyDarkColors();
+}
+
+void Settings::_applyDarkColors()
 {
     data[COLOR_SCHEME_TYPE.toStdString()] = COLOR_SCHEME_DARK.toStdString();
     data["editor_line_number_bg_color"] = "#232627";
@@ -296,6 +314,11 @@ void Settings::applyDarkColors()
 
 void Settings::applyCustomColors(QString path)
 {
+    instance()._applyCustomColors(path);
+}
+
+void Settings::_applyCustomColors(QString path)
+{
     QString s, k, v;
     QFile f(path);
     f.open(QIODevice::ReadOnly);
@@ -336,10 +359,20 @@ QString Settings::getDefaultSnippets()
 
 void Settings::set(std::string k, std::string v)
 {
+    instance()._set(k, v);
+}
+
+void Settings::_set(std::string k, std::string v)
+{
     data[k] = v;
 }
 
 std::string Settings::get(std::string k)
+{
+    return instance()._get(k);
+}
+
+std::string Settings::_get(std::string k)
 {
     iterator = data.find(k);
     if (iterator == data.end()) return "";
@@ -349,6 +382,12 @@ std::string Settings::get(std::string k)
 
 void Settings::load()
 {
+    instance()._load();
+}
+
+void Settings::_load()
+{
+    initData();
     QSettings windowSettings;
     for (auto it : data) {
         if (!windowSettings.contains(QString::fromStdString(it.first))) continue;
@@ -359,6 +398,11 @@ void Settings::load()
 
 void Settings::change(std::unordered_map<std::string, std::string> map)
 {
+    instance()._change(map);
+}
+
+void Settings::_change(std::unordered_map<std::string, std::string> map)
+{
     for (auto it : map) {
         set(it.first, it.second);
         changesData[it.first] = it.second;
@@ -367,14 +411,25 @@ void Settings::change(std::unordered_map<std::string, std::string> map)
 
 void Settings::save()
 {
+    instance()._save();
+}
+
+void Settings::_save()
+{
     QSettings windowSettings;
     for (auto it : changesData) {
         set(it.first, it.second);
         windowSettings.setValue(QString::fromStdString(it.first), QString::fromStdString(it.second));
     }
+    changesData.clear();
 }
 
 void Settings::reset()
+{
+    instance()._reset();
+}
+
+void Settings::_reset()
 {
     QSettings windowSettings;
     for (auto it : data) {

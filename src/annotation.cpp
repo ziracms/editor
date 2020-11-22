@@ -6,7 +6,7 @@ const int ANNOTATION_RIGHT_MARGIN = 10;
 
 const int ANIMATION_DURATION = 200;
 
-Annotation::Annotation(Editor * editor, Settings * settings) :
+Annotation::Annotation(Editor * editor) :
     QWidget(editor),
     editor(editor)
 {
@@ -41,7 +41,7 @@ Annotation::Annotation(Editor * editor, Settings * settings) :
 
     imgLabel->setStyleSheet("#annotationIcon{background:none;}");
 
-    QString colorStr = QString::fromStdString(settings->get("annotation_color"));
+    QString colorStr = QString::fromStdString(Settings::get("annotation_color"));
     txtLabel->setStyleSheet("background:none;color:"+colorStr+";");
 
     animationInProgress = false;

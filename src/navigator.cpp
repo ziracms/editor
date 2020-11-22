@@ -11,7 +11,7 @@
 
 const int LIMIT = 1000;
 
-Navigator::Navigator(QTreeWidget * widget, Settings * /*settings*/) : treeWidget(widget)
+Navigator::Navigator(QTreeWidget * widget) : treeWidget(widget)
 {
     connect(treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), SLOT(navigatorDoubleClicked(QTreeWidgetItem*,int)));
     connect(treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(navigatorExpanded(QTreeWidgetItem*)));

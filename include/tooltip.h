@@ -14,7 +14,7 @@ class Tooltip : public QLabel
 {
     Q_OBJECT
 public:
-    Tooltip(Settings * settings);
+    Tooltip();
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     void paintEvent(QPaintEvent *event) override;

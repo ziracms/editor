@@ -16,7 +16,7 @@ class HighlightWords : public QObject
 {
     Q_OBJECT
 public:
-    HighlightWords(Settings * settings);
+    HighlightWords();
     void reload();
     void reset();
     void addPHPClass(QString k);

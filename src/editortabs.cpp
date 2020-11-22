@@ -17,10 +17,9 @@
 #include <sstream>
 #include "fileiconprovider.h"
 
-EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, Snippets * snippets):
+EditorTabs::EditorTabs(SpellCheckerInterface * spellChecker, QTabWidget * widget, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, Snippets * snippets):
     spellChecker(spellChecker),
     tabWidget(widget),
-    settings(settings),
     highlightWords(highlightWords),
     completeWords(completeWords),
     helpWords(helpWords),
@@ -77,7 +76,7 @@ void EditorTabs::createTab(QString filepath, bool initHighlight)
     }
 
     EditorTab * tab = new EditorTab();
-    editor = new Editor(spellChecker, settings, highlightWords, completeWords, helpWords, spellWords, snippets);
+    editor = new Editor(spellChecker, highlightWords, completeWords, helpWords, spellWords, snippets);
     tab->setEditor(editor);
 
     QString tabName = getTabNameFromPath(filepath);
@@ -230,8 +229,8 @@ void EditorTabs::openFile(QString filepath, bool initHighlight)
 void EditorTabs::open(QString dir)
 {
     if (editor != nullptr) editor->hidePopups();
-    if (dir.size() == 0) dir = QString::fromStdString(settings->get("file_dialog_path"));
-    QString filter = tr(settings->get("file_dialog_filter").c_str());
+    if (dir.size() == 0) dir = QString::fromStdString(Settings::get("file_dialog_path"));
+    QString filter = tr(Settings::get("file_dialog_filter").c_str());
     QString fileName = Helper::getExistingFile(tabWidget, tr("Select file"), dir, filter);
     if (fileName.size() > 0) {
         openFile(fileName);
@@ -263,14 +262,14 @@ void EditorTabs::saveAs()
     QFileInfo fInfo(filename);
     QString dir = fInfo.dir().absolutePath();
     if (dir.size() == 0) {
-        dir = QString::fromStdString(settings->get("file_dialog_path"));
+        dir = QString::fromStdString(Settings::get("file_dialog_path"));
         if (dir.size() == 0) {
             QStringList stddirs = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
             if (stddirs.size()>0) dir = stddirs.at(0);
         }
     }
     if (dir.size() == 0) dir = ".";
-    std::string filter = settings->get("file_dialog_filter");
+    std::string filter = Settings::get("file_dialog_filter");
     QString ext = editor->getFileExtension();
     if (ext.size() > 0) filter = "File (*."+ext.toStdString()+");;All files (*)";
     //QString newName = QFileDialog::getSaveFileName(tabWidget, tr("Save as"), dir, tr(filter.c_str()));

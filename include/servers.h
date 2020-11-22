@@ -20,8 +20,8 @@ public:
     Servers();
     static QString generateApacheServiceCommand(QString command, QString pwd);
     static QString generateMariaDBServiceCommand(QString command, QString pwd);
-    static QString highlightServersCommand(QString & text, Settings * settings);
-    static QString highlightServersCommandOutput(QString & output, Settings * settings);
+    static QString highlightServersCommand(QString & text);
+    static QString highlightServersCommandOutput(QString & output);
 };
 
 #endif // SERVERS_H

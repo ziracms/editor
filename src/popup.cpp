@@ -15,19 +15,19 @@ const int ANIMATION_DURATION = 200;
 const int ANIMATION_OFFSET = 150;
 const int HIDE_DELAY = 4000;
 
-Popup::Popup(Settings * settings, QWidget *parent) : QWidget(parent)
+Popup::Popup(QWidget *parent) : QWidget(parent)
 {
     setMinimumWidth(WIDGET_MIN_WIDTH);
     setMinimumHeight(WIDGET_MIN_HEIGHT);
 
-    bgColorStr = settings->get("popup_bg_color");
-    errorBgColorStr = settings->get("popup_error_bg_color");
-    colorStr = settings->get("popup_color");
+    bgColorStr = Settings::get("popup_bg_color");
+    errorBgColorStr = Settings::get("popup_error_bg_color");
+    colorStr = Settings::get("popup_color");
 
     QFont popupFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
 
-    std::string fontFamily = settings->get("editor_font_family");
-    std::string fontSize = settings->get("editor_font_size");
+    std::string fontFamily = Settings::get("editor_font_family");
+    std::string fontSize = Settings::get("editor_font_size");
     if (fontFamily.size() > 0) {
         popupFont.setStyleHint(QFont::Monospace);
         popupFont.setFamily(QString::fromStdString(fontFamily));

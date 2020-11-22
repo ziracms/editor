@@ -10,7 +10,7 @@ class GitBrowser : public QObject
 {
     Q_OBJECT
 public:
-    GitBrowser(QTreeWidget * widget, Settings * settings);
+    GitBrowser(QTreeWidget * widget);
     void build(QString output);
     void clear();
     void focus();

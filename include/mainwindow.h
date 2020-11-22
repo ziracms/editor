@@ -272,7 +272,6 @@ private slots:
     void sendContextMenuEvent();
 private:
     Ui::MainWindow *ui;
-    Settings * settings;
     HighlightWords * highlightWords;
     CompleteWords * completeWords;
     HelpWords * helpWords;

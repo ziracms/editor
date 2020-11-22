@@ -26,21 +26,21 @@ const QString PHP_WEBSERVER_URI = "127.0.0.1:8000";
 
 const QString ZIRA_DEV_PACK_PATH = "/data/data/com.github.ziracms.devpack/files/bin";
 
-ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(parent)
+ParserWorker::ParserWorker(QObject *parent) : QObject(parent)
 {   
     phpPath = "";
     gitPath = "";
     bashPath = "";
     sasscPath = "";
     phpcsPath = "";
-    phpcsStandard = QString::fromStdString(settings->get("parser_phpcs_standard"));
+    phpcsStandard = QString::fromStdString(Settings::get("parser_phpcs_standard"));
     if (phpcsStandard.size() == 0) phpcsStandard = "PEAR";
-    phpcsErrorSeverity = std::stoi(settings->get("parser_phpcs_error_severity"));
+    phpcsErrorSeverity = std::stoi(Settings::get("parser_phpcs_error_severity"));
     if (phpcsErrorSeverity < 0) phpcsErrorSeverity = 0;
-    phpcsWarningSeverity = std::stoi(settings->get("parser_phpcs_warning_severity"));
+    phpcsWarningSeverity = std::stoi(Settings::get("parser_phpcs_warning_severity"));
     if (phpcsWarningSeverity < 0) phpcsWarningSeverity = 0;
-    encoding = settings->get("editor_encoding");
-    encodingFallback = settings->get("editor_fallback_encoding");
+    encoding = Settings::get("editor_encoding");
+    encodingFallback = Settings::get("editor_fallback_encoding");
     enabled = true;
     searchResultsCount = 0;
     searchBreaked = false;
@@ -61,7 +61,7 @@ ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(paren
     #endif
 
     // php path
-    QString phpPathStr = QString::fromStdString(settings->get("parser_php_path"));
+    QString phpPathStr = QString::fromStdString(Settings::get("parser_php_path"));
     if (phpPathStr.size() == 0) {
         QProcess process(this);
         process.start("which", QStringList() << "php");
@@ -75,7 +75,7 @@ ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(paren
     }
 
     // git path
-    QString gitPathStr = QString::fromStdString(settings->get("parser_git_path"));
+    QString gitPathStr = QString::fromStdString(Settings::get("parser_git_path"));
     if (gitPathStr.size() == 0) {
         QProcess process(this);
         process.start("which", QStringList() << "git");
@@ -89,7 +89,7 @@ ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(paren
     }
 
     // bash path
-    QString bashPathStr = QString::fromStdString(settings->get("parser_bash_path"));
+    QString bashPathStr = QString::fromStdString(Settings::get("parser_bash_path"));
     if (bashPathStr.size() == 0) {
         QProcess process(this);
         process.start("which", QStringList() << "bash");
@@ -103,7 +103,7 @@ ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(paren
     }
 
     // sassc path
-    QString sasscPathStr = QString::fromStdString(settings->get("parser_sassc_path"));
+    QString sasscPathStr = QString::fromStdString(Settings::get("parser_sassc_path"));
     if (sasscPathStr.size() == 0) {
         QProcess process(this);
         process.start("which", QStringList() << "sassc");
@@ -117,7 +117,7 @@ ParserWorker::ParserWorker(Settings * settings, QObject *parent) : QObject(paren
     }
 
     // phpcs path
-    QString phpcsPathStr = QString::fromStdString(settings->get("parser_phpcs_path"));
+    QString phpcsPathStr = QString::fromStdString(Settings::get("parser_phpcs_path"));
     if (phpcsPathStr.size() == 0) {
         QProcess process(this);
         process.start("which", QStringList() << "phpcs");

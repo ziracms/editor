@@ -79,8 +79,8 @@ const int FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE = 300;
 
 const QString SNIPPET_PREFIX = "Snippet: @";
 
-Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, Snippets * snippets, QWidget * parent):
-    QTextEdit(parent), spellChecker(spellChecker), tooltipLabel(settings), mousePressTimer(this)
+Editor::Editor(SpellCheckerInterface * spellChecker, HighlightWords * highlightWords, CompleteWords * completeWords, HelpWords * helpWords, SpellWords * spellWords, Snippets * snippets, QWidget * parent):
+    QTextEdit(parent), spellChecker(spellChecker), mousePressTimer(this)
 {
     setMinimumSize(0, 0);
     setMaximumSize(16777215, 16777215);
@@ -91,7 +91,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     //document()->setDocumentMargin(0);
 
     wrapLines = false;
-    std::string wrapLinesStr = settings->get("editor_wrap_long_lines");
+    std::string wrapLinesStr = Settings::get("editor_wrap_long_lines");
     if (wrapLinesStr == "yes") wrapLines = true;
     if (wrapLines) {
         setLineWrapMode(LineWrapMode::FixedColumnWidth);
@@ -102,17 +102,17 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
         setWordWrapMode(QTextOption::WrapMode::NoWrap);
     }
 
-    QString theme = QString::fromStdString(settings->get("theme"));
+    QString theme = QString::fromStdString(Settings::get("theme"));
 
     //QFont generalFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     QFont generalFont = QApplication::font();
 
     // editor font
-    std::string fontFamily = settings->get("editor_font_family");
-    std::string fontSize = settings->get("editor_font_size");
-    std::string popupFontSize = settings->get("editor_popup_font_size");
-    std::string tooltipFontSize = settings->get("editor_tooltip_font_size");
-    std::string breadcrumbsFontSize = settings->get("editor_breadcrumbs_font_size");
+    std::string fontFamily = Settings::get("editor_font_family");
+    std::string fontSize = Settings::get("editor_font_size");
+    std::string popupFontSize = Settings::get("editor_popup_font_size");
+    std::string tooltipFontSize = Settings::get("editor_tooltip_font_size");
+    std::string breadcrumbsFontSize = Settings::get("editor_breadcrumbs_font_size");
 
     if (fontFamily=="") {
         QFont sysFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -152,48 +152,48 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     if (fontInfo.family() != editorFont.family()) {
         std::unordered_map<std::string, std::string> sData;
         sData["editor_font_family"] = fontInfo.family().toStdString();
-        settings->change(sData);
+        Settings::change(sData);
         // showing message in initMode after slots connection
     }
 
     // colors
-    std::string lineNumberBgColorStr = settings->get("editor_line_number_bg_color");
-    std::string lineNumberColorStr = settings->get("editor_line_number_color");
-    std::string lineNumberModifiedBgColorStr = settings->get("editor_line_number_modified_bg_color");
-    std::string lineNumberModifiedColorStr = settings->get("editor_line_number_modified_color");
-    std::string lineNumberDeletedBorderColorStr = settings->get("editor_line_number_deleted_border_color");
-    std::string lineMarkBgColorStr = settings->get("editor_line_mark_bg_color");
-    std::string lineMapBgColorStr = settings->get("editor_line_map_bg_color");
-    std::string lineMapScrollBgColorStr = settings->get("editor_line_map_scroll_bg_color");
-    std::string lineMapScrollAreaBgColorStr = settings->get("editor_line_map_scroll_area_bg_color");
-    std::string searchBgColorStr = settings->get("editor_search_bg_color");
-    std::string breadcrumbsBgColorStr = settings->get("editor_breadcrumbs_bg_color");
-    std::string breadcrumbsWarningBgColorStr = settings->get("editor_breadcrumbs_warning_bg_color");
-    std::string breadcrumbsErrorBgColorStr = settings->get("editor_breadcrumbs_error_bg_color");
-    std::string breadcrumbsColorStr = settings->get("editor_breadcrumbs_color");
-    std::string widgetBorderColorStr = settings->get("editor_widget_border_color");
-    std::string indentGuideLineColorStr = settings->get("editor_indent_guide_line_color");
-    std::string selectedLineBgColorStr = settings->get("editor_selected_line_bg_color");
-    std::string selectedWordBgColorStr = settings->get("editor_selected_word_bg_color");
-    std::string selectedCharBgColorStr = settings->get("editor_selected_char_bg_color");
-    std::string selectedCharColorStr = settings->get("editor_selected_char_color");
-    std::string selectedTagBgColorStr = settings->get("editor_selected_tag_bg_color");
-    std::string selectedExpressionBgColorStr = settings->get("editor_selected_expression_bg_color");
-    std::string searchWordBgColorStr = settings->get("editor_search_word_bg_color");
-    std::string searchWordColorStr = settings->get("editor_search_word_color");
-    std::string selectionBgColorStr = settings->get("editor_selection_bg_color");
-    std::string selectionColorStr = settings->get("editor_selection_color");
-    std::string searchInputBgColorStr = settings->get("editor_search_input_bg_color");
-    std::string searchInputErrorBgColorStr = settings->get("editor_search_input_error_bg_color");
-    std::string lineMarkColorStr = settings->get("editor_line_mark_color");
-    std::string lineErrorColorStr = settings->get("editor_line_error_color");
-    std::string lineWarningColorStr = settings->get("editor_line_warning_color");
-    std::string lineMarkRectColorStr = settings->get("editor_line_mark_rect_color");
-    std::string lineErrorRectColorStr = settings->get("editor_line_error_rect_color");
-    std::string lineWarningRectColorStr = settings->get("editor_line_warning_rect_color");
-    std::string textColorStr = settings->get("editor_text_color");
-    std::string bgColorStr = settings->get("editor_bg_color");
-    std::string progressColorStr = settings->get("progress_color");
+    std::string lineNumberBgColorStr = Settings::get("editor_line_number_bg_color");
+    std::string lineNumberColorStr = Settings::get("editor_line_number_color");
+    std::string lineNumberModifiedBgColorStr = Settings::get("editor_line_number_modified_bg_color");
+    std::string lineNumberModifiedColorStr = Settings::get("editor_line_number_modified_color");
+    std::string lineNumberDeletedBorderColorStr = Settings::get("editor_line_number_deleted_border_color");
+    std::string lineMarkBgColorStr = Settings::get("editor_line_mark_bg_color");
+    std::string lineMapBgColorStr = Settings::get("editor_line_map_bg_color");
+    std::string lineMapScrollBgColorStr = Settings::get("editor_line_map_scroll_bg_color");
+    std::string lineMapScrollAreaBgColorStr = Settings::get("editor_line_map_scroll_area_bg_color");
+    std::string searchBgColorStr = Settings::get("editor_search_bg_color");
+    std::string breadcrumbsBgColorStr = Settings::get("editor_breadcrumbs_bg_color");
+    std::string breadcrumbsWarningBgColorStr = Settings::get("editor_breadcrumbs_warning_bg_color");
+    std::string breadcrumbsErrorBgColorStr = Settings::get("editor_breadcrumbs_error_bg_color");
+    std::string breadcrumbsColorStr = Settings::get("editor_breadcrumbs_color");
+    std::string widgetBorderColorStr = Settings::get("editor_widget_border_color");
+    std::string indentGuideLineColorStr = Settings::get("editor_indent_guide_line_color");
+    std::string selectedLineBgColorStr = Settings::get("editor_selected_line_bg_color");
+    std::string selectedWordBgColorStr = Settings::get("editor_selected_word_bg_color");
+    std::string selectedCharBgColorStr = Settings::get("editor_selected_char_bg_color");
+    std::string selectedCharColorStr = Settings::get("editor_selected_char_color");
+    std::string selectedTagBgColorStr = Settings::get("editor_selected_tag_bg_color");
+    std::string selectedExpressionBgColorStr = Settings::get("editor_selected_expression_bg_color");
+    std::string searchWordBgColorStr = Settings::get("editor_search_word_bg_color");
+    std::string searchWordColorStr = Settings::get("editor_search_word_color");
+    std::string selectionBgColorStr = Settings::get("editor_selection_bg_color");
+    std::string selectionColorStr = Settings::get("editor_selection_color");
+    std::string searchInputBgColorStr = Settings::get("editor_search_input_bg_color");
+    std::string searchInputErrorBgColorStr = Settings::get("editor_search_input_error_bg_color");
+    std::string lineMarkColorStr = Settings::get("editor_line_mark_color");
+    std::string lineErrorColorStr = Settings::get("editor_line_error_color");
+    std::string lineWarningColorStr = Settings::get("editor_line_warning_color");
+    std::string lineMarkRectColorStr = Settings::get("editor_line_mark_rect_color");
+    std::string lineErrorRectColorStr = Settings::get("editor_line_error_rect_color");
+    std::string lineWarningRectColorStr = Settings::get("editor_line_warning_rect_color");
+    std::string textColorStr = Settings::get("editor_text_color");
+    std::string bgColorStr = Settings::get("editor_bg_color");
+    std::string progressColorStr = Settings::get("progress_color");
 
     lineNumberBgColor = QColor(lineNumberBgColorStr.c_str());
     lineNumberColor = QColor(lineNumberColorStr.c_str());
@@ -239,13 +239,13 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     setPalette(p);
 
     // tab width
-    tabWidthStr = settings->get("editor_tab_width");
-    tabTypeStr = settings->get("editor_tab_type");
-    detectTabTypeStr = settings->get("editor_tab_type_detect");
+    tabWidthStr = Settings::get("editor_tab_width");
+    tabTypeStr = Settings::get("editor_tab_type");
+    detectTabTypeStr = Settings::get("editor_tab_type_detect");
     setTabsSettings();
 
     // new lines
-    std::string newLineModeStr = settings->get("editor_new_line_mode");
+    std::string newLineModeStr = Settings::get("editor_new_line_mode");
     if (newLineModeStr != CRLF && newLineModeStr != CR && newLineModeStr != LF) {
         newLineMode = LF;
     } else {
@@ -253,8 +253,8 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     }
 
     // encoding
-    encoding = settings->get("editor_encoding");
-    encodingFallback = settings->get("editor_fallback_encoding");
+    encoding = Settings::get("editor_encoding");
+    encodingFallback = Settings::get("editor_fallback_encoding");
 
     // regexps
     tagExpr = QRegularExpression("<(?:[/])?[a-zA-Z][^<>]*>");
@@ -284,12 +284,12 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
 
     // some features is enabled only in experimental mode
     experimentalMode = false;
-    std::string experimentalModeStr = settings->get("experimental_mode_enabled");
+    std::string experimentalModeStr = Settings::get("experimental_mode_enabled");
     if (experimentalModeStr == "yes") experimentalMode = true;
 
     // highlighter
-    highlight = new Highlight(settings, highlightWords, document());
-    std::string unusedVariableColorStr = settings->get("highlight_unused_variable_color");
+    highlight = new Highlight(highlightWords, document());
+    std::string unusedVariableColorStr = Settings::get("highlight_unused_variable_color");
     unusedVariableColor = QColor(unusedVariableColorStr.c_str());
     connect(document(), SIGNAL(contentsChange(int,int,int)), this, SLOT(contentsChange(int,int,int)));
     connect(highlight, SIGNAL(progressChanged(int)), this, SLOT(highlightProgressChanged(int)));
@@ -302,69 +302,69 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChanged()));
 
     // shortcuts
-    QString shortcutBackTabStr = QString::fromStdString(settings->get("shortcut_backtab"));
+    QString shortcutBackTabStr = QString::fromStdString(Settings::get("shortcut_backtab"));
     QShortcut * shortcutShiftTab = new QShortcut(QKeySequence(shortcutBackTabStr), this);
     shortcutShiftTab->setContext(Qt::WidgetShortcut);
     connect(shortcutShiftTab, SIGNAL(activated()), this, SLOT(backtab()));
 
-    QString shortcutSaveStr = QString::fromStdString(settings->get("shortcut_save"));
+    QString shortcutSaveStr = QString::fromStdString(Settings::get("shortcut_save"));
     QShortcut * shortcutSave = new QShortcut(QKeySequence(shortcutSaveStr), this);
     shortcutSave->setContext(Qt::WidgetShortcut);
     connect(shortcutSave, SIGNAL(activated()), this, SLOT(save()));
 
-    QString shortcutCommentStr = QString::fromStdString(settings->get("shortcut_comment"));
+    QString shortcutCommentStr = QString::fromStdString(Settings::get("shortcut_comment"));
     QShortcut * shortcutComment = new QShortcut(QKeySequence(shortcutCommentStr), this);
     shortcutComment->setContext(Qt::WidgetShortcut);
     connect(shortcutComment, SIGNAL(activated()), this, SLOT(comment()));
 
-    QString shortcutOverwriteModeStr = QString::fromStdString(settings->get("shortcut_overwrite_mode"));
+    QString shortcutOverwriteModeStr = QString::fromStdString(Settings::get("shortcut_overwrite_mode"));
     QShortcut * shortcutOverwriteMode = new QShortcut(QKeySequence(shortcutOverwriteModeStr), this);
     shortcutOverwriteMode->setContext(Qt::WidgetShortcut);
     connect(shortcutOverwriteMode, SIGNAL(activated()), this, SLOT(switchOverwrite()));
 
-    QString shortcutTooltipStr = QString::fromStdString(settings->get("shortcut_tooltip"));
+    QString shortcutTooltipStr = QString::fromStdString(Settings::get("shortcut_tooltip"));
     QShortcut * shortcutTooltip = new QShortcut(QKeySequence(shortcutTooltipStr), this);
     shortcutTooltip->setContext(Qt::WidgetShortcut);
     connect(shortcutTooltip, SIGNAL(activated()), this, SLOT(tooltip()));
 
-    QString shortcutSearchStr = QString::fromStdString(settings->get("shortcut_search"));
+    QString shortcutSearchStr = QString::fromStdString(Settings::get("shortcut_search"));
     QShortcut * shortcutSearch = new QShortcut(QKeySequence(shortcutSearchStr), this);
     shortcutSearch->setContext(Qt::WidgetWithChildrenShortcut);
     connect(shortcutSearch, SIGNAL(activated()), this, SLOT(findToggle()));
 
-    QString shortcutSelectWordStr = QString::fromStdString(settings->get("shortcut_select_word"));
+    QString shortcutSelectWordStr = QString::fromStdString(Settings::get("shortcut_select_word"));
     QShortcut * shortcutSelectWord = new QShortcut(QKeySequence(shortcutSelectWordStr), this);
     shortcutSelectWord->setContext(Qt::WidgetWithChildrenShortcut);
     connect(shortcutSelectWord, SIGNAL(activated()), this, SLOT(selectWord()));
 
-    QString shortcutMultiSelectStr = QString::fromStdString(settings->get("shortcut_multiselect"));
+    QString shortcutMultiSelectStr = QString::fromStdString(Settings::get("shortcut_multiselect"));
     QShortcut * shortcutMultiSelect = new QShortcut(QKeySequence(shortcutMultiSelectStr), this);
     shortcutMultiSelect->setContext(Qt::WidgetWithChildrenShortcut);
     connect(shortcutMultiSelect, SIGNAL(activated()), this, SLOT(multiSelectToggle()));
 
-    QString shortcutHelpStr = QString::fromStdString(settings->get("shortcut_help"));
+    QString shortcutHelpStr = QString::fromStdString(Settings::get("shortcut_help"));
     QShortcut * shortcutHelp = new QShortcut(QKeySequence(shortcutHelpStr), this);
     shortcutHelp->setContext(Qt::WidgetShortcut);
     connect(shortcutHelp, SIGNAL(activated()), this, SLOT(showHelpRequested()));
 
-    QString shortcutDuplicateStr = QString::fromStdString(settings->get("shortcut_duplicate_line"));
+    QString shortcutDuplicateStr = QString::fromStdString(Settings::get("shortcut_duplicate_line"));
     QShortcut * shortcutDuplicate = new QShortcut(QKeySequence(shortcutDuplicateStr), this);
     shortcutDuplicate->setContext(Qt::WidgetShortcut);
     connect(shortcutDuplicate, SIGNAL(activated()), this, SLOT(duplicateLine()));
 
-    QString shortcutDeleteStr = QString::fromStdString(settings->get("shortcut_delete_line"));
+    QString shortcutDeleteStr = QString::fromStdString(Settings::get("shortcut_delete_line"));
     QShortcut * shortcutDelete = new QShortcut(QKeySequence(shortcutDeleteStr), this);
     shortcutDelete->setContext(Qt::WidgetShortcut);
     connect(shortcutDelete, SIGNAL(activated()), this, SLOT(deleteLine()));
 
-    QString shortcutContextMenuStr = QString::fromStdString(settings->get("shortcut_context_menu"));
+    QString shortcutContextMenuStr = QString::fromStdString(Settings::get("shortcut_context_menu"));
     QShortcut * shortcutContextMenu = new QShortcut(QKeySequence(shortcutContextMenuStr), this);
     shortcutContextMenu->setContext(Qt::WidgetShortcut);
     connect(shortcutContextMenu, SIGNAL(activated()), this, SLOT(contextMenu()));
 
     // order matters
     // annotation
-    lineAnnotation = new Annotation(this, settings);
+    lineAnnotation = new Annotation(this);
     // line number area
     lineNumber = new LineNumber(this);
     // line mark area
@@ -376,7 +376,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     breadcrumbs = new Breadcrumbs(this);
     breadcrumbs->setFont(editorBreadcrumbsFont);
     showBreadcrumbs = false;
-    std::string showBreadcrumbsStr = settings->get("editor_breadcrumbs_enabled");
+    std::string showBreadcrumbsStr = Settings::get("editor_breadcrumbs_enabled");
     if (showBreadcrumbsStr == "yes") showBreadcrumbs = true;
 
     qaBtn = new QToolButton(breadcrumbs);
@@ -442,7 +442,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     // tooltip label
     tooltipLabel.setFont(editorTooltipFont);
 
-    tooltipBoldColorStr = QString::fromStdString(settings->get("editor_tooltip_bold_color"));
+    tooltipBoldColorStr = QString::fromStdString(Settings::get("editor_tooltip_bold_color"));
     tooltipBoldTagStart = "<b style=\"color:"+tooltipBoldColorStr+"\">";
     tooltipBoldTagEnd = "</b>";
 
@@ -453,39 +453,39 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     SNP = snippets;
 
     parsePHPEnabled = false;
-    std::string parsePHPEnabledStr = settings->get("parser_enable_parse_php");
+    std::string parsePHPEnabledStr = Settings::get("parser_enable_parse_php");
     if (parsePHPEnabledStr == "yes") parsePHPEnabled = true;
 
     parseJSEnabled = false;
-    std::string parseJSEnabledStr = settings->get("parser_enable_parse_js");
+    std::string parseJSEnabledStr = Settings::get("parser_enable_parse_js");
     if (parseJSEnabledStr == "yes") parseJSEnabled = true;
 
     parseCSSEnabled = false;
-    std::string parseCSSEnabledStr = settings->get("parser_enable_parse_css");
+    std::string parseCSSEnabledStr = Settings::get("parser_enable_parse_css");
     if (parseCSSEnabledStr == "yes") parseCSSEnabled = true;
 
     cleanBeforeSave = false;
-    std::string cleanBeforeSaveStr = settings->get("editor_clean_before_save");
+    std::string cleanBeforeSaveStr = Settings::get("editor_clean_before_save");
     if (cleanBeforeSaveStr == "yes") cleanBeforeSave = true;
 
     annotationsEnabled = false;
-    std::string annotationsEnabledStr = settings->get("editor_show_annotations");
+    std::string annotationsEnabledStr = Settings::get("editor_show_annotations");
     if (annotationsEnabledStr == "yes") annotationsEnabled = true;
 
-    int parseResultChangedDelayMS = std::stoi(settings->get("editor_parse_interval"));
+    int parseResultChangedDelayMS = std::stoi(Settings::get("editor_parse_interval"));
     if (parseResultChangedDelayMS >= 1000) parseResultChangedDelay = parseResultChangedDelayMS;
     else parseResultChangedDelay = 5000;
 
     spellCheckerEnabled = false;
-    std::string spellCheckerEnabledStr = settings->get("spellchecker_enabled");
+    std::string spellCheckerEnabledStr = Settings::get("spellchecker_enabled");
     if (spellCheckerEnabledStr == "yes") spellCheckerEnabled = true;
 
     drawLongLineMarker = false;
-    std::string drawLongLineMarkerStr = settings->get("editor_long_line_marker_enabled");
+    std::string drawLongLineMarkerStr = Settings::get("editor_long_line_marker_enabled");
     if (drawLongLineMarkerStr == "yes") drawLongLineMarker = true;
 
     drawIndentGuideLines = false;
-    std::string drawIndentGuideLinesStr = settings->get("editor_indent_guide_lines_enabled");
+    std::string drawIndentGuideLinesStr = Settings::get("editor_indent_guide_lines_enabled");
     if (drawIndentGuideLinesStr == "yes") drawIndentGuideLines = true;
 
     // cursor is not set to default sometimes
@@ -502,7 +502,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, Settings * settings, Highli
     isGesturesEnabled = false;
     #if defined(Q_OS_ANDROID)
     // scrolling by gesture
-    if (settings->get("editor_enable_android_gestures") == "yes") {
+    if (Settings::get("editor_enable_android_gestures") == "yes") {
         enableGestures();
     }
     #endif

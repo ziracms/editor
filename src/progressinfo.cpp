@@ -5,15 +5,15 @@
 const int BORDER = 1;
 const int PADDING = 5;
 
-ProgressInfo::ProgressInfo(Settings * settings, QWidget *parent) : QWidget(parent)
+ProgressInfo::ProgressInfo(QWidget *parent) : QWidget(parent)
 {
-    std::string bgColorStr = settings->get("popup_bg_color");
-    std::string colorStr = settings->get("popup_color");
+    std::string bgColorStr = Settings::get("popup_bg_color");
+    std::string colorStr = Settings::get("popup_color");
 
     QFont popupFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
 
-    std::string fontFamily = settings->get("editor_font_family");
-    std::string fontSize = settings->get("editor_tooltip_font_size");
+    std::string fontFamily = Settings::get("editor_font_family");
+    std::string fontSize = Settings::get("editor_tooltip_font_size");
     if (fontFamily.size() > 0) {
         popupFont.setStyleHint(QFont::Monospace);
         popupFont.setFamily(QString::fromStdString(fontFamily));

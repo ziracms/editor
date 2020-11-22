@@ -15,7 +15,7 @@ class SettingsDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SettingsDialog(Settings * settings, QWidget * parent);
+    SettingsDialog(QWidget * parent);
     ~SettingsDialog() override;
     std::unordered_map<std::string, std::string> getData();
 protected:
@@ -23,7 +23,6 @@ protected:
     void disableGestures();
 private:
     Ui::SettingsDialog * ui;
-    Settings * settings;
     std::unordered_map<std::string, std::string> dataMap;
     QFont appFont;
     QFont editorFont;

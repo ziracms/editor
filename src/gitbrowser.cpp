@@ -11,16 +11,16 @@ const QString GB_ACTION_NAME_ADD = "add";
 const QString GB_ACTION_NAME_RESET = "reset";
 const QString GB_ACTION_NAME_COMMIT = "commit";
 
-GitBrowser::GitBrowser(QTreeWidget * widget, Settings * settings):
+GitBrowser::GitBrowser(QTreeWidget * widget):
     treeWidget(widget), mousePressTimer(this)
 {
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(gitBrowserContextMenuRequested(QPoint)));
     connect(treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(gitBrowserItemSelectionChanged()));
 
-    QString errorColorStr = QString::fromStdString(settings->get("git_output_error_color"));
+    QString errorColorStr = QString::fromStdString(Settings::get("git_output_error_color"));
     errorColor = QColor(errorColorStr);
-    QString msgColorStr = QString::fromStdString(settings->get("git_output_message_color"));
+    QString msgColorStr = QString::fromStdString(Settings::get("git_output_message_color"));
     msgColor = QColor(msgColorStr);
 
     treeWidget->installEventFilter(this);
@@ -35,7 +35,7 @@ GitBrowser::GitBrowser(QTreeWidget * widget, Settings * settings):
     QScroller::scroller(treeWidget->viewport())->setScrollerProperties(scrollProps);
     #endif
 
-    QString shortcutContextMenuStr = QString::fromStdString(settings->get("shortcut_context_menu"));
+    QString shortcutContextMenuStr = QString::fromStdString(Settings::get("shortcut_context_menu"));
     QShortcut * shortcutContextMenu = new QShortcut(QKeySequence(shortcutContextMenuStr), treeWidget);
     shortcutContextMenu->setContext(Qt::WidgetShortcut);
     connect(shortcutContextMenu, SIGNAL(activated()), this, SLOT(contextMenu()));
