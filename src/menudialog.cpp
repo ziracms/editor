@@ -1,10 +1,10 @@
 #include "menudialog.h"
 #include "ui_menudialog.h"
-#include <QScroller>
 #include <QScrollBar>
 #include <QScreen>
 #include "icon.h"
 #include "helper.h"
+#include "scroller.h"
 
 const char * MENU_TOP_LEVEL_ITEM_PROPERTY = "toplevel";
 const int MENU_WIDTH_EXTRA_SPACE = 40;
@@ -24,8 +24,7 @@ MenuDialog::MenuDialog(QMenuBar * menuBar, QWidget *parent) :
     ui->listWidget->setSpacing(0);
     connect(ui->listWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
 
-    QScroller::grabGesture(ui->listWidget->viewport(), QScroller::LeftMouseButtonGesture);
-    ui->listWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    Scroller::enableGestures(ui->listWidget);
 
     action = nullptr;
     animationInProgress = false;

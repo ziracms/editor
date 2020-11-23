@@ -8,7 +8,7 @@
 #include "ui_helpdialog.h"
 #include <QFile>
 #include <QTextStream>
-#include <QScroller>
+#include "scroller.h"
 #include "helper.h"
 
 const QString TPL_QT_VERSION = "<div><center>Qt %1</center></div>";
@@ -33,7 +33,7 @@ HelpDialog::HelpDialog(QWidget *parent) :
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
     // scrolling by gesture
-    QScroller::grabGesture(ui->helpScrollArea->viewport(), QScroller::LeftMouseButtonGesture);
+    Scroller::enableGestures(ui->helpScrollArea);
     #endif
 }
 
@@ -96,7 +96,7 @@ void HelpDialog::aboutContent()
     pressed = 0;
 }
 
-void HelpDialog::mousePressEvent(QMouseEvent */*event*/)
+void HelpDialog::mousePressEvent(QMouseEvent *event)
 {
     // easter egg
     pressed++;
@@ -111,4 +111,5 @@ void HelpDialog::mousePressEvent(QMouseEvent */*event*/)
         text += QByteArray::fromHex(lh.toLocal8Bit());
         ui->helpLabel->setText(text);
     }
+    QDialog::mousePressEvent(event);
 }

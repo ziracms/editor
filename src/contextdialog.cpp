@@ -1,9 +1,9 @@
 #include "contextdialog.h"
 #include <QScrollBar>
-#include <QScroller>
 #include <QScreen>
 #include "icon.h"
 #include "helper.h"
+#include "scroller.h"
 
 const int MENU_WIDTH_EXTRA_SPACE = 40;
 
@@ -21,8 +21,7 @@ ContextDialog::ContextDialog(QWidget *parent) :
     ui->contextListWidget->setSpacing(0);
     connect(ui->contextListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
 
-    QScroller::grabGesture(ui->contextListWidget->viewport(), QScroller::LeftMouseButtonGesture);
-    ui->contextListWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    Scroller::enableGestures(ui->contextListWidget);
 
     action = nullptr;
     animationInProgress = false;

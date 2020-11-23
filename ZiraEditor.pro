@@ -44,6 +44,7 @@ SOURCES += \
     src/progressinfo.cpp \
     src/progressline.cpp \
     src/questiondialog.cpp \
+    src/scroller.cpp \
     src/settings.cpp \
     src/editor.cpp \
     src/linenumber.cpp \
@@ -108,6 +109,7 @@ HEADERS += \
     include/progressinfo.h \
     include/progressline.h \
     include/questiondialog.h \
+    include/scroller.h \
     include/settings.h \
     include/editor.h \
     include/linenumber.h \

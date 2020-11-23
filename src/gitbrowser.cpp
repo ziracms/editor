@@ -3,7 +3,7 @@
 #include <QMenu>
 #include <QShortcut>
 #include <QKeyEvent>
-#include <QScroller>
+#include "scroller.h"
 #include "icon.h"
 #include "helper.h"
 
@@ -27,12 +27,7 @@ GitBrowser::GitBrowser(QTreeWidget * widget):
     #if defined(Q_OS_ANDROID)
     treeWidget->viewport()->installEventFilter(this); // for context menu
     // scrolling by gesture
-    QScroller::grabGesture(treeWidget->viewport(), QScroller::LeftMouseButtonGesture);
-    treeWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    QScrollerProperties scrollProps;
-    scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    QScroller::scroller(treeWidget->viewport())->setScrollerProperties(scrollProps);
+    Scroller::enableGestures(treeWidget, false);
     #endif
 
     QString shortcutContextMenuStr = QString::fromStdString(Settings::get("shortcut_context_menu"));

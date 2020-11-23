@@ -44,9 +44,6 @@ protected:
     void fbPasteItem(QTreeWidgetItem * item);
     void fileBrowserRemoveEmptyItems();
     void fileBrowserContextMenuRequested(QTreeWidgetItem * item);
-protected slots:
-    void enableGestures();
-    void disableGestures();
 private:
     QTreeWidget * treeWidget;
     QLineEdit * pathLine;
@@ -60,9 +57,6 @@ private:
     bool acceptEnter;
     bool editMode;
     QTimer mousePressTimer;
-    bool isGesturesEnabled;
-    bool isGesturesActive;
-    int gesturesY;
 public slots:
     void contextMenu();
 private slots:

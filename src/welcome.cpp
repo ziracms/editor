@@ -1,15 +1,10 @@
 #include "welcome.h"
 #include <QTimer>
-#include <QScroller>
+#include "scroller.h"
 #include "helper.h"
 
-#if defined(Q_OS_ANDROID)
-const int ANDROID_PUSH_BUTTONS_DELAY = 100;
-#endif
-
 Welcome::Welcome(bool light, QWidget *parent) : QWidget(parent),
-    ui(new Ui::WelcomeScreen()),
-    isGesturesEnabled(false)
+    ui(new Ui::WelcomeScreen())
 {
     ui->setupUi(this);
 
@@ -26,7 +21,7 @@ Welcome::Welcome(bool light, QWidget *parent) : QWidget(parent),
     #if defined(Q_OS_ANDROID)
     ui->welcomeLabelLayout->setContentsMargins(0, 0, 0, 10);
     // scrolling by gesture
-    enableGestures();
+    Scroller::enableGestures(ui->welcomeScrollArea);
     #endif
 
     connect(ui->welcomeOpenProjectButton, SIGNAL(pressed()), this, SLOT(onOpenProjectPressed()));
@@ -45,46 +40,12 @@ void Welcome::focus()
     ui->welcomeOpenProjectButton->setFocus();
 }
 
-void Welcome::enableGestures()
-{
-    QScroller::grabGesture(ui->welcomeScrollArea->viewport(), QScroller::LeftMouseButtonGesture);
-    isGesturesEnabled = true;
-}
-
-void Welcome::disableGestures()
-{
-    QScroller::ungrabGesture(ui->welcomeScrollArea->viewport());
-    isGesturesEnabled = false;
-}
-
 void Welcome::onCreateProjectPressed()
 {
-    #if defined(Q_OS_ANDROID)
-    // temporarily disable gestures and call it again after delay
-    if (isGesturesEnabled) {
-        disableGestures();
-        QTimer::singleShot(ANDROID_PUSH_BUTTONS_DELAY, this, SLOT(onCreateProjectPressed()));
-        return;
-    }
-    #endif
     emit createProject();
-    #if defined(Q_OS_ANDROID)
-    enableGestures();
-    #endif
 }
 
 void Welcome::onOpenProjectPressed()
 {
-    #if defined(Q_OS_ANDROID)
-    // temporarily disable gestures and call it again after delay
-    if (isGesturesEnabled) {
-        disableGestures();
-        QTimer::singleShot(ANDROID_PUSH_BUTTONS_DELAY, this, SLOT(onOpenProjectPressed()));
-        return;
-    }
-    #endif
     emit openProject();
-    #if defined(Q_OS_ANDROID)
-    enableGestures();
-    #endif
 }

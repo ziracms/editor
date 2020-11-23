@@ -11,12 +11,8 @@ public:
     explicit Welcome(bool light, QWidget *parent = nullptr);
     ~Welcome();
     void focus();
-protected:
-    void enableGestures();
-    void disableGestures();
 private:
     Ui::WelcomeScreen * ui;
-    bool isGesturesEnabled;
 signals:
     void openProject();
     void createProject();

@@ -6,8 +6,7 @@
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QGridLayout>
-#include <QScroller>
-#include <QScrollerProperties>
+#include "scroller.h"
 
 FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
 {
@@ -38,14 +37,7 @@ FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
         treeView->setDragEnabled(false);
         #if defined(Q_OS_ANDROID)
         // scrolling by gesture
-        QScroller::grabGesture(treeView->viewport(), QScroller::LeftMouseButtonGesture);
-        treeView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-        QScrollerProperties scrollProps;
-        scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-        scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-        scrollProps.setScrollMetric(QScrollerProperties::MinimumVelocity, 0);
-        scrollProps.setScrollMetric(QScrollerProperties::MaximumVelocity, 0);
-        QScroller::scroller(treeView->viewport())->setScrollerProperties(scrollProps);
+        Scroller::enableGestures(treeView, false);
         #endif
     }
     QListView * listView = findChild<QListView *>("listView");

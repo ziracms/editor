@@ -32,12 +32,11 @@
 #include <QInputDialog>
 #include <QAction>
 #include <QScreen>
-#include <QScroller>
-#include <QScrollerProperties>
 #include "math.h"
 #include "helper.h"
 #include "icon.h"
 #include "spellchecker.h"
+#include "scroller.h"
 
 const std::string CRLF = "crlf";
 const std::string CR = "cr";
@@ -606,19 +605,13 @@ void Editor::reset()
 
 void Editor::enableGestures()
 {
-    QScroller::grabGesture(viewport(), QScroller::LeftMouseButtonGesture);
-    QScrollerProperties scrollProps;
-    scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    scrollProps.setScrollMetric(QScrollerProperties::MinimumVelocity, 0);
-    scrollProps.setScrollMetric(QScrollerProperties::MaximumVelocity, 0);
-    QScroller::scroller(viewport())->setScrollerProperties(scrollProps);
+    Scroller::enableGestures(this);
     isGesturesEnabled = true;
 }
 
 void Editor::disableGestures()
 {
-    QScroller::ungrabGesture(viewport());
+    Scroller::disableGestures(this);
     isGesturesEnabled = false;
 }
 
@@ -2673,7 +2666,6 @@ void Editor::mousePressEvent(QMouseEvent *e)
 
 void Editor::mouseMoveEvent(QMouseEvent *e)
 {
-    // QScroller triggers mouseReleaseEvent
     /*
     #if defined(Q_OS_ANDROID)
     if (mousePressTimer.isActive()) mousePressTimer.stop();

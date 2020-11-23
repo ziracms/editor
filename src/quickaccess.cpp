@@ -11,9 +11,9 @@
 #include <QTimer>
 #include <QScrollBar>
 #include <QFontDatabase>
-#include <QScroller>
 #include "icon.h"
 #include "helper.h"
+#include "scroller.h"
 
 const int WIDGET_MIN_WIDTH = 200;
 const int WIDGET_MIN_HEIGHT = 100;
@@ -102,12 +102,7 @@ QuickAccess::QuickAccess(QWidget *parent) : QFrame(parent)
 
     #if defined(Q_OS_ANDROID)
     // scrolling by gesture
-    QScroller::grabGesture(resultsList->viewport(), QScroller::LeftMouseButtonGesture);
-    resultsList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    QScrollerProperties scrollProps;
-    scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    QScroller::scroller(resultsList->viewport())->setScrollerProperties(scrollProps);
+    Scroller::enableGestures(resultsList, false);
     #endif
 }
 

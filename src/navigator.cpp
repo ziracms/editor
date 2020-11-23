@@ -5,9 +5,9 @@
  *******************************************/
 
 #include <QKeyEvent>
-#include <QScroller>
 #include "navigator.h"
 #include "helper.h"
+#include "scroller.h"
 
 const int LIMIT = 1000;
 
@@ -19,12 +19,7 @@ Navigator::Navigator(QTreeWidget * widget) : treeWidget(widget)
     treeWidget->installEventFilter(this);
     #if defined(Q_OS_ANDROID)
     // scrolling by gesture
-    QScroller::grabGesture(treeWidget->viewport(), QScroller::LeftMouseButtonGesture);
-    treeWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    QScrollerProperties scrollProps;
-    scrollProps.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    scrollProps.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, QScrollerProperties::OvershootAlwaysOff);
-    QScroller::scroller(treeWidget->viewport())->setScrollerProperties(scrollProps);
+    Scroller::enableGestures(treeWidget, false);
     #endif
 }
 
