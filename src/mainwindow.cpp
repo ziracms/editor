@@ -834,6 +834,10 @@ void MainWindow::editorActionsChanged()
         forward = textEditor->isForwadable();
         rename = true;
     }
+    bool multiSelect = true;
+    #if defined(Q_OS_ANDROID)
+    multiSelect = false;
+    #endif
     QList<QAction *> editActions = ui->menuEdit->actions();
     foreach (QAction * action, editActions) {
         if (action->objectName() == "actionUndo") {
@@ -846,6 +850,8 @@ void MainWindow::editorActionsChanged()
             action->setEnabled(forward);
         } else if (action->objectName() == "actionRename") {
             action->setEnabled(rename);
+        } else if (action->objectName() == "actionMultiSelect") {
+            action->setEnabled(multiSelect);
         }
     }
 }

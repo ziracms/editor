@@ -5093,6 +5093,12 @@ void Editor::cursorPositionChanged()
         forwardPositions.clear();
         emit backForwardChanged(getTabIndex());
     }
+    #if defined(Q_OS_ANDROID)
+    if (mousePressTimer.isActive()) {
+        mousePressTimer.stop();
+        mousePressTimer.start();
+    }
+    #endif
 }
 
 void Editor::cursorPositionChangedDelayed()
@@ -6570,7 +6576,7 @@ void Editor::multiSelectToggle()
 {
     selectWord();
     #if defined(Q_OS_ANDROID)
-    emit showPopupText(tabIndex, tr("Multi-Selection is not working in Android"));
+    emit showPopupText(tabIndex, tr("Multi-Selection is not supported"));
     return;
     #endif
     QTextCursor curs = textCursor();
@@ -7081,7 +7087,12 @@ void Editor::contextMenuEvent(QContextMenuEvent *event)
     menu->addAction(Icon::get("actionFindReplace"), tr("Find \\ Replace"), this, SLOT(showSearchRequested()));
     menu->addAction(Icon::get("actionOpenDeclaration"), tr("Open declaration"), this, SLOT(showDeclarationRequested()));
     menu->addAction(Icon::get("actionSearchInFiles"), tr("Search in files"), this, SLOT(searchInFilesRequested()));
-    menu->addAction(Icon::get("actionMultiSelect"), tr("Multi-Selection"), this, SLOT(multiSelectToggle()));
+    QAction * multiSelectAction = menu->addAction(Icon::get("actionMultiSelect"), tr("Multi-Selection"), this, SLOT(multiSelectToggle()));
+    #if defined(Q_OS_ANDROID)
+    multiSelectAction->setEnabled(false);
+    #else
+    multiSelectAction->setEnabled(true);
+    #endif
     menu->addSeparator();
     menu->addAction(Icon::get("actionSave", QIcon(":/icons/document-save.png")), tr("Save"), this, SLOT(save()));
     menu->addSeparator();
