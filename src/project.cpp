@@ -41,7 +41,15 @@ const QString GIT_IGNORE_FILE = ".gitignore";
 
 const int PROJECT_LOAD_DELAY = 500;
 
-Project::Project(QObject *parent) : QObject(parent)
+Project::Project(){}
+
+Project& Project::instance()
+{
+    static Project _instance;
+    return _instance;
+}
+
+void Project::init()
 {
     CW = &CompleteWords::instance();
     HPW = &HelpWords::instance();

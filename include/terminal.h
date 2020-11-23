@@ -6,11 +6,12 @@
 class Terminal
 {
 public:
-    static TerminalInterface * instance();
+    static Terminal& instance();
+    TerminalInterface * load();
+    TerminalInterface * getTerminal();
 private:
     Terminal();
     TerminalInterface * terminal;
-    QString pluginsPath;
 };
 
 #endif // TERMINAL_H

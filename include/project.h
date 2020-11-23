@@ -20,7 +20,8 @@ class Project : public QObject
 {
     Q_OBJECT
 public:
-    explicit Project(QObject *parent = nullptr);
+    static Project& instance();
+    void init();
     bool create(QString name, QString path, bool lintEnabled, bool csEnabled, bool gitEnabled);
     bool edit(QString name, QString path, bool lintEnabled, bool csEnabled, QStringList openTabFiles, QList<int> openTabLines, int currentTabIndex, QString todo);
     static bool exists(QString path);
@@ -55,6 +56,7 @@ protected:
     static void preparePHPResults(QString project_dir, QVariantMap & map);
     static void preparePHPClasses(QString cls_name, QVariantMap cls, QString & cls_args, QString & class_consts_str, QString & class_properties_str, QString & class_methods_str, QString & class_method_types_str, QString & class_methods_search_str, QString & class_methods_help_str,std::unordered_map<std::string, std::string> & cls_methods_map, std::unordered_map<std::string, std::string> & cls_props_map, std::unordered_map<std::string, std::string> & cls_consts_map);
 private:
+    Project();
     QString projectName;
     QString projectPath;
     QString projectCreated;

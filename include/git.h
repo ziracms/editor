@@ -24,7 +24,8 @@ class Git : public QObject
 {
     Q_OBJECT
 public:
-    explicit Git(QObject *parent = nullptr);
+    static Git& instance();
+    void init();
     bool isCommandSafe(QString command);
     void showStatus(QString path);
     void showStatusShort(QString path, bool outputResult = true, bool silent = false);
@@ -78,6 +79,8 @@ protected:
     QString errorTpl;
     QString msgTpl;
     QString infoTpl;
+private:
+    Git();
 signals:
     void runGitCommand(QString path, QString command, QStringList attrs, bool outputResult = true, bool silent = false);
 public slots:

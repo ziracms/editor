@@ -3,13 +3,20 @@
 
 SpellChecker::SpellChecker(): spellChecker(nullptr){}
 
-SpellCheckerInterface * SpellChecker::instance()
+SpellChecker& SpellChecker::instance()
 {
     static SpellChecker _instance;
-    if (_instance.pluginsPath.isNull() || _instance.pluginsPath != QString::fromStdString(Settings::get("plugins_path"))) {
-        if (_instance.spellChecker != nullptr) delete _instance.spellChecker;
-        _instance.pluginsPath = QString::fromStdString(Settings::get("plugins_path"));
-        _instance.spellChecker = Helper::loadSpellChecker(_instance.pluginsPath);
-    }
-    return _instance.spellChecker;
+    return _instance;
+}
+
+SpellCheckerInterface * SpellChecker::getSpellChecker()
+{
+    return spellChecker;
+}
+
+SpellCheckerInterface * SpellChecker::load()
+{
+    if (spellChecker != nullptr) delete spellChecker;
+    spellChecker = Helper::loadSpellChecker(QString::fromStdString(Settings::get("plugins_path")));
+    return spellChecker;
 }

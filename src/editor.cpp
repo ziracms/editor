@@ -480,7 +480,7 @@ Editor::Editor(QWidget * parent):
     spellCheckerEnabled = false;
     std::string spellCheckerEnabledStr = Settings::get("spellchecker_enabled");
     if (spellCheckerEnabledStr == "yes") spellCheckerEnabled = true;
-    spellChecker = SpellChecker::instance();
+    spellChecker = SpellChecker::instance().getSpellChecker();
 
     drawLongLineMarker = false;
     std::string drawLongLineMarkerStr = Settings::get("editor_long_line_marker_enabled");

@@ -3,13 +3,20 @@
 
 Terminal::Terminal(): terminal(nullptr){}
 
-TerminalInterface * Terminal::instance()
+Terminal& Terminal::instance()
 {
     static Terminal _instance;
-    if (_instance.pluginsPath.isNull() || _instance.pluginsPath != QString::fromStdString(Settings::get("plugins_path"))) {
-        if (_instance.terminal != nullptr) delete _instance.terminal;
-        _instance.pluginsPath = QString::fromStdString(Settings::get("plugins_path"));
-        _instance.terminal = Helper::loadTerminalPlugin(_instance.pluginsPath);
-    }
-    return _instance.terminal;
+    return _instance;
+}
+
+TerminalInterface * Terminal::getTerminal()
+{
+    return terminal;
+}
+
+TerminalInterface * Terminal::load()
+{
+    if (terminal != nullptr) delete terminal;
+    terminal = Helper::loadTerminalPlugin(QString::fromStdString(Settings::get("plugins_path")));
+    return terminal;
 }

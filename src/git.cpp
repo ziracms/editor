@@ -18,7 +18,15 @@ const QString GIT_PUSH_COMMAND = "push";
 const QString GIT_PULL_COMMAND = "pull";
 const QString GIT_CLONE_COMMAND = "clone";
 
-Git::Git(QObject *parent) : QObject(parent)
+Git::Git(){}
+
+Git& Git::instance()
+{
+    static Git _instance;
+    return _instance;
+}
+
+void Git::init()
 {
     cmdTpl = "<div><b>%1</b> %2</div><div>&nbsp;</div>";
     lineTpl = "<div>%1</div>";

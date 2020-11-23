@@ -34,6 +34,7 @@
 #include "docktitlebar.h"
 #include "icon.h"
 #include "colordialog.h"
+#include "spellchecker.h"
 #include "terminal.h"
 
 const int OUTPUT_TAB_MESSAGES_INDEX = 0;
@@ -146,7 +147,8 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreState(windowSettings.value("main_window_state").toByteArray());
 
     // plugins
-    terminal = Terminal::instance();
+    SpellChecker::instance().load();
+    terminal = Terminal::instance().load();
 
     HighlightWords::setColors();
 
@@ -259,7 +261,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->sidebarProgressBarWrapperWidget->setVisible(false);
 
     // project class
-    project = new Project();
+    project = &Project::instance();
+    project->init();
     connect(project, SIGNAL(openTabsRequested(QStringList, bool)), this, SLOT(openTabsRequested(QStringList, bool)));
     connect(project, SIGNAL(gotoTabLinesRequested(QList<int>)), this, SLOT(gotoTabLinesRequested(QList<int>)));
     connect(project, SIGNAL(switchToTabRequested(int)), this, SLOT(switchToTabRequested(int)));
@@ -267,7 +270,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(project, SIGNAL(showTodoRequested(QString)), this, SLOT(showTodoRequested(QString)));
 
     // git
-    git = new Git();
+    git = &Git::instance();
+    git->init();
     connect(git, SIGNAL(runGitCommand(QString,QString,QStringList,bool,bool)), this, SLOT(runGitCommand(QString,QString,QStringList,bool,bool)));
 
     gitBrowser = new GitBrowser(ui->gitTabTreeWidget);
@@ -677,8 +681,6 @@ MainWindow::~MainWindow()
     delete navigator;
     delete editorTabs;
     delete editorTabsSplit;
-    delete project;
-    delete git;
     delete gitBrowser;
     delete ui;
 }

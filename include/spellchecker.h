@@ -6,11 +6,12 @@
 class SpellChecker
 {
 public:
-    static SpellCheckerInterface * instance();
+    static SpellChecker& instance();
+    SpellCheckerInterface * load();
+    SpellCheckerInterface * getSpellChecker();
 private:
     SpellChecker();
     SpellCheckerInterface * spellChecker;
-    QString pluginsPath;
 };
 
 #endif // SPELLCHECKER_H
