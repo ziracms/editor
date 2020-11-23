@@ -23,7 +23,7 @@ protected:
     void _reset();
     void _load();
 private:
-    explicit SpellWords();
+    SpellWords();
 public slots:
     static void load();
 };

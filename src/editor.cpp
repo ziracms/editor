@@ -37,6 +37,7 @@
 #include "math.h"
 #include "helper.h"
 #include "icon.h"
+#include "spellchecker.h"
 
 const std::string CRLF = "crlf";
 const std::string CR = "cr";
@@ -79,8 +80,8 @@ const int FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE = 300;
 
 const QString SNIPPET_PREFIX = "Snippet: @";
 
-Editor::Editor(SpellCheckerInterface * spellChecker, QWidget * parent):
-    QTextEdit(parent), spellChecker(spellChecker), mousePressTimer(this)
+Editor::Editor(QWidget * parent):
+    QTextEdit(parent), mousePressTimer(this)
 {
     setMinimumSize(0, 0);
     setMaximumSize(16777215, 16777215);
@@ -479,6 +480,7 @@ Editor::Editor(SpellCheckerInterface * spellChecker, QWidget * parent):
     spellCheckerEnabled = false;
     std::string spellCheckerEnabledStr = Settings::get("spellchecker_enabled");
     if (spellCheckerEnabledStr == "yes") spellCheckerEnabled = true;
+    spellChecker = SpellChecker::instance();
 
     drawLongLineMarker = false;
     std::string drawLongLineMarkerStr = Settings::get("editor_long_line_marker_enabled");

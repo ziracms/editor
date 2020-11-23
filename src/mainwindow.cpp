@@ -34,6 +34,7 @@
 #include "docktitlebar.h"
 #include "icon.h"
 #include "colordialog.h"
+#include "terminal.h"
 
 const int OUTPUT_TAB_MESSAGES_INDEX = 0;
 const int OUTPUT_TAB_HELP_INDEX = 1;
@@ -145,8 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
     restoreState(windowSettings.value("main_window_state").toByteArray());
 
     // plugins
-    spellChecker = Helper::loadSpellChecker(pluginsDir);
-    terminal = Helper::loadTerminalPlugin(pluginsDir);
+    terminal = Terminal::instance();
 
     HighlightWords::setColors();
 
@@ -164,7 +164,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(welcomeScreen, SIGNAL(createProject()), this, SLOT(on_actionNewProject_triggered()));
 
     // editor tabs
-    editorTabs = new EditorTabs(spellChecker, ui->tabWidget);
+    editorTabs = new EditorTabs(ui->tabWidget);
     connect(editorTabs, SIGNAL(statusBarText(QString)), this, SLOT(setStatusBarText(QString)));
     connect(editorTabs, SIGNAL(editorFilenameChanged(QString)), this, SLOT(editorFilenameChanged(QString)));
     connect(editorTabs, SIGNAL(tabOpened(int)), this, SLOT(editorTabOpened(int)));
@@ -214,7 +214,7 @@ MainWindow::MainWindow(QWidget *parent) :
     editorsSplitter->addWidget(ui->tabWidget);
     editorsSplitter->addWidget(tabWidgetSplit);
 
-    editorTabsSplit = new EditorTabs(spellChecker, tabWidgetSplit);
+    editorTabsSplit = new EditorTabs(tabWidgetSplit);
     tabWidgetSplit->hide();
     isSplitActive = false;
 

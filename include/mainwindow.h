@@ -280,7 +280,6 @@ private:
     EditorTabs * editorTabs;
     Project * project;
     Git * git;
-    SpellCheckerInterface * spellChecker;
     TerminalInterface * terminal;
     QToolButton * tabsListButton;
     QSplitter * editorsSplitter;

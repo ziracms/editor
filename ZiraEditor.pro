@@ -68,8 +68,10 @@ SOURCES += \
     src/parse.cpp \
     src/navigator.cpp \
     src/snippets.cpp \
+    src/spellchecker.cpp \
     src/style.cpp \
     src/tabslist.cpp \
+    src/terminal.cpp \
     src/terminalinterface.cpp \
     src/tooltip.cpp \
     src/breadcrumbs.cpp \
@@ -130,8 +132,10 @@ HEADERS += \
     include/parse.h \
     include/navigator.h \
     include/snippets.h \
+    include/spellchecker.h \
     include/style.h \
     include/tabslist.h \
+    include/terminal.h \
     include/terminalinterface.h \
     include/tooltip.h \
     include/breadcrumbs.h \
