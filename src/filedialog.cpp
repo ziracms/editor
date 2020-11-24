@@ -37,6 +37,7 @@ FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
         treeView->setDragEnabled(false);
         #if defined(Q_OS_ANDROID)
         // scrolling by gesture
+        treeView->setProperty(SCROLLER_DISABLE_TIMER_PROPERTY, QVariant(true));
         Scroller::enableGestures(treeView, false);
         #endif
     }

@@ -33,6 +33,7 @@ HelpDialog::HelpDialog(QWidget *parent) :
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
     // scrolling by gesture
+    ui->helpLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
     Scroller::enableGestures(ui->helpScrollArea);
     #endif
 }

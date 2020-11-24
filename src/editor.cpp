@@ -7099,6 +7099,7 @@ void Editor::contextMenuEvent(QContextMenuEvent *event)
 
     #if defined(Q_OS_ANDROID)
     event->accept();
+    Scroller::reset();
     Helper::contextMenuToDialog(menu, this);
     #else
     menu->exec(event->globalPos());

@@ -93,7 +93,7 @@ void ContextDialog::onItemClicked(QListWidgetItem *item)
     if (index >= 0 && index < actionsList.size()) {
         action = actionsList.at(index);
         if (!action->isSeparator() && action->isEnabled()) {
-            close();
+            done(QDialog::Accepted);
             if (parentWidget != nullptr) {
                 parentWidget->setFocus();
             }

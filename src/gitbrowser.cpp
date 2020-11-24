@@ -134,6 +134,7 @@ void GitBrowser::gitBrowserContextMenuRequested(QTreeWidgetItem * item)
 
     QAction * selectedAction = nullptr;
     #if defined(Q_OS_ANDROID)
+    Scroller::reset();
     selectedAction = Helper::contextMenuToDialog(&menu, treeWidget);
     #else
     //QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));

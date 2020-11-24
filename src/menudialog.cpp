@@ -167,7 +167,7 @@ void MenuDialog::onItemClicked(QListWidgetItem *item)
         if (!action->isSeparator() && action->isEnabled()) {
             QVariant prop = action->property(MENU_TOP_LEVEL_ITEM_PROPERTY);
             if (!prop.isValid() || prop.toInt() != 1) {
-                close();
+                done(QDialog::Accepted);
             }
             action->activate(QAction::Trigger);
         }
