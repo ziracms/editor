@@ -75,7 +75,13 @@ void FileBrowser::initFileBrowser(QString homeDir)
     buildFileBrowserTree(homeDir);
     connect(treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(fileBrowserExpanded(QTreeWidgetItem*)));
     connect(treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(fileBrowserCollapsed(QTreeWidgetItem*)));
+    #if defined(Q_OS_ANDROID)
+    if (Settings::get("enable_android_gestures") != "yes") {
+        connect(treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), SLOT(fileBrowserDoubleClicked(QTreeWidgetItem*,int)));
+    }
+    #else
     connect(treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), SLOT(fileBrowserDoubleClicked(QTreeWidgetItem*,int)));
+    #endif
     connect(pathLine, SIGNAL(returnPressed()), this, SLOT(fileBrowserPathReturnPressed()));
     connect(treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(fileBrowserItemChanged(QTreeWidgetItem*,int)));
     connect(treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(fileBrowserItemSelectionChanged()));
@@ -190,6 +196,7 @@ void FileBrowser::fileBrowserDoubleClicked(QTreeWidgetItem * item, int column)
     if (path.size() == 0) return;
     QFileInfo fInfo(path);
     if (!fInfo.exists() || !fInfo.isWritable()) return;
+    if (mousePressTimer.isActive()) mousePressTimer.stop();
     if (fInfo.isFile()) emit openFile(path);
     else if (fInfo.isDir()) rebuildFileBrowserTree(path);
 }
@@ -202,6 +209,7 @@ void FileBrowser::fileBrowserDoubleClickFile(QTreeWidgetItem * item, int column)
     if (path.size() == 0) return;
     QFileInfo fInfo(path);
     if (!fInfo.exists() || !fInfo.isWritable()) return;
+    if (mousePressTimer.isActive()) mousePressTimer.stop();
     if (fInfo.isFile()) emit openFile(path);
 }
 
@@ -815,8 +823,12 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
     // trigger double click in Android
     if (Settings::get("enable_android_gestures") == "yes") {
         if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonRelease) {
-            QTreeWidgetItem * currentItem = treeWidget->currentItem();
-            fileBrowserDoubleClickFile(currentItem, 0);
+            QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent *>(event);
+            if (mouseEvent != nullptr) {
+                QPoint point(mouseEvent->x(), mouseEvent->y());
+                QTreeWidgetItem * item = treeWidget->itemAt(point);
+                if (item == treeWidget->currentItem()) fileBrowserDoubleClickFile(item, 0);
+            }
         }
     }
     // context menu for Android

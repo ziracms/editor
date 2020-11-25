@@ -13,7 +13,13 @@ const int LIMIT = 1000;
 
 Navigator::Navigator(QTreeWidget * widget) : treeWidget(widget)
 {
+    #if defined(Q_OS_ANDROID)
+    if (Settings::get("enable_android_gestures") != "yes") {
+        connect(treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), SLOT(navigatorDoubleClicked(QTreeWidgetItem*,int)));
+    }
+    #else
     connect(treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), SLOT(navigatorDoubleClicked(QTreeWidgetItem*,int)));
+    #endif
     connect(treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(navigatorExpanded(QTreeWidgetItem*)));
     connect(treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(navigatorCollapsed(QTreeWidgetItem*)));
     treeWidget->installEventFilter(this);
@@ -545,8 +551,12 @@ bool Navigator::eventFilter(QObject *watched, QEvent *event)
     // trigger double click in Android
     if (Settings::get("enable_android_gestures") == "yes") {
         if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonRelease) {
-            QTreeWidgetItem * currentItem = treeWidget->currentItem();
-            navigatorDoubleClicked(currentItem, 0);
+            QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent *>(event);
+            if (mouseEvent != nullptr) {
+                QPoint point(mouseEvent->x(), mouseEvent->y());
+                QTreeWidgetItem * item = treeWidget->itemAt(point);
+                if (item == treeWidget->currentItem()) navigatorDoubleClicked(item, 0);
+            }
         }
     }
     return false;
