@@ -5,6 +5,7 @@
 #include "icon.h"
 #include "helper.h"
 #include "scroller.h"
+#include "settings.h"
 
 const char * MENU_TOP_LEVEL_ITEM_PROPERTY = "toplevel";
 const int MENU_WIDTH_EXTRA_SPACE = 40;
@@ -24,7 +25,9 @@ MenuDialog::MenuDialog(QMenuBar * menuBar, QWidget *parent) :
     ui->listWidget->setSpacing(0);
     connect(ui->listWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
 
-    Scroller::enableGestures(ui->listWidget);
+    if (Settings::get("enable_android_gestures") == "yes") {
+        Scroller::enableGestures(ui->listWidget);
+    }
 
     action = nullptr;
     animationInProgress = false;

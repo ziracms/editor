@@ -27,7 +27,9 @@ GitBrowser::GitBrowser(QTreeWidget * widget):
     #if defined(Q_OS_ANDROID)
     treeWidget->viewport()->installEventFilter(this); // for context menu
     // scrolling by gesture
-    Scroller::enableGestures(treeWidget, false);
+    if (Settings::get("enable_android_gestures") == "yes") {
+        Scroller::enableGestures(treeWidget, false);
+    }
     #endif
 
     QString shortcutContextMenuStr = QString::fromStdString(Settings::get("shortcut_context_menu"));

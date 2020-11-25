@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include "scroller.h"
+#include "settings.h"
 
 FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
 {
@@ -37,8 +38,10 @@ FileDialog::FileDialog(QWidget *parent) : QFileDialog(parent)
         treeView->setDragEnabled(false);
         #if defined(Q_OS_ANDROID)
         // scrolling by gesture
-        //treeView->setProperty(SCROLLER_DISABLE_TIMER_PROPERTY, QVariant(true));
-        Scroller::enableGestures(treeView, false);
+        if (Settings::get("enable_android_gestures") == "yes") {
+            //treeView->setProperty(SCROLLER_DISABLE_TIMER_PROPERTY, QVariant(true));
+            Scroller::enableGestures(treeView, false);
+        }
         #endif
     }
     QListView * listView = findChild<QListView *>("listView");

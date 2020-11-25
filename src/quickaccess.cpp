@@ -102,7 +102,9 @@ QuickAccess::QuickAccess(QWidget *parent) : QFrame(parent)
 
     #if defined(Q_OS_ANDROID)
     // scrolling by gesture
-    Scroller::enableGestures(resultsList, false);
+    if (Settings::get("enable_android_gestures") == "yes") {
+        Scroller::enableGestures(resultsList, false);
+    }
     #endif
 }
 

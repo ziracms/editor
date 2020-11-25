@@ -85,7 +85,9 @@ void FileBrowser::initFileBrowser(QString homeDir)
     #if defined(Q_OS_ANDROID)
     treeWidget->viewport()->installEventFilter(this); // for context menu
     // scrolling by gesture
-    Scroller::enableGestures(treeWidget, false);
+    if (Settings::get("enable_android_gestures") == "yes") {
+        Scroller::enableGestures(treeWidget, false);
+    }
     #endif
     pathLine->installEventFilter(this);
 }

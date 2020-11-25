@@ -65,6 +65,7 @@ SettingsDialog::SettingsDialog(QWidget * parent):
     ui->projectsHomeLineEdit->setText(QString::fromStdString(Settings::get("file_browser_home")));
     if (Settings::get("experimental_mode_enabled") == CHECKED_YES) ui->experimentalModeCheckbox->setChecked(true);
     if (Settings::get("auto_show_virtual_keyboard") == CHECKED_YES) ui->virtualKeyboardCheckBox->setChecked(true);
+    if (Settings::get("enable_android_gestures") == CHECKED_YES) ui->touchGesturesCheckBox->setChecked(true);
     if (Settings::get("scale_auto") == CHECKED_YES) ui->scaleFactorCheckBox->setChecked(true);
     initScaleFactor = std::stoi(Settings::get("scale_factor"));
     ui->scaleFactorSpinBox->setValue(initScaleFactor);
@@ -103,6 +104,8 @@ SettingsDialog::SettingsDialog(QWidget * parent):
     // disable server commands on Android
     #if defined(Q_OS_ANDROID)
     ui->serversCheckbox->setEnabled(false);
+    #else
+    ui->touchGesturesCheckBox->setEnabled(false);
     #endif
     if (Settings::get("spellchecker_enabled") == CHECKED_YES) ui->spellCheckerCheckbox->setChecked(true);
     if (!Helper::isPluginExists(SPELLCHECKER_PLUGIN_NAME, pluginsDir)) ui->spellCheckerCheckbox->setEnabled(false);
@@ -195,14 +198,16 @@ SettingsDialog::SettingsDialog(QWidget * parent):
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
     // scrolling by gesture
-    Scroller::enableGestures(ui->generalSettingsScrollArea);
-    Scroller::enableGestures(ui->editorSettingsScrollArea);
-    Scroller::enableGestures(ui->documentSettingsScrollArea);
-    Scroller::enableGestures(ui->fileTypesSettingsScrollArea);
-    Scroller::enableGestures(ui->syntaxSettingsScrollArea);
-    Scroller::enableGestures(ui->snippetsSettingsScrollArea);
-    Scroller::enableGestures(ui->pathsSettingsScrollArea);
-    Scroller::enableGestures(ui->miscSettingsScrollArea);
+    if (Settings::get("enable_android_gestures") == "yes") {
+        Scroller::enableGestures(ui->generalSettingsScrollArea);
+        Scroller::enableGestures(ui->editorSettingsScrollArea);
+        Scroller::enableGestures(ui->documentSettingsScrollArea);
+        Scroller::enableGestures(ui->fileTypesSettingsScrollArea);
+        Scroller::enableGestures(ui->syntaxSettingsScrollArea);
+        Scroller::enableGestures(ui->snippetsSettingsScrollArea);
+        Scroller::enableGestures(ui->pathsSettingsScrollArea);
+        Scroller::enableGestures(ui->miscSettingsScrollArea);
+    }
     #else
     ui->buttonBox->button(QDialogButtonBox::Help)->hide();
     #endif
@@ -228,6 +233,9 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
 
     if (ui->virtualKeyboardCheckBox->isChecked()) dataMap["auto_show_virtual_keyboard"] = CHECKED_YES;
     else dataMap["auto_show_virtual_keyboard"] = CHECKED_NO;
+
+    if (ui->touchGesturesCheckBox->isChecked()) dataMap["enable_android_gestures"] = CHECKED_YES;
+    else dataMap["enable_android_gestures"] = CHECKED_NO;
 
     if (ui->scaleFactorCheckBox->isChecked()) dataMap["scale_auto"] = CHECKED_YES;
     else dataMap["scale_auto"] = CHECKED_NO;

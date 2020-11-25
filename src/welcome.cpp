@@ -2,6 +2,7 @@
 #include <QTimer>
 #include "scroller.h"
 #include "helper.h"
+#include "settings.h"
 
 Welcome::Welcome(bool light, QWidget *parent) : QWidget(parent),
     ui(new Ui::WelcomeScreen())
@@ -21,7 +22,9 @@ Welcome::Welcome(bool light, QWidget *parent) : QWidget(parent),
     #if defined(Q_OS_ANDROID)
     ui->welcomeLabelLayout->setContentsMargins(0, 0, 0, 10);
     // scrolling by gesture
-    Scroller::enableGestures(ui->welcomeScrollArea);
+    if (Settings::get("enable_android_gestures") == "yes") {
+        Scroller::enableGestures(ui->welcomeScrollArea);
+    }
     #endif
 
     connect(ui->welcomeOpenProjectButton, SIGNAL(pressed()), this, SLOT(onOpenProjectPressed()));

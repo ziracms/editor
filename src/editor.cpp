@@ -503,7 +503,7 @@ Editor::Editor(QWidget * parent):
     isGesturesEnabled = false;
     #if defined(Q_OS_ANDROID)
     // scrolling by gesture
-    if (Settings::get("editor_enable_android_gestures") == "yes") {
+    if (Settings::get("enable_android_gestures") == "yes" && Settings::get("editor_enable_android_gestures") == "yes") {
         enableGestures();
     }
     #endif

@@ -4,8 +4,6 @@
 #include <QEvent>
 #include <QMouseEvent>
 #include <QScrollBar>
-#include <QTextEdit>
-#include <QTreeWidget>
 #include "helper.h"
 
 const char * PROPERTY_HORIZONTAL_SCROLL = "horizontal";

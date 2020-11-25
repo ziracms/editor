@@ -4,6 +4,7 @@
 #include "icon.h"
 #include "helper.h"
 #include "scroller.h"
+#include "settings.h"
 
 const int MENU_WIDTH_EXTRA_SPACE = 40;
 
@@ -21,7 +22,9 @@ ContextDialog::ContextDialog(QWidget *parent) :
     ui->contextListWidget->setSpacing(0);
     connect(ui->contextListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
 
-    Scroller::enableGestures(ui->contextListWidget);
+    if (Settings::get("enable_android_gestures") == "yes") {
+        Scroller::enableGestures(ui->contextListWidget);
+    }
 
     action = nullptr;
     animationInProgress = false;
