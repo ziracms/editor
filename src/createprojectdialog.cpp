@@ -8,6 +8,8 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include "helper.h"
+#include "scroller.h"
+#include "settings.h"
 
 CreateProjectDialog::CreateProjectDialog(QWidget * parent) :
     QDialog(parent),
@@ -28,6 +30,10 @@ CreateProjectDialog::CreateProjectDialog(QWidget * parent) :
 
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
+    // scrolling by gesture
+    if (Settings::get("enable_android_gestures") == "yes") {
+        Scroller::enableGestures(ui->createProjectScrollArea);
+    }
     setWindowState( windowState() | Qt::WindowMaximized);
     #endif
 }
