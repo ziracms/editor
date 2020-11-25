@@ -52,7 +52,7 @@ FileBrowser::FileBrowser(QTreeWidget * widget, QLineEdit * line):
 
     mousePressTimer.setInterval(1000);
     mousePressTimer.setSingleShot(true);
-    connect(&mousePressTimer, SIGNAL(timeout()), this, SLOT(contextMenu()));
+    connect(&mousePressTimer, SIGNAL(timeout()), this, SLOT(triggerContextMenu()));
 
     treeWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     treeWidget->setMouseTracking(true);
@@ -245,10 +245,11 @@ void FileBrowser::homeActionTriggered(bool)
     }
 }
 
-void FileBrowser::fileBrowserContextMenuRequested(QPoint /*p*/)
+void FileBrowser::fileBrowserContextMenuRequested(QPoint p)
 {
-    //QTreeWidgetItem * item = treeWidget->itemAt(p);
-    QTreeWidgetItem * item = treeWidget->currentItem();
+    //QTreeWidgetItem * item = treeWidget->currentItem();
+    QTreeWidgetItem * item = treeWidget->itemAt(p);
+    if (item != nullptr && item != treeWidget->currentItem()) treeWidget->setCurrentItem(item);
     fileBrowserContextMenuRequested(item);
 }
 
@@ -854,4 +855,11 @@ void FileBrowser::contextMenu()
 {
     QTreeWidgetItem * item = treeWidget->currentItem();
     fileBrowserContextMenuRequested(item);
+}
+
+void FileBrowser::triggerContextMenu()
+{
+    QPoint p = treeWidget->mapFromGlobal(QCursor::pos());
+    if (p.isNull()) return;
+    fileBrowserContextMenuRequested(p);
 }

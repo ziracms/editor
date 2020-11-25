@@ -33,6 +33,7 @@ private:
     QAction * action;
     QPropertyAnimation *animationIn;
     bool animationInProgress;
+    int minWidth;
 private slots:
     void onItemClicked(QListWidgetItem * item);
     void animationInFinished();

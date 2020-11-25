@@ -70,6 +70,7 @@ private slots:
     void fileBrowserItemSelectionChanged();
     void upActionTriggered(bool checked);
     void homeActionTriggered(bool checked);
+    void triggerContextMenu();
 signals:
     void openFile(QString);
     void fileCreated(QString);

@@ -29,6 +29,7 @@ MenuDialog::MenuDialog(QMenuBar * menuBar, QWidget *parent) :
         Scroller::enableGestures(ui->listWidget);
     }
 
+    minWidth = 0;
     action = nullptr;
     animationInProgress = false;
     QEasingCurve easingIn(QEasingCurve::OutCubic);
@@ -260,6 +261,8 @@ void MenuDialog::updateGeometry()
     width += ui->listWidget->frameWidth() * 2;
     if (ui->listWidget->verticalScrollBar()->isVisible()) width += ui->listWidget->verticalScrollBar()->width();
     width += MENU_WIDTH_EXTRA_SPACE;
+    if (width < minWidth) width = minWidth;
+    else minWidth = width;
     QScreen * screen = QGuiApplication::primaryScreen();
     if (width > screen->availableGeometry().width()) width = screen->availableGeometry().width();
     int height = screen->availableGeometry().height();
