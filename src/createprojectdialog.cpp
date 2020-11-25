@@ -10,6 +10,7 @@
 #include "helper.h"
 #include "scroller.h"
 #include "settings.h"
+#include "virtualinput.h"
 
 CreateProjectDialog::CreateProjectDialog(QWidget * parent) :
     QDialog(parent),
@@ -33,6 +34,9 @@ CreateProjectDialog::CreateProjectDialog(QWidget * parent) :
     // scrolling by gesture
     if (Settings::get("enable_android_gestures") == "yes") {
         Scroller::enableGestures(ui->createProjectScrollArea);
+    }
+    if (Settings::get("auto_show_virtual_keyboard") == "yes") {
+        VirtualInput::registerDialog(this);
     }
     setWindowState( windowState() | Qt::WindowMaximized);
     #endif

@@ -92,6 +92,7 @@ SOURCES += \
     src/spellcheckerinterface.cpp \
     src/plugininterface.cpp \
     src/spellwords.cpp \
+    src/virtualinput.cpp \
     src/welcome.cpp
 
 HEADERS += \
@@ -158,6 +159,7 @@ HEADERS += \
     include/spellcheckerinterface.h \
     include/plugininterface.h \
     include/spellwords.h \
+    include/virtualinput.h \
     include/welcome.h
 
 FORMS += \

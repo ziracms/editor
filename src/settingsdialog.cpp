@@ -15,6 +15,7 @@
 #include "scroller.h"
 #include <QTimer>
 #include "helper.h"
+#include "virtualinput.h"
 
 const std::string CHECKED_YES = "yes";
 const std::string CHECKED_NO = "no";
@@ -207,6 +208,9 @@ SettingsDialog::SettingsDialog(QWidget * parent):
         Scroller::enableGestures(ui->snippetsSettingsScrollArea);
         Scroller::enableGestures(ui->pathsSettingsScrollArea);
         Scroller::enableGestures(ui->miscSettingsScrollArea);
+    }
+    if (Settings::get("auto_show_virtual_keyboard") == "yes") {
+        VirtualInput::registerDialog(this);
     }
     #else
     ui->buttonBox->button(QDialogButtonBox::Help)->hide();

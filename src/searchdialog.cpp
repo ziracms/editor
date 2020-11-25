@@ -10,6 +10,7 @@
 #include "icon.h"
 #include "scroller.h"
 #include "settings.h"
+#include "virtualinput.h"
 
 SearchDialog::SearchDialog(QWidget * parent) :
     QDialog(parent),
@@ -36,6 +37,9 @@ SearchDialog::SearchDialog(QWidget * parent) :
     // scrolling by gesture
     if (Settings::get("enable_android_gestures") == "yes") {
         Scroller::enableGestures(ui->searchDialogScrollArea);
+    }
+    if (Settings::get("auto_show_virtual_keyboard") == "yes") {
+        VirtualInput::registerDialog(this);
     }
     setWindowState( windowState() | Qt::WindowMaximized);
     #endif
