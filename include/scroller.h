@@ -23,6 +23,7 @@ private:
     Scroller();
     int mouseX;
     int mouseY;
+    QPointF mousePoint;
     bool isActive;
     bool isTriggered;
     QObject * activeObject;

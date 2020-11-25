@@ -14,7 +14,7 @@ const char * PROPERTY_VERTICAL_SCROLL = "vertical";
 const char * SCROLLER_DISABLE_TIMER_PROPERTY = "disable-timer";
 
 const int ACTIVATE_DELTA = 20;
-const int TRIGGER_DELAY = 500;
+const int TRIGGER_DELAY = 250;
 
 Scroller::Scroller(): mouseX(-1), mouseY(-1), isActive(false), isTriggered(false), activeObject(nullptr) {
     timer.setSingleShot(true);
@@ -88,6 +88,8 @@ bool Scroller::eventFilter(QObject *watched, QEvent *event)
             isActive = false;
             if (!isTriggered && !disableTimer) {
                 activeObject = scrollArea;
+                mousePoint.setX(mouseEvent->localPos().x());
+                mousePoint.setY(mouseEvent->localPos().y());
                 if (timer.isActive()) timer.stop();
                 timer.start(TRIGGER_DELAY);
                 return true;
@@ -159,13 +161,21 @@ void Scroller::trigger()
     QAbstractScrollArea * scrollArea = qobject_cast<QAbstractScrollArea *>(activeObject);
     if (scrollArea == nullptr) return;
     isTriggered = true;
-    QMouseEvent pressEvent(QEvent::MouseButtonPress, scrollArea->mapFromGlobal(QCursor::pos()), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    QPointF point;
+    if (!mousePoint.isNull()) {
+        point.setX(mousePoint.x());
+        point.setY(mousePoint.y());
+    } else {
+        point.setX(scrollArea->mapFromGlobal(QCursor::pos()).x());
+        point.setY(scrollArea->mapFromGlobal(QCursor::pos()).y());
+    }
+    QMouseEvent pressEvent(QEvent::MouseButtonPress, point, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
     QCoreApplication::sendEvent(scrollArea->viewport(), &pressEvent);
     if (timer.interval() == 0) {
-        QMouseEvent moveEvent(QEvent::MouseMove, scrollArea->mapFromGlobal(QCursor::pos()), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+        QMouseEvent moveEvent(QEvent::MouseMove, point, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
         QCoreApplication::sendEvent(scrollArea->viewport(), &moveEvent);
 
-        QMouseEvent releaseEvent(QEvent::MouseButtonRelease, scrollArea->mapFromGlobal(QCursor::pos()), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+        QMouseEvent releaseEvent(QEvent::MouseButtonRelease, point, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
         QCoreApplication::sendEvent(scrollArea->viewport(), &releaseEvent);
     }
 }
