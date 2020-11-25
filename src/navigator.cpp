@@ -18,6 +18,7 @@ Navigator::Navigator(QTreeWidget * widget) : treeWidget(widget)
     connect(treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(navigatorCollapsed(QTreeWidgetItem*)));
     treeWidget->installEventFilter(this);
     #if defined(Q_OS_ANDROID)
+    treeWidget->viewport()->installEventFilter(this);
     // scrolling by gesture
     if (Settings::get("enable_android_gestures") == "yes") {
         Scroller::enableGestures(treeWidget, false);
@@ -539,6 +540,13 @@ bool Navigator::eventFilter(QObject *watched, QEvent *event)
         if (keyEvent->key() == Qt::Key_Return && !ctrl && !shift) {
             QTreeWidgetItem * item = treeWidget->currentItem();
             navigatorDoubleClicked(item, 0);
+        }
+    }
+    // trigger double click in Android
+    if (Settings::get("enable_android_gestures") == "yes") {
+        if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonRelease) {
+            QTreeWidgetItem * currentItem = treeWidget->currentItem();
+            navigatorDoubleClicked(currentItem, 0);
         }
     }
     return false;

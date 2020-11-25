@@ -194,6 +194,17 @@ void FileBrowser::fileBrowserDoubleClicked(QTreeWidgetItem * item, int column)
     else if (fInfo.isDir()) rebuildFileBrowserTree(path);
 }
 
+void FileBrowser::fileBrowserDoubleClickFile(QTreeWidgetItem * item, int column)
+{
+    if (item == nullptr) return;
+    if (column != 0) return;
+    QString path = item->data(0, Qt::UserRole).toString();
+    if (path.size() == 0) return;
+    QFileInfo fInfo(path);
+    if (!fInfo.exists() || !fInfo.isWritable()) return;
+    if (fInfo.isFile()) emit openFile(path);
+}
+
 void FileBrowser::fileBrowserPathReturnPressed()
 {
     QString path = pathLine->text();
@@ -799,6 +810,13 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
             if (treeWidget->topLevelItemCount() == 0 || treeWidget->currentItem() == treeWidget->topLevelItem(0)) {
                 pathLine->setFocus();
             }
+        }
+    }
+    // trigger double click in Android
+    if (Settings::get("enable_android_gestures") == "yes") {
+        if(watched == treeWidget->viewport() && event->type() == QEvent::MouseButtonRelease) {
+            QTreeWidgetItem * currentItem = treeWidget->currentItem();
+            fileBrowserDoubleClickFile(currentItem, 0);
         }
     }
     // context menu for Android
