@@ -1090,3 +1090,22 @@ InputDialog #descriptionLabel
 {
     background: #000000;
 }
+
+#virtualInputWidget
+{
+    border: 1px solid #48678e;
+    background-color: #314661;
+    border-radius: 3px;
+    color: #bbbbbb;
+}
+#virtualInputWidget QLabel
+{
+    background: transparent;
+    color: #bbbbbb;
+}
+#virtualInputWidget QLineEdit
+{
+    border: none;
+    background: transparent;
+    color: #bbbbbb;
+}
