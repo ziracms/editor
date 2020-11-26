@@ -3020,9 +3020,6 @@ void MainWindow::inputMethodVisibleChanged()
         ui->tabWidget->tabBar()->setVisible(false);
         tabWidgetSplit->tabBar()->setVisible(false);
         tabsListButton->hide();
-
-        Editor * textEditor = getActiveEditor();
-        if (textEditor != nullptr) textEditor->closeSearch();
     } else {
         ui->statusBar->setVisible(true);
         ui->tabWidget->tabBar()->setVisible(true);

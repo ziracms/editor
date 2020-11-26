@@ -79,6 +79,12 @@ const int FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE = 300;
 
 const QString SNIPPET_PREFIX = "Snippet: @";
 
+#if defined(Q_OS_ANDROID)
+const bool SEARCH_DISPLAY_ON_TOP = true;
+#else
+const bool SEARCH_DISPLAY_ON_TOP = false;
+#endif
+
 Editor::Editor(QWidget * parent):
     QTextEdit(parent), mousePressTimer(this)
 {
@@ -919,7 +925,7 @@ int Editor::searchWidgetHeight()
     if (static_cast<Search *>(search)->scrollAreaHorizontalScrollBar()->maximum() > static_cast<Search *>(search)->scrollAreaHorizontalScrollBar()->minimum()) {
         scrollH = static_cast<Search *>(search)->scrollAreaHorizontalScrollBar()->height();
     }
-    if (static_cast<Search *>(search)->horizontalScrollBar()->maximum() > static_cast<Search *>(search)->horizontalScrollBar()->minimum()) {
+    if (!SEARCH_DISPLAY_ON_TOP && static_cast<Search *>(search)->horizontalScrollBar()->maximum() > static_cast<Search *>(search)->horizontalScrollBar()->minimum()) {
         scrollHE = static_cast<Search *>(search)->horizontalScrollBar()->height();
     }
     return SEARCH_WIDGET_HEIGHT + scrollH + scrollHE;
@@ -942,7 +948,11 @@ void Editor::updateViewportMargins()
     int searchH = searchWidgetHeight();
     if (!search->isVisible()) searchH = 0;
     int breadcrumbsH = breadcrumbsHeight();
-    setViewportMargins(lineW + markW, breadcrumbsH, mapW, searchH);
+    if (!SEARCH_DISPLAY_ON_TOP) {
+        setViewportMargins(lineW + markW, breadcrumbsH, mapW, searchH);
+    } else {
+        setViewportMargins(lineW + markW, breadcrumbsH + searchH, mapW, 0);
+    }
 }
 
 void Editor::updateLineWidgetsArea()
@@ -1502,7 +1512,7 @@ void Editor::resizeEvent(QResizeEvent * e)
     hidePopups();
     updateWidgetsGeometry();
     updateLineAnnotationView();
-    if (static_cast<Search *>(search)->isVisible()) {
+    if (!SEARCH_DISPLAY_ON_TOP && static_cast<Search *>(search)->isVisible()) {
         static_cast<Search *>(search)->updateScrollBar();
     }
 }
@@ -1522,15 +1532,21 @@ void Editor::updateWidgetsGeometry()
     if (verticalScrollBar()->maximum() <= verticalScrollBar()->minimum()) vScrollW = 0;
     if (horizontalScrollBar()->maximum() <= horizontalScrollBar()->minimum() || searchH == 0) hScrollH = 0;
 
-    lineNumber->setGeometry(QRect(cr.left(), cr.top()+breadcrumbsH, lineW, cr.height()-breadcrumbsH-searchH-hScrollH));
-    lineMark->setGeometry(QRect(cr.left()+lineW, cr.top()+breadcrumbsH, markW, cr.height()-breadcrumbsH-searchH-hScrollH));
     lineMap->setGeometry(QRect(cr.right()-mapW-vScrollW+1, cr.top(), mapW+vScrollW, cr.height()));
     breadcrumbs->setGeometry(QRect(cr.left(), cr.top(), cr.width()-mapW-vScrollW, breadcrumbsH));
     qaBtn->setGeometry(0, 0, lineW, breadcrumbsH-1);
-    search->setGeometry(QRect(cr.left(), cr.bottom()-searchH-hScrollH+1, cr.width()-mapW-vScrollW, searchH+hScrollH));
-    QMargins searchMargins = search->contentsMargins();
-    searchMargins.setBottom(hScrollH);
-    search->setContentsMargins(searchMargins);
+    if (!SEARCH_DISPLAY_ON_TOP) {
+        search->setGeometry(QRect(cr.left(), cr.bottom()-searchH-hScrollH+1, cr.width()-mapW-vScrollW, searchH+hScrollH));
+        lineNumber->setGeometry(QRect(cr.left(), cr.top()+breadcrumbsH, lineW, cr.height()-breadcrumbsH-searchH-hScrollH));
+        lineMark->setGeometry(QRect(cr.left()+lineW, cr.top()+breadcrumbsH, markW, cr.height()-breadcrumbsH-searchH-hScrollH));
+        QMargins searchMargins = search->contentsMargins();
+        searchMargins.setBottom(hScrollH);
+        search->setContentsMargins(searchMargins);
+    } else {
+        search->setGeometry(QRect(cr.left(), cr.top()+breadcrumbsH, cr.width()-mapW-vScrollW, searchH));
+        lineNumber->setGeometry(QRect(cr.left(), cr.top()+breadcrumbsH+searchH, lineW, cr.height()-breadcrumbsH-searchH));
+        lineMark->setGeometry(QRect(cr.left()+lineW, cr.top()+breadcrumbsH+searchH, markW, cr.height()-breadcrumbsH-searchH));
+    }
 }
 
 void Editor::backtab()
@@ -1833,7 +1849,7 @@ void Editor::focusInEvent(QFocusEvent *e)
             setFileIsOutdated();
         }
     }
-    if (static_cast<Search *>(search)->isVisible()) {
+    if (!SEARCH_DISPLAY_ON_TOP && static_cast<Search *>(search)->isVisible()) {
         static_cast<Search *>(search)->updateScrollBar();
     }
     QTextEdit::focusInEvent(e);
@@ -2620,7 +2636,7 @@ void Editor::blockCountChanged(int /*blockCount*/)
 void Editor::horizontalScrollbarValueChanged(int /* sliderPos */)
 {
     updateLineAnnotationView();
-    if (static_cast<Search *>(search)->isVisible()) {
+    if (!SEARCH_DISPLAY_ON_TOP && static_cast<Search *>(search)->isVisible()) {
         static_cast<Search *>(search)->updateScrollBar();
     }
 }
@@ -6416,7 +6432,9 @@ void Editor::showSearch()
 {
     if (!search->isVisible()) search->show();
     static_cast<Search *>(search)->setFindEditFocus();
-    static_cast<Search *>(search)->updateScrollBar();
+    if (!SEARCH_DISPLAY_ON_TOP) {
+        static_cast<Search *>(search)->updateScrollBar();
+    }
     updateViewportMargins();
 }
 
@@ -6424,7 +6442,9 @@ void Editor::closeSearch()
 {
     if (!search->isVisible()) return;
     search->hide();
-    static_cast<Search *>(search)->updateScrollBar();
+    if (!SEARCH_DISPLAY_ON_TOP) {
+        static_cast<Search *>(search)->updateScrollBar();
+    }
     updateViewportMargins();
     setFocus();
     static_cast<LineMap *>(lineMap)->clearMarks();
