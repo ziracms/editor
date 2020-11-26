@@ -210,7 +210,7 @@ SettingsDialog::SettingsDialog(QWidget * parent):
         Scroller::enableGestures(ui->miscSettingsScrollArea);
     }
     if (Settings::get("auto_show_virtual_keyboard") == "yes") {
-        VirtualInput::registerDialog(this);
+        VirtualInput::registerDialog(this, true);
     }
     #else
     ui->buttonBox->button(QDialogButtonBox::Help)->hide();
