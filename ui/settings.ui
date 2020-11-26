@@ -373,7 +373,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Enable experimental mode</string>
+                <string>Enable extra syntax highlighting</string>
                </property>
               </widget>
              </item>

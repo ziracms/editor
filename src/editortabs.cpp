@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <sstream>
 #include "fileiconprovider.h"
+#include "settings.h"
 
 EditorTabs::EditorTabs(QTabWidget * widget):
     tabWidget(widget)
@@ -116,6 +117,10 @@ void EditorTabs::createTab(QString filepath, bool initHighlight)
 
     if (txt.size() >= BIG_FILE_SIZE) editor->setIsBigFile(true);
     else editor->setIsBigFile(false);
+
+    #if defined(Q_OS_ANDROID)
+    if (Settings::get("experimental_mode_enabled") != "yes") editor->setIsBigFile(true);
+    #endif
 
     editor->convertNewLines(txt);
     editor->setPlainText(txt);
