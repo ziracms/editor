@@ -688,6 +688,11 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     #if defined(Q_OS_ANDROID)
+    if (!MainWindow::WANT_RESTART && ui->outputDockWidget->isVisible()) {
+        outputActionTriggered(false);
+        event->ignore();
+        return;
+    }
     if (!MainWindow::WANT_RESTART && !Helper::showQuestion(tr("Confirmation"), tr("Do you want to exit ?"))) {
         MainWindow::WANT_RESTART = false;
         event->ignore();
