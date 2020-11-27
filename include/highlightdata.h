@@ -97,6 +97,7 @@ public:
     QVector<bool> clsOpensPHP;
     QString varsClsOpenChainPHP;
     QStringList clsPropsChainPHP;
+    bool isGlobalPHP;
     QString funcNameJS;
     QList<int> funcScopeChainJS;
     QString funcChainJS;

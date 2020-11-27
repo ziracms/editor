@@ -95,6 +95,7 @@ void HighlightData::reset()
     clsOpensPHP.clear();
     varsClsOpenChainPHP = "";
     clsPropsChainPHP.clear();
+    isGlobalPHP = false;
     funcNameJS = "";
     funcScopeChainJS.clear();
     funcChainJS = "";

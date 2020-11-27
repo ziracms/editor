@@ -313,6 +313,7 @@ void Highlight::reset()
     clsOpensPHP.clear();
     varsClsOpenChainPHP = "";
     clsPropsChainPHP.clear();
+    isGlobalPHP = false;
     funcNameJS = "";
     funcScopeChainJS.clear();
     funcChainJS = "";
@@ -1732,6 +1733,7 @@ void Highlight::restoreState() {
             clsOpensPHP = prevBlockData->clsOpensPHP;
             varsClsOpenChainPHP = prevBlockData->varsClsOpenChainPHP;
             clsPropsChainPHP = prevBlockData->clsPropsChainPHP;
+            isGlobalPHP = prevBlockData->isGlobalPHP;
             funcNameJS = prevBlockData->funcNameJS;
             funcScopeChainJS = prevBlockData->funcScopeChainJS;
             funcChainJS = prevBlockData->funcChainJS;
@@ -2845,6 +2847,9 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
                     keywordPHPStart = -1;
                 }
             }
+            if (keywordStringPHP == "global" && funcNamePHP.size() > 0) {
+                isGlobalPHP = true;
+            }
         } else if ((keywordPHPprevChar == "$" || isObjectContext) && !isBigFile) {
             // php variables
             bool known = false;
@@ -2877,6 +2882,13 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
                             QString kk = k + "::" + varName;
                             knownVarsPositions[kk.toStdString()] = keywordPHPStart;
                             knownVarsBlocks[kk.toStdString()] = cBlock.blockNumber();
+                        }
+                        if (isGlobalPHP) {
+                            if (usedVarsGlobChainPHP.size() > 0) usedVarsGlobChainPHP += ",";
+                            usedVarsGlobChainPHP += varName;
+                            if (highlightVarsMode || firstRunMode) {
+                                usedVars["::"] = usedVarsGlobChainPHP.toStdString();
+                            }
                         }
                     } else {
                         known = true;
@@ -2966,6 +2978,7 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
     if (c == ';') {
         keywordPHPprevString = "";
         keywordPHPprevStringPrevChar = "";
+        isGlobalPHP = false;
     }
     if (keywordPHPStartPrev>=0 && keywordPHPLengthPrev>0) {
         // php functions
@@ -4046,6 +4059,7 @@ bool Highlight::parseBlock(const QString & text)
     blockData->clsOpensPHP = clsOpensPHP;
     blockData->varsClsOpenChainPHP = varsClsOpenChainPHP;
     blockData->clsPropsChainPHP = clsPropsChainPHP;
+    blockData->isGlobalPHP = isGlobalPHP;
     blockData->funcNameJS = funcNameJS;
     blockData->funcScopeChainJS = funcScopeChainJS;
     blockData->funcChainJS = funcChainJS;
