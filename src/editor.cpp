@@ -290,8 +290,10 @@ Editor::Editor(QWidget * parent):
 
     // some features is enabled only in experimental mode
     experimentalMode = false;
+    #if !defined(Q_OS_ANDROID)
     std::string experimentalModeStr = Settings::get("experimental_mode_enabled");
     if (experimentalModeStr == "yes") experimentalMode = true;
+    #endif
 
     // highlighter
     highlight = new Highlight(document());
