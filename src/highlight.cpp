@@ -728,7 +728,7 @@ bool Highlight::detectModeOpen(const QChar & c, int pos, bool isWSpace, bool isL
 {
     std::string _mode = mode;
 
-    if (mode!=MODE_PHP && c == "<") {
+    if (mode!=MODE_PHP && c.toLatin1() == '<') {
         // php in opening tag
         prevModeString = modeString;
         prevModeExpect = modeExpect;
@@ -766,13 +766,13 @@ bool Highlight::detectModeOpen(const QChar & c, int pos, bool isWSpace, bool isL
         mode = MODE_PHP;
     } else if (_mode == MODE_HTML && modeString == "<script>") {
         mode = MODE_JS;
-    } else if (_mode == MODE_HTML && modeExpect == MODE_JS && c == ">") {
+    } else if (_mode == MODE_HTML && modeExpect == MODE_JS && c.toLatin1() == '>') {
         mode = MODE_JS;
     } else if (_mode == MODE_HTML && modeString == "<style>") {
         mode = MODE_CSS;
-    } else if (_mode == MODE_HTML && modeExpect == MODE_CSS && c == ">") {
+    } else if (_mode == MODE_HTML && modeExpect == MODE_CSS && c.toLatin1() == '>') {
         mode = MODE_CSS;
-    } else if (c == ">" || modeString.size()>8) {
+    } else if (c.toLatin1() == '>' || modeString.size()>8) {
         modeString = "";
         modeExpect = "";
         modeSpos = -1;
@@ -812,14 +812,14 @@ bool Highlight::detectModeClose(const QChar & c, int pos, bool isWSpace)
 {
     std::string _mode = mode;
 
-    if (mode == MODE_PHP && stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentMLOpenedPHP < 0 && exprOpenedPHP < 0 && c == "?") {
+    if (mode == MODE_PHP && stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentMLOpenedPHP < 0 && exprOpenedPHP < 0 && c.toLatin1() == '?') {
         modeExpectC = "";
         modeStringC = c;
         modeCpos = pos;
         modeCposed = modeCpos;
         modeSkipC = false;
         return false;
-    } else if (mode == MODE_JS && stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && exprOpenedJS < 0 && c == "<") {
+    } else if (mode == MODE_JS && stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && exprOpenedJS < 0 && c.toLatin1() == '<') {
         // php in closing tag
         prevModeExpectC = modeExpectC;
         prevModeStringC = modeStringC;
@@ -832,7 +832,7 @@ bool Highlight::detectModeClose(const QChar & c, int pos, bool isWSpace)
         modeCposed = modeCpos;
         modeSkipC = false;
         return false;
-    } else if (mode == MODE_CSS && commentMLOpenedCSS < 0 && c == "<") {
+    } else if (mode == MODE_CSS && commentMLOpenedCSS < 0 && c.toLatin1() == '<') {
         // php in closing tag
         prevModeExpectC = modeExpectC;
         prevModeStringC = modeStringC;
@@ -865,13 +865,13 @@ bool Highlight::detectModeClose(const QChar & c, int pos, bool isWSpace)
         mode = prevMode;
     } else if (mode == MODE_JS && modeStringC == "</script>") {
         mode = prevMode;
-    } else if (mode == MODE_JS && modeExpectC == MODE_JS && c == ">") {
+    } else if (mode == MODE_JS && modeExpectC == MODE_JS && c.toLatin1() == '>') {
         mode = prevMode;
     } else if (mode == MODE_CSS && modeStringC == "</style>") {
         mode = prevMode;
-    } else if (mode == MODE_CSS && modeExpectC == MODE_CSS && c == ">") {
+    } else if (mode == MODE_CSS && modeExpectC == MODE_CSS && c.toLatin1() == '>') {
         mode = prevMode;
-    } else if (c == ">" || modeStringC.size()>9) {
+    } else if (c.toLatin1() == '>' || modeStringC.size()>9) {
         modeExpectC = "";
         modeStringC = "";
         modeCpos = -1;
@@ -897,11 +897,11 @@ bool Highlight::detectModeClose(const QChar & c, int pos, bool isWSpace)
 bool Highlight::detectTag(const QChar & c, int pos)
 {
     if (stringSQOpenedHTML>=0 || stringDQOpenedHTML>=0) return false;
-    if (tagOpened < 0 && c == "<") {
+    if (tagOpened < 0 && c.toLatin1() == '<') {
         tagOpened = pos;
         state = STATE_TAG;
         return true;
-    } else if (tagOpened >= 0 && c == ">" && commentHTMLOpened < 0) {
+    } else if (tagOpened >= 0 && c.toLatin1() == '>' && commentHTMLOpened < 0) {
         tagOpened = -1;
         state = STATE_NONE;
         return true;
@@ -919,11 +919,11 @@ bool Highlight::detectCommentHTML(const QChar & c)
             state = STATE_COMMENT_ML_HTML;
             return true;
         }
-    } else if (tagOpened>=0 && commentHTMLOpened >= 0 && c == "-" && commentHTMLString.size()<2) {
+    } else if (tagOpened>=0 && commentHTMLOpened >= 0 && c.toLatin1() == '-' && commentHTMLString.size()<2) {
         commentHTMLString += c;
-    } else if (tagOpened>=0 && commentHTMLOpened >= 0 && c != "-" && c != ">") {
+    } else if (tagOpened>=0 && commentHTMLOpened >= 0 && c.toLatin1() != '-' && c.toLatin1() != '>') {
         commentHTMLString = "";
-    } else if (tagOpened>=0 && commentHTMLOpened >= 0 && c == ">" && commentHTMLString == "--") {
+    } else if (tagOpened>=0 && commentHTMLOpened >= 0 && c.toLatin1() == '>' && commentHTMLString == "--") {
         commentHTMLString = "";
         commentHTMLOpened = -1;
         tagOpened = -1;
@@ -938,7 +938,7 @@ bool Highlight::detectCommentHTML(const QChar & c)
 bool Highlight::detectMLCommentCSS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedCSS >= 0 || stringDQOpenedCSS >= 0 || commentMLOpenedCSS >= 0;
-    if (!opened && commentCSSStringML.size()==0 && c == "/") {
+    if (!opened && commentCSSStringML.size()==0 && c.toLatin1() == '/') {
         commentCSSStringML = c;
     } else if (!opened && commentCSSStringML.size()==1) {
         commentCSSStringML += c;
@@ -950,7 +950,7 @@ bool Highlight::detectMLCommentCSS(const QChar & c, int pos)
         } else {
             commentCSSStringML = "";
         }
-    } else if (commentMLOpenedCSS >= 0 && c == "*") {
+    } else if (commentMLOpenedCSS >= 0 && c.toLatin1() == '*') {
         commentCSSStringML = c;
     } else if (commentMLOpenedCSS >= 0 && commentCSSStringML.size()==1) {
         commentCSSStringML += c;
@@ -970,7 +970,7 @@ bool Highlight::detectMLCommentCSS(const QChar & c, int pos)
 bool Highlight::detectSLCommentJS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || exprOpenedJS >= 0;
-    if (!opened && commentJSStringSL.size()==0 && c == "/" && (regexpOpenedJS < 0 || regexpOpenedJS == pos)) {
+    if (!opened && commentJSStringSL.size()==0 && c.toLatin1() == '/' && (regexpOpenedJS < 0 || regexpOpenedJS == pos)) {
         commentJSStringSL = c;
     } else if (!opened && commentJSStringSL.size()==1) {
         commentJSStringSL += c;
@@ -993,7 +993,7 @@ bool Highlight::detectSLCommentJS(const QChar & c, int pos)
 bool Highlight::detectMLCommentJS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || exprOpenedJS >= 0;
-    if (!opened && commentJSStringML.size()==0 && c == "/" && (regexpOpenedJS < 0 || regexpOpenedJS == pos)) {
+    if (!opened && commentJSStringML.size()==0 && c.toLatin1() == '/' && (regexpOpenedJS < 0 || regexpOpenedJS == pos)) {
         commentJSStringML = c;
     } else if (!opened && commentJSStringML.size()==1) {
         commentJSStringML += c;
@@ -1006,7 +1006,7 @@ bool Highlight::detectMLCommentJS(const QChar & c, int pos)
         } else {
             commentJSStringML = "";
         }
-    } else if (commentMLOpenedJS >= 0 && c == "*") {
+    } else if (commentMLOpenedJS >= 0 && c.toLatin1() == '*') {
         commentJSStringML = c;
     } else if (commentMLOpenedJS >= 0 && commentJSStringML.size()==1) {
         commentJSStringML += c;
@@ -1026,7 +1026,7 @@ bool Highlight::detectMLCommentJS(const QChar & c, int pos)
 bool Highlight::detectMLCommentPHP(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
-    if (!opened && commentPHPStringML.size()==0 && c == "/") {
+    if (!opened && commentPHPStringML.size()==0 && c.toLatin1() == '/') {
         commentPHPStringML = c;
     } else if (!opened && commentPHPStringML.size()==1) {
         commentPHPStringML += c;
@@ -1038,7 +1038,7 @@ bool Highlight::detectMLCommentPHP(const QChar & c, int pos)
         } else {
             commentPHPStringML = "";
         }
-    } else if (commentMLOpenedPHP >= 0 && c == "*") {
+    } else if (commentMLOpenedPHP >= 0 && c.toLatin1() == '*') {
         commentPHPStringML = c;
     } else if (commentMLOpenedPHP >= 0 && commentPHPStringML.size()==1) {
         commentPHPStringML += c;
@@ -1058,8 +1058,8 @@ bool Highlight::detectMLCommentPHP(const QChar & c, int pos)
 bool Highlight::detectSLCommentPHP(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
-    if (!opened && commentPHPStringSL.size()==0 && (c == "/" || c == "#")) {
-        if (c == "#") {
+    if (!opened && commentPHPStringSL.size()==0 && (c.toLatin1() == '/' || c.toLatin1() == '#')) {
+        if (c.toLatin1() == '#') {
             commentPHPStringSL = "";
             commentSLOpenedPHP = pos;
             state = STATE_COMMENT_SL_PHP;
@@ -1085,13 +1085,13 @@ bool Highlight::detectSLCommentPHP(const QChar & c, int pos)
 bool Highlight::detectStringSQHTML(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedHTML >= 0 || stringDQOpenedHTML >= 0 || commentHTMLOpened >= 0;
-    if (!opened && tagOpened >= 0 && c == "'") {
+    if (!opened && tagOpened >= 0 && c.toLatin1() == '\'') {
         stringSQOpenedHTML = pos;
         prevPrevState = prevState;
         prevState = state;
         state = STATE_STRING_SQ_HTML;
         return true;
-    } else if (stringSQOpenedHTML >= 0 && c == "'") {
+    } else if (stringSQOpenedHTML >= 0 && c.toLatin1() == '\'') {
         stringSQOpenedHTML = -1;
         state = prevState;
         prevState = prevPrevState;
@@ -1104,13 +1104,13 @@ bool Highlight::detectStringSQHTML(const QChar & c, int pos)
 bool Highlight::detectStringDQHTML(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedHTML >= 0 || stringDQOpenedHTML >= 0 || commentHTMLOpened >= 0;
-    if (!opened && tagOpened >= 0 && c == "\"") {
+    if (!opened && tagOpened >= 0 && c.toLatin1() == '"') {
         stringDQOpenedHTML = pos;
         prevPrevState = prevState;
         prevState = state;
         state = STATE_STRING_DQ_HTML;
         return true;
-    } else if (stringDQOpenedHTML >= 0 && c == "\"") {
+    } else if (stringDQOpenedHTML >= 0 && c.toLatin1() == '"') {
         stringDQOpenedHTML = -1;
         state = prevState;
         prevState = prevPrevState;
@@ -1123,24 +1123,24 @@ bool Highlight::detectStringDQHTML(const QChar & c, int pos)
 bool Highlight::detectStringSQCSS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedCSS >= 0 || stringDQOpenedCSS >= 0 || commentMLOpenedCSS >= 0;
-    if (!opened && c == "'") {
+    if (!opened && c.toLatin1() == '\'') {
         stringSQOpenedCSS = pos;
         prevPrevState = prevState;
         prevState = state;
         state = STATE_STRING_SQ_CSS;
         stringEscStringCSS = "";
         return true;
-    } else if (stringSQOpenedCSS >= 0 && c == "'" && stringEscStringCSS.size()%2 == 0) {
+    } else if (stringSQOpenedCSS >= 0 && c.toLatin1() == '\'' && stringEscStringCSS.size()%2 == 0) {
         stringSQOpenedCSS = -1;
         state = prevState;
         prevState = prevPrevState;
         prevPrevState = STATE_NONE;
         stringEscStringCSS = "";
         return true;
-    } else if (stringSQOpenedCSS >= 0 && c == "\\") {
+    } else if (stringSQOpenedCSS >= 0 && c.toLatin1() == '\\') {
         stringEscStringCSS += c;
     } else if (stringSQOpenedCSS >= 0) {
-        if (c == "<") prevStringEscStringCSS = stringEscStringCSS;
+        if (c.toLatin1() == '<') prevStringEscStringCSS = stringEscStringCSS;
         stringEscStringCSS = "";
     }
     return false;
@@ -1149,24 +1149,24 @@ bool Highlight::detectStringSQCSS(const QChar & c, int pos)
 bool Highlight::detectStringDQCSS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedCSS >= 0 || stringDQOpenedCSS >= 0 || commentMLOpenedCSS >= 0;
-    if (!opened && c == "\"") {
+    if (!opened && c.toLatin1() == '"') {
         stringDQOpenedCSS = pos;
         prevPrevState = prevState;
         prevState = state;
         state = STATE_STRING_DQ_CSS;
         stringEscStringCSS = "";
         return true;
-    } else if (stringDQOpenedCSS >= 0 && c == "\"" && stringEscStringCSS.size()%2 == 0) {
+    } else if (stringDQOpenedCSS >= 0 && c.toLatin1() == '"' && stringEscStringCSS.size()%2 == 0) {
         stringDQOpenedCSS = -1;
         state = prevState;
         prevState = prevPrevState;
         prevPrevState = STATE_NONE;
         stringEscStringCSS = "";
         return true;
-    } else if (stringDQOpenedCSS >= 0 && c == "\\") {
+    } else if (stringDQOpenedCSS >= 0 && c.toLatin1() == '\\') {
         stringEscStringCSS += c;
     } else if (stringDQOpenedCSS >= 0) {
-        if (c == "<") prevStringEscStringCSS = stringEscStringCSS;
+        if (c.toLatin1() == '<') prevStringEscStringCSS = stringEscStringCSS;
         stringEscStringCSS = "";
     }
     return false;
@@ -1175,24 +1175,24 @@ bool Highlight::detectStringDQCSS(const QChar & c, int pos)
 bool Highlight::detectStringSQJS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || regexpOpenedJS >= 0 || exprOpenedJS >= 0;
-    if (!opened && c == "'") {
+    if (!opened && c.toLatin1() == '\'') {
         stringSQOpenedJS = pos;
         prevPrevState = prevState;
         prevState = state;
         state = STATE_STRING_SQ_JS;
         stringEscStringJS = "";
         return true;
-    } else if (stringSQOpenedJS >= 0 && c == "'" && stringEscStringJS.size()%2 == 0) {
+    } else if (stringSQOpenedJS >= 0 && c.toLatin1() == '\'' && stringEscStringJS.size()%2 == 0) {
         stringSQOpenedJS = -1;
         state = prevState;
         prevState = prevPrevState;
         prevPrevState = STATE_NONE;
         stringEscStringJS = "";
         return true;
-    } else if (stringSQOpenedJS >= 0 && c == "\\") {
+    } else if (stringSQOpenedJS >= 0 && c.toLatin1() == '\\') {
         stringEscStringJS += c;
     } else if (stringSQOpenedJS >= 0) {
-        if (c == "<") prevStringEscStringJS = stringEscStringJS;
+        if (c.toLatin1() == '<') prevStringEscStringJS = stringEscStringJS;
         stringEscStringJS = "";
     }
     return false;
@@ -1201,24 +1201,24 @@ bool Highlight::detectStringSQJS(const QChar & c, int pos)
 bool Highlight::detectStringDQJS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || regexpOpenedJS >= 0 || exprOpenedJS >= 0;
-    if (!opened && c == "\"") {
+    if (!opened && c.toLatin1() == '"') {
         stringDQOpenedJS = pos;
         prevPrevState = prevState;
         prevState = state;
         state = STATE_STRING_DQ_JS;
         stringEscStringJS = "";
         return true;
-    } else if (stringDQOpenedJS >= 0 && c == "\"" && stringEscStringJS.size()%2 == 0) {
+    } else if (stringDQOpenedJS >= 0 && c.toLatin1() == '"' && stringEscStringJS.size()%2 == 0) {
         stringDQOpenedJS = -1;
         state = prevState;
         prevState = prevPrevState;
         prevPrevState = STATE_NONE;
         stringEscStringJS = "";
         return true;
-    } else if (stringDQOpenedJS >= 0 && c == "\\") {
+    } else if (stringDQOpenedJS >= 0 && c.toLatin1() == '\\') {
         stringEscStringJS += c;
     } else if (stringDQOpenedJS >= 0) {
-        if (c == "<") prevStringEscStringJS = stringEscStringJS;
+        if (c.toLatin1() == '<') prevStringEscStringJS = stringEscStringJS;
         stringEscStringJS = "";
     }
     return false;
@@ -1227,17 +1227,17 @@ bool Highlight::detectStringDQJS(const QChar & c, int pos)
 bool Highlight::detectStringSQPHP(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
-    if (!opened && c == "'") {
+    if (!opened && c.toLatin1() == '\'') {
         stringSQOpenedPHP = pos;
         state = STATE_STRING_SQ_PHP;
         stringEscStringPHP = "";
         return true;
-    } else if (stringSQOpenedPHP >= 0 && c == "'" && stringEscStringPHP.size()%2 == 0) {
+    } else if (stringSQOpenedPHP >= 0 && c.toLatin1() == '\'' && stringEscStringPHP.size()%2 == 0) {
         stringSQOpenedPHP = -1;
         state = STATE_NONE;
         stringEscStringPHP = "";
         return true;
-    } else if (stringSQOpenedPHP >= 0 && c == "\\") {
+    } else if (stringSQOpenedPHP >= 0 && c.toLatin1() == '\\') {
         stringEscStringPHP += c;
     } else if (stringSQOpenedPHP >= 0) {
         stringEscStringPHP = "";
@@ -1248,17 +1248,17 @@ bool Highlight::detectStringSQPHP(const QChar & c, int pos)
 bool Highlight::detectStringDQPHP(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
-    if (!opened && c == "\"") {
+    if (!opened && c.toLatin1() == '"') {
         stringDQOpenedPHP = pos;
         state = STATE_STRING_DQ_PHP;
         stringEscStringPHP = "";
         return true;
-    } else if (stringDQOpenedPHP >= 0 && c == "\"" && stringEscStringPHP.size()%2 == 0 && !keywordPHPScoped) {
+    } else if (stringDQOpenedPHP >= 0 && c.toLatin1() == '"' && stringEscStringPHP.size()%2 == 0 && !keywordPHPScoped) {
         stringDQOpenedPHP = -1;
         state = STATE_NONE;
         stringEscStringPHP = "";
         return true;
-    } else if (stringDQOpenedPHP >= 0 && c == "\\") {
+    } else if (stringDQOpenedPHP >= 0 && c.toLatin1() == '\\') {
         stringEscStringPHP += c;
     } else if (stringDQOpenedPHP >= 0) {
         stringEscStringPHP = "";
@@ -1269,15 +1269,15 @@ bool Highlight::detectStringDQPHP(const QChar & c, int pos)
 bool Highlight::detectStringBPHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isLast)
 {
     bool opened = stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
-    if (!opened && stringBstring.size()<=3 && c == "<" && stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0) {
+    if (!opened && stringBstring.size()<=3 && c.toLatin1() == '<' && stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0) {
         stringBstring += c;
         if (stringBStart<0) stringBStart = pos;
-    } else if (!opened && stringBstring.size()==3 && stringBlock.size()==0 && stringSQOpenedPHP < 0 && c == "\"" && stringBExpect < 0) {
+    } else if (!opened && stringBstring.size()==3 && stringBlock.size()==0 && stringSQOpenedPHP < 0 && c.toLatin1() == '"' && stringBExpect < 0) {
         stringDQOpenedPHP = -1;
         state = STATE_NONE;
         stringEscStringPHP = "";
         stringBExpect = STATE_STRING_HEREDOC;
-    }  else if (!opened && stringBstring.size()==3 && stringBlock.size()==0 && stringDQOpenedPHP < 0 && c == "'" && stringBExpect < 0) {
+    }  else if (!opened && stringBstring.size()==3 && stringBlock.size()==0 && stringDQOpenedPHP < 0 && c.toLatin1() == '\'' && stringBExpect < 0) {
         stringSQOpenedPHP = -1;
         state = STATE_NONE;
         stringEscStringPHP = "";
@@ -1300,7 +1300,7 @@ bool Highlight::detectStringBPHP(const QChar & c, int pos, bool isAlpha, bool is
             state = STATE_STRING_HEREDOC;
             return true;
         }
-    }  else if (!opened && stringBstring.size()==3 && stringBlock.size()>0 && stringSQOpenedPHP < 0 && stringBExpect == STATE_STRING_HEREDOC && c == "\"" && isLast) {
+    }  else if (!opened && stringBstring.size()==3 && stringBlock.size()>0 && stringSQOpenedPHP < 0 && stringBExpect == STATE_STRING_HEREDOC && c.toLatin1() == '"' && isLast) {
         stringDQOpenedPHP = -1;
         stringEscStringPHP = "";
         stringBExpect = -1;
@@ -1308,7 +1308,7 @@ bool Highlight::detectStringBPHP(const QChar & c, int pos, bool isAlpha, bool is
         stringBOpened = pos;
         state = STATE_STRING_HEREDOC;
         return true;
-    } else if (!opened && stringBstring.size()==3 && stringBlock.size()>0 && stringDQOpenedPHP < 0 && stringBExpect == STATE_STRING_NOWDOC && c == "'" && isLast) {
+    } else if (!opened && stringBstring.size()==3 && stringBlock.size()>0 && stringDQOpenedPHP < 0 && stringBExpect == STATE_STRING_NOWDOC && c.toLatin1() == '\'' && isLast) {
         stringSQOpenedPHP = -1;
         stringEscStringPHP = "";
         stringBExpect = -1;
@@ -1338,7 +1338,7 @@ bool Highlight::detectStringBPHP(const QChar & c, int pos, bool isAlpha, bool is
 bool Highlight::detectRegexpJS(const QChar & c, int pos, bool isWSPace, bool isAlnum)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || regexpOpenedJS >= 0 || exprOpenedJS >= 0;
-    if (!opened && c == "/" && regexpPrevCharJS.size()==0) {
+    if (!opened && c.toLatin1() == '/' && regexpPrevCharJS.size()==0) {
         regexpOpenedJS = pos;
         prevPrevState = prevState;
         prevState = state;
@@ -1346,7 +1346,7 @@ bool Highlight::detectRegexpJS(const QChar & c, int pos, bool isWSPace, bool isA
         regexpEscStringJS = "";
         regexpPrevCharJS = "";
         return true;
-    } else if (regexpOpenedJS >= 0 && c == "/" && regexpEscStringJS.size()%2 == 0) {
+    } else if (regexpOpenedJS >= 0 && c.toLatin1() == '/' && regexpEscStringJS.size()%2 == 0) {
         regexpOpenedJS = -1;
         state = prevState;
         prevState = prevPrevState;
@@ -1354,12 +1354,11 @@ bool Highlight::detectRegexpJS(const QChar & c, int pos, bool isWSPace, bool isA
         regexpEscStringJS = "";
         regexpPrevCharJS = "";
         return true;
-    } else if (regexpOpenedJS >= 0 && c == "\\") {
+    } else if (regexpOpenedJS >= 0 && c.toLatin1() == '\\') {
         regexpEscStringJS += c;
     } else if (regexpOpenedJS >= 0) {
-        if (c == "<") prevRegexpEscStringJS = regexpEscStringJS;
+        if (c.toLatin1() == '<') prevRegexpEscStringJS = regexpEscStringJS;
         regexpEscStringJS = "";
-    //} else if (regexpOpenedJS < 0 && !isWSPace && (isAlnum || c == "$" || c == ")" || c == "]" || c == "<" || c == "~")) {
     } else if (regexpOpenedJS < 0 && !isWSPace && (isAlnum || c.toLatin1() == '$' || c.toLatin1() == ')' || c.toLatin1() == ']' || c.toLatin1() == '<' || c.toLatin1() == '~')) {
         regexpPrevCharJS = c;
     } else if (regexpOpenedJS < 0 && !isWSPace) {
@@ -1417,7 +1416,6 @@ int Highlight::detectKeywordCSS(const QChar & c, int pos, bool isAlpha, bool isA
     }
     if (keywordCSSOpened>=0 && isColorKeyword && isAlnum && !isdigit(c.toLatin1())) {
         QChar _c = c.toLower();
-        //if (_c != "a" && _c != "b" && _c != "c" && _c != "d" && _c != "e" && _c != "f") isColorKeyword = false;
         if (_c.toLatin1() != 'a' && _c.toLatin1() != 'b' && _c.toLatin1() != 'c' && _c.toLatin1() != 'd' && _c.toLatin1() != 'e' && _c.toLatin1() != 'f') isColorKeyword = false;
     }
     if (keywordCSSOpened>=0 && (!isAlnum || isLast)) {
@@ -1482,24 +1480,24 @@ int Highlight::detectKeywordPHP(const QChar & c, int pos, bool isAlpha, bool isA
 bool Highlight::detectExpressionJS(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedJS >= 0 || stringDQOpenedJS >= 0 || commentSLOpenedJS >= 0 || commentMLOpenedJS >= 0 || regexpOpenedJS >= 0 || exprOpenedJS >= 0;
-    if (!opened && c == "`") {
+    if (!opened && c.toLatin1() == '`') {
         exprOpenedJS = pos;
         prevPrevState = prevState;
         prevState = state;
         state = STATE_EXPRESSION_JS;
         exprEscStringJS = "";
         return true;
-    } else if (exprOpenedJS >= 0 && c == "`" && exprEscStringJS.size()%2 == 0) {
+    } else if (exprOpenedJS >= 0 && c.toLatin1() == '`' && exprEscStringJS.size()%2 == 0) {
         exprOpenedJS = -1;
         state = prevState;
         prevState = prevPrevState;
         prevPrevState = STATE_NONE;
         exprEscStringJS = "";
         return true;
-    } else if (exprOpenedJS >= 0 && c == "\\") {
+    } else if (exprOpenedJS >= 0 && c.toLatin1() == '\\') {
         exprEscStringJS += c;
     } else if (exprOpenedJS >= 0) {
-        if (c == "<") prevExprEscStringJS = exprEscStringJS;
+        if (c.toLatin1() == '<') prevExprEscStringJS = exprEscStringJS;
         exprEscStringJS = "";
     }
     return false;
@@ -1508,17 +1506,17 @@ bool Highlight::detectExpressionJS(const QChar & c, int pos)
 bool Highlight::detectExpressionPHP(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedPHP >= 0 || stringDQOpenedPHP >= 0 || stringBOpened >= 0 || commentSLOpenedPHP >= 0 || commentMLOpenedPHP >= 0 || exprOpenedPHP >= 0;
-    if (!opened && c == "`") {
+    if (!opened && c.toLatin1() == '`') {
         exprOpenedPHP = pos;
         state = STATE_EXPRESSION_PHP;
         exprEscStringPHP = "";
         return true;
-    } else if (exprOpenedPHP >= 0 && c == "`" && exprEscStringPHP.size()%2 == 0) {
+    } else if (exprOpenedPHP >= 0 && c.toLatin1() == '`' && exprEscStringPHP.size()%2 == 0) {
         exprOpenedPHP = -1;
         state = STATE_NONE;
         exprEscStringPHP = "";
         return true;
-    } else if (exprOpenedPHP >= 0 && c == "\\") {
+    } else if (exprOpenedPHP >= 0 && c.toLatin1() == '\\') {
         exprEscStringPHP += c;
     } else if (exprOpenedPHP >= 0) {
         exprEscStringPHP = "";
@@ -1529,17 +1527,17 @@ bool Highlight::detectExpressionPHP(const QChar & c, int pos)
 bool Highlight::detectStringSQUnknown(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
-    if (!opened && c == "'") {
+    if (!opened && c.toLatin1() == '\'') {
         stringSQOpenedUnknown = pos;
         state = STATE_STRING_SQ_UNKNOWN;
         stringEscStringUnknown = "";
         return true;
-    } else if (stringSQOpenedUnknown >= 0 && c == "'" && stringEscStringUnknown.size()%2 == 0) {
+    } else if (stringSQOpenedUnknown >= 0 && c.toLatin1() == '\'' && stringEscStringUnknown.size()%2 == 0) {
         stringSQOpenedUnknown = -1;
         state = STATE_NONE;
         stringEscStringUnknown = "";
         return true;
-    } else if (stringSQOpenedUnknown >= 0 && c == "\\") {
+    } else if (stringSQOpenedUnknown >= 0 && c.toLatin1() == '\\') {
         stringEscStringUnknown += c;
     } else if (stringSQOpenedUnknown >= 0) {
         stringEscStringUnknown = "";
@@ -1550,17 +1548,17 @@ bool Highlight::detectStringSQUnknown(const QChar & c, int pos)
 bool Highlight::detectStringDQUnknown(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
-    if (!opened && c == "\"") {
+    if (!opened && c.toLatin1() == '"') {
         stringDQOpenedUnknown = pos;
         state = STATE_STRING_DQ_UNKNOWN;
         stringEscStringUnknown = "";
         return true;
-    } else if (stringDQOpenedUnknown >= 0 && c == "\"" && stringEscStringUnknown.size()%2 == 0) {
+    } else if (stringDQOpenedUnknown >= 0 && c.toLatin1() == '"' && stringEscStringUnknown.size()%2 == 0) {
         stringDQOpenedUnknown = -1;
         state = STATE_NONE;
         stringEscStringUnknown = "";
         return true;
-    } else if (stringDQOpenedUnknown >= 0 && c == "\\") {
+    } else if (stringDQOpenedUnknown >= 0 && c.toLatin1() == '\\') {
         stringEscStringUnknown += c;
     } else if (stringDQOpenedUnknown >= 0) {
         stringEscStringUnknown = "";
@@ -1571,8 +1569,8 @@ bool Highlight::detectStringDQUnknown(const QChar & c, int pos)
 bool Highlight::detectSLCommentUnknown(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
-    if (!opened && commentUnknownStringSL.size()==0 && (c == "/" || c == "#" || (c == ";" && extension == EXTENSION_INI))) {
-        if (c == "#" || (c == ";" && extension == EXTENSION_INI)) {
+    if (!opened && commentUnknownStringSL.size()==0 && (c.toLatin1() == '/' || c.toLatin1() == '#' || (c.toLatin1() == ';' && extension == EXTENSION_INI))) {
+        if (c.toLatin1() == '#' || (c.toLatin1() == ';' && extension == EXTENSION_INI)) {
             commentUnknownStringSL = "";
             commentSLOpenedUnknown = pos;
             state = STATE_COMMENT_SL_UNKNOWN;
@@ -1598,7 +1596,7 @@ bool Highlight::detectSLCommentUnknown(const QChar & c, int pos)
 bool Highlight::detectMLCommentUnknown(const QChar & c, int pos)
 {
     bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0;
-    if (!opened && commentUnknownStringML.size()==0 && c == "/") {
+    if (!opened && commentUnknownStringML.size()==0 && c.toLatin1() == '/') {
         commentUnknownStringML = c;
     } else if (!opened && commentUnknownStringML.size()==1) {
         commentUnknownStringML += c;
@@ -1610,7 +1608,7 @@ bool Highlight::detectMLCommentUnknown(const QChar & c, int pos)
         } else {
             commentUnknownStringML = "";
         }
-    } else if (commentMLOpenedUnknown >= 0 && c == "*") {
+    } else if (commentMLOpenedUnknown >= 0 && c.toLatin1() == '*') {
         commentUnknownStringML = c;
     } else if (commentMLOpenedUnknown >= 0 && commentUnknownStringML.size()==1) {
         commentUnknownStringML += c;
@@ -1628,8 +1626,8 @@ bool Highlight::detectMLCommentUnknown(const QChar & c, int pos)
 }
 
 int Highlight::detectKeywordUnknown(const QChar & c, int pos, bool isAlpha, bool isAlnum, bool isLast) {
-    if (!isAlpha && c == "-") isAlpha = true;
-    if (!isAlnum && c == "-") isAlnum = true;
+    if (!isAlpha && c.toLatin1() == '-') isAlpha = true;
+    if (!isAlnum && c.toLatin1() == '-') isAlnum = true;
     bool opened = stringSQOpenedUnknown >= 0 || stringDQOpenedUnknown >= 0 || commentSLOpenedUnknown >= 0 || commentMLOpenedUnknown >= 0 || keywordUnknownOpened >= 0;
     if (!opened && keywordUnknownOpened!=-2 && isAlnum && !isAlpha) {
         keywordUnknownOpened = -2;
@@ -2102,10 +2100,10 @@ void Highlight::parseHTML(const QChar & c, const QChar & prevC, int pos, bool is
     }
 
     // close open short tag
-    if (tagChainStartsHTML.size() > tagChainEndsHTML.size() && tagChainHTML.size() > 0 && c == ">" && tagChanged) {
+    if (tagChainStartsHTML.size() > tagChainEndsHTML.size() && tagChainHTML.size() > 0 && c.toLatin1() == '>' && tagChanged) {
         QStringList tagChainList = tagChainHTML.split(",");
         bool doClose = false;
-        if (prevC == "/") doClose = true;
+        if (prevC.toLatin1() == '/') doClose = true;
         if (!doClose) {
             QString lastTag = tagChainList.last();
             HW->htmlshortsIterator = HW->htmlshorts.find(lastTag.toLower().toStdString());
@@ -2131,9 +2129,9 @@ void Highlight::parseHTML(const QChar & c, const QChar & prevC, int pos, bool is
 
     // tabs and spaces
     if (stringSQOpenedHTML < 0 && stringDQOpenedHTML < 0 && commentHTMLOpened < 0 && keywordHTMLOpened < 0) {
-        if (highlightTabs && c == "\t") {
+        if (highlightTabs && c.toLatin1() == '\t') {
             highlightChar(pos, HW->tabFormat);
-        } else if (highlightSpaces && c == " ") {
+        } else if (highlightSpaces && c.toLatin1() == ' ') {
             highlightChar(pos, HW->spaceFormat);
         }
     }
@@ -2174,7 +2172,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
             }
         }
         int keywordCSSLength = pos-keywordCSSStart;
-        if (isLast && (isAlnum || c == "-")) keywordCSSLength += 1;
+        if (isLast && (isAlnum || c.toLatin1() == '-')) keywordCSSLength += 1;
         if ((keywordCSSprevChar == "@" || keywordCSSprevChar == "!") && keywordCSSStart>0) {
             keywordCSSStart -= 1;
             keywordCSSLength += 1;
@@ -2243,7 +2241,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
     }
     if (keywordCSSStartPrev>=0 && keywordCSSLengthPrev>0) {
         // css functions
-        if (c == "(") {
+        if (c.toLatin1() == '(') {
             highlightString(keywordCSSStartPrev, keywordCSSLengthPrev, HW->functionFormat);
             keywordCSSStartPrev = -1;
             keywordCSSLengthPrev = -1;
@@ -2254,7 +2252,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
     }
 
     // css curly brackets
-    if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c == "{") {
+    if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c.toLatin1() == '{') {
         bracesCSS++;
         cssValuePart = true;
         if (expectedMediaNameCSS.size() > 0 && expectedMediaParsCSS < 0) {
@@ -2266,7 +2264,7 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
             expectedMediaNameCSS = "";
             expectedMediaParsCSS = -1;
         }
-    } else if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c == "}") {
+    } else if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c.toLatin1() == '}') {
         bracesCSS--;
         if (bracesCSS < 0) bracesCSS = 0;
         if (bracesCSS == 0 && cssMediaScope) {
@@ -2283,20 +2281,20 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
             expectedMediaParsCSS = -1;
         }
     }
-    if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c == ":") {
+    if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c.toLatin1() == ':') {
         cssValuePart = false;
-    } else if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c == ";") {
+    } else if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c.toLatin1() == ';') {
         cssValuePart = true;
     }
 
     // css parentheses
-    if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c == "(") {
+    if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c.toLatin1() == '(') {
         parensCSS++;
         if (expectedMediaNameCSS.size() > 0 && expectedMediaNameCSS == "media") {
             expectedMediaParsCSS = parensCSS-1;
             expectedMediaNameCSS = "";
         }
-    } else if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c == ")") {
+    } else if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && c.toLatin1() == ')') {
         parensCSS--;
         if (parensCSS < 0) parensCSS = 0;
         if (expectedMediaParsCSS >= 0 && expectedMediaParsCSS == parensCSS) {
@@ -2305,28 +2303,27 @@ void Highlight::parseCSS(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
     }
 
     // expected media
-    if (expectedMediaParsCSS >= 0 && c != "(" && c != ")") {
+    if (expectedMediaParsCSS >= 0 && c.toLatin1() != '(' && c.toLatin1() != ')') {
         expectedMediaNameCSS += c;
     }
     // unexpected media
-    if (expectedMediaNameCSS.size() > 0 && (c == ";" || c == "{")) {
+    if (expectedMediaNameCSS.size() > 0 && (c.toLatin1() == ';' || c.toLatin1() == '{')) {
         expectedMediaNameCSS = "";
         expectedMediaParsCSS = -1;
     }
 
     // saving special chars data
-    if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && (c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]")) {
+    if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0 && (c.toLatin1() == '{' || c.toLatin1() == '}' || c.toLatin1() == '(' || c.toLatin1() == ')' || c.toLatin1() == '[' || c.toLatin1() == ']')) {
         addSpecialChar(c, pos);
     }
 
     // tabs, spaces, semicolons, commas
     if (stringSQOpenedCSS < 0 && stringDQOpenedCSS < 0 && commentMLOpenedCSS < 0 && keywordCSSOpened < 0) {
-        if (highlightTabs && c == "\t") {
+        if (highlightTabs && c.toLatin1() == '\t') {
             highlightChar(pos, HW->tabFormat);
-        } else if (highlightSpaces && c == " ") {
+        } else if (highlightSpaces && c.toLatin1() == ' ') {
             highlightChar(pos, HW->spaceFormat);
         }
-        //if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]")) {
         if (!isBigFile && (c.toLatin1() == ';' || c.toLatin1() == ',' || c.toLatin1() == '{' || c.toLatin1() == '}' || c.toLatin1() == '(' || c.toLatin1() == ')' || c.toLatin1() == '[' || c.toLatin1() == ']')) {
             highlightChar(pos, HW->punctuationFormat);
         }
@@ -2356,23 +2353,23 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
     }
 
     // js template expression
-    if (exprOpenedJS >= 0 && c == "$" && stringEscVariableJS.size()%2 == 0) {
+    if (exprOpenedJS >= 0 && c.toLatin1() == '$' && stringEscVariableJS.size()%2 == 0) {
         keywordJSScopedOpened = pos;
         keywordJSScoped = false;
-    } else if (exprOpenedJS >= 0 && keywordJSScopedOpened >= 0 && c == "{" && !keywordJSScoped) {
+    } else if (exprOpenedJS >= 0 && keywordJSScopedOpened >= 0 && c.toLatin1() == '{' && !keywordJSScoped) {
         keywordJSScoped = true;
         highlightString(keywordJSScopedOpened, pos-keywordJSScopedOpened, HW->expressionFormat);
     } else if (exprOpenedJS >= 0 && keywordJSScopedOpened >= 0 && !isWSpace && !keywordJSScoped) {
         keywordJSScopedOpened = -1;
-    } else if (exprOpenedJS >= 0 && keywordJSScopedOpened >= 0 && c == "}" && keywordJSScoped) {
+    } else if (exprOpenedJS >= 0 && keywordJSScopedOpened >= 0 && c.toLatin1() == '}' && keywordJSScoped) {
         keywordJSScopedOpened = -1;
         keywordJSScoped = false;
         highlightChar(pos, HW->expressionFormat);
     }
-    if (exprOpenedJS >= 0 && keywordJSScopedOpened < 0 && c == "\\") {
+    if (exprOpenedJS >= 0 && keywordJSScopedOpened < 0 && c.toLatin1() == '\\') {
         stringEscVariableJS += c;
-    } else if (c != "$") {
-        if (c == "<") prevStringEscVariableJS = stringEscVariableJS;
+    } else if (c.toLatin1() != '$') {
+        if (c.toLatin1() == '<') prevStringEscVariableJS = stringEscVariableJS;
         stringEscVariableJS = "";
     }
     if (keywordJSScoped) {
@@ -2409,11 +2406,10 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
 
     // keywords & functions
     int keywordJSStart = detectKeywordJS(c, pos, isAlpha, isAlnum, isLast);
-    //bool isExpectJSVarChar = (c == ")" || c == "[" || c == "]" || c == "}" || c == ";" || c == "=" || c == "," || c == "+" || c == "-" || c == "*" || c == "/" || c == "~" || c == "%" || c == "&" || c == "?" || c == ":" || c == "<" || c == ">" || c == "|");
     bool isExpectJSVarChar = (c.toLatin1() == ')' || c.toLatin1() == '[' || c.toLatin1() == ']' || c.toLatin1() == '}' || c.toLatin1() == ';' || c.toLatin1() == '=' || c.toLatin1() == ',' || c.toLatin1() == '+' || c.toLatin1() == '-' || c.toLatin1() == '*' || c.toLatin1() == '/' || c.toLatin1() == '~' || c.toLatin1() == '%' || c.toLatin1() == '&' || c.toLatin1() == '?' || c.toLatin1() == ':' || c.toLatin1() == '<' || c.toLatin1() == '>' || c.toLatin1() == '|');
     if (keywordJSStart>=0) {
         int keywordJSLength = pos-keywordJSStart;
-        if (isLast && (isAlnum || c == "$")) keywordJSLength += 1;
+        if (isLast && (isAlnum || c.toLatin1() == '$')) keywordJSLength += 1;
         bool known = false;
         bool isKeyword = false;
         if (keywordJSprevChar != "$" && (keywordJSprevChar != "." || keywordStringJS == "prototype") && keywordStringJS.size()>0) {
@@ -2440,7 +2436,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                     isKeyword = true;
                 }
             }
-            if (!known && c != ":" && c != "." && !isBigFile) {
+            if (!known && c.toLatin1() != ':' && c.toLatin1() != '.' && !isBigFile) {
                 jsNamesIterator = jsNames.find(keywordStringJS.toStdString());
                 if (jsNamesIterator != jsNames.end()) {
                     highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
@@ -2454,22 +2450,22 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
                 varsChainJS += keywordStringJS;
                 jsNames[keywordStringJS.toStdString()] = keywordStringJS.toStdString();
                 highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
-            } else if (keywordJSprevChar != "." && c == ".") {
+            } else if (keywordJSprevChar != "." && c.toLatin1() == '.') {
                 highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
             } else if (keywordJSprevChar == ".") {
                 highlightString(keywordJSStart, keywordJSLength, HW->propertyFormat);
-            } else if (keywordJSprevChar != "." && c == ":") {
+            } else if (keywordJSprevChar != "." && c.toLatin1() == ':') {
                 highlightString(keywordJSStart, keywordJSLength, HW->propertyFormat);
             } else if (keywordJSprevChar == "@") {
                 highlightString(keywordJSStart, keywordJSLength, HW->punctuationFormat);
-            } else if (keywordJSprevChar == "<" && c == ">") {
+            } else if (keywordJSprevChar == "<" && c.toLatin1() == '>') {
                 highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
             } else if (keywordJSprevString == "class" || keywordJSprevString == "extends" || keywordJSprevString == "with") {
                 highlightString(keywordJSStart, keywordJSLength, HW->classFormat);
             } else if (expectedFuncNameJS.size() > 0 || expectedFuncParsJS >= 0) { // add arg if var is unknown
                 expectedFuncArgsJS.append(keywordStringJS);
                 highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
-            } else if (isExpectJSVarChar || (isLast && (isAlnum || c == "$"))) {
+            } else if (isExpectJSVarChar || (isLast && (isAlnum || c.toLatin1() == '$'))) {
                 highlightString(keywordJSStart, keywordJSLength, HW->variableFormat);
             } else if (!expectJSVar && (c.isSpace() || isLast)) {
                 expectJSVar = true;
@@ -2523,13 +2519,13 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
     }
     if (keywordJSStartPrev>=0 && keywordJSLengthPrev>0) {
         // js functions, variables, classes
-        if (c == "(") {
+        if (c.toLatin1() == '(') {
             highlightString(keywordJSStartPrev, keywordJSLengthPrev, HW->functionFormat);
         } else if (expectJSVar && (isExpectJSVarChar || (isLast && isWSpace))) {
             highlightString(keywordJSStartPrev, keywordJSLengthPrev, HW->variableFormat);
         }
         if (!isWSpace) {
-            if (!isAlnum && c != "$") {
+            if (!isAlnum && c.toLatin1() != '$') {
                 keywordJSStartPrev = -1;
                 keywordJSLengthPrev = -1;
             }
@@ -2537,7 +2533,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         }
     }
     if (expectVarInit) {
-        if (c == "=" && keywordStringJS.size() > 0 && keywordJSprevChar != ".") {
+        if (c.toLatin1() == '=' && keywordStringJS.size() > 0 && keywordJSprevChar != ".") {
             if (varsChainJS.size() > 0) varsChainJS += ",";
             varsChainJS += keywordStringJS;
             jsNames[keywordStringJS.toStdString()] = keywordStringJS.toStdString();
@@ -2546,12 +2542,12 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             expectVarInit = false;
         }
     }
-    if (!isWSpace && !isAlnum && c != "$") {
+    if (!isWSpace && !isAlnum && c.toLatin1() != '$') {
         prevIsKeyword = false;
     }
 
     // js curly brackets
-    if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c == "{") {
+    if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c.toLatin1() == '{') {
         bracesJS++;
         // open class scope
         if (expectedClsNameJS.size() > 0) {
@@ -2595,7 +2591,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             }
             expectedFuncArgsJS.clear();
         }
-    } else if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c == "}") {
+    } else if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c.toLatin1() == '}') {
         bracesJS--;
         if (bracesJS < 0) bracesJS = 0;
         // close class scope
@@ -2662,26 +2658,25 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
         }
     }
 
-    if (expectedFuncNameJS.size() > 0 && expectedFuncNameJS == "function" && c == "(" && expectedFuncParsJS == parensJS) {
+    if (expectedFuncNameJS.size() > 0 && expectedFuncNameJS == "function" && c.toLatin1() == '(' && expectedFuncParsJS == parensJS) {
         expectedFuncNameJS = "anonymous function";
     }
 
     // unexpected class scope
-    if (expectedClsNameJS.size() > 0 && expectedClsNameJS.toLower() == "class" && c == "(") {
+    if (expectedClsNameJS.size() > 0 && expectedClsNameJS.toLower() == "class" && c.toLatin1() == '(') {
         expectedClsNameJS = "anonymous class";
-    } else if (expectedClsNameJS.size() > 0 && c == ";") {
+    } else if (expectedClsNameJS.size() > 0 && c.toLatin1() == ';') {
         expectedClsNameJS = "";
     }
     // unexpected function scope
-    //if (expectedFuncNameJS.size() > 0 && expectedFuncNameJS != "function" && (c == ";" || c == ")" || c == "}" || c == "]" || c == "," || c == ":" || c == "=" || c == "+" || c == "-" || c == "*" || c == "/" || c == "%" || c == "&" || c == "|" || c == "?") && expectedFuncParsJS == parensJS) {
     if (expectedFuncNameJS.size() > 0 && expectedFuncNameJS != "function" && (c.toLatin1() == ';' || c.toLatin1() == ')' || c.toLatin1() == '}' || c.toLatin1() == ']' || c.toLatin1() == ',' || c.toLatin1() == ':' || c.toLatin1() == '=' || c.toLatin1() == '+' || c.toLatin1() == '-' || c.toLatin1() == '*' || c.toLatin1() == '/' || c.toLatin1() == '%' || c.toLatin1() == '&' || c.toLatin1() == '|' || c.toLatin1() == '?') && expectedFuncParsJS == parensJS) {
         expectedFuncNameJS = "";
         expectedFuncParsJS = -1;
         expectedFuncArgsJS.clear();
     }
-    if (keywordJSStart < 0 && expectedFuncVarJS.size() > 0 && expectedFuncParsJS < 0 && !isWSpace && (isAlnum || c == "=")) {
+    if (keywordJSStart < 0 && expectedFuncVarJS.size() > 0 && expectedFuncParsJS < 0 && !isWSpace && (isAlnum || c.toLatin1() == '=')) {
         expectedFuncVarJS += c;
-    } else if (expectedFuncVarJS.size() > 0 && expectedFuncParsJS < 0 && expectedFuncVarJS.indexOf("=") < 0 && c == "(") {
+    } else if (expectedFuncVarJS.size() > 0 && expectedFuncParsJS < 0 && expectedFuncVarJS.indexOf("=") < 0 && c.toLatin1() == '(') {
         expectedFuncNameJS = expectedFuncVarJS;
         expectedFuncVarJS = "";
         expectedFuncParsJS = parensJS;
@@ -2691,28 +2686,27 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
     }
 
     // js parentheses
-    if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c == "(") {
+    if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c.toLatin1() == '(') {
         parensJS++;
         operatorsJS[parensJS] = "";
-    } else if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c == ")") {
+    } else if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && c.toLatin1() == ')') {
         operatorsJS[parensJS] = "";
         parensJS--;
         if (parensJS < 0) parensJS = 0;
     }
 
     // saving special chars data
-    if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && (c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]")) {
+    if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0 && (c.toLatin1() == '{' || c.toLatin1() == '}' || c.toLatin1() == '(' || c.toLatin1() == ')' || c.toLatin1() == '[' || c.toLatin1() == ']')) {
         addSpecialChar(c, pos);
     }
 
     // tabs, spaces, semicolons, commas
     if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0) {
-        if (highlightTabs && c == "\t") {
+        if (highlightTabs && c.toLatin1() == '\t') {
             highlightChar(pos, HW->tabFormat);
-        } else if (highlightSpaces && c == " ") {
+        } else if (highlightSpaces && c.toLatin1() == ' ') {
             highlightChar(pos, HW->spaceFormat);
         }
-        //if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "@")) {
         if (!isBigFile && (c.toLatin1() == ';' || c.toLatin1() == ',' || c.toLatin1() == '{' || c.toLatin1() == '}' || c.toLatin1() == '(' || c.toLatin1() == ')' || c.toLatin1() == '[' || c.toLatin1() == ']' || c.toLatin1() == '@')) {
             highlightChar(pos, HW->punctuationFormat);
         }
@@ -2720,7 +2714,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
 
     // "and / or" operators check
     if (stringSQOpenedJS < 0 && stringDQOpenedJS < 0 && commentSLOpenedJS < 0 && commentMLOpenedJS < 0 && regexpOpenedJS < 0 && keywordJSOpened < 0) {
-        if (expectAndSignJS && c == "&") {
+        if (expectAndSignJS && c.toLatin1() == '&') {
             operatorsJSIterator = operatorsJS.find(parensJS);
             if (operatorsJSIterator != operatorsJS.end() && operatorsJSIterator->second == "|") {
                 highlightError(pos - 1, 2);
@@ -2729,7 +2723,7 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             }
             operatorsChainJS += "&";
         }
-        if (expectOrSignJS && c == "|") {
+        if (expectOrSignJS && c.toLatin1() == '|') {
             operatorsJSIterator = operatorsJS.find(parensJS);
             if (operatorsJSIterator != operatorsJS.end() && operatorsJSIterator->second == "&") {
                 highlightError(pos - 1, 2);
@@ -2738,11 +2732,11 @@ void Highlight::parseJS(const QChar & c, int pos, bool isAlpha, bool isAlnum, bo
             }
             operatorsChainJS += "|";
         }
-        if (c == "&") expectAndSignJS = true;
+        if (c.toLatin1() == '&') expectAndSignJS = true;
         else expectAndSignJS = false;
-        if (c == "|") expectOrSignJS = true;
+        if (c.toLatin1() == '|') expectOrSignJS = true;
         else expectOrSignJS = false;
-        if (c == ";" || c == ",") {
+        if (c.toLatin1() == ';' || c.toLatin1() == ',') {
             operatorsJSIterator = operatorsJS.find(parensJS);
             if (operatorsJSIterator != operatorsJS.end() && operatorsJSIterator->second != "") {
                 operatorsJS[parensJS] = "";
@@ -2777,7 +2771,7 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
     bool commentsSLchangedPHP = detectSLCommentPHP(c, pos);
     if (commentSLOpenedPHP>=0 || commentsSLchangedPHP) {
         highlightChar(pos, HW->singleLineCommentFormat);
-        if (commentSLOpenedPHP>=0 && commentsSLchangedPHP && pos>0 && c != "#") {
+        if (commentSLOpenedPHP>=0 && commentsSLchangedPHP && pos>0 && c.toLatin1() != '#') {
             highlightChar(pos-1, HW->singleLineCommentFormat);
         }
     }
@@ -2800,15 +2794,15 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
     }
 
     // dq-string variables
-    if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && c == "{") {
+    if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && c.toLatin1() == '{') {
         keywordPHPScopedOpened = pos;
         keywordPHPScoped = false;
-    } else if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPScopedOpened >= 0 && c == "$" && !keywordPHPScoped) {
+    } else if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPScopedOpened >= 0 && c.toLatin1() == '$' && !keywordPHPScoped) {
         keywordPHPScoped = true;
         highlightString(keywordPHPScopedOpened, pos-keywordPHPScopedOpened, HW->expressionFormat);
     } else if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPScopedOpened >= 0 && !isWSpace && !keywordPHPScoped) {
         keywordPHPScopedOpened = -1;
-    } else if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPScopedOpened >= 0 && c == "}" && keywordPHPScoped) {
+    } else if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPScopedOpened >= 0 && c.toLatin1() == '}' && keywordPHPScoped) {
         keywordPHPScopedOpened = -1;
         keywordPHPScoped = false;
         highlightChar(pos, HW->expressionFormat);
@@ -2817,9 +2811,9 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
     if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPprevChar == "$" && stringEscVariablePHP.size()%2 == 0) {
         forceDetectKeyword = true;
     }
-    if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPScopedOpened < 0 && c == "\\") {
+    if ((stringDQOpenedPHP >= 0 || (stringBOpened >= 0 && state == STATE_STRING_HEREDOC)) && keywordPHPScopedOpened < 0 && c.toLatin1() == '\\') {
         stringEscVariablePHP += c;
-    } else if (c != "$") {
+    } else if (c.toLatin1() != '$') {
         stringEscVariablePHP = "";
     }
     if (keywordPHPScoped) {
@@ -2982,7 +2976,7 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
     }
     if (keywordPHPStartPrev>=0 && keywordPHPLengthPrev>0) {
         // php functions
-        if (c == "(") {
+        if (c.toLatin1() == '(') {
             highlightString(keywordPHPStartPrev, keywordPHPLengthPrev, HW->functionFormat);
             keywordPHPStartPrev = -1;
             keywordPHPLengthPrev = -1;
@@ -2993,7 +2987,7 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
     }
 
     // php curly brackets
-    if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && c == "{") {
+    if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && c.toLatin1() == '{') {
         bracesPHP++;
         // open namespace scope
         if (expectedNsNamePHP.size() > 0) {
@@ -3134,7 +3128,7 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
             QString k = _clsName + "::" + funcNamePHP;
             knownFunctions[k.toStdString()] = funcNamePHP.toStdString();
         }
-    } else if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && c == "}") {
+    } else if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && c.toLatin1() == '}') {
         bracesPHP--;
         if (bracesPHP < 0) bracesPHP = 0;
         // close namespace scope
@@ -3321,9 +3315,9 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
     }
 
     // expected namespace scope
-    if (expectedNsNamePHP.size() > 0 && c != ";") {
+    if (expectedNsNamePHP.size() > 0 && c.toLatin1() != ';') {
         expectedNsNamePHP += c;
-    } else if (expectedNsNamePHP.size() > 0 && c == ";") {
+    } else if (expectedNsNamePHP.size() > 0 && c.toLatin1() == ';') {
         // open namespace without scope
         if (nsStartsPHP.size() > nsEndsPHP.size()) {
             nsEndsPHP.append(pos);
@@ -3340,42 +3334,41 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
         expectedNsNamePHP = "";
     }
     // unexpected class scope
-    if (expectedClsNamePHP.size() > 0 && expectedClsNamePHP.toLower() == "class" && c == "(") {
+    if (expectedClsNamePHP.size() > 0 && expectedClsNamePHP.toLower() == "class" && c.toLatin1() == '(') {
         expectedClsNamePHP = "anonymous class";
-    } else if (expectedClsNamePHP.size() > 0 && c == ";") {
+    } else if (expectedClsNamePHP.size() > 0 && c.toLatin1() == ';') {
         expectedClsNamePHP = "";
     }
     // unexpected function scope
-    if (expectedFuncNamePHP.size() > 0 && expectedFuncNamePHP.toLower() == "function" && c == "(" && expectedFuncParsPHP == parensPHP) {
+    if (expectedFuncNamePHP.size() > 0 && expectedFuncNamePHP.toLower() == "function" && c.toLatin1() == '(' && expectedFuncParsPHP == parensPHP) {
         expectedFuncNamePHP = "anonymous function";
-    } else if (expectedFuncNamePHP.size() > 0 && c == ";" && expectedFuncParsPHP == parensPHP) {
+    } else if (expectedFuncNamePHP.size() > 0 && c.toLatin1() == ';' && expectedFuncParsPHP == parensPHP) {
         expectedFuncNamePHP = "";
         expectedFuncParsPHP = -1;
     }
 
     // php parentheses
-    if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && c == "(") {
+    if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && c.toLatin1() == '(') {
         parensPHP++;
         operatorsPHP[parensPHP] = "";
-    } else if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && c == ")") {
+    } else if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && c.toLatin1() == ')') {
         operatorsPHP[parensPHP] = "";
         parensPHP--;
         if (parensPHP < 0) parensPHP = 0;
     }
 
     // saving special chars data
-    if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && (c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]")) {
+    if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0 && (c.toLatin1() == '{' || c.toLatin1() == '}' || c.toLatin1() == '(' || c.toLatin1() == ')' || c.toLatin1() == '[' || c.toLatin1() == ']')) {
         addSpecialChar(c, pos);
     }
 
     // tabs, spaces, semicolons, commas
     if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0) {
-        if (highlightTabs && c == "\t") {
+        if (highlightTabs && c.toLatin1() == '\t') {
             highlightChar(pos, HW->tabFormat);
-        } else if (highlightSpaces && c == " ") {
+        } else if (highlightSpaces && c.toLatin1() == ' ') {
             highlightChar(pos, HW->spaceFormat);
         }
-        //if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@")) {
         if (!isBigFile && (c.toLatin1() == ';' || c.toLatin1() == ',' || c.toLatin1() == '{' || c.toLatin1() == '}' || c.toLatin1() == '(' || c.toLatin1() == ')' || c.toLatin1() == '[' || c.toLatin1() == ']' || c.toLatin1() == '\\' || c.toLatin1() == '@')) {
             highlightChar(pos, HW->punctuationFormat);
         }
@@ -3383,7 +3376,7 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
 
     // "and / or" operators check
     if (stringSQOpenedPHP < 0 && stringDQOpenedPHP < 0 && stringBOpened < 0 && commentSLOpenedPHP < 0 && commentMLOpenedPHP < 0 && keywordPHPOpened < 0) {
-        if (expectAndSignPHP && c == "&") {
+        if (expectAndSignPHP && c.toLatin1() == '&') {
             operatorsPHPIterator = operatorsPHP.find(parensPHP);
             if (operatorsPHPIterator != operatorsPHP.end() && operatorsPHPIterator->second == "|") {
                 highlightError(pos - 1, 2);
@@ -3392,7 +3385,7 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
             }
             operatorsChainPHP += "&";
         }
-        if (expectOrSignPHP && c == "|") {
+        if (expectOrSignPHP && c.toLatin1() == '|') {
             operatorsPHPIterator = operatorsPHP.find(parensPHP);
             if (operatorsPHPIterator != operatorsPHP.end() && operatorsPHPIterator->second == "&") {
                 highlightError(pos - 1, 2);
@@ -3401,11 +3394,11 @@ void Highlight::parsePHP(const QChar & c, int pos, bool isAlpha, bool isAlnum, b
             }
             operatorsChainPHP += "|";
         }
-        if (c == "&") expectAndSignPHP = true;
+        if (c.toLatin1() == '&') expectAndSignPHP = true;
         else expectAndSignPHP = false;
-        if (c == "|") expectOrSignPHP = true;
+        if (c.toLatin1() == '|') expectOrSignPHP = true;
         else expectOrSignPHP = false;
-        if (c == ";" || c == ",") {
+        if (c.toLatin1() == ';' || c.toLatin1() == ',') {
             operatorsPHPIterator = operatorsPHP.find(parensPHP);
             if (operatorsPHPIterator != operatorsPHP.end() && operatorsPHPIterator->second != "") {
                 operatorsPHP[parensPHP] = "";
@@ -3441,7 +3434,7 @@ void Highlight::parseUnknown(const QChar &c, int pos, bool isAlpha, bool isAlnum
         commentsSLchangedUnknown = detectSLCommentUnknown(c, pos);
         if (commentSLOpenedUnknown>=0 || commentsSLchangedUnknown) {
             highlightChar(pos, HW->singleLineCommentFormat);
-            if (commentSLOpenedUnknown>=0 && commentsSLchangedUnknown && pos>0 && c != "#" && c != ";") {
+            if (commentSLOpenedUnknown>=0 && commentsSLchangedUnknown && pos>0 && c.toLatin1() != '#' && c.toLatin1() != ';') {
                 highlightChar(pos-1, HW->singleLineCommentFormat);
             }
         }
@@ -3459,7 +3452,7 @@ void Highlight::parseUnknown(const QChar &c, int pos, bool isAlpha, bool isAlnum
         int keywordUnknownStart = detectKeywordUnknown(c, pos, isAlpha, isAlnum, isLast);
         if (keywordUnknownStart>=0) {
             int keywordUnknownLength = pos-keywordUnknownStart;
-            if (isLast && (isAlnum || c == "-")) keywordUnknownLength += 1;
+            if (isLast && (isAlnum || c.toLatin1() == '-')) keywordUnknownLength += 1;
             bool known = false;
             if (keywordStringUnknown.size()>0) {
                 // general keywords
@@ -3474,7 +3467,7 @@ void Highlight::parseUnknown(const QChar &c, int pos, bool isAlpha, bool isAlnum
             if (!known && !isBigFile) {
                 if (keywordUnknownprevChar == "@") {
                     highlightString(keywordUnknownStart, keywordUnknownLength, HW->punctuationFormat);
-                } else if (keywordJSprevChar != "." && c == ":") {
+                } else if (keywordJSprevChar != "." && c.toLatin1() == ':') {
                     highlightString(keywordUnknownStart, keywordUnknownLength, HW->propertyFormat);
                 }
             }
@@ -3486,11 +3479,11 @@ void Highlight::parseUnknown(const QChar &c, int pos, bool isAlpha, bool isAlnum
         }
         if (keywordUnknownStartPrev>=0 && keywordUnknownLengthPrev>0) {
             // functions
-            if (c == "(") {
+            if (c.toLatin1() == '(') {
                 highlightString(keywordUnknownStartPrev, keywordUnknownLengthPrev, HW->functionFormat);
             }
             if (!isWSpace) {
-                if (!isAlnum && c != "-") {
+                if (!isAlnum && c.toLatin1() != '-') {
                     keywordUnknownStartPrev = -1;
                     keywordUnknownLengthPrev = -1;
                 }
@@ -3498,12 +3491,11 @@ void Highlight::parseUnknown(const QChar &c, int pos, bool isAlpha, bool isAlnum
         }
     }
     if (stringSQOpenedUnknown < 0 && stringDQOpenedUnknown < 0 && commentSLOpenedUnknown < 0 && commentMLOpenedUnknown < 0 && !commentsMLchangedUnknown && !commentsSLchangedUnknown && !stringSQchangedUnknown && !stringDQchangedUnknown) {
-        if (highlightTabs && c == "\t") {
+        if (highlightTabs && c.toLatin1() == '\t') {
             highlightChar(pos, HW->tabFormat);
-        } else if (highlightSpaces && c == " ") {
+        } else if (highlightSpaces && c.toLatin1() == ' ') {
             highlightChar(pos, HW->spaceFormat);
         }
-        //if (!isBigFile && (c == ";" || c == "," || c == "{" || c == "}" || c == "(" || c == ")" || c == "[" || c == "]" || c == "\\" || c == "@" || c == "&" || c == "<" || c == ">" || c == "." || c == "?" || c == ":" || c == "%" || c == "$" || c == "^" || c == "#" || c == "@" || c == "!" || c == "'" || c == "\"" || c == "|" || c == "~" || c == "`")) {
         if (!isTextMode() && !isBigFile && (c.toLatin1() == ';' || c.toLatin1() == ',' || c.toLatin1() == '{' || c.toLatin1() == '}' || c.toLatin1() == '(' || c.toLatin1() == ')' || c.toLatin1() == '[' || c.toLatin1() == ']' || c.toLatin1() == '\\' || c.toLatin1() == '@' || c.toLatin1() == '&' || c.toLatin1() == '<' || c.toLatin1() == '>' || c.toLatin1() == '.' || c.toLatin1() == '?' || c.toLatin1() == ':' || c.toLatin1() == '%' || c.toLatin1() == '$' || c.toLatin1() == '^' || c.toLatin1() == '#' || c.toLatin1() == '@' || c.toLatin1() == '!' || c.toLatin1() == '\'' || c.toLatin1() == '"' || c.toLatin1() == '|' || c.toLatin1() == '~' || c.toLatin1() == '`')) {
             highlightChar(pos, HW->punctuationFormat);
         }
@@ -3527,10 +3519,10 @@ void Highlight::updateState(const QChar & c, int pos, int & pState)
         )) {
             stateStart = pos - 1;
         }
-        if (state == STATE_COMMENT_SL_PHP && c != "#" && pos > 0) stateStart = pos - 1;
+        if (state == STATE_COMMENT_SL_PHP && c.toLatin1() != '#' && pos > 0) stateStart = pos - 1;
         if (state == STATE_COMMENT_ML_HTML) stateStart = commentHTMLOpened;
         if (state == STATE_STRING_HEREDOC || state == STATE_STRING_NOWDOC) stateStart = stringBStart;
-        if (state == STATE_COMMENT_SL_UNKNOWN && c != "#" && c != ";" && pos > 0) stateStart = pos - 1;
+        if (state == STATE_COMMENT_SL_UNKNOWN && c.toLatin1() != '#' && c.toLatin1() != ';' && pos > 0) stateStart = pos - 1;
         stateStart++;
         if (stateStarts.size() > 0 && stateStarts.last() == stateStart &&
             stateStarts.size() == stateIds.size() && stateStarts.size() == stateEnds.size()
