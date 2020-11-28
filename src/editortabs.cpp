@@ -131,7 +131,15 @@ void EditorTabs::createTab(QString filepath, bool initHighlight)
 
     emit tabOpened(tabIndex);
     if (initHighlight) {
+        #if defined(Q_OS_ANDROID)
+        QTimer::singleShot(100, this, ([&](){
+            if (editor != nullptr) {
+                editor->initHighlighter();
+            }
+        }));
+        #else
         editor->initHighlighter();
+        #endif
     }
 }
 
