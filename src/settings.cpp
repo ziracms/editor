@@ -351,9 +351,9 @@ QString Settings::getDefaultSnippets()
         << "// @for"
         << "[{php:@for}] = [[for ($i=0; $i<{$cursor}; $i++){\\n\\t\\n}]]"
         << "// @cls"
-        << "[{php:@cls}] = [[class {$selectStart}MyClassNameInsert{$selectEnd} {\\n\\t public function __construct() {\\n\\t\\n\\t}\\n}]]"
+        << "[{php:@cls}] = [[class {$selectStart}MyClassNameInsert{$selectEnd} {\\n\\tpublic function __construct() {\\n\\t\\n\\t}\\n}]]"
         << "// @cls"
-        << "[{html:@cls}] = [[<?php\\n/**\\n * Class MyClassNameInsert\\n */\\n\\nclass {$multiSelectStart}MyClassNameInsert{$multiSelectEnd} {\\n\\t public function __construct() {\\n\\t\\n\\t}\\n}]]"
+        << "[{html:@cls}] = [[<?php\\n/**\\n * Class MyClassNameInsert\\n */\\n\\nclass {$multiSelectStart}MyClassNameInsert{$multiSelectEnd} {\\n\\tpublic function __construct() {\\n\\t\\n\\t}\\n}]]"
     ;
     return snippets.join("\n\n");
 }
