@@ -2,6 +2,7 @@
     <qresource prefix="/image">
         <file alias="abstract">resources/images/abstract.png</file>
         <file alias="zira.png">resources/images/zira.png</file>
+        <file alias="emblem.png">resources/images/uzssr.png</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="application-exit.png">resources/images/icons/application-exit.png</file>

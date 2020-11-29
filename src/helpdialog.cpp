@@ -29,7 +29,6 @@ HelpDialog::HelpDialog(QWidget *parent) :
     ui->helpDialogIconLayout->setMargin(0);
     ui->helpDialogIconLayout->setSpacing(0);
 
-
     // maximize dialog in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
@@ -44,21 +43,6 @@ HelpDialog::HelpDialog(QWidget *parent) :
 HelpDialog::~HelpDialog()
 {
     delete ui;
-}
-
-void HelpDialog::shortcutsContent()
-{
-    QFile f(":/help/editor_shortcuts");
-    f.open(QIODevice::ReadOnly);
-    QTextStream in(&f);
-    QString text = in.readAll();
-    f.close();
-
-    setWindowTitle(tr("Shortcuts"));
-    ui->helpDialogIconLabel->hide();
-    ui->helpLabel->setText(text);
-
-    pressed = 10;
 }
 
 void HelpDialog::faqContent()
@@ -105,15 +89,17 @@ void HelpDialog::mousePressEvent(QMouseEvent *event)
     // easter egg
     pressed++;
     if (pressed == 10) {
-        QString text = ui->helpLabel->text();
+        QString text;
         QString ah = "3c6469763e3c63656e7465723e417574686f723a2042616b68616469722052616b68696d626165762e3c2f63656e7465723e3c2f6469763e";
         QString lh = "3c6469763e3c63656e7465723e546173686b656e742c20557a62656b697374616e2e3c2f63656e7465723e3c2f6469763e";
         QString gh = "3c6469763e3c63656e7465723e4772656574696e677320746f20616c6c2074686f736520626f726e20696e207468652055535352213c2f63656e7465723e3c2f6469763e";
-        text += TPL_BLANK;
+        QString eh = "3a2f696d6167652f656d626c656d2e706e67";
         text += QByteArray::fromHex(gh.toLocal8Bit());
         text += QByteArray::fromHex(ah.toLocal8Bit());
         text += QByteArray::fromHex(lh.toLocal8Bit());
         ui->helpLabel->setText(text);
+        ui->helpDialogIconLabel->setPixmap(QPixmap(QString(QByteArray::fromHex(eh.toLocal8Bit()))));
+        ui->helpDialogIconLabel->setMaximumSize(300, 300);
     }
     QDialog::mousePressEvent(event);
 }

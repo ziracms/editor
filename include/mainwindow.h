@@ -53,6 +53,7 @@ namespace Ui {
     class ContextDialog;
     class InputDialog;
     class MenuDialog;
+    class ShortcutsDialog;
 }
 
 Q_DECLARE_METATYPE(ParsePHP::ParseResult)

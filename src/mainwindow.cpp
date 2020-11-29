@@ -36,6 +36,7 @@
 #include "colordialog.h"
 #include "spellchecker.h"
 #include "terminal.h"
+#include "shortcutsdialog.h"
 
 const int OUTPUT_TAB_MESSAGES_INDEX = 0;
 const int OUTPUT_TAB_HELP_INDEX = 1;
@@ -1812,9 +1813,10 @@ void MainWindow::on_actionSettings_triggered()
 
 void MainWindow::on_actionHelpShortcuts_triggered()
 {
-    HelpDialog dialog(this);
-    dialog.shortcutsContent();
-    dialog.exec();
+    ShortcutsDialog dialog(this);
+    if (dialog.exec() != QDialog::Accepted) return;
+    Settings::change(dialog.getData());
+    restartApp();
 }
 
 void MainWindow::on_actionHelpAbout_triggered()

@@ -68,6 +68,7 @@ SOURCES += \
     src/parsecss.cpp \
     src/parse.cpp \
     src/navigator.cpp \
+    src/shortcutsdialog.cpp \
     src/snippets.cpp \
     src/spellchecker.cpp \
     src/style.cpp \
@@ -134,6 +135,7 @@ HEADERS += \
     include/parsecss.h \
     include/parse.h \
     include/navigator.h \
+    include/shortcutsdialog.h \
     include/snippets.h \
     include/spellchecker.h \
     include/style.h \
@@ -177,6 +179,7 @@ FORMS += \
     ui/editproject.ui \
     ui/settings.ui \
     ui/helpdialog.ui \
+    ui/shortcutsdialog.ui \
     ui/welcome.ui
 
 RESOURCES += \
