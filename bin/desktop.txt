@@ -6,6 +6,6 @@ Path=%dir%
 Exec=%dir%/ZiraEditor %F
 Icon=%dir%/zira.png
 Categories=Application;Development;IDE
-Version=1.0
+Version=2.0
 Type=Application
 Terminal=0 
