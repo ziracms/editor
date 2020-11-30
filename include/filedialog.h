@@ -6,6 +6,7 @@
 
 class FileDialog : public QFileDialog
 {
+    Q_OBJECT
 public:
     FileDialog(QWidget *parent = nullptr);
     ~FileDialog();
