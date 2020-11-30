@@ -18,6 +18,10 @@
 #include "fileiconprovider.h"
 #include "settings.h"
 
+#if defined(Q_OS_ANDROID)
+const int ANDROID_INIT_HIGHLIGHTER_DELAY = 100;
+#endif
+
 EditorTabs::EditorTabs(QTabWidget * widget):
     tabWidget(widget)
 {
@@ -132,10 +136,9 @@ void EditorTabs::createTab(QString filepath, bool initHighlight)
     emit tabOpened(tabIndex);
     if (initHighlight) {
         #if defined(Q_OS_ANDROID)
-        QTimer::singleShot(100, this, ([this](){
-            if (editor != nullptr) {
-                editor->initHighlighter();
-            }
+        Editor * currentEditor = editor;
+        QTimer::singleShot(ANDROID_INIT_HIGHLIGHTER_DELAY, currentEditor, ([currentEditor](){
+            currentEditor->initHighlighter();
         }));
         #else
         editor->initHighlighter();

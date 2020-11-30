@@ -52,6 +52,7 @@ bool MainWindow::WANT_RESTART = false;
 
 int const TERMINAL_START_DELAY = 250; // should not be less then PROJECT_LOAD_DELAY
 int const CHECK_SCALE_FACTOR_DELAY = 2000;
+int const INPUT_METHOD_ENSURE_CURSOR_VISIBLE_DELAY = 500;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -144,9 +145,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // restore window geometry & state
     QSettings windowSettings;
-    restoreGeometry(windowSettings.value("main_window_geometry").toByteArray());
-    restoreState(windowSettings.value("main_window_state").toByteArray());
-
+    if (windowSettings.allKeys().size() > 0) {
+        restoreGeometry(windowSettings.value("main_window_geometry").toByteArray());
+        restoreState(windowSettings.value("main_window_state").toByteArray());
+    } else {
+        ui->sidebarDockWidget->hide();
+        ui->outputDockWidget->hide();
+    }
     // plugins
     SpellChecker::instance().load();
     terminal = Terminal::instance().load();
@@ -694,6 +699,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
         return;
     }
+    if (!MainWindow::WANT_RESTART && ui->sidebarDockWidget->isVisible()) {
+        sidebarActionTriggered(false);
+        event->ignore();
+        return;
+    }
     if (!MainWindow::WANT_RESTART && !Helper::showQuestion(tr("Confirmation"), tr("Do you want to exit ?"))) {
         MainWindow::WANT_RESTART = false;
         event->ignore();
@@ -1214,6 +1224,9 @@ void MainWindow::on_actionClose_triggered()
 
 void MainWindow::on_actionQuit_triggered()
 {
+    #if defined(Q_OS_ANDROID)
+    MainWindow::WANT_RESTART = true; // force quit (restart is disabled on Android)
+    #endif
     close();
 }
 
@@ -3027,6 +3040,13 @@ void MainWindow::inputMethodVisibleChanged()
         ui->tabWidget->tabBar()->setVisible(false);
         tabWidgetSplit->tabBar()->setVisible(false);
         tabsListButton->hide();
+
+        QTimer::singleShot(INPUT_METHOD_ENSURE_CURSOR_VISIBLE_DELAY, this, [this](){
+            Editor * textEditor = getActiveEditor();
+            if (textEditor != nullptr) {
+                textEditor->ensureCursorVisible();
+            }
+        });
     } else {
         ui->statusBar->setVisible(true);
         ui->tabWidget->tabBar()->setVisible(true);
