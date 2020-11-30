@@ -45,7 +45,11 @@ void ProgressLine::paintEvent(QPaintEvent */*event*/)
 
 void ProgressLine::updateGeometry(int x, int y, int w)
 {
+    #if defined(Q_OS_ANDROID)
+    setGeometry(x, y + PROGRESS_LINE_HEIGHT, w, PROGRESS_LINE_HEIGHT);
+    #else
     setGeometry(x, y - PROGRESS_LINE_HEIGHT, w, PROGRESS_LINE_HEIGHT);
+    #endif
 }
 
 void ProgressLine::updateProgress()

@@ -2023,7 +2023,11 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     hideQAPanel();
+    #if defined(Q_OS_ANDROID)
+    progressLine->updateGeometry(0, 0, geometry().width());
+    #else
     progressLine->updateGeometry(ui->menuBar->geometry().x(), ui->menuBar->geometry().y() + ui->menuBar->geometry().height(), ui->menuBar->geometry().width());
+    #endif
     progressInfo->updateGeometry(ui->statusBar->geometry().x(), ui->statusBar->geometry().y(), ui->statusBar->width(), ui->statusBar->height());
     QMainWindow::resizeEvent(event);
 }
