@@ -26,13 +26,7 @@ const QString PHP_WEBSERVER_URI = "127.0.0.1:8000";
 
 const QString ZIRA_DEV_PACK_PATH = "/data/data/com.github.ziracms.devpack/files/bin";
 
-ParserWorker::ParserWorker(QObject *parent) : QObject(parent)
-{   
-    phpPath = "";
-    gitPath = "";
-    bashPath = "";
-    sasscPath = "";
-    phpcsPath = "";
+ParserWorker::ParserWorker(QObject *parent) : QObject(parent){
     phpcsStandard = QString::fromStdString(Settings::get("parser_phpcs_standard"));
     if (phpcsStandard.size() == 0) phpcsStandard = "PEAR";
     phpcsErrorSeverity = std::stoi(Settings::get("parser_phpcs_error_severity"));
@@ -49,6 +43,16 @@ ParserWorker::ParserWorker(QObject *parent) : QObject(parent)
     quickBreaked = false;
     wantStop = false;
     phpWebServerPid = 0;
+    init();
+}
+
+void ParserWorker::init()
+{   
+    phpPath = "";
+    gitPath = "";
+    bashPath = "";
+    sasscPath = "";
+    phpcsPath = "";
 
     // android pack
     androidHomePath="";
@@ -60,6 +64,7 @@ ParserWorker::ParserWorker(QObject *parent) : QObject(parent)
     if (stddirs.size()>0) androidHomePath = stddirs.at(0);
     #endif
 
+    #if !defined(Q_OS_ANDROID)
     // php path
     QString phpPathStr = QString::fromStdString(Settings::get("parser_php_path"));
     if (phpPathStr.size() == 0) {
@@ -129,6 +134,7 @@ ParserWorker::ParserWorker(QObject *parent) : QObject(parent)
     if (phpcsPathStr.size() > 0 && Helper::fileOrFolderExists(phpcsPathStr)) {
         phpcsPath = phpcsPathStr;
     }
+    #endif
 
     #if defined(Q_OS_ANDROID)
     setAndroidBinPaths(); // use installed binaries if exists

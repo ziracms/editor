@@ -84,6 +84,7 @@ signals:
     void updateProgressInfo(QString text);
     void installAndroidPackFinished(QString result);
 public slots:
+    void init();
     void disable();
     void lint(int tabIndex, QString path);
     void execPHP(int tabIndex, QString path);

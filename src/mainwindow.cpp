@@ -333,6 +333,7 @@ MainWindow::MainWindow(QWidget *parent) :
     parserWorker = new ParserWorker();
     parserWorker->moveToThread(&parserThread);
     connect(&parserThread, &QThread::finished, parserWorker, &QObject::deleteLater);
+    connect(this, SIGNAL(initWorker()), parserWorker, SLOT(init()));
     connect(this, SIGNAL(disableWorker()), parserWorker, SLOT(disable()));
     connect(this, SIGNAL(parseLint(int,QString)), parserWorker, SLOT(lint(int,QString)));
     connect(this, SIGNAL(execPHP(int,QString)), parserWorker, SLOT(execPHP(int,QString)));
@@ -661,6 +662,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QTimer::singleShot(CHECK_SCALE_FACTOR_DELAY, this, SLOT(checkScaleFactor()));
     }
 
+    suspended = false;
     // make sure that window is maximized in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
@@ -670,6 +672,8 @@ MainWindow::MainWindow(QWidget *parent) :
     mainMenuAction->setIcon(Icon::get("actionMenu", QIcon(":/icons/separator-double.png")));
     connect(mainMenuAction, SIGNAL(triggered(bool)), this, SLOT(mainMenuDialogTriggered(bool)));
     ui->mainToolBar->insertAction(ui->mainToolBar->actions().at(0), mainMenuAction);
+
+    connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), this, SLOT(applicationStateChanged(Qt::ApplicationState)));
     #endif
 
     bool autoShowVirtualKeyboard = false;
@@ -3056,5 +3060,21 @@ void MainWindow::inputMethodVisibleChanged()
         ui->tabWidget->tabBar()->setVisible(true);
         tabWidgetSplit->tabBar()->setVisible(true);
         updateTabsListButton();
+    }
+}
+
+void MainWindow::applicationStateChanged(Qt::ApplicationState state)
+{
+    if (state == Qt::ApplicationActive) {
+        if (suspended) {
+            emit initWorker();
+        }
+        suspended = false;
+    } else if (state == Qt::ApplicationSuspended) {
+        if (progressInfo->isVisible()) {
+            emit progressInfo->cancelTriggered();
+        }
+        Settings::save();
+        suspended = true;
     }
 }

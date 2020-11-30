@@ -271,6 +271,7 @@ private slots:
     void installAndroidPackFinished(QString result);
     void mainMenuDialogTriggered(bool checked);
     void sendContextMenuEvent();
+    void applicationStateChanged(Qt::ApplicationState state);
 private:
     Ui::MainWindow *ui;
     ParserWorker * parserWorker;
@@ -321,7 +322,9 @@ private:
     EditorTabs * editorTabsSplit;
     bool isSplitActive;
     QHash<QString,int> filesHistory;
+    bool suspended;
 signals:
+    void initWorker();
     void disableWorker();
     void parseLint(int tabIndex, QString path);
     void execPHP(int tabIndex, QString path);
