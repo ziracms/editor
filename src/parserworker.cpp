@@ -11,6 +11,7 @@
 #include <QDateTime>
 #include <QCoreApplication>
 #include <QStandardPaths>
+#include <QSettings>
 #include "helper.h"
 #include "project.h"
 #include "servers.h"
@@ -44,6 +45,12 @@ ParserWorker::ParserWorker(QObject *parent) : QObject(parent){
     wantStop = false;
     phpWebServerPid = 0;
     init();
+
+    QSettings windowSettings;
+    if (windowSettings.allKeys().size() > 0 && windowSettings.contains("php_webserver_pid")) {
+        int _phpWebServerPid = windowSettings.value("php_webserver_pid").toInt();
+        if (_phpWebServerPid > 0) phpWebServerPid = _phpWebServerPid;
+    }
 }
 
 void ParserWorker::init()
@@ -238,7 +245,9 @@ void ParserWorker::startPHPWebServer(QString path)
         return;
     }
     if (path.size() == 0 || !Helper::folderExists(path)) return;
-    if (phpWebServerPid != 0) return;
+    if (phpWebServerPid != 0) {
+        stopPHPWebServer();
+    }
     QProcess process(this);
     process.setWorkingDirectory(path);
     process.setProgram(phpPath);
@@ -246,6 +255,8 @@ void ParserWorker::startPHPWebServer(QString path)
     process.setStandardOutputFile(QProcess::nullDevice());
     process.setStandardErrorFile(QProcess::nullDevice());
     if (process.startDetached(&phpWebServerPid)) {
+        QSettings windowSettings;
+        windowSettings.setValue("php_webserver_pid", QVariant(phpWebServerPid));
         emit execPHPWebServerFinished(true, tr("PHP web-server started.")+"\n"+tr("Document root: %1").arg(path)+"\n"+tr("URL address: %1").arg("http://" + PHP_WEBSERVER_URI));
     } else {
         emit execPHPWebServerFinished(false, tr("Could not start PHP web-server."));
@@ -257,6 +268,8 @@ void ParserWorker::stopPHPWebServer()
     if (phpWebServerPid == 0) return;
     if (QProcess::startDetached("kill", {QString::number(phpWebServerPid)})) {
         phpWebServerPid = 0;
+        QSettings windowSettings;
+        windowSettings.remove("php_webserver_pid");
         // success = false (do not want browser to be opened)
         emit execPHPWebServerFinished(false, tr("PHP web-server stopped."));
     } else {

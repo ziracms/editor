@@ -109,6 +109,7 @@ public slots:
     void restartApp();
     void on_actionOpenProject_triggered();
     void on_actionNewProject_triggered();
+    void saveStateBeforeExit();
 private slots:
     void on_actionOpenFile_triggered();
     void on_actionNewFile_triggered();

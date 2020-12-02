@@ -721,6 +721,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
         return;
     }
     emit disableWorker();
+    saveStateBeforeExit();
+    QMainWindow::closeEvent(event);
+}
+
+void MainWindow::saveStateBeforeExit()
+{
     // save project
     project->save(editorTabs->getOpenTabFiles(), editorTabs->getOpenTabLines(), editorTabs->getCurrentTabIndex(), ui->todoEdit->toPlainText());
     if (Settings::get("devpack_install_silent") == "no") {
@@ -736,7 +742,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (args.length() <= 1) {
         windowSettings.setValue("project_path", project->getPath());
     }
-    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::menuEditOnShow()
@@ -3074,7 +3079,7 @@ void MainWindow::applicationStateChanged(Qt::ApplicationState state)
         if (progressInfo->isVisible()) {
             emit progressInfo->cancelTriggered();
         }
-        Settings::save();
+        saveStateBeforeExit();
         suspended = true;
     }
 }
