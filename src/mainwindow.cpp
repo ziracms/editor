@@ -667,6 +667,7 @@ MainWindow::MainWindow(QWidget *parent) :
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
     ui->menuBar->setVisible(false);
+    ui->mainToolBar->setVisible(true);
     ui->mainToolBar->insertSeparator(ui->mainToolBar->actions().at(0));
     QAction * mainMenuAction = new QAction(tr("Menu"));
     mainMenuAction->setIcon(Icon::get("actionMenu", QIcon(":/icons/separator-double.png")));
