@@ -4182,6 +4182,12 @@ QString Editor::detectCompleteTypeAtCursorPHP(QTextCursor & curs, QString nsName
         prevChar = findPrevCharNonSpaceAtCursos(curs);
         prevPrevChar = findPrevCharNonSpaceAtCursos(curs);
         prevWord = findPrevWordNonSpaceAtCursor(curs, MODE_PHP);
+        if (prevWord.size() > 0) {
+            QTextBlock block = curs.block();
+            int pos = curs.positionInBlock();
+            int state = highlight->findStateAtCursor(&block, pos);
+            if (state != STATE_NONE) break;
+        }
         if (prevWord.toLower() == "return" || prevWord.toLower() == "else" || prevWord.toLower() == "echo") break;
         /*
         HW->phpwordsIterator = HW->phpwords.find(prevWord.toLower().toStdString());
