@@ -1093,23 +1093,20 @@ void Editor::detectTabsMode()
     do {
         QTextBlock block = curs.block();
         QString blockText = block.text();
-        int total = blockText.size();
-        curs.movePosition(QTextCursor::EndOfBlock, QTextCursor::MoveAnchor);
-        int pos = curs.positionInBlock();
-        if (pos > 0) {
-            QChar lastChar = blockText[pos-1];
-            if (lastChar == "{" || indentPos>=0) {
+        QString blockTextTrimmed = blockText.trimmed();
+        if (blockTextTrimmed.size() > 0) {
+            QChar firstChar = blockTextTrimmed.at(0);
+            QChar lastChar = blockTextTrimmed.at(blockTextTrimmed.size()-1);
+            if (lastChar == "{" || (firstChar == "<" && lastChar == ">") || indentPos>=0) {
                 curs.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
                 if (indentPos>0 && !curs.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, indentPos)) {
                     indentPos = -1;
                     continue;
                 }
-                pos = curs.positionInBlock();
                 QString prefix = "";
                 bool isSpace = false;
-                while(pos < total) {
-                    if (!curs.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor)) break;
-                    pos = curs.positionInBlock();
+                while(curs.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor)) {
+                    int pos = curs.positionInBlock();
                     QChar prevChar = blockText[pos-1];
                     if (prevChar == "\t" && prefix.size()==0) {
                         isSpace = false;
@@ -1132,8 +1129,6 @@ void Editor::detectTabsMode()
                         tabWidth = prefix.size();
                     }
                     break;
-                } else {
-                    indentPos = -1;
                 }
             }
         } else {
