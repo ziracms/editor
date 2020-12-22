@@ -5087,6 +5087,7 @@ void Editor::cursorPositionChanged()
     QList<QTextEdit::ExtraSelection> extraSelections;
     if (!isReadOnly()) {
         highlightCurrentLine(& extraSelections);
+        highlightSearchWords(& extraSelections);
     }
     setExtraSelections(extraSelections);
     lineAnnotation->hide();
@@ -6270,6 +6271,36 @@ void Editor::highlightMultiSelection(QList<QTextEdit::ExtraSelection> * extraSel
     }
 }
 
+void Editor::highlightSearchWords(QList<QTextEdit::ExtraSelection> *extraSelections)
+{
+    if (!search->isVisible() || searchString.size() == 0) return;
+    static_cast<LineMap *>(lineMap)->clearMarks();
+    QTextCursor searchWordCursor(document());
+    QTextDocument::FindFlags findFlags = nullptr;
+    if (searchCaSe) findFlags |= QTextDocument::FindCaseSensitively;
+    if (searchWord) findFlags |= QTextDocument::FindWholeWords;
+    searchWordCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+    int searchWordBlockNumber = -1;
+    int co = 0;
+    while(!searchWordCursor.isNull() && !searchWordCursor.atEnd()) {
+        if (!searchRegE) searchWordCursor = document()->find(searchString, searchWordCursor, findFlags);
+        else searchWordCursor = document()->find(QRegularExpression(searchString), searchWordCursor, findFlags);
+        if (!searchWordCursor.isNull()) {
+            QTextEdit::ExtraSelection selectedWordSelection;
+            selectedWordSelection.format.setBackground(searchWordBgColor);
+            selectedWordSelection.format.setForeground(searchWordColor);
+            selectedWordSelection.cursor = searchWordCursor;
+            extraSelections->append(selectedWordSelection);
+            if (searchWordBlockNumber != searchWordCursor.block().blockNumber()) {
+                searchWordBlockNumber = searchWordCursor.block().blockNumber();
+                static_cast<LineMap *>(lineMap)->addMark(searchWordBlockNumber+1);
+            }
+        }
+        co++;
+        if (co >= SEARCH_LIMIT) break; // too much results
+    }
+}
+
 void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPrevChar, QString cursorText, int cursorTextPos, std::string mode)
 {
     QList<QTextEdit::ExtraSelection> extraSelections;
@@ -6308,33 +6339,7 @@ void Editor::highlightExtras(QChar prevChar, QChar nextChar, QChar cursorTextPre
             }
         }
         // search words
-        if (search->isVisible() && searchString.size() > 0) {
-            static_cast<LineMap *>(lineMap)->clearMarks();
-            QTextCursor searchWordCursor(document());
-            QTextDocument::FindFlags findFlags = nullptr;
-            if (searchCaSe) findFlags |= QTextDocument::FindCaseSensitively;
-            if (searchWord) findFlags |= QTextDocument::FindWholeWords;
-            searchWordCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-            int searchWordBlockNumber = -1;
-            int co = 0;
-            while(!searchWordCursor.isNull() && !searchWordCursor.atEnd()) {
-                if (!searchRegE) searchWordCursor = document()->find(searchString, searchWordCursor, findFlags);
-                else searchWordCursor = document()->find(QRegularExpression(searchString), searchWordCursor, findFlags);
-                if (!searchWordCursor.isNull()) {
-                    QTextEdit::ExtraSelection selectedWordSelection;
-                    selectedWordSelection.format.setBackground(searchWordBgColor);
-                    selectedWordSelection.format.setForeground(searchWordColor);
-                    selectedWordSelection.cursor = searchWordCursor;
-                    extraSelections.append(selectedWordSelection);
-                    if (searchWordBlockNumber != searchWordCursor.block().blockNumber()) {
-                        searchWordBlockNumber = searchWordCursor.block().blockNumber();
-                        static_cast<LineMap *>(lineMap)->addMark(searchWordBlockNumber+1);
-                    }
-                }
-                co++;
-                if (co >= SEARCH_LIMIT) break; // too much results
-            }
-        }
+        highlightSearchWords(& extraSelections);
 
         // multiselect
         highlightMultiSelection(& extraSelections);

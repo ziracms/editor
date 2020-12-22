@@ -153,6 +153,7 @@ protected:
     void highlightPHPOpenSpecialTagPair(QString tagName, int pos, QList<QTextEdit::ExtraSelection> * extraSelections);
     void highlightCurrentLine(QList<QTextEdit::ExtraSelection> * extraSelections);
     void highlightMultiSelection(QList<QTextEdit::ExtraSelection> * extraSelections);
+    void highlightSearchWords(QList<QTextEdit::ExtraSelection> * extraSelections);
     void showCompletePopup();
     void hideCompletePopup();
     void detectCompleteText(QString text, QChar cursorTextPrevChar, int cursorTextPos, std::string mode, int state);
