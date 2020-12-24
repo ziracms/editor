@@ -589,8 +589,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(shortcutQuickAccess, SIGNAL(activated()), this, SLOT(on_actionQuickAccess_triggered()));
 
     QString shortcutQuickAccessAltStr = QString::fromStdString(Settings::get("shortcut_quick_access_alt"));
-    QShortcut * shortcutQuickAccessAlt = new QShortcut(QKeySequence(shortcutQuickAccessAltStr), this);
-    connect(shortcutQuickAccessAlt, SIGNAL(activated()), this, SLOT(on_actionQuickAccess_triggered()));
+    if (shortcutQuickAccessStr != shortcutQuickAccessAltStr) {
+        QShortcut * shortcutQuickAccessAlt = new QShortcut(QKeySequence(shortcutQuickAccessAltStr), this);
+        connect(shortcutQuickAccessAlt, SIGNAL(activated()), this, SLOT(on_actionQuickAccess_triggered()));
+    }
 
     QString shortcutFocusTreeStr = QString::fromStdString(Settings::get("shortcut_focus_tree"));
     QShortcut * shortcutFocusTree = new QShortcut(QKeySequence(shortcutFocusTreeStr), this);
@@ -1678,21 +1680,33 @@ void MainWindow::on_actionGitInitializeRepository_triggered()
 
 void MainWindow::on_actionGitAddRemoteURL_triggered()
 {
-    QString url = Helper::showInputDialog(tr("Add remote URL"), tr("Enter URL:"), QLineEdit::Normal, "", "Note: you might want to add a username and password to repository URL\n(https://username:password@host/path)");
+    QString description = "";
+    #if defined(Q_OS_ANDROID)
+    description = "Note: you might want to add a username and password to repository URL\n(https://username:password@host/path)";
+    #endif
+    QString url = Helper::showInputDialog(tr("Add remote URL"), tr("Enter URL:"), QLineEdit::Normal, "", description);
     if (url.isNull() || url.size() == 0) return;
     git->addRemoteURL(getGitWorkingDir(), url);
 }
 
 void MainWindow::on_actionGitChangeRemoteURL_triggered()
 {
-    QString url = Helper::showInputDialog(tr("Change remote URL"), tr("Enter URL:"), QLineEdit::Normal, "", "Note: you might want to add a username and password to repository URL\n(https://username:password@host/path)");
+    QString description = "";
+    #if defined(Q_OS_ANDROID)
+    description = "Note: you might want to add a username and password to repository URL\n(https://username:password@host/path)";
+    #endif
+    QString url = Helper::showInputDialog(tr("Change remote URL"), tr("Enter URL:"), QLineEdit::Normal, "", description);
     if (url.isNull() || url.size() == 0) return;
     git->changeRemoteURL(getGitWorkingDir(), url);
 }
 
 void MainWindow::on_actionGitCloneRepository_triggered()
 {
-    QString url = Helper::showInputDialog(tr("Clone repository"), tr("Enter URL:"), QLineEdit::Normal, "", "Note: you might want to add a username and password to repository URL\n(https://username:password@host/path)");
+    QString description = "";
+    #if defined(Q_OS_ANDROID)
+    description = "Note: you might want to add a username and password to repository URL\n(https://username:password@host/path)";
+    #endif
+    QString url = Helper::showInputDialog(tr("Clone repository"), tr("Enter URL:"), QLineEdit::Normal, "", description);
     if (url.isNull() || url.size() == 0) return;
     git->clone(getGitWorkingDir(), url);
 }
@@ -2020,7 +2034,7 @@ void MainWindow::dropEvent(QDropEvent * event)
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     if (tabsList->isVisible()) tabsList->hide();
-    if (e->key() != Qt::Key_Down && e->key() != Qt::Key_Up) hideQAPanel();
+    if (e->key() == Qt::Key_Escape) hideQAPanel();
     QMainWindow::keyPressEvent(e);
 }
 

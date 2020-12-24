@@ -63,7 +63,7 @@ private slots:
     void fileBrowserExpanded(QTreeWidgetItem * item);
     void fileBrowserCollapsed(QTreeWidgetItem * item);
     void fileBrowserDoubleClicked(QTreeWidgetItem * item, int column);
-    void fileBrowserDoubleClickFile(QTreeWidgetItem * item, int column);
+    void fileBrowserClicked(QTreeWidgetItem * item, int column);
     void fileBrowserPathReturnPressed();
     void fileBrowserContextMenuRequested(QPoint p);
     void fileBrowserItemChanged(QTreeWidgetItem * item, int col);

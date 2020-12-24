@@ -66,8 +66,8 @@ Search::Search(Editor * codeEditor) : QWidget(codeEditor)
 
     hLayoutFind = new QHBoxLayout();
     hLayoutFind->addWidget(findEdit);
-    hLayoutFind->addWidget(findButton);
     hLayoutFind->addWidget(findPrevButton);
+    hLayoutFind->addWidget(findButton);
     hLayoutFind->addWidget(findCaseSensitive);
     hLayoutFind->addWidget(findWholeWords);
     hLayoutFind->addWidget(findRegexp);

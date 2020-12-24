@@ -167,6 +167,7 @@ void FileBrowser::rebuildFileBrowserTree(QString path)
 
 void FileBrowser::fileBrowserExpanded(QTreeWidgetItem * item)
 {
+    if (mousePressTimer.isActive()) mousePressTimer.stop();
     QString path = item->data(0, Qt::UserRole).toString();
     if (path.size() == 0) return;
     QFileInfo fInfo(path);
@@ -176,6 +177,7 @@ void FileBrowser::fileBrowserExpanded(QTreeWidgetItem * item)
 
 void FileBrowser::fileBrowserCollapsed(QTreeWidgetItem * item)
 {
+    if (mousePressTimer.isActive()) mousePressTimer.stop();
     while(item->childCount() > 0) {
         QTreeWidgetItem * child = item->child(item->childCount()-1);
         if (child->childCount() > 0) {
@@ -201,7 +203,7 @@ void FileBrowser::fileBrowserDoubleClicked(QTreeWidgetItem * item, int column)
     else if (fInfo.isDir()) rebuildFileBrowserTree(path);
 }
 
-void FileBrowser::fileBrowserDoubleClickFile(QTreeWidgetItem * item, int column)
+void FileBrowser::fileBrowserClicked(QTreeWidgetItem * item, int column)
 {
     if (item == nullptr) return;
     if (column != 0) return;
@@ -209,8 +211,10 @@ void FileBrowser::fileBrowserDoubleClickFile(QTreeWidgetItem * item, int column)
     if (path.size() == 0) return;
     QFileInfo fInfo(path);
     if (!fInfo.exists() || !fInfo.isWritable()) return;
+    bool timerActive = mousePressTimer.isActive();
     if (mousePressTimer.isActive()) mousePressTimer.stop();
     if (fInfo.isFile()) emit openFile(path);
+    else if (fInfo.isDir() && timerActive) item->setExpanded(!item->isExpanded());
 }
 
 void FileBrowser::fileBrowserPathReturnPressed()
@@ -828,7 +832,7 @@ bool FileBrowser::eventFilter(QObject *watched, QEvent *event)
             if (mouseEvent != nullptr) {
                 QPoint point(mouseEvent->x(), mouseEvent->y());
                 QTreeWidgetItem * item = treeWidget->itemAt(point);
-                if (item == treeWidget->currentItem()) fileBrowserDoubleClickFile(item, 0);
+                if (item == treeWidget->currentItem()) fileBrowserClicked(item, 0);
             }
         }
     }
