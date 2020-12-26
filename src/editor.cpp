@@ -2066,6 +2066,9 @@ bool Editor::onKeyPress(QKeyEvent *e)
     }
     // indent
     if (code == Qt::Key_Tab && !shift && !ctrl) {
+        if (search->isVisible() && static_cast<Search *>(search)->isFocused()) {
+            return false;
+        }
         QTextCursor curs = textCursor();
         if (curs.selectedText().size()==0 && tabType == "spaces") {
             QString insert = " ";
