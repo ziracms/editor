@@ -278,7 +278,7 @@ void Settings::_applyDarkColors()
     data["editor_line_warning_rect_color"] = "#ffbf4a";
     data["highlight_keyword_color"] = "#6b76ff";
     data["highlight_class_color"] = "#ae63ff";
-    data["highlight_function_color"] = "#33b598";
+    data["highlight_function_color"] = "#629de7"; // old color #33b598
     data["highlight_known_function_color"] = "#05aeff";
     data["highlight_variable_color"] = "#e65dc1";
     data["highlight_known_variable_color"] = "#f1ca7f";
