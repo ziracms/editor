@@ -370,6 +370,11 @@ Editor::Editor(QWidget * parent):
     shortcutContextMenu->setContext(Qt::WidgetShortcut);
     connect(shortcutContextMenu, SIGNAL(activated()), this, SLOT(contextMenu()));
 
+    QString shortcutGoToStr = QString::fromStdString(Settings::get("shortcut_goto"));
+    QShortcut * shortcutGoTo = new QShortcut(QKeySequence(shortcutGoToStr), this);
+    shortcutGoTo->setContext(Qt::WidgetShortcut);
+    connect(shortcutGoTo, SIGNAL(activated()), this, SLOT(gotoLineRequest()));
+
     // order matters
     // annotation
     lineAnnotation = new Annotation(this);
@@ -2355,9 +2360,15 @@ bool Editor::onKeyPress(QKeyEvent *e)
         return false;
     }
     // hide popup
-    if (code == Qt::Key_Escape && completePopup->isVisible()) {
-        hideCompletePopup();
-        return false;
+    if (code == Qt::Key_Escape) {
+        if (completePopup->isVisible()) {
+            hideCompletePopup();
+            return false;
+        }
+        if (search->isVisible()) {
+            closeSearch();
+            return false;
+        }
     }
     // switch tooltip page
     if ((code == Qt::Key_Down || code == Qt::Key_Up) && tooltipLabel.isVisible() && tooltipSavedList.size()>1 && tooltipSavedPageOffset >= 0 && tooltipSavedPageOffset < tooltipSavedList.size()) {
@@ -6427,6 +6438,7 @@ void Editor::updateMarksAndMapArea()
 void Editor::findToggle()
 {
     QTextCursor curs = textCursor();
+    /*
     if (!search->isVisible() || curs.hasSelection()) {
         if (curs.hasSelection()) {
             searchString = curs.selectedText();
@@ -6437,6 +6449,13 @@ void Editor::findToggle()
     } else {
         closeSearch();
     }
+    */
+    if (curs.hasSelection()) {
+        searchString = curs.selectedText();
+        static_cast<Search *>(search)->setFindEditText(searchString);
+    }
+    showSearch();
+    highlightExtras();
 }
 
 void Editor::showSearch()

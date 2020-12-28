@@ -110,6 +110,7 @@ void Settings::initData()
         {"shortcut_delete_line", "Ctrl+Shift+D"},
         {"shortcut_context_menu", "F2"},
         {"shortcut_focus_tree", "Alt+Down"},
+        {"shortcut_goto", "Ctrl+G"},
         {"shortcut_open_file", "Ctrl+O"},
         {"shortcut_open_project", "Ctrl+Shift+O"},
         {"shortcut_new_file", "Ctrl+N"},

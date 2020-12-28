@@ -65,6 +65,7 @@ std::vector<std::pair<std::string, std::string>> ShortcutsDialog::getShortcutNam
         {"shortcut_multiselect", "Multi-Selection"},
         {"shortcut_help", "Context help"},
         {"shortcut_quick_access", "Quick Access"},
+        {"shortcut_goto", "Go to line"},
         {"shortcut_duplicate_line", "Duplicate line"},
         {"shortcut_delete_line", "Delete line"},
         {"shortcut_context_menu", "Context menu"},
