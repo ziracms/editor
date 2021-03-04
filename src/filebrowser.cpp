@@ -323,15 +323,21 @@ void FileBrowser::fileBrowserContextMenuRequested(QTreeWidgetItem * item)
     acceptEnter = false;
 
     QAction * selectedAction = nullptr;
+    bool useContextDialog = false;
     #if defined(Q_OS_ANDROID)
-    Scroller::reset();
-    selectedAction = Helper::contextMenuToDialog(&menu, treeWidget);
-    #else
-    //QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));
-    QPoint p = QCursor::pos();
-    selectedAction = menu.exec(p);
-    menu.hide();
+    if (Settings::get("enable_android_desktop_mode") != "yes") {
+        useContextDialog = true;
+    }
     #endif
+    if (useContextDialog) {
+        Scroller::reset();
+        selectedAction = Helper::contextMenuToDialog(&menu, treeWidget);
+    } else {
+        //QAction * selectedAction = menu.exec(treeWidget->viewport()->mapToGlobal(p));
+        QPoint p = QCursor::pos();
+        selectedAction = menu.exec(p);
+        menu.hide();
+    }
     if (selectedAction == nullptr) {
         acceptEnter = true;
         return;

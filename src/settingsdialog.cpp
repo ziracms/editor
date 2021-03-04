@@ -25,6 +25,10 @@ const std::string NEW_LINE_LF = "lf";
 const std::string NEW_LINE_CR = "cr";
 const std::string NEW_LINE_CRLF = "crlf";
 
+#if !defined(Q_OS_ANDROID)
+const int SETTINGS_TAB_ANDROID_INDEX = 8;
+#endif
+
 SettingsDialog::SettingsDialog(QWidget * parent):
     QDialog(parent),
     ui(new Ui::SettingsDialog())
@@ -67,6 +71,8 @@ SettingsDialog::SettingsDialog(QWidget * parent):
     if (Settings::get("experimental_mode_enabled") == CHECKED_YES) ui->experimentalModeCheckbox->setChecked(true);
     if (Settings::get("auto_show_virtual_keyboard") == CHECKED_YES) ui->virtualKeyboardCheckBox->setChecked(true);
     if (Settings::get("enable_android_gestures") == CHECKED_YES) ui->touchGesturesCheckBox->setChecked(true);
+    if (Settings::get("enable_android_desktop_mode") == CHECKED_YES) ui->desktopStyleCheckBox->setChecked(true);
+    if (Settings::get("enable_scaling") == CHECKED_YES) ui->scalingCheckBox->setChecked(true);
     if (Settings::get("scale_auto") == CHECKED_YES) ui->scaleFactorCheckBox->setChecked(true);
     initScaleFactor = std::stoi(Settings::get("scale_factor"));
     ui->scaleFactorSpinBox->setValue(initScaleFactor);
@@ -208,12 +214,14 @@ SettingsDialog::SettingsDialog(QWidget * parent):
         Scroller::enableGestures(ui->snippetsSettingsScrollArea);
         Scroller::enableGestures(ui->pathsSettingsScrollArea);
         Scroller::enableGestures(ui->miscSettingsScrollArea);
+        Scroller::enableGestures(ui->androidSettingsScrollArea);
     }
     if (Settings::get("auto_show_virtual_keyboard") == "yes") {
         VirtualInput::registerDialog(this, true);
     }
     #else
     ui->buttonBox->button(QDialogButtonBox::Help)->hide();
+    ui->settingsTabWidget->removeTab(SETTINGS_TAB_ANDROID_INDEX);
     #endif
 }
 
@@ -235,11 +243,19 @@ std::unordered_map<std::string, std::string> SettingsDialog::getData()
     if (ui->experimentalModeCheckbox->isChecked()) dataMap["experimental_mode_enabled"] = CHECKED_YES;
     else dataMap["experimental_mode_enabled"] = CHECKED_NO;
 
+    #if defined(Q_OS_ANDROID)
     if (ui->virtualKeyboardCheckBox->isChecked()) dataMap["auto_show_virtual_keyboard"] = CHECKED_YES;
     else dataMap["auto_show_virtual_keyboard"] = CHECKED_NO;
 
     if (ui->touchGesturesCheckBox->isChecked()) dataMap["enable_android_gestures"] = CHECKED_YES;
     else dataMap["enable_android_gestures"] = CHECKED_NO;
+
+    if (ui->desktopStyleCheckBox->isChecked()) dataMap["enable_android_desktop_mode"] = CHECKED_YES;
+    else dataMap["enable_android_desktop_mode"] = CHECKED_NO;
+    #endif
+
+    if (ui->scalingCheckBox->isChecked()) dataMap["enable_scaling"] = CHECKED_YES;
+    else dataMap["enable_scaling"] = CHECKED_NO;
 
     if (ui->scaleFactorCheckBox->isChecked()) dataMap["scale_auto"] = CHECKED_YES;
     else dataMap["scale_auto"] = CHECKED_NO;

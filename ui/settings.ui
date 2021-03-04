@@ -265,6 +265,26 @@
             </layout>
            </item>
            <item>
+            <layout class="QHBoxLayout" name="scalingLayout">
+             <property name="leftMargin">
+              <number>156</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="scalingCheckBox">
+               <property name="text">
+                <string>Enable UI scaling</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
             <layout class="QHBoxLayout" name="scaleFactorLayout">
              <property name="topMargin">
               <number>10</number>
@@ -374,46 +394,6 @@
                </property>
                <property name="text">
                 <string>Enable extra syntax highlighting</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="virtualKeyboardLayout">
-             <property name="leftMargin">
-              <number>156</number>
-             </property>
-             <property name="topMargin">
-              <number>10</number>
-             </property>
-             <property name="bottomMargin">
-              <number>10</number>
-             </property>
-             <item>
-              <widget class="QCheckBox" name="virtualKeyboardCheckBox">
-               <property name="text">
-                <string>Automatically show virtual keyboard</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="touchGesturesLayout">
-             <property name="leftMargin">
-              <number>156</number>
-             </property>
-             <property name="topMargin">
-              <number>10</number>
-             </property>
-             <property name="bottomMargin">
-              <number>10</number>
-             </property>
-             <item>
-              <widget class="QCheckBox" name="touchGesturesCheckBox">
-               <property name="text">
-                <string>Enable touch scrolling</string>
                </property>
               </widget>
              </item>
@@ -2140,6 +2120,105 @@
            </item>
            <item>
             <spacer name="miscSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="androidSettingsTab">
+      <attribute name="title">
+       <string>Android</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_18">
+       <item>
+        <widget class="QScrollArea" name="androidSettingsScrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_9">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>758</width>
+            <height>448</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_19">
+           <item>
+            <layout class="QHBoxLayout" name="virtualKeyboardLayout">
+             <property name="leftMargin">
+              <number>156</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="virtualKeyboardCheckBox">
+               <property name="text">
+                <string>Automatically show virtual keyboard</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="touchGesturesLayout">
+             <property name="leftMargin">
+              <number>156</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="touchGesturesCheckBox">
+               <property name="text">
+                <string>Enable touch scrolling</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="desktopStyleLayout">
+             <property name="leftMargin">
+              <number>156</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="desktopStyleCheckBox">
+               <property name="text">
+                <string>Switch to desktop mode</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>

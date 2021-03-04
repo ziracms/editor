@@ -79,12 +79,6 @@ const int FIRST_BLOCK_BIN_SEARCH_SCROLL_VALUE = 300;
 
 const QString SNIPPET_PREFIX = "Snippet: @";
 
-#if defined(Q_OS_ANDROID)
-const bool SEARCH_DISPLAY_ON_TOP = true;
-#else
-const bool SEARCH_DISPLAY_ON_TOP = false;
-#endif
-
 Editor::Editor(QWidget * parent):
     QTextEdit(parent), mousePressTimer(this)
 {
@@ -95,6 +89,13 @@ Editor::Editor(QWidget * parent):
     setAcceptDrops(false);
 
     //document()->setDocumentMargin(0);
+
+    searchDisplayOnTop = false;
+    #if defined(Q_OS_ANDROID)
+    if (Settings::get("enable_android_desktop_mode") != "yes") {
+        searchDisplayOnTop = true;
+    }
+    #endif
 
     wrapLines = false;
     std::string wrapLinesStr = Settings::get("editor_wrap_long_lines");
@@ -932,7 +933,7 @@ int Editor::searchWidgetHeight()
     if (static_cast<Search *>(search)->scrollAreaHorizontalScrollBar()->maximum() > static_cast<Search *>(search)->scrollAreaHorizontalScrollBar()->minimum()) {
         scrollH = static_cast<Search *>(search)->scrollAreaHorizontalScrollBar()->height();
     }
-    if (!SEARCH_DISPLAY_ON_TOP && static_cast<Search *>(search)->horizontalScrollBar()->maximum() > static_cast<Search *>(search)->horizontalScrollBar()->minimum()) {
+    if (!searchDisplayOnTop && static_cast<Search *>(search)->horizontalScrollBar()->maximum() > static_cast<Search *>(search)->horizontalScrollBar()->minimum()) {
         scrollHE = static_cast<Search *>(search)->horizontalScrollBar()->height();
     }
     return SEARCH_WIDGET_HEIGHT + scrollH + scrollHE;
@@ -955,7 +956,7 @@ void Editor::updateViewportMargins()
     int searchH = searchWidgetHeight();
     if (!search->isVisible()) searchH = 0;
     int breadcrumbsH = breadcrumbsHeight();
-    if (!SEARCH_DISPLAY_ON_TOP) {
+    if (!searchDisplayOnTop) {
         setViewportMargins(lineW + markW, breadcrumbsH, mapW, searchH);
     } else {
         setViewportMargins(lineW + markW, breadcrumbsH + searchH, mapW, 0);
@@ -1514,7 +1515,7 @@ void Editor::resizeEvent(QResizeEvent * e)
     hidePopups();
     updateWidgetsGeometry();
     updateLineAnnotationView();
-    if (!SEARCH_DISPLAY_ON_TOP && static_cast<Search *>(search)->isVisible()) {
+    if (!searchDisplayOnTop && static_cast<Search *>(search)->isVisible()) {
         static_cast<Search *>(search)->updateScrollBar();
     }
 }
@@ -1537,7 +1538,7 @@ void Editor::updateWidgetsGeometry()
     lineMap->setGeometry(QRect(cr.right()-mapW-vScrollW+1, cr.top(), mapW+vScrollW, cr.height()));
     breadcrumbs->setGeometry(QRect(cr.left(), cr.top(), cr.width()-mapW-vScrollW, breadcrumbsH));
     qaBtn->setGeometry(0, 0, lineW, breadcrumbsH-1);
-    if (!SEARCH_DISPLAY_ON_TOP) {
+    if (!searchDisplayOnTop) {
         search->setGeometry(QRect(cr.left(), cr.bottom()-searchH-hScrollH+1, cr.width()-mapW-vScrollW, searchH+hScrollH));
         lineNumber->setGeometry(QRect(cr.left(), cr.top()+breadcrumbsH, lineW, cr.height()-breadcrumbsH-searchH-hScrollH));
         lineMark->setGeometry(QRect(cr.left()+lineW, cr.top()+breadcrumbsH, markW, cr.height()-breadcrumbsH-searchH-hScrollH));
@@ -1851,7 +1852,7 @@ void Editor::focusInEvent(QFocusEvent *e)
             setFileIsOutdated();
         }
     }
-    if (!SEARCH_DISPLAY_ON_TOP && static_cast<Search *>(search)->isVisible()) {
+    if (!searchDisplayOnTop && static_cast<Search *>(search)->isVisible()) {
         static_cast<Search *>(search)->updateScrollBar();
     }
     QTextEdit::focusInEvent(e);
@@ -2647,7 +2648,7 @@ void Editor::blockCountChanged(int /*blockCount*/)
 void Editor::horizontalScrollbarValueChanged(int /* sliderPos */)
 {
     updateLineAnnotationView();
-    if (!SEARCH_DISPLAY_ON_TOP && static_cast<Search *>(search)->isVisible()) {
+    if (!searchDisplayOnTop && static_cast<Search *>(search)->isVisible()) {
         static_cast<Search *>(search)->updateScrollBar();
     }
 }
@@ -6462,7 +6463,7 @@ void Editor::showSearch()
 {
     if (!search->isVisible()) search->show();
     static_cast<Search *>(search)->setFindEditFocus();
-    if (!SEARCH_DISPLAY_ON_TOP) {
+    if (!searchDisplayOnTop) {
         static_cast<Search *>(search)->updateScrollBar();
     }
     updateViewportMargins();
@@ -6472,7 +6473,7 @@ void Editor::closeSearch()
 {
     if (!search->isVisible()) return;
     search->hide();
-    if (!SEARCH_DISPLAY_ON_TOP) {
+    if (!searchDisplayOnTop) {
         static_cast<Search *>(search)->updateScrollBar();
     }
     updateViewportMargins();
@@ -7147,13 +7148,19 @@ void Editor::contextMenuEvent(QContextMenuEvent *event)
     if (!isBackable()) backAction->setEnabled(false);
     if (!isForwadable()) forwardAction->setEnabled(false);
 
+    bool useContextDialog = false;
     #if defined(Q_OS_ANDROID)
-    event->accept();
-    Scroller::reset();
-    Helper::contextMenuToDialog(menu, this);
-    #else
-    menu->exec(event->globalPos());
+    if (Settings::get("enable_android_desktop_mode") != "yes") {
+        useContextDialog = true;
+    }
     #endif
+    if (useContextDialog) {
+        event->accept();
+        Scroller::reset();
+        Helper::contextMenuToDialog(menu, this);
+    } else {
+        menu->exec(event->globalPos());
+    }
 
     delete menu;
 }

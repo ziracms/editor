@@ -411,6 +411,7 @@ private:
     QTimer mousePressTimer;
     bool ignoreMouseRelease;
     bool isGesturesEnabled;
+    bool searchDisplayOnTop;
 signals:
     void ready(int index);
     void statusBarText(int index, QString text);

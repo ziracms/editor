@@ -29,6 +29,7 @@ const QString PHP_MANUAL_FALLBACK_FOLDER = "php-chunked-xhtml";
 
 const std::string PHP_MANUAL_ENCODING = "UTF-8";
 
+const QString SCALE_ENABLE_SETTINGS_VAR = "enable_scaling";
 const QString SCALE_AUTO_SETTINGS_VAR = "scale_auto";
 const QString SCALE_FACTOR_SETTINGS_VAR = "scale_factor";
 
@@ -132,13 +133,15 @@ void Settings::initData()
         {"plugins_path", ""},
         {"snippets", getDefaultSnippets().toStdString()},
         {"custom_snippets_file", ""},
+        {"enable_scaling", "yes"},
         {"scale_auto", "yes"},
         {"scale_factor", "100"},
         {"scale_factor_unchecked", "no"},
         {"devpack_install_silent", "no"},
         {"enable_android_gestures", "yes"},
         {"editor_enable_android_gestures", "yes"},
-        {"auto_show_virtual_keyboard", "yes"}
+        {"auto_show_virtual_keyboard", "yes"},
+        {"enable_android_desktop_mode", "no"}
     };
 }
 
@@ -391,7 +394,7 @@ void Settings::_load()
 {
     initData();
     QSettings windowSettings;
-    for (auto it : data) {
+    for (auto & it : data) {
         if (!windowSettings.contains(QString::fromStdString(it.first))) continue;
         QVariant v = windowSettings.value(QString::fromStdString(it.first), QString::fromStdString(it.second));
         set(it.first, v.toString().toStdString());
@@ -405,7 +408,7 @@ void Settings::change(std::unordered_map<std::string, std::string> map)
 
 void Settings::_change(std::unordered_map<std::string, std::string> map)
 {
-    for (auto it : map) {
+    for (auto & it : map) {
         set(it.first, it.second);
         changesData[it.first] = it.second;
     }
@@ -419,7 +422,7 @@ void Settings::save()
 void Settings::_save()
 {
     QSettings windowSettings;
-    for (auto it : changesData) {
+    for (auto & it : changesData) {
         set(it.first, it.second);
         windowSettings.setValue(QString::fromStdString(it.first), QString::fromStdString(it.second));
     }
@@ -434,7 +437,7 @@ void Settings::reset()
 void Settings::_reset()
 {
     QSettings windowSettings;
-    for (auto it : data) {
+    for (auto & it : data) {
         if (!windowSettings.contains(QString::fromStdString(it.first))) continue;
         windowSettings.remove(QString::fromStdString(it.first));
     }
@@ -444,7 +447,17 @@ void Settings::initApplicationScaling()
 {
     double scaleFactor = 1.;
     bool scaleAuto = true;
+    bool enableScaling = true;
     QSettings qSettings;
+    if (qSettings.contains(SCALE_ENABLE_SETTINGS_VAR)) {
+        QVariant scaleEnableVar = qSettings.value(SCALE_ENABLE_SETTINGS_VAR, "yes");
+        if (scaleEnableVar.toString() == "no") enableScaling = false;
+    }
+    if (!enableScaling) {
+        qunsetenv("QT_SCALE_FACTOR");
+        qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", QByteArray("0"));
+        return;
+    }
     if (qSettings.contains(SCALE_AUTO_SETTINGS_VAR)) {
         QVariant scaleAutoVar = qSettings.value(SCALE_AUTO_SETTINGS_VAR, "yes");
         if (scaleAutoVar.toString() == "no") scaleAuto = false;

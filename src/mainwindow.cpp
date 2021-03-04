@@ -660,7 +660,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(QApplication::inputMethod(), SIGNAL(visibleChanged()), this, SLOT(inputMethodVisibleChanged()));
 
-    if (Settings::get("scale_factor_unchecked") == "yes" && Settings::get("scale_auto") == "no") {
+    if (Settings::get("scale_factor_unchecked") == "yes" && Settings::get("scale_auto") == "no" &&  Settings::get("enable_scaling") == "yes") {
         QTimer::singleShot(CHECK_SCALE_FACTOR_DELAY, this, SLOT(checkScaleFactor()));
     }
 
@@ -668,14 +668,15 @@ MainWindow::MainWindow(QWidget *parent) :
     // make sure that window is maximized in Android
     #if defined(Q_OS_ANDROID)
     setWindowState( windowState() | Qt::WindowMaximized);
-    ui->menuBar->setVisible(false);
-    ui->mainToolBar->setVisible(true);
-    ui->mainToolBar->insertSeparator(ui->mainToolBar->actions().at(0));
-    QAction * mainMenuAction = new QAction(tr("Menu"));
-    mainMenuAction->setIcon(Icon::get("actionMenu", QIcon(":/icons/separator-double.png")));
-    connect(mainMenuAction, SIGNAL(triggered(bool)), this, SLOT(mainMenuDialogTriggered(bool)));
-    ui->mainToolBar->insertAction(ui->mainToolBar->actions().at(0), mainMenuAction);
-
+    if (Settings::get("enable_android_desktop_mode") != "yes") {
+        ui->menuBar->setVisible(false);
+        ui->mainToolBar->setVisible(true);
+        ui->mainToolBar->insertSeparator(ui->mainToolBar->actions().at(0));
+        QAction * mainMenuAction = new QAction(tr("Menu"));
+        mainMenuAction->setIcon(Icon::get("actionMenu", QIcon(":/icons/separator-double.png")));
+        connect(mainMenuAction, SIGNAL(triggered(bool)), this, SLOT(mainMenuDialogTriggered(bool)));
+        ui->mainToolBar->insertAction(ui->mainToolBar->actions().at(0), mainMenuAction);
+    }
     connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), this, SLOT(applicationStateChanged(Qt::ApplicationState)));
     #endif
 

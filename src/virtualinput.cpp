@@ -6,6 +6,7 @@
 #include <QInputMethodEvent>
 #include <QTextBlock>
 #include "helper.h"
+#include "settings.h"
 
 /*
 #if defined(Q_OS_ANDROID)
@@ -50,6 +51,7 @@ void VirtualInput::registerDialog(QDialog *dialog, bool withPlainTextEdits)
 
 void VirtualInput::_registerDialog(QDialog *dialog, bool withPlainTextEdits)
 {
+    if (Settings::get("enable_android_desktop_mode") == "yes") return;
     dialog->installEventFilter(this);
     QWidget * widget = new QWidget(dialog);
     widget->setObjectName(WIDGET_OBJECT_NAME);
