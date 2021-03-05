@@ -6291,7 +6291,7 @@ void Editor::highlightSearchWords(QList<QTextEdit::ExtraSelection> *extraSelecti
     if (!search->isVisible() || searchString.size() == 0) return;
     static_cast<LineMap *>(lineMap)->clearMarks();
     QTextCursor searchWordCursor(document());
-    QTextDocument::FindFlags findFlags = nullptr;
+    QTextDocument::FindFlags findFlags;
     if (searchCaSe) findFlags |= QTextDocument::FindCaseSensitively;
     if (searchWord) findFlags |= QTextDocument::FindWholeWords;
     searchWordCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
@@ -6511,7 +6511,7 @@ void Editor::searchText(QString searchTxt, bool CaSe, bool Word, bool RegE, bool
         else curs.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
     }
     if (backwards && curs.positionInBlock() == 0) curs.movePosition(QTextCursor::PreviousCharacter, QTextCursor::MoveAnchor); // bug ?
-    QTextDocument::FindFlags flags = nullptr;
+    QTextDocument::FindFlags flags;
     if (CaSe) flags |= QTextDocument::FindCaseSensitively;
     if (Word) flags |= QTextDocument::FindWholeWords;
     if (backwards) flags |= QTextDocument::FindBackward;
@@ -6562,7 +6562,7 @@ void Editor::replaceAllText(QString searchTxt, QString replaceTxt, bool CaSe, bo
     if (searchTxt.size() == 0) return;
     curs.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
     curs.beginEditBlock();
-    QTextDocument::FindFlags flags = nullptr;
+    QTextDocument::FindFlags flags;
     if (CaSe) flags |= QTextDocument::FindCaseSensitively;
     if (Word) flags |= QTextDocument::FindWholeWords;
     QTextCursor resCurs;
@@ -6633,7 +6633,7 @@ void Editor::multiSelectToggle()
         setTextCursor(curs);
 
         QTextCursor searchWordCursor(document());
-        QTextDocument::FindFlags findFlags = nullptr;
+        QTextDocument::FindFlags findFlags;
         findFlags |= QTextDocument::FindCaseSensitively;
         searchWordCursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
         int co = 0;

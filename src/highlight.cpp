@@ -673,7 +673,7 @@ QStringList Highlight::getKnownFunctions(QString clsName)
 {
     QStringList funcs;
     if (clsName == "anonymous class") return funcs;
-    for (auto it : knownFunctions) {
+    for (const auto &it : knownFunctions) {
         QString k = QString::fromStdString(it.first);
         if (clsName.size() > 0 && k.indexOf(clsName+"::") != 0) continue;
         funcs.append(k);
@@ -3663,9 +3663,11 @@ void Highlight::rehighlight()
             int percent = (block.blockNumber()+1)*100 / blocksCount;
             if (percent - progressPercent > 10) {
                 progressPercent = percent;
-                doc->markContentsDirty(startPos, block.position() - startPos + block.length());
-                startPos = block.position() + block.length();
-                dirty = false;
+                if (Helper::isQtVersionLessThan(5, 15, 0) || highlightVarsMode) {
+                    doc->markContentsDirty(startPos, block.position() - startPos + block.length());
+                    startPos = block.position() + block.length();
+                    dirty = false;
+                }
                 emit progressChanged(percent);
             }
         }
