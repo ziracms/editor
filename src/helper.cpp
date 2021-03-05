@@ -35,7 +35,7 @@
 #endif
 
 const QString APPLICATION_NAME = "Zira Editor";
-const QString APPLICATION_VERSION = "2.1.0";
+const QString APPLICATION_VERSION = "2.1.1";
 const QString ORGANIZATION_NAME = "Zira";
 const QString PROJECT_NAME = "Zira project";
 const QString AUTHOR_EMAIL_USERNAME = "ziracms";
